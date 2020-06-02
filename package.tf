@@ -19,8 +19,8 @@ data "external" "archive_prepare" {
       with_ssh_agent = var.docker_with_ssh_agent
     }) : null
 
-    artifacts_dir    = "builds"
-    runtime          = var.runtime # @todo: check building layer when compatible_runtime set
+    artifacts_dir    = var.artifacts_dir
+    runtime          = var.runtime
     function_name    = var.function_name
     source_path      = var.source_path
     hash_extra       = var.hash_extra
