@@ -393,12 +393,12 @@ source_path = [
     !abc/.*            # Filter out everything in an abc folder
     abc/def/.*         # Re-include everything in abc/def sub folder
     !abc/def/hgk/.*    # Filter out again in abc/def/hgk sub folder
-
+```
 
 * `commands` - List of commands to run. If specified, this argument overrides `pip_requirements`.
 * `pip_requirements` - Set to `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
 * `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
-```
+
 
 ### Building in Docker
 
