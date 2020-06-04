@@ -15,18 +15,18 @@ Not supported, yet:
 * [Lambda Event Source Mapping](https://www.terraform.io/docs/providers/aws/r/lambda_event_source_mapping.html)
 
 
-This Terraform module is the part of [serverless.tf framework](https://serverless.tf), which aims to simplify all operations when working with the serverless in Terraform:
+This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform:
 
-1. Build and package dependencies
-2. Create and store deployment package
-3. Create and update AWS Lambda Function and Lambda Layer
-4. Publish and create aliases for AWS Lambda Function
-5. and more
+1. Build and install dependencies - [read more](#build)
+2. Create, store, and use deployment packages - [read more](#package)
+3. Create and update AWS Lambda Function and Lambda Layer - [see usage](#usage)
+4. Publish and create aliases for AWS Lambda Function - [see usage](#usage)
 
 
 ## Features
 
-- [x] Build dependencies for your Lambda Function and Layer. Supports local builds, using Docker (with or without SSH agent support for private builds).
+- [x] Build dependencies for your Lambda Function and Layer.
+- [x] Support builds locally and in Docker (with or without SSH agent support for private builds).
 - [x] Create deployment package or deploy existing (previously built package) from local, from S3, from URL.
 - [x] Store deployment packages locally or in the S3 bucket.
 - [x] Support almost all features of Lambda resources (function, layer, alias, etc.)
@@ -250,82 +250,24 @@ module "lambda" {
 }
 ```
 
-## Creation of deployment package
-
-By default, this module creates deployment package and uses it to create or update Lambda Function or Lambda Layer.
-
-Sometimes, you may want to separate build of deployment package (eg, to compile and install dependencies) from the deployment of a package into two separate steps.
-
-When creating archive locally outside of this module you need to set `create_package = false` and then argument `local_existing_package = "existing_package.zip"`. Alternatively, you may prefer to keep your deployment packages into S3 bucket and provide a reference to them like this:
-
-```hcl
-  create_package      = false
-  s3_existing_package = {
-    bucket = "my-bucket-with-lambda-builds"
-    key    = "existing_package.zip"
-  }
-
-```
-
-### Using deployment package from remote URL
-
-This can be implemented in two steps: download file locally using CURL, and pass path to deployment package as `local_existing_package` argument.
-
-```hcl
-locals {
-  package_url = "https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-lambda/master/examples/fixtures/python3.8-zip/existing_package.zip"
-  downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
-}
-
-resource "null_resource" "download_package" {
-  triggers = {
-    downloaded = local.downloaded
-  }
-
-  provisioner "local-exec" {
-    command = "curl -L -o ${local.downloaded} ${local.package_url}"
-  }
-}
-
-data "null_data_source" "downloaded_package" {
-  inputs = {
-    id       = null_resource.download_package.id
-    filename = local.downloaded
-  }
-}
-
-module "lambda_function_existing_package_from_remote_url" {
-  source = "terraform-aws-modules/lambda/aws"
-
-  function_name = "my-lambda-existing-package-local"
-  description   = "My awesome lambda function"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-
-  create_package         = false
-  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
-}
-```
-
-
-## How does building and packaging work?
+## <a name="build-package"></a> How does building and packaging work?
 
 This is one of the most complicated part done by the module and normally you don't have to know internals.
 
-`build.py` is the script which does it. The main functions of the script are to generate a filename of zip-archive based on the content of the files, verify if zip-archive has been already created, and create the zip-archive only when it is necessary (during `apply`, not `plan`).
+`lambda.py` is Python script which does it. Make sure, Python 3.5 or newer is installed. The main functions of the script are to generate a filename of zip-archive based on the content of the files, verify if zip-archive has been already created, and create zip-archive only when it is necessary (during `apply`, not `plan`).
 
 Hash of zip-archive created with the same content of the files is always identical which prevents unnecessary force-updates of the Lambda resources unless content modifies. If you need to have different filenames for the same content you can specify extra string argument `hash_extra`.
 
 
-## Build Dependencies
+## <a name="build"></a> Build Dependencies
 
-You can specify `source_path` in a variety of ways to specify path(s) and rules for building.
+You can specify `source_path` in a variety of ways to achieve desired flexibility when building deployment packages locally or in Docker. You can use absolute or relative paths.
 
-Note that files are not copying anywhere from the source directories when making packages, we use fast Python regular expressions to find matching files, which makes packaging very fast and easy to understand.
+Note that, when building locally, files are not copying anywhere from the source directories when making packages, we use fast Python regular expressions to find matching files and directories, which makes packaging very fast and easy to understand.
 
 ### Simple build from single directory
 
-When `source_path` is set to a path the content of that directory will be used as-is:
+When `source_path` is set to a string, the content of that path will be used to create deployment package as-is:
 
 `source_path = "src/function1"`
 
@@ -336,7 +278,7 @@ When `source_path` is set to a list of directories the content of each will be t
 
 ### Combine various options for extreme flexibility
 
-This is the most complete way of creating a deployment package from multiple sources with multiple dependencies.
+This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing all the available options:
 
 ```hcl
 source_path = [
@@ -347,40 +289,34 @@ source_path = [
       "!.*/.*\\.txt", # Skip all txt files recursively
     ]
   }, {
-    path = "src/python3.8-app1",
-    pip_requirements = true,     # Run "pip install" with requirements.txt in "path"
-    prefix_in_zip = "foo/bar1"   # Put content from this target into "foo/bar" inside of deployment package
+    path             = "src/python3.8-app1",
+    pip_requirements = true,
+    prefix_in_zip    = "foo/bar1",
   }, {
-    path = "src/python3.8-app2"
-    pip_requirements = "requirements-large.txt" # Run "pip install" with this file
+    path             = "src/python3.8-app2",
+    pip_requirements = "requirements-large.txt",
   }, {
-    path = "src/python3.8-app3"
-    commands = ["npm install"]   # Run these commands
+    path     = "src/python3.8-app3",
+    commands = ["npm install"],
     patterns = [
-      "!.*/.*\\.txt", # Skip all txt files recursively
+      "!.*/.*\\.txt",    # Skip all txt files recursively
       "node_modules/.+", # Include all node_modules
     ],
   }, {
-    path = "${path.module}/../fixtures/python3.8-app1"
-    commands = ["npm install"]
+    path     = "src/python3.8-app3",
+    commands = ["go build"],
     patterns = <<END
-      !.*/.*\.txt
-      node_modules/.*
+      bin/.*
       abc/def/.*
     END
-  }, {
-    path = "${path.module}/../fixtures/python3.8-app1"
-    commands = ["npm install"]
-    prefix_in_zip = "foo/bar",
-    patterns = [".*"]  # default
   }
-
 ]
 ```
 
+Few notes:
 
-* `prefix_in_zip` - By default everything installs into the root of a zip-archive.
-* `patterns` - Python regex (can support multiline heredoc). Default value is `patterns = [".*"]` which means "include everything". Some examples:
+* All arguments except `path` are optional.
+* `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
 
 ```txt
     !.*/.*\.txt        # Filter all txt files recursively
@@ -409,7 +345,7 @@ If your Lambda Function or Layer uses some dependencies you can build them in Do
     docker_build_root = "src/python3.8-app1/docker"
     docker_image      = "lambci/lambda:build-python3.8"
     runtime           = "python3.8"    # Setting runtime is required when building package in Docker and Lambda Layer resource.
-    
+
 Using this module you can install dependencies from private hosts. To do this, you need for forward SSH agent:
 
     docker_with_ssh_agent = true
@@ -491,9 +427,10 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 ## Examples
 
 * [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features
-* [Building and Packaging](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Building and packaging deployment packages in various ways
+* [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways
 * [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS and SNS integration)
 * [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC
+
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -611,6 +548,9 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 ## Authors
 
 Module managed by [Anton Babenko](https://github.com/antonbabenko). Check out [serverless.tf](https://serverless.tf) to learn more about doing serverless with Terraform.
+
+Please reach out to [Betajob](https://www.betajob.com/) if you are looking for commercial support for your Terraform, AWS, or serverless project.
+
 
 ## License
 
