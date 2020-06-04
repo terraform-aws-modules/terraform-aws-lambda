@@ -7,32 +7,20 @@ All notable changes to this project will be documented in this file.
 
 
 
-<a name="v0.4.0"></a>
-## [v0.4.0] - 2020-03-26
+<a name="v1.0.0"></a>
+## [v1.0.0] - 2020-06-04
 
-- fix: Fixed required version of AWS provider (thanks [@okgolove](https://github.com/okgolove))
-
-
-<a name="v0.3.0"></a>
-## [v0.3.0] - 2020-03-11
-
-- Updated example to create tls private key and import it ([#2](https://github.com/terraform-aws-modules/terraform-aws-key-pair/issues/2))
+- Updated README formatting
+- Initial terraform-aws-lambda implementation
+- Added example of Dockerfile for custom AWS Lambda build env
+- Added initial draft implementation of lambda.py and package.tf
 
 
-<a name="v0.2.0"></a>
-## [v0.2.0] - 2019-09-25
+<a name="v0.0.1"></a>
+## v0.0.1 - 2020-06-02
 
-- Fixed count rule
-
-
-<a name="v0.1.0"></a>
-## v0.1.0 - 2019-09-25
-
-- Fixed formatting
-- Added aws-key-pair module
+- first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-key-pair/compare/v0.4.0...HEAD
-[v0.4.0]: https://github.com/terraform-aws-modules/terraform-aws-key-pair/compare/v0.3.0...v0.4.0
-[v0.3.0]: https://github.com/terraform-aws-modules/terraform-aws-key-pair/compare/v0.2.0...v0.3.0
-[v0.2.0]: https://github.com/terraform-aws-modules/terraform-aws-key-pair/compare/v0.1.0...v0.2.0
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.0.0...HEAD
+[v1.0.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v0.0.1...v1.0.0
