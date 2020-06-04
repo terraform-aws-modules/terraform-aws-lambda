@@ -3,7 +3,7 @@
 data "external" "archive_prepare" {
   count = var.create && var.create_package ? 1 : 0
 
-  program     = ["python", "${path.module}/lambda.py", "prepare"]
+  program     = ["python", "${path.module}/build.py", "prepare"]
   working_dir = path.cwd
 
   query = {
@@ -24,7 +24,7 @@ data "external" "archive_prepare" {
     function_name    = var.function_name
     source_path      = var.source_path
     hash_extra       = var.hash_extra
-    hash_extra_paths = jsonencode(["${path.module}/lambda.py"])
+    hash_extra_paths = jsonencode(["${path.module}/build.py"])
   }
 }
 
@@ -38,7 +38,7 @@ resource "null_resource" "archive" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["python", "${path.module}/lambda.py", "build"]
+    interpreter = ["python", "${path.module}/build.py", "build"]
     command     = data.external.archive_prepare[0].result.build_data
     working_dir = path.cwd
   }
