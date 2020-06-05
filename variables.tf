@@ -330,16 +330,34 @@ variable "attach_async_event_policy" {
   default     = false
 }
 
-variable "policy" {
-  description = "An additional policy to attach to the Lambda Function role"
-  type        = string
-  default     = null
-}
-
 variable "trusted_entities" {
   description = "Lambda Function additional trusted entities for assuming roles (trust relationship)"
   type        = list(string)
   default     = []
+}
+
+variable "policy_json" {
+  description = "An additional policy document as JSON to attach to the Lambda Function role"
+  type        = string
+  default     = null
+}
+
+variable "policy" {
+  description = "An additional policy document ARN to attach to the Lambda Function role"
+  type        = string
+  default     = null
+}
+
+variable "policies" {
+  description = "List of policy statements ARN to attach to Lambda Function role"
+  type        = list(string)
+  default     = []
+}
+
+variable "policy_statements" {
+  description = "Map of dynamic policy statements to attach to Lambda Function role"
+  type        = any
+  default     = {}
 }
 
 ##########################
