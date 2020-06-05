@@ -32,6 +32,38 @@ module "lambda_function" {
   //  create_package         = false
   //  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
 
+//
+//  policy_json = <<EOF
+//{
+//    "Version": "2012-10-17",
+//    "Statement": [
+//        {
+//            "Effect": "Allow",
+//            "Action": [
+//                "xray:GetSamplingStatisticSummaries"
+//            ],
+//            "Resource": ["*"]
+//        }
+//    ]
+//}
+//EOF
+//
+//  policy   = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+//  policies = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+//
+//  policy_statements = {
+//    dynamodb = {
+//      effect    = "Allow",
+//      actions   = ["dynamodb:BatchWriteItem"],
+//      resources = ["arn:aws:dynamodb:eu-west-1:052212379155:table/Test"]
+//    },
+//    s3_read = {
+//      effect    = "Deny",
+//      actions   = ["s3:HeadObject", "s3:GetObject"],
+//      resources = ["arn:aws:s3:::my-bucket/*"]
+//    }
+//  }
+
   source_path = "${path.module}/../fixtures/python3.8-app1"
   //  source_path = [
   //    "${path.module}/../fixtures/python3.8-app1-extra",

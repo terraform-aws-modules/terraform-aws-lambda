@@ -224,6 +224,16 @@ module "vpc" {
 ```
 
 
+## Additional IAM policies for Lambda Functions
+
+There are 4 supported ways to attach IAM policies to IAM role used by Lambda Function:
+
+1. `policy_json` - set as JSON string or heredoc
+1. `policy` - ARN of existing IAM policy
+1. `policies` - List of ARNs of existing IAM policies
+1. `policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy. See examples/complete for more information.
+
+
 ## Conditional creation
 
 Sometimes you need to have a way to create resources conditionally but Terraform does not allow usage of `count` inside `module` block, so the solution is to specify `create` arguments.
@@ -494,7 +504,10 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | maximum\_event\_age\_in\_seconds | Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600. | `number` | `null` | no |
 | maximum\_retry\_attempts | Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2. | `number` | `null` | no |
 | memory\_size | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 3008 MB, in 64 MB increments. | `number` | `128` | no |
-| policy | An additional policy to attach to the Lambda Function role | `string` | `null` | no |
+| policies | List of policy statements ARN to attach to Lambda Function role | `list(string)` | `[]` | no |
+| policy | An additional policy document ARN to attach to the Lambda Function role | `string` | `null` | no |
+| policy\_json | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |
+| policy\_statements | Map of dynamic policy statements to attach to Lambda Function role | `map(any)` | `{}` | no |
 | provisioned\_concurrent\_executions | Amount of capacity to allocate. Must be greater than or equal to 1. | `number` | `-1` | no |
 | publish | Whether to publish creation/change as new Lambda Function Version. | `bool` | `false` | no |
 | reserved\_concurrent\_executions | The amount of reserved concurrent executions for this Lambda Function. A value of 0 disables Lambda Function from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1. | `number` | `-1` | no |

@@ -23,7 +23,6 @@ module "lambda_function" {
   publish       = true
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
-  //  ignore_paths = ["**/*.txt", "*.so"]
 
   store_on_s3 = true
   s3_bucket   = module.s3_bucket.this_s3_bucket_id
@@ -40,6 +39,45 @@ module "lambda_function" {
 
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
   attach_dead_letter_policy = true
+
+  ######################
+  # Additional policies
+  ######################
+
+  policy_json = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "xray:GetSamplingStatisticSummaries"
+            ],
+            "Resource": ["*"]
+        }
+    ]
+}
+EOF
+
+  policy   = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+  policies = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+
+  policy_statements = {
+    dynamodb = {
+      effect    = "Allow",
+      actions   = ["dynamodb:BatchWriteItem"],
+      resources = ["arn:aws:dynamodb:eu-west-1:052212379155:table/Test"]
+    },
+    s3_read = {
+      effect    = "Deny",
+      actions   = ["s3:HeadObject", "s3:GetObject"],
+      resources = ["arn:aws:s3:::my-bucket/*"]
+    }
+  }
+
+  ###########################
+  # END: Additional policies
+  ###########################
 
   tags = {
     Module = "lambda1"

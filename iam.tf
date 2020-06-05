@@ -135,92 +135,24 @@ resource "aws_iam_policy_attachment" "dead_letter" {
 # VPC
 ######
 
-data "aws_iam_policy_document" "vpc" {
-  count = local.create_role && var.attach_network_policy ? 1 : 0
-
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "ec2:CreateNetworkInterface",
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:DeleteNetworkInterface",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "vpc" {
-  count = local.create_role && var.attach_network_policy ? 1 : 0
-
-  name   = "${var.function_name}-vpc"
-  policy = data.aws_iam_policy_document.vpc[0].json
-}
-
 resource "aws_iam_policy_attachment" "vpc" {
   count = local.create_role && var.attach_network_policy ? 1 : 0
 
   name       = "${var.function_name}-vpc"
   roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = aws_iam_policy.vpc[0].arn
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
 }
 
 #####################
 # Tracing with X-Ray
 #####################
 
-data "aws_iam_policy_document" "tracing" {
-  count = local.create_role && var.attach_tracing_policy ? 1 : 0
-
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "xray:PutTraceSegments",
-      "xray:PutTelemetryRecords",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "tracing" {
-  count = local.create_role && var.attach_tracing_policy ? 1 : 0
-
-  name   = "${var.function_name}-tracing"
-  policy = data.aws_iam_policy_document.tracing[0].json
-}
-
 resource "aws_iam_policy_attachment" "tracing" {
   count = local.create_role && var.attach_tracing_policy ? 1 : 0
 
   name       = "${var.function_name}-tracing"
   roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = aws_iam_policy.tracing[0].arn
-}
-
-######################
-# Additional policies
-######################
-
-resource "aws_iam_policy" "additional" {
-  count = local.create_role && var.policy != null ? 1 : 0
-
-  name   = var.function_name
-  policy = var.policy
-}
-
-resource "aws_iam_policy_attachment" "additional" {
-  count = local.create_role && var.policy != null ? 1 : 0
-
-  name       = var.function_name
-  roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = aws_iam_policy.additional[0].arn
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }
 
 ###############################
@@ -255,4 +187,96 @@ resource "aws_iam_policy_attachment" "async" {
   name       = "${var.function_name}-async"
   roles      = [aws_iam_role.lambda[0].name]
   policy_arn = aws_iam_policy.async[0].arn
+}
+
+###########################
+# Additional policy (JSON)
+###########################
+
+resource "aws_iam_policy" "additional_json" {
+  count = local.create_role && var.policy_json != null ? 1 : 0
+
+  name   = var.function_name
+  policy = var.policy_json
+}
+
+resource "aws_iam_policy_attachment" "additional_json" {
+  count = local.create_role && var.policy_json != null ? 1 : 0
+
+  name       = var.function_name
+  roles      = [aws_iam_role.lambda[0].name]
+  policy_arn = aws_iam_policy.additional_json[0].arn
+}
+
+#############################
+# ARN of additional policies
+#############################
+
+resource "aws_iam_policy_attachment" "additional" {
+  for_each = local.create_role ? toset(compact(concat([var.policy], var.policies))) : []
+
+  name       = var.function_name
+  roles      = [aws_iam_role.lambda[0].name]
+  policy_arn = each.value
+}
+
+###############################
+# Additional policy statements
+###############################
+
+data "aws_iam_policy_document" "inline" {
+  count = local.create_role && length(keys(var.policy_statements)) > 0 ? 1 : 0
+
+  dynamic "statement" {
+    for_each = local.create_role && length(keys(var.policy_statements)) > 0 ? var.policy_statements : toobject({})
+
+    content {
+      sid           = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
+      effect        = lookup(statement.value, "effect", null)
+      actions       = lookup(statement.value, "actions", null)
+      not_actions   = lookup(statement.value, "not_actions", null)
+      resources     = lookup(statement.value, "resources", null)
+      not_resources = lookup(statement.value, "not_resources", null)
+
+      dynamic "principals" {
+        for_each = lookup(statement.value, "principals", [])
+        content {
+          type        = principals.value.type
+          identifiers = principals.value.identifiers
+        }
+      }
+
+      dynamic "not_principals" {
+        for_each = lookup(statement.value, "not_principals", [])
+        content {
+          type        = not_principals.value.type
+          identifiers = not_principals.value.identifiers
+        }
+      }
+
+      dynamic "condition" {
+        for_each = lookup(statement.value, "condition", [])
+        content {
+          test     = condition.value.test
+          variable = condition.value.variable
+          values   = condition.value.values
+        }
+      }
+    }
+  }
+}
+
+resource "aws_iam_policy" "inline" {
+  count = local.create_role && length(keys(var.policy_statements)) > 0 ? 1 : 0
+
+  name   = "${var.function_name}-inline"
+  policy = data.aws_iam_policy_document.inline[0].json
+}
+
+resource "aws_iam_policy_attachment" "inline" {
+  count = local.create_role && length(keys(var.policy_statements)) > 0 ? 1 : 0
+
+  name       = var.function_name
+  roles      = [aws_iam_role.lambda[0].name]
+  policy_arn = aws_iam_policy.inline[0].arn
 }
