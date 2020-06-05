@@ -33,7 +33,8 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 - [x] Lambda@Edge
 - [x] Conditional creation for many types of resources.
 - [x] Control execution of nearly any step in the process - build, package, store package, deploy, update.
-- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, dead-letter notification, tracing, and async events) and create of required IAM policies.
+- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, dead-letter notification, tracing, async events, IAM role, IAM policies, and more).
+- [x] Support integration with other `serverless.tf` modules like [HTTP API Gateway](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2) (see [examples there](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2/tree/master/examples/complete-http)).
 
 
 ## Usage
