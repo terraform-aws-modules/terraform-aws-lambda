@@ -71,6 +71,30 @@ def tempdir():
         shutil.rmtree(path)
 
 
+def dataclass(name, **fields):
+    typ = type(name, (object,), {
+        '__slots__': fields.keys(),
+        '__getattr__': lambda *_: None,
+    })
+    for k, v in fields.items():
+        setattr(typ, k, v)
+    return typ
+
+
+def datatree(name, **fields):
+    def decode_json(v):
+        if v and isinstance(v, str) and v[0] in '"[{':
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                pass
+        return v
+
+    return dataclass(name, **dict(((
+        k, datatree(k, **v) if isinstance(v, dict) else decode_json(v))
+        for k, v in fields.items())))()
+
+
 ################################################################################
 # Packaging functions
 
