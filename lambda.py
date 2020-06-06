@@ -425,7 +425,7 @@ def build_command(args):
                         chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
                         docker_command = [shlex_join(pip_command), '&&',
                                           shlex_join(['chown', '-R',
-                                                      chown_mask, '/var/task'])]
+                                                      chown_mask, '.'])]
                         docker_command = [' '.join(docker_command)]
                         check_call(docker_run_command(
                             '.', docker_command, runtime, shell=True,
