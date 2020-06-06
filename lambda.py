@@ -245,7 +245,7 @@ def prepare_command(args):
     artifacts_dir = query['artifacts_dir']
     tf_paths = argparse.Namespace(**json.loads(query['paths']))
     hash_extra_paths = json.loads(query['hash_extra_paths'])
-    source_path = os.path.abspath(query['source_path'])
+    source_path = query['source_path']
     hash_extra = query['hash_extra']
 
     docker = query.get('docker')
@@ -332,7 +332,6 @@ def build_command(args):
         Creates a zip file from a directory.
         """
 
-        target_file = os.path.abspath(target_file)
         target_dir = os.path.dirname(target_file)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
@@ -359,9 +358,7 @@ def build_command(args):
 
     docker = build_data.get('docker')
 
-    absolute_filename = os.path.abspath(filename)
-
-    if os.path.exists(absolute_filename):
+    if os.path.exists(filename):
         print('Reused: {}'.format(shlex.quote(filename)))
         return
 
@@ -419,8 +416,8 @@ def build_command(args):
 
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
-        create_zip_file(temp_dir, absolute_filename)
-        os.utime(absolute_filename, ns=(timestamp, timestamp))
+        create_zip_file(temp_dir, filename)
+        os.utime(filename, ns=(timestamp, timestamp))
         print('Created: {}'.format(shlex.quote(filename)))
 
 
