@@ -148,7 +148,7 @@ def docker_run_command(build_root, command, runtime,
             '--mount', 'type=bind,'
                        'src=/run/host-services/ssh-auth.sock,'
                        'target=/run/host-services/ssh-auth.sock',
-            '-e', 'SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"',
+            '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
         ])
     elif platform.system() == 'Linux':
         sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
