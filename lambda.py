@@ -449,12 +449,12 @@ def build_command(args):
                                     working_dir, artifacts_dir, 'cache/pip'))
 
                         chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                        docker_command = [shlex_join(pip_command), '&&',
-                                          shlex_join(['chown', '-R',
-                                                      chown_mask, '.'])]
-                        docker_command = [' '.join(docker_command)]
+                        shell_command = [shlex_join(pip_command), '&&',
+                                         shlex_join(['chown', '-R',
+                                                     chown_mask, '.'])]
+                        shell_command = [' '.join(shell_command)]
                         check_call(docker_run_command(
-                            '.', docker_command, runtime, shell=True,
+                            '.', shell_command, runtime, shell=True,
                             pip_cache_dir=pip_cache_dir
                         ))
                     else:
