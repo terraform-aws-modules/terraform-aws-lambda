@@ -126,7 +126,8 @@ def docker_build_command(build_root, docker_file=None, tag=None):
 
 
 def docker_run_command(build_root, command, runtime,
-                       image=None, shell=None, interactive=False):
+                       image=None, shell=None, interactive=False,
+                       pip_cache_dir=None):
     """"""
     docker_cmd = ['docker', 'run', '--rm']
 
@@ -156,6 +157,11 @@ def docker_run_command(build_root, command, runtime,
             '-v', '{}:/tmp/ssh_sock:z'.format(sock),
             '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
         ])
+        if pip_cache_dir:
+            pip_cache_dir = os.path.abspath(pip_cache_dir)
+            docker_cmd.extend([
+                '-v', '{}:/root/.cache/pip:z'.format(pip_cache_dir),
+            ])
     else:
         raise RuntimeError("Unsupported platform for docker building")
 
@@ -292,6 +298,7 @@ def prepare_command(args):
         'filename': filename,
         'runtime': runtime,
         'source_path': source_path,
+        'artifacts_dir': artifacts_dir,
         'timestamp': timestamp,
     }
 
@@ -355,12 +362,15 @@ def build_command(args):
     runtime = build_data['runtime']
     source_path = build_data['source_path']
     timestamp = build_data['timestamp']
+    artifacts_dir = build_data['artifacts_dir']
 
     docker = build_data.get('docker')
 
     if os.path.exists(filename):
         print('Reused: {}'.format(shlex.quote(filename)))
         return
+
+    working_dir = os.getcwd()
 
     # Create a temporary directory for building the archive,
     # so no changes will be made to the source directory.
@@ -403,13 +413,24 @@ def build_command(args):
                         '--requirement=requirements.txt',
                     ])
                     if docker:
+                        pip_cache_dir = docker.get('docker_pip_cache')
+                        if pip_cache_dir:
+                            if isinstance(pip_cache_dir, str):
+                                pip_cache_dir = os.path.abspath(
+                                    os.path.join(working_dir, pip_cache_dir))
+                            else:
+                                pip_cache_dir = os.path.abspath(os.path.join(
+                                    working_dir, artifacts_dir, 'cache/pip'))
+
                         chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
                         docker_command = [shlex_join(pip_command), '&&',
                                           shlex_join(['chown', '-R',
                                                       chown_mask, '/var/task'])]
                         docker_command = [' '.join(docker_command)]
-                        check_call(docker_run_command('.', docker_command,
-                                                      runtime, shell=True))
+                        check_call(docker_run_command(
+                            '.', docker_command, runtime, shell=True,
+                            pip_cache_dir=pip_cache_dir
+                        ))
                     else:
                         print(pip_command, flush=True)
                         check_call(pip_command)
