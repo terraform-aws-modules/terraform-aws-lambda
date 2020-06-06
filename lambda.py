@@ -266,24 +266,23 @@ def prepare_command(args):
 
     args.dump_env and dump_env('prepare_command')
 
-    # Parse the query.
-    query = json.load(sys.stdin)
-    args.dump_input and dump_query('prepare_command', query)
+    # Load the query.
+    query_data = json.load(sys.stdin)
+    args.dump_input and dump_query('prepare_command', query_data)
+    query = datatree('prepare_query', **query_data)
 
-    runtime = query['runtime']
-    function_name = query['function_name']
-    artifacts_dir = query['artifacts_dir']
-    tf_paths = argparse.Namespace(**json.loads(query['paths']))
-    hash_extra_paths = json.loads(query['hash_extra_paths'])
-    source_path = query['source_path']
-    hash_extra = query['hash_extra']
+    tf_paths = query.paths
+    runtime = query.runtime
+    function_name = query.function_name
+    artifacts_dir = query.artifacts_dir
+    hash_extra_paths = query.hash_extra_paths
+    source_path = query.source_path
+    hash_extra = query.hash_extra
 
-    docker = query.get('docker')
+    # Compacting docker vars
+    docker = query.docker
     if docker:
-        docker = json.loads(docker)
-        docker = {k: v for k, v in docker.items() if v}
-        if not docker:
-            docker = True
+        docker = {k: v for k, v in docker.items() if v} or True
 
     # Validate the query.
     if not os.path.exists(source_path):
@@ -318,13 +317,14 @@ def prepare_command(args):
 
     # Replace variables in the build command with calculated values.
     build_data = {
-        'docker': docker,
         'filename': filename,
         'runtime': runtime,
         'source_path': source_path,
         'artifacts_dir': artifacts_dir,
         'timestamp': timestamp,
     }
+    if docker:
+        build_data['docker'] = docker
 
     # Output the result to Terraform.
     json.dump({
@@ -381,14 +381,16 @@ def build_command(args):
         args.source_path,
         file=open('build_command.args', 'a'))
 
-    build_data = json.loads(args.build_data)
-    filename = build_data['filename']
-    runtime = build_data['runtime']
-    source_path = build_data['source_path']
-    timestamp = build_data['timestamp']
-    artifacts_dir = build_data['artifacts_dir']
+    query_data = json.loads(args.build_data)
+    query = datatree('build_query', **query_data)
 
-    docker = build_data.get('docker')
+    runtime = query.runtime
+    filename = query.filename
+    source_path = query.source_path
+
+    timestamp = query.timestamp
+    artifacts_dir = query.artifacts_dir
+    docker = query.docker
 
     if os.path.exists(filename):
         print('Reused: {}'.format(shlex.quote(filename)))
@@ -437,7 +439,7 @@ def build_command(args):
                         '--requirement=requirements.txt',
                     ])
                     if docker:
-                        pip_cache_dir = docker.get('docker_pip_cache')
+                        pip_cache_dir = docker.docker_pip_cache
                         if pip_cache_dir:
                             if isinstance(pip_cache_dir, str):
                                 pip_cache_dir = os.path.abspath(
