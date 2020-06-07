@@ -1,7 +1,10 @@
 # coding: utf-8
 
-import os
 import sys
+if sys.version_info < (3, 7):
+    raise RuntimeError("A python version 3.7 or newer is required")
+
+import os
 import json
 import shlex
 import shutil
@@ -14,6 +17,7 @@ import platform
 import subprocess
 from subprocess import check_call, call
 from contextlib import contextmanager
+
 
 
 ################################################################################

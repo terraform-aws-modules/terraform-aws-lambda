@@ -3,7 +3,7 @@
 data "external" "archive_prepare" {
   count = var.create && var.create_package ? 1 : 0
 
-  program     = ["python", "${path.module}/lambda.py", "prepare"]
+  program     = ["python3", "${path.module}/lambda.py", "prepare"]
   working_dir = path.cwd
 
   query = {
@@ -53,7 +53,7 @@ resource "null_resource" "archive" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["python", "${path.module}/lambda.py", "build"]
+    interpreter = ["python3", "${path.module}/lambda.py", "build"]
     command     = "${data.external.archive_prepare[0].result.filename}.plan"
     working_dir = path.cwd
   }
