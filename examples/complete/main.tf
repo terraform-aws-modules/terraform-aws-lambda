@@ -206,27 +206,27 @@ module "lambda_with_provisioned_concurrency" {
 ########################
 # Lambda Function alias
 ########################
-//
-//data "aws_lambda_function" "existing" {
-//  function_name = module.lambda_function.this_lambda_function_name
-//}
-//
-//module "existing_lambda_alias" {
-//  source = "../../"
-//
-//  create_function = false
-//  create_package  = false
-//  create_alias    = true
-//
-//  alias_name        = "alias-existing-function"
-//  alias_description = "Alias for an existing lambda function"
-//
-//  alias_function_name    = data.aws_lambda_function.existing.function_name
-//  alias_function_version = data.aws_lambda_function.existing.version
-//  //  alias_routing_additional_version_weights = {
-//  //    "1" = 0.3
-//  //  }
-//}
+
+data "aws_lambda_function" "existing" {
+  function_name = module.lambda_function.this_lambda_function_name
+}
+
+module "existing_lambda_alias" {
+  source = "../../"
+
+  create_function = false
+  create_package  = false
+  create_alias    = true
+
+  alias_name        = "alias-existing-function"
+  alias_description = "Alias for an existing lambda function"
+
+  alias_function_name    = data.aws_lambda_function.existing.function_name
+  alias_function_version = data.aws_lambda_function.existing.version
+  //  alias_routing_additional_version_weights = {
+  //    "1" = 0.3
+  //  }
+}
 
 ###########
 # Disabled

@@ -298,7 +298,7 @@ This is one of the most complicated part done by the module and normally you don
 
 Hash of zip-archive created with the same content of the files is always identical which prevents unnecessary force-updates of the Lambda resources unless content modifies. If you need to have different filenames for the same content you can specify extra string argument `hash_extra`.
 
-When calling this module multiple times to create package with the same `source_path` will create corrupted zip-archives due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
+When calling this module multiple times in one execution to create packages with the same `source_path`, zip-archives will corrupted due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
 
 ## <a name="build"></a> Build Dependencies
 
