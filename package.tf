@@ -53,7 +53,8 @@ resource "null_resource" "archive" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["python3", "${path.module}/lambda.py", "build"]
+    interpreter = ["python3", "${path.module}/lambda.py", "build",
+                   data.external.archive_prepare[0].result.timestamp]
     command     = "${data.external.archive_prepare[0].result.filename}.plan"
     working_dir = path.cwd
   }
