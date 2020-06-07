@@ -9,9 +9,9 @@ These types of resources supported:
 * [Lambda Alias](https://www.terraform.io/docs/providers/aws/r/lambda_alias.html)
 * [Lambda Provisioned Concurrency](https://www.terraform.io/docs/providers/aws/r/lambda_provisioned_concurrency_config.html)
 * [Lambda Async Event Configuration](https://www.terraform.io/docs/providers/aws/r/lambda_function_event_invoke_config.html)
+* [Lambda Permission](https://www.terraform.io/docs/providers/aws/r/lambda_permission.html)
 
 Not supported, yet:
-* [Lambda Permission](https://www.terraform.io/docs/providers/aws/r/lambda_permission.html)
 * [Lambda Event Source Mapping](https://www.terraform.io/docs/providers/aws/r/lambda_event_source_mapping.html)
 
 
@@ -235,6 +235,35 @@ There are 4 supported ways to attach IAM policies to IAM role used by Lambda Fun
 1. `policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy. See examples/complete for more information.
 
 
+## Lambda Permissions for allowed triggers
+
+Lambda Permissions should be specified to allow certain resources to invoke Lambda Function.
+ 
+```hcl
+module "lambda_function" {
+  source = "terraform-aws-modules/lambda/aws"
+  
+  # ...omitted for brevity
+
+  allowed_triggers = {
+    APIGatewayAny = {
+      service = "apigateway"
+      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
+    },
+    APIGatewayDevPost = {
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/dev/POST/*"
+    },
+    OneRule = {
+      principal  = "events.amazonaws.com"
+      source_arn = "arn:aws:events:eu-west-1:135367859851:rule/RunDaily"
+    }
+  }
+}
+```
+
+Note: `service = "apigateway" with arn` is a short form to allow invocations of a Lambda Function from any stage, any method, any resource of an API Gateway.
+
 ## Conditional creation
 
 Sometimes you need to have a way to create resources conditionally but Terraform does not allow usage of `count` inside `module` block, so the solution is to specify `create` arguments.
@@ -269,6 +298,7 @@ This is one of the most complicated part done by the module and normally you don
 
 Hash of zip-archive created with the same content of the files is always identical which prevents unnecessary force-updates of the Lambda resources unless content modifies. If you need to have different filenames for the same content you can specify extra string argument `hash_extra`.
 
+When calling this module multiple times to create package with the same `source_path` will create corrupted zip-archives due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
 
 ## <a name="build"></a> Build Dependencies
 
@@ -468,6 +498,7 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | alias\_function\_version | Lambda function version for which you are creating the alias. Pattern: ($LATEST\|[0-9]+). | `string` | `""` | no |
 | alias\_name | Name for the alias you are creating. | `string` | `""` | no |
 | alias\_routing\_additional\_version\_weights | A map that defines the proportion of events that should be sent to different versions of a lambda function. | `map(number)` | `{}` | no |
+| allowed\_triggers | Map of allowed triggers to create Lambda permissions | `map(any)` | `{}` | no |
 | artifacts\_dir | Directory name where artifacts should be stored | `string` | `"builds"` | no |
 | attach\_async\_event\_policy | Controls whether async event policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | attach\_cloudwatch\_logs\_policy | Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function | `bool` | `true` | no |
@@ -508,7 +539,7 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | policies | List of policy statements ARN to attach to Lambda Function role | `list(string)` | `[]` | no |
 | policy | An additional policy document ARN to attach to the Lambda Function role | `string` | `null` | no |
 | policy\_json | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |
-| policy\_statements | Map of dynamic policy statements to attach to Lambda Function role | `map(any)` | `{}` | no |
+| policy\_statements | Map of dynamic policy statements to attach to Lambda Function role | `any` | `{}` | no |
 | provisioned\_concurrent\_executions | Amount of capacity to allocate. Must be greater than or equal to 1. | `number` | `-1` | no |
 | publish | Whether to publish creation/change as new Lambda Function Version. | `bool` | `false` | no |
 | reserved\_concurrent\_executions | The amount of reserved concurrent executions for this Lambda Function. A value of 0 disables Lambda Function from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1. | `number` | `-1` | no |
