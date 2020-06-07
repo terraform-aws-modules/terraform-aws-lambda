@@ -29,6 +29,20 @@ data "external" "archive_prepare" {
   }
 }
 
+# This transitive resource used as a bridge between a state stored
+# in a Terraform plan and a call of a build command on the apply stage
+# to transfer a noticeable amount of data
+resource "local_file" "archive_plan" {
+  count = var.create && var.create_package ? 1 : 0
+
+  # Using a sensitive_content to omit showing diffs
+//  content = data.external.archive_prepare[0].result.build_plan
+//  content_base64 = data.external.archive_prepare[0].result.build_plan_base64
+  content_base64 = base64encode(data.external.archive_prepare[0].result.build_plan)
+  filename = "${data.external.archive_prepare[0].result.filename}.plan"
+  file_permission = "0664"
+}
+
 # Build the zip archive whenever the filename changes.
 resource "null_resource" "archive" {
   count = var.create && var.create_package ? 1 : 0
@@ -40,7 +54,9 @@ resource "null_resource" "archive" {
 
   provisioner "local-exec" {
     interpreter = ["python", "${path.module}/lambda.py", "build"]
-    command     = data.external.archive_prepare[0].result.build_data
+    command     = "${data.external.archive_prepare[0].result.filename}.plan"
     working_dir = path.cwd
   }
+
+  depends_on = [local_file.archive_plan]
 }

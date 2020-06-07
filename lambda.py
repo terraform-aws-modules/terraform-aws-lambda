@@ -329,7 +329,7 @@ def prepare_command(args):
     # Output the result to Terraform.
     json.dump({
         'filename': filename,
-        'build_data': json.dumps(build_data),
+        'build_plan': json.dumps(build_data),
         'timestamp': str(timestamp),
         'was_missing': 'true' if was_missing else 'false',
     }, sys.stdout, indent=2)
@@ -381,7 +381,8 @@ def build_command(args):
         args.source_path,
         file=open('build_command.args', 'a'))
 
-    query_data = json.loads(args.build_data)
+    with open(args.build_plan_file) as f:
+        query_data = json.load(f)
     query = datatree('build_query', **query_data)
 
     runtime = query.runtime
@@ -480,8 +481,8 @@ def args_parser():
     p = sp.add_parser('build',
                       help='build and pack to a zip archive')
     p.set_defaults(command=build_command)
-    p.add_argument('build_data', help='A build_data field from output '
-                                      'of the prepare command')
+    p.add_argument('build_plan_file', help='A build plan file provided by '
+                                           'the prepare command')
 
     p = sp.add_parser('docker', help='Run docker build')
     sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
