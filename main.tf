@@ -153,3 +153,18 @@ resource "aws_lambda_provisioned_concurrency_config" "this" {
 
   provisioned_concurrent_executions = var.provisioned_concurrent_executions
 }
+
+resource "aws_lambda_permission" "triggers" {
+  for_each = var.create && ((var.create_function && ! var.create_layer) || var.create_alias) ? var.allowed_triggers : {}
+
+  statement_id = lookup(each.value, "statement_id", each.key)
+
+  function_name = element(concat(aws_lambda_function.this.*.function_name, aws_lambda_alias.this.*.function_name, [""]), 0)
+  //  qualifier     = element(concat(aws_lambda_function.this.*.version, aws_lambda_alias.this.*.name, [""]), 0)
+
+  action             = lookup(each.value, "action", "lambda:InvokeFunction")
+  principal          = lookup(each.value, "principal", format("%s.amazonaws.com", lookup(each.value, "service", "")))
+  source_arn         = lookup(each.value, "source_arn", lookup(each.value, "service", null) == "apigateway" ? "${lookup(each.value, "arn", "")}/*/*/*" : null)
+  source_account     = lookup(each.value, "source_account", null)
+  event_source_token = lookup(each.value, "event_source_token", null)
+}

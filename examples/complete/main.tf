@@ -10,7 +10,8 @@ provider "aws" {
 }
 
 ####################################################
-# Lambda Function (building locally, storing on S3)
+# Lambda Function (building locally, storing on S3,
+# set allowed triggers, set policies)
 ####################################################
 
 module "lambda_function" {
@@ -39,6 +40,21 @@ module "lambda_function" {
 
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
   attach_dead_letter_policy = true
+
+  allowed_triggers = {
+    APIGatewayAny = {
+      service = "apigateway"
+      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
+    },
+    APIGatewayDevPost = {
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/dev/POST/*"
+    },
+    OneRule = {
+      principal  = "events.amazonaws.com"
+      source_arn = "arn:aws:events:eu-west-1:135367859851:rule/RunDaily"
+    }
+  }
 
   ######################
   # Additional policies
@@ -181,6 +197,8 @@ module "lambda_with_provisioned_concurrency" {
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
   publish     = true
+
+  hash_extra = "hash-extra-lambda-provisioned"
 
   provisioned_concurrent_executions = 2
 }
