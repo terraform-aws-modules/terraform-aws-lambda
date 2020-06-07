@@ -302,11 +302,10 @@ def prepare_command(args):
     content_hash = generate_content_hash(content_hash_paths)
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
+    content_hash = content_hash.hexdigest()
 
     # Generate a unique filename based on the hash.
-    filename = os.path.join(artifacts_dir, '{content_hash}.zip'.format(
-        content_hash=content_hash.hexdigest(),
-    ))
+    filename = os.path.join(artifacts_dir, '{}.zip'.format(content_hash))
 
     # Compute timestamp trigger
     was_missing = False
@@ -330,13 +329,18 @@ def prepare_command(args):
         build_data['docker'] = docker
 
     build_plan = json.dumps(build_data)
-    with open("{}.plan".format(filename), 'w') as f:
+    build_plan_filename = os.path.join(artifacts_dir,
+                                       '{}.plan'.format(content_hash))
+    if not os.path.exists(artifacts_dir):
+        os.makedirs(artifacts_dir)
+    with open(build_plan_filename, 'w') as f:
         f.write(build_plan)
 
     # Output the result to Terraform.
     json.dump({
         'filename': filename,
         'build_plan': build_plan,
+        'build_plan_filename': build_plan_filename,
         'timestamp': str(timestamp),
         'was_missing': 'true' if was_missing else 'false',
     }, sys.stdout, indent=2)
