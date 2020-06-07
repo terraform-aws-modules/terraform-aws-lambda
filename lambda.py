@@ -329,10 +329,14 @@ def prepare_command(args):
     if docker:
         build_data['docker'] = docker
 
+    build_plan = json.dumps(build_data)
+    with open("{}.plan".format(filename), 'w') as f:
+        f.write(build_plan)
+
     # Output the result to Terraform.
     json.dump({
         'filename': filename,
-        'build_plan': json.dumps(build_data),
+        'build_plan': build_plan,
         'timestamp': str(timestamp),
         'was_missing': 'true' if was_missing else 'false',
     }, sys.stdout, indent=2)
