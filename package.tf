@@ -34,11 +34,9 @@ data "external" "archive_prepare" {
 resource "local_file" "archive_plan" {
   count = var.create && var.create_package ? 1 : 0
 
-  # Using a sensitive_content to omit showing diffs
-//  content = data.external.archive_prepare[0].result.build_plan
-//  content_base64 = data.external.archive_prepare[0].result.build_plan_base64
-  content_base64 = base64encode(data.external.archive_prepare[0].result.build_plan)
-  filename = "${data.external.archive_prepare[0].result.filename}.plan"
+  content = data.external.archive_prepare[0].result.build_plan
+  filename = data.external.archive_prepare[0].result.build_plan_filename
+  directory_permission = "0755"
   file_permission = "0664"
 }
 
@@ -53,8 +51,8 @@ resource "null_resource" "archive" {
 
   provisioner "local-exec" {
     interpreter = ["python3", "${path.module}/lambda.py", "build",
-                   data.external.archive_prepare[0].result.timestamp]
-    command     = "${data.external.archive_prepare[0].result.filename}.plan"
+                  data.external.archive_prepare[0].result.timestamp]
+    command     = data.external.archive_prepare[0].result.build_plan_filename
     working_dir = path.cwd
   }
 
