@@ -38,8 +38,8 @@ module "lambda_function" {
     Serverless = "Terraform"
   }
 
-  dead_letter_target_arn    = aws_sqs_queue.dlq.arn
   attach_dead_letter_policy = true
+  dead_letter_target_arn    = aws_sqs_queue.dlq.arn
 
   allowed_triggers = {
     APIGatewayAny = {
@@ -60,7 +60,8 @@ module "lambda_function" {
   # Additional policies
   ######################
 
-  policy_json = <<EOF
+  attach_policy_json = true
+  policy_json        = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -75,9 +76,13 @@ module "lambda_function" {
 }
 EOF
 
-  policy   = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
-  policies = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+  attach_policy = true
+  policy        = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 
+  attach_policies = true
+  policies        = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+
+  attach_policy_statements = true
   policy_statements = {
     dynamodb = {
       effect    = "Allow",

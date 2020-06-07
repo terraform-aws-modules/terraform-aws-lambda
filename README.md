@@ -229,10 +229,10 @@ module "vpc" {
 
 There are 4 supported ways to attach IAM policies to IAM role used by Lambda Function:
 
-1. `policy_json` - set as JSON string or heredoc
-1. `policy` - ARN of existing IAM policy
-1. `policies` - List of ARNs of existing IAM policies
-1. `policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy. See examples/complete for more information.
+1. `policy_json` - set as JSON string or heredoc, when `attach_policy_json = true`.
+1. `policy` - ARN of existing IAM policy, when `attach_policy = true`.
+1. `policies` - List of ARNs of existing IAM policies, when `attach_policies = true`.
+1. `policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy. Requires `attach_policy_statements = true`. See examples/complete for more information.
 
 
 ## Lambda Permissions for allowed triggers
@@ -504,6 +504,10 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | attach\_cloudwatch\_logs\_policy | Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function | `bool` | `true` | no |
 | attach\_dead\_letter\_policy | Controls whether SNS/SQS dead letter notification policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | attach\_network\_policy | Controls whether VPC/network policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
+| attach\_policies | Controls whether list of policies should be added to IAM role for Lambda Function | `bool` | `false` | no |
+| attach\_policy | Controls whether policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
+| attach\_policy\_json | Controls whether policy\_json should be added to IAM role for Lambda Function | `bool` | `false` | no |
+| attach\_policy\_statements | Controls whether policy\_statements should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | attach\_tracing\_policy | Controls whether X-Ray tracing policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | build\_in\_docker | Whether to build dependencies in Docker | `bool` | `false` | no |
 | compatible\_runtimes | A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified. | `list(string)` | `[]` | no |
@@ -536,6 +540,7 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | maximum\_event\_age\_in\_seconds | Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600. | `number` | `null` | no |
 | maximum\_retry\_attempts | Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2. | `number` | `null` | no |
 | memory\_size | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 3008 MB, in 64 MB increments. | `number` | `128` | no |
+| number\_of\_policies | Number of policies to attach to IAM role for Lambda Function | `number` | `0` | no |
 | policies | List of policy statements ARN to attach to Lambda Function role | `list(string)` | `[]` | no |
 | policy | An additional policy document ARN to attach to the Lambda Function role | `string` | `null` | no |
 | policy\_json | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |

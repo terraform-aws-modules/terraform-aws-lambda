@@ -340,6 +340,36 @@ variable "attach_async_event_policy" {
   default     = false
 }
 
+variable "attach_policy_json" {
+  description = "Controls whether policy_json should be added to IAM role for Lambda Function"
+  type        = bool
+  default     = false
+}
+
+variable "attach_policy" {
+  description = "Controls whether policy should be added to IAM role for Lambda Function"
+  type        = bool
+  default     = false
+}
+
+variable "attach_policies" {
+  description = "Controls whether list of policies should be added to IAM role for Lambda Function"
+  type        = bool
+  default     = false
+}
+
+variable "number_of_policies" {
+  description = "Number of policies to attach to IAM role for Lambda Function"
+  type        = number
+  default     = 0
+}
+
+variable "attach_policy_statements" {
+  description = "Controls whether policy_statements should be added to IAM role for Lambda Function"
+  type        = bool
+  default     = false
+}
+
 variable "trusted_entities" {
   description = "Lambda Function additional trusted entities for assuming roles (trust relationship)"
   type        = list(string)

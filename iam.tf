@@ -194,41 +194,53 @@ resource "aws_iam_policy_attachment" "async" {
 ###########################
 
 resource "aws_iam_policy" "additional_json" {
-  count = local.create_role && var.policy_json != null ? 1 : 0
+  count = local.create_role && var.attach_policy_json ? 1 : 0
 
   name   = var.function_name
   policy = var.policy_json
 }
 
 resource "aws_iam_policy_attachment" "additional_json" {
-  count = local.create_role && var.policy_json != null ? 1 : 0
+  count = local.create_role && var.attach_policy_json ? 1 : 0
 
   name       = var.function_name
   roles      = [aws_iam_role.lambda[0].name]
   policy_arn = aws_iam_policy.additional_json[0].arn
 }
 
-#############################
-# ARN of additional policies
-#############################
+###########################
+# ARN of additional policy
+###########################
 
-resource "aws_iam_policy_attachment" "additional" {
-  for_each = local.create_role ? toset(compact(concat([var.policy], var.policies))) : []
+resource "aws_iam_policy_attachment" "additional_one" {
+  count = local.create_role && var.attach_policy ? 1 : 0
 
   name       = var.function_name
   roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = each.value
+  policy_arn = var.policy
+}
+
+######################################
+# List of ARNs of additional policies
+######################################
+
+resource "aws_iam_policy_attachment" "additional_many" {
+  count = local.create_role && var.attach_policies ? var.number_of_policies : 0
+
+  name       = var.function_name
+  roles      = [aws_iam_role.lambda[0].name]
+  policy_arn = var.policies[count.index]
 }
 
 ###############################
 # Additional policy statements
 ###############################
 
-data "aws_iam_policy_document" "inline" {
-  count = local.create_role && length(keys(var.policy_statements)) > 0 ? 1 : 0
+data "aws_iam_policy_document" "additional_inline" {
+  count = local.create_role && var.attach_policy_statements ? 1 : 0
 
   dynamic "statement" {
-    for_each = local.create_role && length(keys(var.policy_statements)) > 0 ? var.policy_statements : toobject({})
+    for_each = var.policy_statements
 
     content {
       sid           = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
@@ -266,17 +278,17 @@ data "aws_iam_policy_document" "inline" {
   }
 }
 
-resource "aws_iam_policy" "inline" {
-  count = local.create_role && length(keys(var.policy_statements)) > 0 ? 1 : 0
+resource "aws_iam_policy" "additional_inline" {
+  count = local.create_role && var.attach_policy_statements ? 1 : 0
 
   name   = "${var.function_name}-inline"
-  policy = data.aws_iam_policy_document.inline[0].json
+  policy = data.aws_iam_policy_document.additional_inline[0].json
 }
 
-resource "aws_iam_policy_attachment" "inline" {
-  count = local.create_role && length(keys(var.policy_statements)) > 0 ? 1 : 0
+resource "aws_iam_policy_attachment" "additional_inline" {
+  count = local.create_role && var.attach_policy_statements ? 1 : 0
 
   name       = var.function_name
   roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = aws_iam_policy.inline[0].arn
+  policy_arn = aws_iam_policy.additional_inline[0].arn
 }
