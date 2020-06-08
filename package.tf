@@ -22,7 +22,6 @@ data "external" "archive_prepare" {
 
     artifacts_dir    = var.artifacts_dir
     runtime          = var.runtime
-    function_name    = var.function_name
     source_path      = var.source_path
     hash_extra       = var.hash_extra
     hash_extra_paths = jsonencode(["${path.module}/lambda.py"])
