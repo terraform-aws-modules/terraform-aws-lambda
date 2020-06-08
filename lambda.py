@@ -17,7 +17,23 @@ import platform
 import subprocess
 from subprocess import check_call, call
 from contextlib import contextmanager
+import logging
 
+
+################################################################################
+# Logging
+
+class StderrLogFormatter(logging.Formatter):
+    def formatMessage(self, record):
+        self._style._fmt = self._style.default_format\
+            if record.name == 'root' else self._fmt
+        return super().formatMessage(record)
+
+
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(StderrLogFormatter("%(name)s: %(message)s"))
+logging.basicConfig(level=logging.INFO, handlers=(log_handler,))
+logger = logging.getLogger()
 
 
 ################################################################################
@@ -46,7 +62,7 @@ def shlex_join(split_command):
 
 def abort(message):
     """Exits with an error message."""
-    print(message, file=sys.stderr)
+    logger.error(message)
     sys.exit(1)
 
 
@@ -54,7 +70,7 @@ def abort(message):
 def cd(path):
     """Changes the working directory."""
     cwd = os.getcwd()
-    print('cd', shlex.quote(path))
+    logger.info('cd %s', shlex.quote(path))
     try:
         os.chdir(path)
         yield
@@ -66,9 +82,8 @@ def cd(path):
 def tempdir():
     """Creates a temporary directory and then deletes it afterwards."""
     prefix = 'terraform-aws-lambda-'
-    print('mktemp -d {}XXXXXXXX #'.format(prefix), end=' ')
     path = tempfile.mkdtemp(prefix=prefix)
-    print(shlex.quote(path))
+    logger.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
     try:
         yield path
     finally:
@@ -149,7 +164,8 @@ def docker_build_command(build_root, docker_file=None, tag=None):
         docker_cmd.extend(['--tag', tag])
     docker_cmd.append(build_root)
 
-    print(shlex_join(docker_cmd), flush=True)
+    logger.info(shlex_join(docker_cmd))
+    log_handler.flush()
     return docker_cmd
 
 
@@ -205,7 +221,8 @@ def docker_run_command(build_root, command, runtime,
         docker_cmd.extend([shell, '-c'])
     docker_cmd.extend(command)
 
-    print(shlex_join(docker_cmd), flush=True)
+    logger.info(shlex_join(docker_cmd))
+    log_handler.flush()
     return docker_cmd
 
 
@@ -405,7 +422,7 @@ def build_command(args):
     docker = query.docker
 
     if os.path.exists(filename):
-        print('Reused: {}'.format(shlex.quote(filename)))
+        logger.info('Reused: %s', shlex.quote(filename))
         return
 
     working_dir = os.getcwd()
@@ -427,10 +444,10 @@ def build_command(args):
                 target_path = os.path.join(temp_dir, file_name)
                 target_dir = os.path.dirname(target_path)
                 if not os.path.exists(target_dir):
-                    print('mkdir -p {}'.format(shlex.quote(target_dir)))
+                    logger.info('mkdir -p %s', shlex.quote(target_dir))
                     os.makedirs(target_dir)
-                print('cp {} {}'.format(shlex.quote(file_name),
-                                        shlex.quote(target_path)))
+                logger.info('cp %s %s', shlex.quote(file_name),
+                                        shlex.quote(target_path))
                 shutil.copyfile(file_name, target_path)
                 shutil.copymode(file_name, target_path)
                 shutil.copystat(file_name, target_path)
@@ -470,14 +487,15 @@ def build_command(args):
                             pip_cache_dir=pip_cache_dir
                         ))
                     else:
-                        print(pip_command, flush=True)
+                        logger.info(pip_command)
+                        log_handler.flush()
                         check_call(pip_command)
 
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
         create_zip_file(temp_dir, filename)
         os.utime(filename, ns=(timestamp, timestamp))
-        print('Created: {}'.format(shlex.quote(filename)))
+        logger.info('Created: %s', shlex.quote(filename))
 
 
 def args_parser():
