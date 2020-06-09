@@ -558,9 +558,8 @@ def build_command(args):
                     else:
                         pip_command = ['pip2']
                     pip_command.extend([
-                        'install',
-                        '--prefix=',
-                        '--target=.',
+                        'install', '--no-compile',
+                        '--prefix=', '--target=.',
                         '--requirement=requirements.txt',
                     ])
                     if docker:
