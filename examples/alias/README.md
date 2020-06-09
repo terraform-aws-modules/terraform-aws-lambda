@@ -1,7 +1,6 @@
-# Complete AWS Lambda examples
+# Lambda Alias
 
-Configuration in this directory creates AWS Lambda Function, Layers, Alias, and so on with the large variety of supported features showing this module in action.
-
+Configuration in this directory creates Lambda Function and Aliases in different configurations.
 
 ## Usage
 
@@ -24,7 +23,6 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
 | random | n/a |
 
 ## Inputs
@@ -39,6 +37,11 @@ No input.
 | lambda\_role\_name | The name of the IAM role created for the Lambda Function |
 | local\_filename | The filename of zip archive deployed (if deployment was from local) |
 | s3\_object | The map with S3 object data of zip archive deployed (if deployment was from S3) |
+| this\_lambda\_alias\_arn | The ARN of the Lambda Function Alias |
+| this\_lambda\_alias\_description | Description of alias |
+| this\_lambda\_alias\_function\_version | Lambda function version which the alias uses |
+| this\_lambda\_alias\_invoke\_arn | The ARN to be used for invoking Lambda Function from API Gateway |
+| this\_lambda\_alias\_name | The name of the Lambda Function Alias |
 | this\_lambda\_function\_arn | The ARN of the Lambda Function |
 | this\_lambda\_function\_invoke\_arn | The Invoke ARN of the Lambda Function |
 | this\_lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key of Lambda Function |

@@ -16,7 +16,7 @@ resource "random_pet" "this" {
 module "lambda_function" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda-simple1"
+  function_name = "${random_pet.this.id}-lambda-async"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
 

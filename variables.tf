@@ -22,18 +22,6 @@ variable "create_layer" {
   default     = false
 }
 
-variable "create_alias" {
-  description = "Controls whether Lambda Alias resource should be created"
-  type        = bool
-  default     = false
-}
-
-variable "create_async_event_config" {
-  description = "Controls whether async event configuration for Lambda Function/Alias should be created"
-  type        = bool
-  default     = false
-}
-
 variable "create_role" {
   description = "Controls whether IAM role for Lambda Function should be created"
   type        = bool
@@ -92,8 +80,9 @@ variable "layers" {
 }
 
 variable "kms_key_arn" {
-  type    = string
-  default = null
+  description = "The ARN of KMS key to use by your Lambda Function"
+  type        = string
+  default     = null
 }
 
 variable "memory_size" {
@@ -184,43 +173,27 @@ variable "compatible_runtimes" {
   default     = []
 }
 
-########
-# Alias
-########
-
-variable "alias_name" {
-  description = "Name for the alias you are creating."
-  type        = string
-  default     = ""
-}
-
-variable "alias_description" {
-  description = "Description of the alias."
-  type        = string
-  default     = ""
-}
-
-variable "alias_function_name" {
-  description = "The function ARN of the Lambda function for which you want to create an alias."
-  type        = string
-  default     = ""
-}
-
-variable "alias_function_version" {
-  description = "Lambda function version for which you are creating the alias. Pattern: ($LATEST|[0-9]+)."
-  type        = string
-  default     = ""
-}
-
-variable "alias_routing_additional_version_weights" {
-  description = "A map that defines the proportion of events that should be sent to different versions of a lambda function."
-  type        = map(number)
-  default     = {}
-}
-
 ############################
 # Lambda Async Event Config
 ############################
+
+variable "create_async_event_config" {
+  description = "Controls whether async event configuration for Lambda Function/Alias should be created"
+  type        = bool
+  default     = false
+}
+
+variable "create_current_version_async_event_config" {
+  description = "Whether to allow async event configuration on current version of Lambda Function (this will revoke permissions from previous version because Terraform manages only current resources)"
+  type        = bool
+  default     = true
+}
+
+variable "create_unqualified_alias_async_event_config" {
+  description = "Whether to allow async event configuration on unqualified alias pointing to $LATEST version"
+  type        = bool
+  default     = true
+}
 
 variable "maximum_event_age_in_seconds" {
   description = "Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600."
@@ -259,6 +232,18 @@ variable "provisioned_concurrent_executions" {
 ############################################
 # Lambda Permissions (for allowed triggers)
 ############################################
+
+variable "create_current_version_allowed_triggers" {
+  description = "Whether to allow triggers on current version of Lambda Function (this will revoke permissions from previous version because Terraform manages only current resources)"
+  type        = bool
+  default     = true
+}
+
+variable "create_unqualified_alias_allowed_triggers" {
+  description = "Whether to allow triggers on unqualified alias pointing to $LATEST version"
+  type        = bool
+  default     = true
+}
 
 variable "allowed_triggers" {
   description = "Map of allowed triggers to create Lambda permissions"
