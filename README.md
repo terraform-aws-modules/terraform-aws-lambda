@@ -6,7 +6,7 @@ These types of resources supported:
 
 * [Lambda Function](https://www.terraform.io/docs/providers/aws/r/lambda_function.html)
 * [Lambda Layer](https://www.terraform.io/docs/providers/aws/r/lambda_layer_version.html)
-* [Lambda Alias](https://www.terraform.io/docs/providers/aws/r/lambda_alias.html)
+* [Lambda Alias](https://www.terraform.io/docs/providers/aws/r/lambda_alias.html) - using [alias module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias)
 * [Lambda Provisioned Concurrency](https://www.terraform.io/docs/providers/aws/r/lambda_provisioned_concurrency_config.html)
 * [Lambda Async Event Configuration](https://www.terraform.io/docs/providers/aws/r/lambda_function_event_invoke_config.html)
 * [Lambda Permission](https://www.terraform.io/docs/providers/aws/r/lambda_permission.html)
@@ -21,6 +21,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 2. Create, store, and use deployment packages - [read more](#package)
 3. Create and update AWS Lambda Function and Lambda Layer - [see usage](#usage)
 4. Publish and create aliases for AWS Lambda Function - [see usage](#usage)
+5. Do complex deployments (eg, rolling, canary, rollbacks) - [read more](#deployment)
 
 
 ## Features
@@ -277,7 +278,6 @@ module "lambda" {
   create_package  = false  # to control build package process
   create_function = false  # to control creation of the Lambda Function and related resources
   create_layer    = false  # to control creation of the Lambda Layer and related resources
-  create_alias    = false  # to control creation of the Lambda Function Alias
   create_role     = false  # to control creation of the IAM role and policies required for Lambda Function
 
   attach_cloudwatch_logs_policy = false
@@ -448,6 +448,27 @@ module "lambda_function_existing_package_from_remote_url" {
 }
 ```
 
+
+## <a name="deployment"></a> How to deploy and manage Lambda Functions?
+
+### Simple deployments
+
+Typically, Lambda Function resource updates when source code changes. If `publish = true` is specified a new [Lambda Function version](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html) will also be created.
+
+Published Lambda Function can be invoked using either by version number or using `$LATEST`. This is the simplest way of deployment which does not required any additional tool or service.
+
+
+### Controlled deployments (rolling, canary, rollbacks)
+
+In order to do controlled deployments (rolling, canary, rollbacks) of Lambda Functions we need to use [Lambda Function aliases](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html).
+
+In simple terms, Lambda alias is like a pointer to either one version of Lambda Function (when deployment complete), or to two weighted versions of Lambda Function (during rolling or canary deployment).
+
+One Lambda Function can be used in multiple aliases. Using aliases gives large control of which version deployed when having multiple environments.
+
+There is [alias module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias), which simplifies working with alias (create, manage configurations, updates, etc).
+
+
 ## FAQ
 
 Q1: Why deployment package not recreating every time I change something?
@@ -493,11 +514,6 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| alias\_description | Description of the alias. | `string` | `""` | no |
-| alias\_function\_name | The function ARN of the Lambda function for which you want to create an alias. | `string` | `""` | no |
-| alias\_function\_version | Lambda function version for which you are creating the alias. Pattern: ($LATEST\|[0-9]+). | `string` | `""` | no |
-| alias\_name | Name for the alias you are creating. | `string` | `""` | no |
-| alias\_routing\_additional\_version\_weights | A map that defines the proportion of events that should be sent to different versions of a lambda function. | `map(number)` | `{}` | no |
 | allowed\_triggers | Map of allowed triggers to create Lambda permissions | `map(any)` | `{}` | no |
 | artifacts\_dir | Directory name where artifacts should be stored | `string` | `"builds"` | no |
 | attach\_async\_event\_policy | Controls whether async event policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
@@ -512,12 +528,15 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | build\_in\_docker | Whether to build dependencies in Docker | `bool` | `false` | no |
 | compatible\_runtimes | A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified. | `list(string)` | `[]` | no |
 | create | Controls whether resources should be created | `bool` | `true` | no |
-| create\_alias | Controls whether Lambda Alias resource should be created | `bool` | `false` | no |
 | create\_async\_event\_config | Controls whether async event configuration for Lambda Function/Alias should be created | `bool` | `false` | no |
+| create\_current\_version\_allowed\_triggers | Whether to allow triggers on current version of Lambda Function (this will revoke permissions from previous version because Terraform manages only current resources) | `bool` | `true` | no |
+| create\_current\_version\_async\_event\_config | Whether to allow async event configuration on current version of Lambda Function (this will revoke permissions from previous version because Terraform manages only current resources) | `bool` | `true` | no |
 | create\_function | Controls whether Lambda Function resource should be created | `bool` | `true` | no |
 | create\_layer | Controls whether Lambda Layer resource should be created | `bool` | `false` | no |
 | create\_package | Controls whether Lambda package should be created | `bool` | `true` | no |
 | create\_role | Controls whether IAM role for Lambda Function should be created | `bool` | `true` | no |
+| create\_unqualified\_alias\_allowed\_triggers | Whether to allow triggers on unqualified alias pointing to $LATEST version | `bool` | `true` | no |
+| create\_unqualified\_alias\_async\_event\_config | Whether to allow async event configuration on unqualified alias pointing to $LATEST version | `bool` | `true` | no |
 | dead\_letter\_target\_arn | The ARN of an SNS topic or SQS queue to notify when an invocation fails. | `string` | `null` | no |
 | description | Description of your Lambda Function (or Layer) | `string` | `""` | no |
 | destination\_on\_failure | Amazon Resource Name (ARN) of the destination resource for failed asynchronous invocations | `string` | `null` | no |
@@ -530,7 +549,7 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | function\_name | A unique name for your Lambda Function | `string` | `""` | no |
 | handler | Lambda Function entrypoint in your code | `string` | `""` | no |
 | hash\_extra | The string to add into hashing function. Useful when building same source path for different functions. | `string` | `""` | no |
-| kms\_key\_arn | n/a | `string` | `null` | no |
+| kms\_key\_arn | The ARN of KMS key to use by your Lambda Function | `string` | `null` | no |
 | lambda\_at\_edge | Set this to true if using Lambda@Edge, to enable publishing, limit the timeout, and allow edgelambda.amazonaws.com to invoke the function | `bool` | `false` | no |
 | lambda\_role | IAM role attached to the Lambda Function. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details. | `string` | `""` | no |
 | layer\_name | Name of Lambda Layer to create | `string` | `""` | no |
@@ -576,8 +595,6 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | lambda\_role\_name | The name of the IAM role created for the Lambda Function |
 | local\_filename | The filename of zip archive deployed (if deployment was from local) |
 | s3\_object | The map with S3 object data of zip archive deployed (if deployment was from S3) |
-| this\_lambda\_alias\_arn | The ARN of the Lambda Function Alias |
-| this\_lambda\_alias\_invoke\_arn | The ARN to be used for invoking Lambda Function from API Gateway |
 | this\_lambda\_function\_arn | The ARN of the Lambda Function |
 | this\_lambda\_function\_invoke\_arn | The Invoke ARN of the Lambda Function |
 | this\_lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key of Lambda Function |

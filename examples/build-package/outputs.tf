@@ -70,17 +70,6 @@
 //  value       = module.lambda_function_from_package.this_lambda_layer_version
 //}
 //
-//# Lambda Alias
-//output "this_lambda_alias_arn" {
-//  description = "The ARN of the Lambda Function Alias"
-//  value       = module.lambda_function_from_package.this_lambda_alias_arn
-//}
-//
-//output "this_lambda_alias_invoke_arn" {
-//  description = "The ARN to be used for invoking Lambda Function from API Gateway"
-//  value       = module.lambda_function_from_package.this_lambda_alias_invoke_arn
-//}
-//
 //# IAM Role
 //output "lambda_role_arn" {
 //  description = "The ARN of the IAM role created for the Lambda Function"

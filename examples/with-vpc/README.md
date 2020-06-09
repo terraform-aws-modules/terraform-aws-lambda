@@ -39,8 +39,6 @@ No input.
 | lambda\_role\_name | The name of the IAM role created for the Lambda Function |
 | local\_filename | The filename of zip archive deployed (if deployment was from local) |
 | s3\_object | The map with S3 object data of zip archive deployed (if deployment was from S3) |
-| this\_lambda\_alias\_arn | The ARN of the Lambda Function Alias |
-| this\_lambda\_alias\_invoke\_arn | The ARN to be used for invoking Lambda Function from API Gateway |
 | this\_lambda\_function\_arn | The ARN of the Lambda Function |
 | this\_lambda\_function\_invoke\_arn | The Invoke ARN of the Lambda Function |
 | this\_lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key of Lambda Function |
