@@ -487,6 +487,7 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 |------|---------|
 | aws | ~> 2.46 |
 | external | n/a |
+| local | n/a |
 | null | n/a |
 
 ## Inputs
@@ -525,6 +526,7 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 | docker\_build\_root | Root dir where to build in Docker | `string` | `""` | no |
 | docker\_file | Path to a Dockerfile when building in Docker | `string` | `""` | no |
 | docker\_image | Docker image to use for the build | `string` | `""` | no |
+| docker\_pip\_cache | Whether to mount a shared pip cache folder into docker environment or not | `any` | `null` | no |
 | docker\_with\_ssh\_agent | Whether to pass SSH\_AUTH\_SOCK into docker environment or not | `bool` | `false` | no |
 | environment\_variables | A map that defines environment variables for the Lambda Function. | `map(string)` | `{}` | no |
 | function\_name | A unique name for your Lambda Function | `string` | `""` | no |

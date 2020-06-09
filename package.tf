@@ -15,9 +15,9 @@ data "external" "archive_prepare" {
 
     docker = var.build_in_docker ? jsonencode({
       docker_pip_cache = var.docker_pip_cache
-      docker_file    = var.docker_file
-      docker_image   = var.docker_image
-      with_ssh_agent = var.docker_with_ssh_agent
+      docker_file      = var.docker_file
+      docker_image     = var.docker_image
+      with_ssh_agent   = var.docker_with_ssh_agent
     }) : null
 
     artifacts_dir    = var.artifacts_dir
@@ -34,10 +34,10 @@ data "external" "archive_prepare" {
 resource "local_file" "archive_plan" {
   count = var.create && var.create_package ? 1 : 0
 
-  content = data.external.archive_prepare[0].result.build_plan
-  filename = data.external.archive_prepare[0].result.build_plan_filename
+  content              = data.external.archive_prepare[0].result.build_plan
+  filename             = data.external.archive_prepare[0].result.build_plan_filename
   directory_permission = "0755"
-  file_permission = "0664"
+  file_permission      = "0664"
 }
 
 # Build the zip archive whenever the filename changes.
@@ -50,8 +50,10 @@ resource "null_resource" "archive" {
   }
 
   provisioner "local-exec" {
-    interpreter = ["python3", "${path.module}/package.py", "build",
-                  "--timestamp", data.external.archive_prepare[0].result.timestamp]
+    interpreter = [
+      "python3", "${path.module}/package.py", "build",
+      "--timestamp", data.external.archive_prepare[0].result.timestamp
+    ]
     command     = data.external.archive_prepare[0].result.build_plan_filename
     working_dir = path.cwd
   }
