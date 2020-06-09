@@ -18,6 +18,7 @@ import platform
 import subprocess
 from subprocess import check_call, call
 from contextlib import contextmanager
+from base64 import b64encode
 import logging
 
 
@@ -126,6 +127,10 @@ def timestamp_now_ns():
     timestamp = datetime.datetime.now().timestamp()
     timestamp = int(timestamp * 10 ** 7) * 10 ** 2
     return timestamp
+
+
+def source_code_hash(bytes):
+    return b64encode(hashlib.sha256(bytes).digest()).decode()
 
 
 ################################################################################
@@ -587,6 +592,9 @@ def build_command(args):
         create_zip_file(temp_dir, filename)
         os.utime(filename, ns=(timestamp, timestamp))
         logger.info('Created: %s', shlex.quote(filename))
+        if logger.level <= logging.DEBUG:
+            with open(filename, 'rb') as f:
+                logger.info('Base64sha256: %s', source_code_hash(f.read()))
 
 
 def add_hidden_commands(sub_parsers):
