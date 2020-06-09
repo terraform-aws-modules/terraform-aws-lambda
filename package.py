@@ -205,7 +205,14 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
                 shutil.copyfileobj(src, dest, 1024 * 8)
 
     def str_int_to_timestamp(s):
-        return int(s) / 10 ** (len(s) - 10)
+        min_zip_ts = datetime.datetime(1980, 1, 1).timestamp()
+        ts = int(s)
+        if ts < min_zip_ts:
+            return min_zip_ts
+        deg = len(str(int(s))) - 9
+        if deg < 0:
+            ts = ts * 10 ** deg
+        return ts
 
     logger = logging.getLogger('zip')
 
