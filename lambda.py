@@ -114,6 +114,12 @@ def datatree(name, **fields):
         for k, v in fields.items())))()
 
 
+def timestamp_now_ns():
+    timestamp = datetime.datetime.now().timestamp()
+    timestamp = int(timestamp * 10 ** 7) * 10 ** 2
+    return timestamp
+
+
 ################################################################################
 # Packaging functions
 
@@ -333,8 +339,7 @@ def prepare_command(args):
         st = os.stat(filename_path)
         timestamp = st.st_mtime_ns
     else:
-        timestamp = datetime.datetime.now().timestamp()
-        timestamp = int(timestamp * 10 ** 7) * 10 ** 2
+        timestamp = timestamp_now_ns()
         was_missing = True
 
     # Replace variables in the build command with calculated values.
