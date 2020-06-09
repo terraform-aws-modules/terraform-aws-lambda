@@ -230,9 +230,10 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
     with zipfile.ZipFile(zip_filename, "w", compression) as zf:
         for base_dir in base_dirs:
             logger.info("adding directory '%s'", base_dir)
-            for path in emit_dir_files(base_dir):
-                logger.info("adding '%s'", path)
-                write(zf, path, path, date_time=date_time)
+            with cd(base_dir):
+                for path in emit_dir_files('.'):
+                    logger.info("adding '%s'", path)
+                    write(zf, path, path, date_time=date_time)
     return zip_filename
 
 
@@ -477,12 +478,7 @@ def build_command(args):
         target_dir = os.path.dirname(target_file)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
-        target_base, _ = os.path.splitext(target_file)
-        shutil.make_archive(
-            target_base,
-            format='zip',
-            root_dir=source_dir,
-        )
+        make_zipfile(target_file, source_dir)
 
     args.dump_env and dump_env('build_command')
 
