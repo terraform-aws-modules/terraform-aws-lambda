@@ -486,7 +486,7 @@ def build_command(args):
         results.sort()
         return results
 
-    def create_zip_file(source_dir, target_file):
+    def create_zip_file(source_dir, target_file, timestamp):
         """
         Creates a zip file from a directory.
         """
@@ -494,7 +494,7 @@ def build_command(args):
         target_dir = os.path.dirname(target_file)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
-        make_zipfile(target_file, source_dir)
+        make_zipfile(target_file, source_dir, timestamp=timestamp)
 
     args.dump_env and dump_env('build_command')
 
@@ -589,7 +589,7 @@ def build_command(args):
 
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
-        create_zip_file(temp_dir, filename)
+        create_zip_file(temp_dir, filename, timestamp=0)
         os.utime(filename, ns=(timestamp, timestamp))
         logger.info('Created: %s', shlex.quote(filename))
         if logger.level <= logging.DEBUG:
