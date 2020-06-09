@@ -124,15 +124,11 @@ def timestamp_now_ns():
 # Packaging functions
 
 def emit_dir_files(base_dir):
-    path = os.path.normpath(base_dir)
-    if path != os.curdir:
-        yield path
-    for dirpath, dirnames, filenames in os.walk(base_dir):
-        for name in sorted(dirnames):
-            path = os.path.normpath(os.path.join(dirpath, name))
-            yield path
-        for name in filenames:
-            path = os.path.normpath(os.path.join(dirpath, name))
+    for root, dirs, files in os.walk(base_dir):
+        if root != '.':
+            yield os.path.normpath(root)
+        for name in files:
+            path = os.path.normpath(os.path.join(root, name))
             if os.path.isfile(path):
                 yield path
 
