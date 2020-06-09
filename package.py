@@ -35,6 +35,12 @@ log_handler.setFormatter(StderrLogFormatter("%(name)s: %(message)s"))
 logging.basicConfig(level=logging.INFO, handlers=(log_handler,))
 logger = logging.getLogger()
 
+cmd_logger = logging.getLogger('cmd')
+cmd_log_handler = logging.StreamHandler()
+cmd_log_handler.setFormatter(StderrLogFormatter("> %(message)s"))
+cmd_logger.addHandler(cmd_log_handler)
+cmd_logger.propagate = False
+
 
 ################################################################################
 # Debug helpers
@@ -67,10 +73,11 @@ def abort(message):
 
 
 @contextmanager
-def cd(path):
+def cd(path, silent=False):
     """Changes the working directory."""
     cwd = os.getcwd()
-    logger.info('cd %s', shlex.quote(path))
+    if not silent:
+        cmd_logger.info('cd %s', shlex.quote(path))
     try:
         os.chdir(path)
         yield
@@ -83,7 +90,7 @@ def tempdir():
     """Creates a temporary directory and then deletes it afterwards."""
     prefix = 'terraform-aws-lambda-'
     path = tempfile.mkdtemp(prefix=prefix)
-    logger.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
+    cmd_logger.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
     try:
         yield path
     finally:
@@ -225,8 +232,8 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
 
     with zipfile.ZipFile(zip_filename, "w", compression) as zf:
         for base_dir in base_dirs:
-            logger.info("adding directory '%s'", base_dir)
-            with cd(base_dir):
+            logger.info("adding content of directory '%s'", base_dir)
+            with cd(base_dir, silent=True):
                 for path in emit_dir_files('.'):
                     logger.info("adding '%s'", path)
                     write(zf, path, path, date_time=date_time)
@@ -519,10 +526,11 @@ def build_command(args):
                 target_path = os.path.join(temp_dir, file_name)
                 target_dir = os.path.dirname(target_path)
                 if not os.path.exists(target_dir):
-                    logger.info('mkdir -p %s', shlex.quote(target_dir))
+                    cmd_logger.info('mkdir -p %s', shlex.quote(target_dir))
                     os.makedirs(target_dir)
-                logger.info('cp %s %s', shlex.quote(file_name),
-                                        shlex.quote(target_path))
+                cmd_logger.info('cp -t %s %s',
+                                shlex.quote(target_dir),
+                                shlex.quote(file_name))
                 shutil.copyfile(file_name, target_path)
                 shutil.copymode(file_name, target_path)
                 shutil.copystat(file_name, target_path)
@@ -562,7 +570,7 @@ def build_command(args):
                             pip_cache_dir=pip_cache_dir
                         ))
                     else:
-                        logger.info(pip_command)
+                        cmd_logger.info(shlex_join(pip_command))
                         log_handler.flush()
                         check_call(pip_command)
 
