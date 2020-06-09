@@ -626,6 +626,10 @@ def add_hidden_commands(sub_parsers):
         make_zipfile(args.zipfile, *args.dir, timestamp=args.timestamp)
         logger.info('-' * 80)
         subprocess.call(['zipinfo', args.zipfile])
+        logger.info('-' * 80)
+        logger.info('Source code hash: %s',
+                    source_code_hash(open(args.zipfile, 'rb').read()))
+
     p = hidden_parser('zip', help='Zip folder with provided files timestamp')
     p.set_defaults(command=zip_cmd)
     p.add_argument('zipfile', help='Path to a zip file')
