@@ -294,7 +294,7 @@ module "lambda" {
 
 This is one of the most complicated part done by the module and normally you don't have to know internals.
 
-`lambda.py` is Python script which does it. Make sure, Python 3.5 or newer is installed. The main functions of the script are to generate a filename of zip-archive based on the content of the files, verify if zip-archive has been already created, and create zip-archive only when it is necessary (during `apply`, not `plan`).
+`package.py` is Python script which does it. Make sure, Python 3.7 or newer is installed. The main functions of the script are to generate a filename of zip-archive based on the content of the files, verify if zip-archive has been already created, and create zip-archive only when it is necessary (during `apply`, not `plan`).
 
 Hash of zip-archive created with the same content of the files is always identical which prevents unnecessary force-updates of the Lambda resources unless content modifies. If you need to have different filenames for the same content you can specify extra string argument `hash_extra`.
 
