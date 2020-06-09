@@ -352,24 +352,24 @@ def prepare_command(args):
         results.sort()
         return results
 
-    def generate_content_hash(source_paths):
+    def generate_content_hash(source_paths, hash_func=hashlib.sha256):
         """
         Generate a content hash of the source paths.
         """
 
-        sha256 = hashlib.sha256()
+        hash_obj = hash_func()
 
         for source_path in source_paths:
             if os.path.isdir(source_path):
                 source_dir = source_path
                 for source_file in list_files(source_dir):
-                    update_hash(sha256, source_dir, source_file)
+                    update_hash(hash_obj, source_dir, source_file)
             else:
                 source_dir = os.path.dirname(source_path)
                 source_file = source_path
-                update_hash(sha256, source_dir, source_file)
+                update_hash(hash_obj, source_dir, source_file)
 
-        return sha256
+        return hash_obj
 
     def update_hash(hash_obj, file_root, file_path):
         """
@@ -381,7 +381,7 @@ def prepare_command(args):
 
         with open(file_path, 'rb') as open_file:
             while True:
-                data = open_file.read(1024)
+                data = open_file.read(1024 * 8)
                 if not data:
                     break
                 hash_obj.update(data)
