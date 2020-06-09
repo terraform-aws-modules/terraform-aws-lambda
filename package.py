@@ -144,6 +144,64 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
     The output zip file will be named 'base_name' + ".zip".  Returns the
     name of the output zip file.
     """
+    if timestamp:
+        timestamp = datetime.datetime.fromtimestamp(timestamp).timetuple()[:6]
+
+    # An extended version of a write method
+    # from the original zipfile.py library module
+    def write(self, filename, arcname=None,
+              compress_type=None, compresslevel=None,
+              date_time=None):
+        """Put the bytes from filename into the archive under the name
+        arcname."""
+        if not self.fp:
+            raise ValueError(
+                "Attempt to write to ZIP archive that was already closed")
+        if self._writing:
+            raise ValueError(
+                "Can't write to ZIP archive while an open writing handle exists"
+            )
+
+        zinfo = zipfile.ZipInfo.from_file(
+            filename, arcname, strict_timestamps=self._strict_timestamps)
+
+        if date_time:
+            zinfo.date_time = date_time
+
+        if zinfo.is_dir():
+            zinfo.compress_size = 0
+            zinfo.CRC = 0
+        else:
+            if compress_type is not None:
+                zinfo.compress_type = compress_type
+            else:
+                zinfo.compress_type = self.compression
+
+            if compresslevel is not None:
+                zinfo._compresslevel = compresslevel
+            else:
+                zinfo._compresslevel = self.compresslevel
+
+        if zinfo.is_dir():
+            with self._lock:
+                if self._seekable:
+                    self.fp.seek(self.start_dir)
+                zinfo.header_offset = self.fp.tell()  # Start of header bytes
+                if zinfo.compress_type == zipfile.ZIP_LZMA:
+                # Compressed data includes an end-of-stream (EOS) marker
+                    zinfo.flag_bits |= 0x02
+
+                self._writecheck(zinfo)
+                self._didModify = True
+
+                self.filelist.append(zinfo)
+                self.NameToInfo[zinfo.filename] = zinfo
+                self.fp.write(zinfo.FileHeader(False))
+                self.start_dir = self.fp.tell()
+        else:
+            with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
+                shutil.copyfileobj(src, dest, 1024*8)
+
     logger = logging.getLogger('zip')
 
     archive_dir = os.path.dirname(zip_filename)
@@ -159,7 +217,7 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
             logger.info("adding directory '%s'", base_dir)
             for path in emit_dir_files(base_dir):
                 logger.info("adding '%s'", path)
-                zf.write(path, path)
+                write(zf, path, path)
     return zip_filename
 
 
