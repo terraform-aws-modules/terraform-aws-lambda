@@ -522,8 +522,13 @@ def args_parser():
 
 def add_hidden_commands(sub_parsers):
     sp = sub_parsers
-    p = sp.add_parser('docker', help='Run docker build')
-    sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+
+    def hidden_parser(name, **kwargs):
+        p = sp.add_parser(name, **kwargs)
+        sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+        return p
+
+    p = hidden_parser('docker', help='Run docker build')
     p.set_defaults(command=lambda args: call(docker_run_command(
         args.build_root, args.docker_command, args.runtime, interactive=True)))
     p.add_argument('build_root', help='A docker build root folder')
@@ -532,8 +537,7 @@ def add_hidden_commands(sub_parsers):
     p.add_argument('-r', '--runtime', help='A docker image runtime',
                    default='python3.8')
 
-    p = sp.add_parser('docker_image', help='Run docker build')
-    sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+    p = hidden_parser('docker_image', help='Run docker build')
     p.set_defaults(command=lambda args: call(docker_build_command(
         args.build_root, args.docker_file, args.tag)))
     p.add_argument('-t', '--tag', help='A docker image tag')
