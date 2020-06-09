@@ -354,7 +354,7 @@ def prepare_command(args):
 
     build_plan = json.dumps(build_data)
     build_plan_filename = os.path.join(artifacts_dir,
-                                       '{}.plan'.format(content_hash))
+                                       '{}.plan.json'.format(content_hash))
     if not os.path.exists(artifacts_dir):
         os.makedirs(artifacts_dir)
     with open(build_plan_filename, 'w') as f:
