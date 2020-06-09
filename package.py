@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import sys
+
 if sys.version_info < (3, 7):
     raise RuntimeError("A python version 3.7 or newer is required")
 
@@ -25,7 +26,7 @@ import logging
 
 class StderrLogFormatter(logging.Formatter):
     def formatMessage(self, record):
-        self._style._fmt = self._style.default_format\
+        self._style._fmt = self._style.default_format \
             if record.name == 'root' else self._fmt
         return super().formatMessage(record)
 
@@ -189,7 +190,7 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
                     self.fp.seek(self.start_dir)
                 zinfo.header_offset = self.fp.tell()  # Start of header bytes
                 if zinfo.compress_type == zipfile.ZIP_LZMA:
-                # Compressed data includes an end-of-stream (EOS) marker
+                    # Compressed data includes an end-of-stream (EOS) marker
                     zinfo.flag_bits |= 0x02
 
                 self._writecheck(zinfo)
@@ -201,7 +202,7 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
                 self.start_dir = self.fp.tell()
         else:
             with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
-                shutil.copyfileobj(src, dest, 1024*8)
+                shutil.copyfileobj(src, dest, 1024 * 8)
 
     def str_int_to_timestamp(s):
         return int(s) / 10 ** (len(s) - 10)
