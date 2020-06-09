@@ -137,7 +137,8 @@ def emit_dir_files(base_dir):
                 yield path
 
 
-def make_zipfile(zip_filename, *base_dirs, timestamp=None):
+def make_zipfile(zip_filename, *base_dirs, timestamp=None,
+                 compression=zipfile.ZIP_DEFLATED):
     """
     Create a zip file from all the files under 'base_dir'.
     The output zip file will be named 'base_name' + ".zip".  Returns the
@@ -153,8 +154,7 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None):
 
     logger.info("creating '%s' archive", zip_filename)
 
-    with zipfile.ZipFile(zip_filename, "w",
-                         compression=zipfile.ZIP_DEFLATED) as zf:
+    with zipfile.ZipFile(zip_filename, "w", compression) as zf:
         for base_dir in base_dirs:
             logger.info("adding directory '%s'", base_dir)
             for path in emit_dir_files(base_dir):
