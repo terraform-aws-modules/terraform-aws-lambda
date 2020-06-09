@@ -1,7 +1,10 @@
 # coding: utf-8
 
-import os
 import sys
+if sys.version_info < (3, 7):
+    raise RuntimeError("A python version 3.7 or newer is required")
+
+import os
 import json
 import shlex
 import shutil
@@ -14,6 +17,23 @@ import platform
 import subprocess
 from subprocess import check_call, call
 from contextlib import contextmanager
+import logging
+
+
+################################################################################
+# Logging
+
+class StderrLogFormatter(logging.Formatter):
+    def formatMessage(self, record):
+        self._style._fmt = self._style.default_format\
+            if record.name == 'root' else self._fmt
+        return super().formatMessage(record)
+
+
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(StderrLogFormatter("%(name)s: %(message)s"))
+logging.basicConfig(level=logging.INFO, handlers=(log_handler,))
+logger = logging.getLogger()
 
 
 ################################################################################
@@ -42,7 +62,7 @@ def shlex_join(split_command):
 
 def abort(message):
     """Exits with an error message."""
-    print(message, file=sys.stderr)
+    logger.error(message)
     sys.exit(1)
 
 
@@ -50,7 +70,7 @@ def abort(message):
 def cd(path):
     """Changes the working directory."""
     cwd = os.getcwd()
-    print('cd', shlex.quote(path))
+    logger.info('cd %s', shlex.quote(path))
     try:
         os.chdir(path)
         yield
@@ -62,50 +82,81 @@ def cd(path):
 def tempdir():
     """Creates a temporary directory and then deletes it afterwards."""
     prefix = 'terraform-aws-lambda-'
-    print('mktemp -d {}XXXXXXXX #'.format(prefix), end=' ')
     path = tempfile.mkdtemp(prefix=prefix)
-    print(shlex.quote(path))
+    logger.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
     try:
         yield path
     finally:
         shutil.rmtree(path)
 
 
+def dataclass(name, **fields):
+    typ = type(name, (object,), {
+        '__slots__': fields.keys(),
+        '__getattr__': lambda *_: None,
+    })
+    for k, v in fields.items():
+        setattr(typ, k, v)
+    return typ
+
+
+def datatree(name, **fields):
+    def decode_json(v):
+        if v and isinstance(v, str) and v[0] in '"[{':
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                pass
+        return v
+
+    return dataclass(name, **dict(((
+        k, datatree(k, **v) if isinstance(v, dict) else decode_json(v))
+        for k, v in fields.items())))()
+
+
+def timestamp_now_ns():
+    timestamp = datetime.datetime.now().timestamp()
+    timestamp = int(timestamp * 10 ** 7) * 10 ** 2
+    return timestamp
+
+
 ################################################################################
 # Packaging functions
 
-def make_zipfile(base_name, base_dir, logger=None):
+def make_zipfile(base_name, base_dir):
     """
     Create a zip file from all the files under 'base_dir'.
     The output zip file will be named 'base_name' + ".zip".  Returns the
     name of the output zip file.
     """
+    logger = logging.getLogger('zip')
+
     zip_filename = base_name + ".zip"
     archive_dir = os.path.dirname(base_name)
 
     if archive_dir and not os.path.exists(archive_dir):
-        logger and logger.info("creating %s", archive_dir)
+        logger.info("creating %s", archive_dir)
         os.makedirs(archive_dir)
 
-    logger and logger.info("creating '%s' and adding '%s' to it",
-                           zip_filename, base_dir)
+    logger.info("creating '%s' and adding '%s' to it",
+                zip_filename, base_dir)
 
     with zipfile.ZipFile(zip_filename, "w",
                          compression=zipfile.ZIP_DEFLATED) as zf:
         path = os.path.normpath(base_dir)
         if path != os.curdir:
             zf.write(path, path)
-            logger and logger.info("adding '%s'", path)
+            logger.info("adding '%s'", path)
         for dirpath, dirnames, filenames in os.walk(base_dir):
             for name in sorted(dirnames):
                 path = os.path.normpath(os.path.join(dirpath, name))
                 zf.write(path, path)
-                logger and logger.info("adding '%s'", path)
+                logger.info("adding '%s'", path)
             for name in filenames:
                 path = os.path.normpath(os.path.join(dirpath, name))
                 if os.path.isfile(path):
                     zf.write(path, path)
-                    logger and logger.info("adding '%s'", path)
+                    logger.info("adding '%s'", path)
     return zip_filename
 
 
@@ -121,12 +172,14 @@ def docker_build_command(build_root, docker_file=None, tag=None):
         docker_cmd.extend(['--tag', tag])
     docker_cmd.append(build_root)
 
-    print(shlex_join(docker_cmd), flush=True)
+    logger.info(shlex_join(docker_cmd))
+    log_handler.flush()
     return docker_cmd
 
 
 def docker_run_command(build_root, command, runtime,
-                       image=None, shell=None, interactive=False):
+                       image=None, shell=None, interactive=False,
+                       pip_cache_dir=None):
     """"""
     docker_cmd = ['docker', 'run', '--rm']
 
@@ -148,7 +201,7 @@ def docker_run_command(build_root, command, runtime,
             '--mount', 'type=bind,'
                        'src=/run/host-services/ssh-auth.sock,'
                        'target=/run/host-services/ssh-auth.sock',
-            '-e', 'SSH_AUTH_SOCK="/run/host-services/ssh-auth.sock"',
+            '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
         ])
     elif platform.system() == 'Linux':
         sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
@@ -156,6 +209,11 @@ def docker_run_command(build_root, command, runtime,
             '-v', '{}:/tmp/ssh_sock:z'.format(sock),
             '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
         ])
+        if pip_cache_dir:
+            pip_cache_dir = os.path.abspath(pip_cache_dir)
+            docker_cmd.extend([
+                '-v', '{}:/root/.cache/pip:z'.format(pip_cache_dir),
+            ])
     else:
         raise RuntimeError("Unsupported platform for docker building")
 
@@ -171,7 +229,8 @@ def docker_run_command(build_root, command, runtime,
         docker_cmd.extend([shell, '-c'])
     docker_cmd.extend(command)
 
-    print(shlex_join(docker_cmd), flush=True)
+    logger.info(shlex_join(docker_cmd))
+    log_handler.flush()
     return docker_cmd
 
 
@@ -236,24 +295,23 @@ def prepare_command(args):
 
     args.dump_env and dump_env('prepare_command')
 
-    # Parse the query.
-    query = json.load(sys.stdin)
-    args.dump_input and dump_query('prepare_command', query)
+    # Load the query.
+    query_data = json.load(sys.stdin)
+    args.dump_input and dump_query('prepare_command', query_data)
+    query = datatree('prepare_query', **query_data)
 
-    runtime = query['runtime']
-    function_name = query['function_name']
-    artifacts_dir = query['artifacts_dir']
-    tf_paths = argparse.Namespace(**json.loads(query['paths']))
-    hash_extra_paths = json.loads(query['hash_extra_paths'])
-    source_path = os.path.abspath(query['source_path'])
-    hash_extra = query['hash_extra']
+    tf_paths = query.paths
+    runtime = query.runtime
+    function_name = query.function_name
+    artifacts_dir = query.artifacts_dir
+    hash_extra_paths = query.hash_extra_paths
+    source_path = query.source_path
+    hash_extra = query.hash_extra
 
-    docker = query.get('docker')
+    # Compacting docker vars
+    docker = query.docker
     if docker:
-        docker = json.loads(docker)
-        docker = {k: v for k, v in docker.items() if v}
-        if not docker:
-            docker = True
+        docker = {k: v for k, v in docker.items() if v} or True
 
     # Validate the query.
     if not os.path.exists(source_path):
@@ -269,11 +327,10 @@ def prepare_command(args):
     content_hash = generate_content_hash(content_hash_paths)
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
+    content_hash = content_hash.hexdigest()
 
     # Generate a unique filename based on the hash.
-    filename = os.path.join(artifacts_dir, '{content_hash}.zip'.format(
-        content_hash=content_hash.hexdigest(),
-    ))
+    filename = os.path.join(artifacts_dir, '{}.zip'.format(content_hash))
 
     # Compute timestamp trigger
     was_missing = False
@@ -282,23 +339,32 @@ def prepare_command(args):
         st = os.stat(filename_path)
         timestamp = st.st_mtime_ns
     else:
-        timestamp = datetime.datetime.now().timestamp()
-        timestamp = int(timestamp * 10 ** 7) * 10 ** 2
+        timestamp = timestamp_now_ns()
         was_missing = True
 
     # Replace variables in the build command with calculated values.
     build_data = {
-        'docker': docker,
         'filename': filename,
         'runtime': runtime,
         'source_path': source_path,
-        'timestamp': timestamp,
+        'artifacts_dir': artifacts_dir,
     }
+    if docker:
+        build_data['docker'] = docker
+
+    build_plan = json.dumps(build_data)
+    build_plan_filename = os.path.join(artifacts_dir,
+                                       '{}.plan'.format(content_hash))
+    if not os.path.exists(artifacts_dir):
+        os.makedirs(artifacts_dir)
+    with open(build_plan_filename, 'w') as f:
+        f.write(build_plan)
 
     # Output the result to Terraform.
     json.dump({
         'filename': filename,
-        'build_data': json.dumps(build_data),
+        'build_plan': build_plan,
+        'build_plan_filename': build_plan_filename,
         'timestamp': str(timestamp),
         'was_missing': 'true' if was_missing else 'false',
     }, sys.stdout, indent=2)
@@ -332,7 +398,6 @@ def build_command(args):
         Creates a zip file from a directory.
         """
 
-        target_file = os.path.abspath(target_file)
         target_dir = os.path.dirname(target_file)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
@@ -351,19 +416,23 @@ def build_command(args):
         args.source_path,
         file=open('build_command.args', 'a'))
 
-    build_data = json.loads(args.build_data)
-    filename = build_data['filename']
-    runtime = build_data['runtime']
-    source_path = build_data['source_path']
-    timestamp = build_data['timestamp']
+    with open(args.build_plan_file) as f:
+        query_data = json.load(f)
+    query = datatree('build_query', **query_data)
 
-    docker = build_data.get('docker')
+    runtime = query.runtime
+    filename = query.filename
+    source_path = query.source_path
 
-    absolute_filename = os.path.abspath(filename)
+    timestamp = args.zip_file_timestamp
+    artifacts_dir = query.artifacts_dir
+    docker = query.docker
 
-    if os.path.exists(absolute_filename):
-        print('Reused: {}'.format(shlex.quote(filename)))
+    if os.path.exists(filename):
+        logger.info('Reused: %s', shlex.quote(filename))
         return
+
+    working_dir = os.getcwd()
 
     # Create a temporary directory for building the archive,
     # so no changes will be made to the source directory.
@@ -382,10 +451,10 @@ def build_command(args):
                 target_path = os.path.join(temp_dir, file_name)
                 target_dir = os.path.dirname(target_path)
                 if not os.path.exists(target_dir):
-                    print('mkdir -p {}'.format(shlex.quote(target_dir)))
+                    logger.info('mkdir -p %s', shlex.quote(target_dir))
                     os.makedirs(target_dir)
-                print('cp {} {}'.format(shlex.quote(file_name),
-                                        shlex.quote(target_path)))
+                logger.info('cp %s %s', shlex.quote(file_name),
+                                        shlex.quote(target_path))
                 shutil.copyfile(file_name, target_path)
                 shutil.copymode(file_name, target_path)
                 shutil.copystat(file_name, target_path)
@@ -406,22 +475,34 @@ def build_command(args):
                         '--requirement=requirements.txt',
                     ])
                     if docker:
+                        pip_cache_dir = docker.docker_pip_cache
+                        if pip_cache_dir:
+                            if isinstance(pip_cache_dir, str):
+                                pip_cache_dir = os.path.abspath(
+                                    os.path.join(working_dir, pip_cache_dir))
+                            else:
+                                pip_cache_dir = os.path.abspath(os.path.join(
+                                    working_dir, artifacts_dir, 'cache/pip'))
+
                         chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                        docker_command = [shlex_join(pip_command), '&&',
-                                          shlex_join(['chown', '-R',
-                                                      chown_mask, '/var/task'])]
-                        docker_command = [' '.join(docker_command)]
-                        check_call(docker_run_command('.', docker_command,
-                                                      runtime, shell=True))
+                        shell_command = [shlex_join(pip_command), '&&',
+                                         shlex_join(['chown', '-R',
+                                                     chown_mask, '.'])]
+                        shell_command = [' '.join(shell_command)]
+                        check_call(docker_run_command(
+                            '.', shell_command, runtime, shell=True,
+                            pip_cache_dir=pip_cache_dir
+                        ))
                     else:
-                        print(pip_command, flush=True)
+                        logger.info(pip_command)
+                        log_handler.flush()
                         check_call(pip_command)
 
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
-        create_zip_file(temp_dir, absolute_filename)
-        os.utime(absolute_filename, ns=(timestamp, timestamp))
-        print('Created: {}'.format(shlex.quote(filename)))
+        create_zip_file(temp_dir, filename)
+        os.utime(filename, ns=(timestamp, timestamp))
+        logger.info('Created: %s', shlex.quote(filename))
 
 
 def args_parser():
@@ -436,11 +517,24 @@ def args_parser():
     p = sp.add_parser('build',
                       help='build and pack to a zip archive')
     p.set_defaults(command=build_command)
-    p.add_argument('build_data', help='A build_data field from output '
-                                      'of the prepare command')
+    p.add_argument('-t', '--timestamp',
+                   dest='zip_file_timestamp', type=int, required=True,
+                   help='A zip file timestamp generated by the prepare command')
+    p.add_argument('build_plan_file', metavar='PLAN_FILE',
+                   help='A build plan file provided by the prepare command')
+    add_hidden_commands(sp)
+    return ap
 
-    p = sp.add_parser('docker', help='Run docker build')
-    sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+
+def add_hidden_commands(sub_parsers):
+    sp = sub_parsers
+
+    def hidden_parser(name, **kwargs):
+        p = sp.add_parser(name, **kwargs)
+        sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+        return p
+
+    p = hidden_parser('docker', help='Run docker build')
     p.set_defaults(command=lambda args: call(docker_run_command(
         args.build_root, args.docker_command, args.runtime, interactive=True)))
     p.add_argument('build_root', help='A docker build root folder')
@@ -449,15 +543,13 @@ def args_parser():
     p.add_argument('-r', '--runtime', help='A docker image runtime',
                    default='python3.8')
 
-    p = sp.add_parser('docker_image', help='Run docker build')
-    sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+    p = hidden_parser('docker_image', help='Run docker build')
     p.set_defaults(command=lambda args: call(docker_build_command(
         args.build_root, args.docker_file, args.tag)))
     p.add_argument('-t', '--tag', help='A docker image tag')
     p.add_argument('build_root', help='A docker build root folder')
     p.add_argument('docker_file', help='A docker file path',
                    nargs=argparse.OPTIONAL)
-    return ap
 
 
 def main():
