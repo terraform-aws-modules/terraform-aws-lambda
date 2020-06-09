@@ -123,7 +123,7 @@ def timestamp_now_ns():
 ################################################################################
 # Packaging functions
 
-def make_zipfile(base_name, base_dir):
+def make_zipfile(zip_filename, base_dir, timestamp=None):
     """
     Create a zip file from all the files under 'base_dir'.
     The output zip file will be named 'base_name' + ".zip".  Returns the
@@ -131,8 +131,7 @@ def make_zipfile(base_name, base_dir):
     """
     logger = logging.getLogger('zip')
 
-    zip_filename = base_name + ".zip"
-    archive_dir = os.path.dirname(base_name)
+    archive_dir = os.path.dirname(zip_filename)
 
     if archive_dir and not os.path.exists(archive_dir):
         logger.info("creating %s", archive_dir)
@@ -505,6 +504,43 @@ def build_command(args):
         logger.info('Created: %s', shlex.quote(filename))
 
 
+def add_hidden_commands(sub_parsers):
+    sp = sub_parsers
+
+    def hidden_parser(name, **kwargs):
+        p = sp.add_parser(name, **kwargs)
+        sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
+        return p
+
+    p = hidden_parser('docker', help='Run docker build')
+    p.set_defaults(command=lambda args: call(docker_run_command(
+        args.build_root, args.docker_command, args.runtime, interactive=True)))
+    p.add_argument('build_root', help='A docker build root folder')
+    p.add_argument('docker_command', help='A docker container command',
+                   metavar='command', nargs=argparse.REMAINDER)
+    p.add_argument('-r', '--runtime', help='A docker image runtime',
+                   default='python3.8')
+
+    p = hidden_parser('docker-image', help='Run docker build')
+    p.set_defaults(command=lambda args: call(docker_build_command(
+        args.build_root, args.docker_file, args.tag)))
+    p.add_argument('-t', '--tag', help='A docker image tag')
+    p.add_argument('build_root', help='A docker build root folder')
+    p.add_argument('docker_file', help='A docker file path',
+                   nargs=argparse.OPTIONAL)
+
+    def zip_cmd(args):
+        make_zipfile(args.zipfile, args.dir, args.timestamp)
+        logger.info('-' * 80)
+        subprocess.call(['zipinfo', args.zipfile])
+    p = hidden_parser('zip', help='Zip folder with provided files timestamp')
+    p.set_defaults(command=zip_cmd)
+    p.add_argument('zipfile', help='Path to a zip file')
+    p.add_argument('dir', help='Path to a directory for packaging')
+    p.add_argument('-t', '--timestamp', default=timestamp_now_ns(), type=int,
+                   help='A timestamp to override for all zip members')
+
+
 def args_parser():
     ap = argparse.ArgumentParser()
     ap.set_defaults(command=lambda _: ap.print_usage())
@@ -524,32 +560,6 @@ def args_parser():
                    help='A build plan file provided by the prepare command')
     add_hidden_commands(sp)
     return ap
-
-
-def add_hidden_commands(sub_parsers):
-    sp = sub_parsers
-
-    def hidden_parser(name, **kwargs):
-        p = sp.add_parser(name, **kwargs)
-        sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
-        return p
-
-    p = hidden_parser('docker', help='Run docker build')
-    p.set_defaults(command=lambda args: call(docker_run_command(
-        args.build_root, args.docker_command, args.runtime, interactive=True)))
-    p.add_argument('build_root', help='A docker build root folder')
-    p.add_argument('docker_command', help='A docker container command',
-                   metavar='command', nargs=argparse.REMAINDER)
-    p.add_argument('-r', '--runtime', help='A docker image runtime',
-                   default='python3.8')
-
-    p = hidden_parser('docker_image', help='Run docker build')
-    p.set_defaults(command=lambda args: call(docker_build_command(
-        args.build_root, args.docker_file, args.tag)))
-    p.add_argument('-t', '--tag', help='A docker image tag')
-    p.add_argument('build_root', help='A docker build root folder')
-    p.add_argument('docker_file', help='A docker file path',
-                   nargs=argparse.OPTIONAL)
 
 
 def main():
