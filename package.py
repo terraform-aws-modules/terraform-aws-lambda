@@ -144,8 +144,6 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
     The output zip file will be named 'base_name' + ".zip".  Returns the
     name of the output zip file.
     """
-    if timestamp:
-        timestamp = datetime.datetime.fromtimestamp(timestamp).timetuple()[:6]
 
     # An extended version of a write method
     # from the original zipfile.py library module
@@ -202,7 +200,24 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
             with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
                 shutil.copyfileobj(src, dest, 1024*8)
 
+    def str_int_to_timestamp(s):
+        return int(s) / 10 ** (len(s) - 10)
+
     logger = logging.getLogger('zip')
+
+    date_time = None
+    if timestamp is not None:
+        if isinstance(timestamp, str):
+            if timestamp.isnumeric():
+                timestamp = str_int_to_timestamp(timestamp)
+            else:
+                timestamp = float(timestamp)
+        elif isinstance(timestamp, int):
+            timestamp = str_int_to_timestamp(str(timestamp))
+
+        date_time = datetime.datetime.fromtimestamp(timestamp).timetuple()[:6]
+        if date_time[0] < 1980:
+            raise ValueError('ZIP does not support timestamps before 1980')
 
     archive_dir = os.path.dirname(zip_filename)
 
@@ -217,7 +232,7 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
             logger.info("adding directory '%s'", base_dir)
             for path in emit_dir_files(base_dir):
                 logger.info("adding '%s'", path)
-                write(zf, path, path)
+                write(zf, path, path, date_time=date_time)
     return zip_filename
 
 
@@ -600,7 +615,7 @@ def add_hidden_commands(sub_parsers):
     p.add_argument('zipfile', help='Path to a zip file')
     p.add_argument('dir', nargs=argparse.ONE_OR_MORE,
                    help='Path to a directory for packaging')
-    p.add_argument('-t', '--timestamp', default=timestamp_now_ns(), type=int,
+    p.add_argument('-t', '--timestamp', type=int,
                    help='A timestamp to override for all zip members')
 
 
