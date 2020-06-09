@@ -124,7 +124,19 @@ module "lambda_function_existing_package_local" {
 
 ### Lambda Function with existing package (prebuilt) stored in S3 bucket
 
+Note that this module does not copy prebuilt packages into S3 bucket. This module can only store packages it builds locally and in S3 bucket.
+
 ```hcl
+locals {
+  my_function_source = "../path/to/package.zip"
+}
+
+resource "aws_s3_bucket_object" "my_function" {
+  bucket = "my-bucket-with-lambda-builds"
+  key    = "${filemd5(local.my_function_source)}.zip"
+  source = local.my_function_source
+}
+
 module "lambda_function_existing_package_s3" {
   source = "terraform-aws-modules/lambda/aws"
 
@@ -136,7 +148,7 @@ module "lambda_function_existing_package_s3" {
   create_package      = false
   s3_existing_package = {
     bucket = "my-bucket-with-lambda-builds"
-    key    = "existing_package.zip"
+    key    = aws_s3_bucket_object.my_function.id
   }
 }
 ```
