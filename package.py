@@ -137,7 +137,7 @@ def emit_dir_files(base_dir):
                 yield path
 
 
-def make_zipfile(zip_filename, base_dir, timestamp=None):
+def make_zipfile(zip_filename, *base_dirs, timestamp=None):
     """
     Create a zip file from all the files under 'base_dir'.
     The output zip file will be named 'base_name' + ".zip".  Returns the
@@ -151,14 +151,15 @@ def make_zipfile(zip_filename, base_dir, timestamp=None):
         logger.info("creating %s", archive_dir)
         os.makedirs(archive_dir)
 
-    logger.info("creating '%s' and adding '%s' to it",
-                zip_filename, base_dir)
+    logger.info("creating '%s' archive", zip_filename)
 
     with zipfile.ZipFile(zip_filename, "w",
                          compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in emit_dir_files(base_dir):
-            logger.info("adding '%s'", path)
-            zf.write(path, path)
+        for base_dir in base_dirs:
+            logger.info("adding directory '%s'", base_dir)
+            for path in emit_dir_files(base_dir):
+                logger.info("adding '%s'", path)
+                zf.write(path, path)
     return zip_filename
 
 
@@ -533,13 +534,14 @@ def add_hidden_commands(sub_parsers):
                    nargs=argparse.OPTIONAL)
 
     def zip_cmd(args):
-        make_zipfile(args.zipfile, args.dir, args.timestamp)
+        make_zipfile(args.zipfile, *args.dir, timestamp=args.timestamp)
         logger.info('-' * 80)
         subprocess.call(['zipinfo', args.zipfile])
     p = hidden_parser('zip', help='Zip folder with provided files timestamp')
     p.set_defaults(command=zip_cmd)
     p.add_argument('zipfile', help='Path to a zip file')
-    p.add_argument('dir', help='Path to a directory for packaging')
+    p.add_argument('dir', nargs=argparse.ONE_OR_MORE,
+                   help='Path to a directory for packaging')
     p.add_argument('-t', '--timestamp', default=timestamp_now_ns(), type=int,
                    help='A timestamp to override for all zip members')
 
