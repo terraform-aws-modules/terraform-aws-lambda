@@ -481,3 +481,9 @@ variable "docker_with_ssh_agent" {
   type        = bool
   default     = false
 }
+
+variable "docker_pip_cache" {
+  description = "Whether to mount a shared pip cache folder into docker environment or not"
+  type        = any
+  default     = null
+}
