@@ -123,6 +123,20 @@ def timestamp_now_ns():
 ################################################################################
 # Packaging functions
 
+def emit_dir_files(base_dir):
+    path = os.path.normpath(base_dir)
+    if path != os.curdir:
+        yield path
+    for dirpath, dirnames, filenames in os.walk(base_dir):
+        for name in sorted(dirnames):
+            path = os.path.normpath(os.path.join(dirpath, name))
+            yield path
+        for name in filenames:
+            path = os.path.normpath(os.path.join(dirpath, name))
+            if os.path.isfile(path):
+                yield path
+
+
 def make_zipfile(zip_filename, base_dir, timestamp=None):
     """
     Create a zip file from all the files under 'base_dir'.
@@ -142,20 +156,9 @@ def make_zipfile(zip_filename, base_dir, timestamp=None):
 
     with zipfile.ZipFile(zip_filename, "w",
                          compression=zipfile.ZIP_DEFLATED) as zf:
-        path = os.path.normpath(base_dir)
-        if path != os.curdir:
-            zf.write(path, path)
+        for path in emit_dir_files(base_dir):
             logger.info("adding '%s'", path)
-        for dirpath, dirnames, filenames in os.walk(base_dir):
-            for name in sorted(dirnames):
-                path = os.path.normpath(os.path.join(dirpath, name))
-                zf.write(path, path)
-                logger.info("adding '%s'", path)
-            for name in filenames:
-                path = os.path.normpath(os.path.join(dirpath, name))
-                if os.path.isfile(path):
-                    zf.write(path, path)
-                    logger.info("adding '%s'", path)
+            zf.write(path, path)
     return zip_filename
 
 
