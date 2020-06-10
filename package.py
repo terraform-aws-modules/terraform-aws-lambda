@@ -139,6 +139,26 @@ def source_code_hash(bytes):
     return b64encode(hashlib.sha256(bytes).digest()).decode()
 
 
+def yesno_bool(val):
+    if val is None:
+        return
+    if isinstance(val, bool):
+        return val
+    if isinstance(val, int):
+        return bool(val)
+    if isinstance(val, str):
+        if val.isnumeric():
+            return bool(int(val))
+        val = val.lower()
+        if val in ('true', 'yes', 'y'):
+            return True
+        elif val in ('false', 'no', 'n'):
+            return False
+        else:
+            raise ValueError("Unsupported value: %s" % val)
+    return False
+
+
 ################################################################################
 # Packaging functions
 
@@ -412,6 +432,7 @@ def prepare_command(args):
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
+    recreate_missing_package = yesno_bool(args.recreate_missing_package)
 
     # Compacting docker vars
     docker = query.docker
@@ -440,12 +461,15 @@ def prepare_command(args):
     # Compute timestamp trigger
     was_missing = False
     filename_path = os.path.join(os.getcwd(), filename)
-    if os.path.exists(filename_path):
-        st = os.stat(filename_path)
-        timestamp = st.st_mtime_ns
+    if recreate_missing_package:
+        if os.path.exists(filename_path):
+            st = os.stat(filename_path)
+            timestamp = st.st_mtime_ns
+        else:
+            timestamp = timestamp_now_ns()
+            was_missing = True
     else:
-        timestamp = timestamp_now_ns()
-        was_missing = True
+        timestamp = 0
 
     # Replace variables in the build command with calculated values.
     build_data = {
@@ -684,6 +708,8 @@ def args_parser():
 
 def main():
     ns = argparse.Namespace(
+        recreate_missing_package=os.environ.get(
+            'TF_RECREATE_MISSING_LAMBDA_PACKAGE'),
         log_level=os.environ.get('TF_PACKAGE_LOG_LEVEL', 'INFO'),
         dump_input=bool(os.environ.get('TF_DUMP_INPUT')),
         dump_env=bool(os.environ.get('TF_DUMP_ENV')),
