@@ -16,7 +16,7 @@ import datetime
 import tempfile
 import platform
 import subprocess
-from subprocess import check_call, call
+from subprocess import check_call
 from contextlib import contextmanager
 from base64 import b64encode
 import logging
@@ -622,7 +622,7 @@ def add_hidden_commands(sub_parsers):
         return p
 
     p = hidden_parser('docker', help='Run docker build')
-    p.set_defaults(command=lambda args: call(docker_run_command(
+    p.set_defaults(command=lambda args: subprocess.call(docker_run_command(
         args.build_root, args.docker_command, args.runtime, interactive=True)))
     p.add_argument('build_root', help='A docker build root folder')
     p.add_argument('docker_command', help='A docker container command',
@@ -631,7 +631,7 @@ def add_hidden_commands(sub_parsers):
                    default='python3.8')
 
     p = hidden_parser('docker-image', help='Run docker build')
-    p.set_defaults(command=lambda args: call(docker_build_command(
+    p.set_defaults(command=lambda args: subprocess.call(docker_build_command(
         args.build_root, args.docker_file, args.tag)))
     p.add_argument('-t', '--tag', help='A docker image tag')
     p.add_argument('build_root', help='A docker build root folder')
