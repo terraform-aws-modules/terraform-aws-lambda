@@ -25,23 +25,29 @@ import logging
 ################################################################################
 # Logging
 
-class StderrLogFormatter(logging.Formatter):
+class LogFormatter(logging.Formatter):
+    default_format = '%(message)s'
+    formats = {
+        'root': default_format,
+        'build': default_format,
+        'prepare': default_format,
+        'cmd': '> %(message)s',
+        '': '%(name)s: %(message)s'
+    }
+
     def formatMessage(self, record):
-        self._style._fmt = self._style.default_format \
-            if record.name == 'root' else self._fmt
+        self._style._fmt = self.formats.get(record.name, self.formats[''])
         return super().formatMessage(record)
 
 
 log_handler = logging.StreamHandler()
-log_handler.setFormatter(StderrLogFormatter("%(name)s: %(message)s"))
-logging.basicConfig(level=logging.INFO, handlers=(log_handler,))
+log_handler.setFormatter(LogFormatter())
+
 logger = logging.getLogger()
+logger.addHandler(log_handler)
+logger.setLevel(logging.INFO)
 
 cmd_logger = logging.getLogger('cmd')
-cmd_log_handler = logging.StreamHandler()
-cmd_log_handler.setFormatter(StderrLogFormatter("> %(message)s"))
-cmd_logger.addHandler(cmd_log_handler)
-cmd_logger.propagate = False
 
 
 ################################################################################
@@ -265,7 +271,7 @@ def docker_build_command(build_root, docker_file=None, tag=None):
         docker_cmd.extend(['--tag', tag])
     docker_cmd.append(build_root)
 
-    logger.info(shlex_join(docker_cmd))
+    cmd_logger.info(shlex_join(docker_cmd))
     log_handler.flush()
     return docker_cmd
 
@@ -322,7 +328,7 @@ def docker_run_command(build_root, command, runtime,
         docker_cmd.extend([shell, '-c'])
     docker_cmd.extend(command)
 
-    logger.info(shlex_join(docker_cmd))
+    cmd_logger.info(shlex_join(docker_cmd))
     log_handler.flush()
     return docker_cmd
 
@@ -338,16 +344,22 @@ def prepare_command(args):
     Outputs a filename and a command to run if the archive needs to be built.
     """
 
+    logger = logging.getLogger('prepare')
+
     def list_files(top_path):
         """
         Returns a sorted list of all files in a directory.
         """
 
+        _logger = logger.getChild('ls')
+
         results = []
 
         for root, dirs, files in os.walk(top_path):
             for file_name in files:
-                results.append(os.path.join(root, file_name))
+                file_path = os.path.join(root, file_name)
+                results.append(file_path)
+                _logger.debug(file_path)
 
         results.sort()
         return results
@@ -470,10 +482,14 @@ def build_command(args):
     Installs dependencies with pip automatically.
     """
 
+    logger = logging.getLogger('build')
+
     def list_files(top_path):
         """
         Returns a sorted list of all files in a directory.
         """
+
+        _logger = logger.getChild('ls')
 
         results = []
 
@@ -482,6 +498,7 @@ def build_command(args):
                 file_path = os.path.join(root, file_name)
                 relative_path = os.path.relpath(file_path, top_path)
                 results.append(relative_path)
+                _logger.debug(relative_path)
 
         results.sort()
         return results
@@ -591,7 +608,7 @@ def build_command(args):
         create_zip_file(temp_dir, filename, timestamp=0)
         os.utime(filename, ns=(timestamp, timestamp))
         logger.info('Created: %s', shlex.quote(filename))
-        if logger.level <= logging.DEBUG:
+        if logger.isEnabledFor(logging.DEBUG):
             with open(filename, 'rb') as f:
                 logger.info('Base64sha256: %s', source_code_hash(f.read()))
 
@@ -661,11 +678,16 @@ def args_parser():
 
 def main():
     ns = argparse.Namespace(
+        log_level=os.environ.get('TF_PACKAGE_LOG_LEVEL', 'INFO'),
         dump_input=bool(os.environ.get('TF_DUMP_INPUT')),
         dump_env=bool(os.environ.get('TF_DUMP_ENV')),
     )
     p = args_parser()
     args = p.parse_args(namespace=ns)
+
+    if args.log_level and logging._checkLevel(args.log_level):
+        logging.root.setLevel(args.log_level)
+
     exit(args.command(args))
 
 
