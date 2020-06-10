@@ -13,10 +13,10 @@ resource "random_pet" "this" {
   length = 2
 }
 
-module "lambda_function1" {
+module "lambda_function" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda1"
+  function_name = "${random_pet.this.id}-lambda"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
   publish       = true
@@ -32,68 +32,60 @@ module "lambda_function1" {
   }
 }
 
-module "lambda_function2" {
-  source = "../../"
-
-  function_name = "${random_pet.this.id}-lambda2"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-  publish       = true
-
-  source_path = "${path.module}/../fixtures/python3.8-app1"
-  hash_extra  = "yo2"
-
-  allowed_triggers = {
-    APIGatewayAny = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
-    }
-  }
-}
-
-module "alias_refresh1" {
+module "alias_refresh" {
   source = "../../modules/alias"
 
   refresh_alias = true
 
-  name = "current-with-refresh1"
+  name = "current-with-refresh"
 
-  function_name = module.lambda_function1.this_lambda_function_name
-
-  # Set function_version when creating alias to be able to deploy using it,
-  # because AWS CodeDeploy doesn't understand $LATEST as CurrentVersion.
-  function_version = module.lambda_function1.this_lambda_function_version
-}
-
-module "alias_refresh2" {
-  source = "../../modules/alias"
-
-  refresh_alias = true
-
-  name = "current-with-refresh2"
-
-  function_name = module.lambda_function2.this_lambda_function_name
+  function_name = module.lambda_function.this_lambda_function_name
 
   # Set function_version when creating alias to be able to deploy using it,
   # because AWS CodeDeploy doesn't understand $LATEST as CurrentVersion.
-  function_version = module.lambda_function2.this_lambda_function_version
+  function_version = module.lambda_function.this_lambda_function_version
 }
 
 module "deploy" {
   source = "../../modules/deploy"
 
-  alias_name    = module.alias_refresh1.this_lambda_alias_name
-  function_name = module.lambda_function1.this_lambda_function_name
+  alias_name    = module.alias_refresh.this_lambda_alias_name
+  function_name = module.lambda_function.this_lambda_function_name
 
-  target_version = module.lambda_function1.this_lambda_function_version
+  target_version = module.lambda_function.this_lambda_function_version
+  description    = "This is my awesome deploy!"
 
-  create_app            = true
-  app_name              = "my-awesome-app"
-  deployment_group_name = "something"
+  create_app = true
+  app_name   = "my-awesome-app"
 
-  create_deployment = true
+  create_deployment_group = true
+  deployment_group_name   = "something"
 
-  //  before_allow_traffic_hook_arn = "arn1"
-  //  after_allow_traffic_hook_arn = "arn2"
+  create_deployment          = true
+  save_deploy_script         = true
+  wait_deployment_completion = true
+  force_deploy               = true
 
+  attach_triggers_policy = true
+  triggers = {
+    start = {
+      events     = ["DeploymentStart"]
+      name       = "DeploymentStart"
+      target_arn = aws_sns_topic.sns1.arn
+    }
+    success = {
+      events     = ["DeploymentSuccess"]
+      name       = "DeploymentSuccess"
+      target_arn = aws_sns_topic.sns2.arn
+    }
+  }
+
+}
+
+resource "aws_sns_topic" "sns1" {
+  name_prefix = random_pet.this.id
+}
+
+resource "aws_sns_topic" "sns2" {
+  name_prefix = random_pet.this.id
 }

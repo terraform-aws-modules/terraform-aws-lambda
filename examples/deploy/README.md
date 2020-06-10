@@ -1,8 +1,6 @@
-# Do Lambda Function Deployments using AWS CodeDeploy
+# Lambda Function Deployments using AWS CodeDeploy
 
-Configuration in this directory creates Lambda Function, Alias, and all resources required to create deployments using AWS CodeDeploy.
-
-PS: This example and modules/deploy is a bit incomplete, because it creates a bit too much.
+Configuration in this directory creates Lambda Function, Alias, and all resources required to create deployments using AWS CodeDeploy, and then it does a real deployment.
 
 ## Usage
 
@@ -25,6 +23,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
+| aws | n/a |
 | random | n/a |
 
 ## Inputs
@@ -33,6 +32,15 @@ No input.
 
 ## Outputs
 
-No output.
+| Name | Description |
+|------|-------------|
+| appspec | n/a |
+| appspec\_content | n/a |
+| appspec\_sha256 | n/a |
+| codedeploy\_iam\_role\_name | Name of IAM role used by CodeDeploy |
+| deploy\_script | n/a |
+| script | n/a |
+| this\_codedeploy\_app\_name | Name of CodeDeploy application |
+| this\_codedeploy\_deployment\_group\_id | CodeDeploy deployment group name |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

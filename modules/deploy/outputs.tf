@@ -1,38 +1,34 @@
-//# Lambda Alias
-//output "this_lambda_alias_name" {
-//  description = "The name of the Lambda Function Alias"
-//  value       = element(concat(data.aws_lambda_alias.existing.*.name, aws_lambda_alias.with_refresh.*.name, aws_lambda_alias.no_refresh.*.name, [""]), 0)
-//}
-//
-//output "this_lambda_alias_arn" {
-//  description = "The ARN of the Lambda Function Alias"
-//  value       = element(concat(data.aws_lambda_alias.existing.*.arn, aws_lambda_alias.with_refresh.*.arn, aws_lambda_alias.no_refresh.*.arn, [""]), 0)
-//}
-//
-//output "this_lambda_alias_invoke_arn" {
-//  description = "The ARN to be used for invoking Lambda Function from API Gateway"
-//  value       = element(concat(data.aws_lambda_alias.existing.*.invoke_arn, aws_lambda_alias.with_refresh.*.invoke_arn, aws_lambda_alias.no_refresh.*.invoke_arn, [""]), 0)
-//}
-//
-//output "this_lambda_alias_description" {
-//  description = "Description of alias"
-//  value       = element(concat(data.aws_lambda_alias.existing.*.description, aws_lambda_alias.with_refresh.*.description, aws_lambda_alias.no_refresh.*.description, [""]), 0)
-//}
-//
-//output "this_lambda_alias_function_version" {
-//  description = "Lambda function version which the alias uses"
-//  value       = element(concat(data.aws_lambda_alias.existing.*.function_version, aws_lambda_alias.with_refresh.*.function_version, aws_lambda_alias.no_refresh.*.function_version, [""]), 0)
-//}
+output "this_codedeploy_app_name" {
+  description = "Name of CodeDeploy application"
+  value       = local.app_name
+}
+
+output "this_codedeploy_deployment_group_id" {
+  description = "CodeDeploy deployment group name"
+  value       = element(concat(aws_codedeploy_deployment_group.this.*.id, [""]), 0)
+}
+
+output "codedeploy_iam_role_name" {
+  description = "Name of IAM role used by CodeDeploy"
+  value       = element(concat(aws_iam_role.codedeploy.*.name, [""]), 0)
+}
 
 output "appspec" {
   value = local.appspec
 }
 
-output "appspec_json" {
-  value = jsonencode(local.appspec)
+output "appspec_content" {
+  value = local.appspec_content
 }
 
-output "appspec_json_sha256" {
-  value = sha256(jsonencode(local.appspec))
+output "appspec_sha256" {
+  value = local.appspec_sha256
 }
 
+output "script" {
+  value = local.script
+}
+
+output "deploy_script" {
+  value = element(concat(local_file.deploy_script.*.filename, [""]), 0)
+}
