@@ -643,8 +643,10 @@ def add_hidden_commands(sub_parsers):
             logger.setLevel(logging.DEBUG)
         make_zipfile(args.zipfile, *args.dir, timestamp=args.timestamp)
         if logger.isEnabledFor(logging.DEBUG):
-            logger.debug('-' * 80)
-            subprocess.call(['zipinfo', args.zipfile])
+            zipinfo = shutil.which('zipinfo')
+            if zipinfo:
+                logger.debug('-' * 80)
+                subprocess.call([zipinfo, args.zipfile])
             logger.debug('-' * 80)
             logger.debug('Source code hash: %s',
                          source_code_hash(open(args.zipfile, 'rb').read()))
