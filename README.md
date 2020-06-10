@@ -17,11 +17,11 @@ Not supported, yet:
 
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform:
 
-1. Build and install dependencies - [read more](#build)
-2. Create, store, and use deployment packages - [read more](#package)
-3. Create and update AWS Lambda Function and Lambda Layer - [see usage](#usage)
-4. Publish and create aliases for AWS Lambda Function - [see usage](#usage)
-5. Do complex deployments (eg, rolling, canary, rollbacks) - [read more](#deployment)
+1. Build and install dependencies - [read more](#build).
+2. Create, store, and use deployment packages - [read more](#package).
+3. Create, update, and publish AWS Lambda Function and Lambda Layer - [see usage](#usage).
+4. Create static and dynamic aliases for AWS Lambda Function - [see usage](#usage), see [modules/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias).
+5. Do complex deployments (eg, rolling, canary, rollbacks, triggers) - [read more](#deployment), see [modules/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy).
 
 
 ## Features
@@ -124,7 +124,19 @@ module "lambda_function_existing_package_local" {
 
 ### Lambda Function with existing package (prebuilt) stored in S3 bucket
 
+Note that this module does not copy prebuilt packages into S3 bucket. This module can only store packages it builds locally and in S3 bucket.
+
 ```hcl
+locals {
+  my_function_source = "../path/to/package.zip"
+}
+
+resource "aws_s3_bucket_object" "my_function" {
+  bucket = "my-bucket-with-lambda-builds"
+  key    = "${filemd5(local.my_function_source)}.zip"
+  source = local.my_function_source
+}
+
 module "lambda_function_existing_package_s3" {
   source = "terraform-aws-modules/lambda/aws"
 
@@ -136,7 +148,7 @@ module "lambda_function_existing_package_s3" {
   create_package      = false
   s3_existing_package = {
     bucket = "my-bucket-with-lambda-builds"
-    key    = "existing_package.zip"
+    key    = aws_s3_bucket_object.my_function.id
   }
 }
 ```
@@ -466,7 +478,9 @@ In simple terms, Lambda alias is like a pointer to either one version of Lambda 
 
 One Lambda Function can be used in multiple aliases. Using aliases gives large control of which version deployed when having multiple environments.
 
-There is [alias module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias), which simplifies working with alias (create, manage configurations, updates, etc).
+There is [alias module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias), which simplifies working with alias (create, manage configurations, updates, etc). See [examples/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) for various use-cases how aliases can be configured and used.
+
+There is [deploy module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy), which creates required resources to do deployments using AWS CodeDeploy. It also creates the deployment, and wait for completion. See [examples/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) for complete end-to-end build/update/deploy process.
 
 
 ## FAQ
@@ -488,10 +502,12 @@ A2: Delete an existing zip-archive from `builds` directory, or make a change in 
 
 ## Examples
 
-* [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features
-* [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways
-* [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS and SNS integration)
-* [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC
+* [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
+* [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
+* [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
+* [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
+* [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS and SNS integration).
+* [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.
 
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
