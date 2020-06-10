@@ -493,6 +493,10 @@ Q2: How to force recreate deployment package?
 
 A2: Delete an existing zip-archive from `builds` directory, or make a change in your source code. If there is no zip-archive for the current content hash, it will be recreated during `terraform apply`.
 
+Q3: `null_resource.archive[0] must be replaced`
+
+A3: This probably mean that zip-archive has been deployed, but is currently absent locally, and it has to be recreated locally. When you run into this issue during CI/CD process (where workspace is clean), you can set environment variable `TF_RECREATE_MISSING_LAMBDA_PACKAGE=false` and run `terraform apply`.
+
 
 ## Notes
 
