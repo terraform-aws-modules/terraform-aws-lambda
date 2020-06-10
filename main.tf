@@ -96,6 +96,8 @@ resource "aws_s3_bucket_object" "lambda_package" {
   storage_class = var.s3_object_storage_class
 
   tags = merge(var.tags, var.s3_object_tags)
+
+  depends_on = [null_resource.archive]
 }
 
 resource "aws_lambda_provisioned_concurrency_config" "current_version" {
