@@ -70,17 +70,6 @@ output "this_lambda_layer_version" {
   value       = element(concat(aws_lambda_layer_version.this.*.version, [""]), 0)
 }
 
-# Lambda Alias
-output "this_lambda_alias_arn" {
-  description = "The ARN of the Lambda Function Alias"
-  value       = element(concat(aws_lambda_alias.this.*.arn, [""]), 0)
-}
-
-output "this_lambda_alias_invoke_arn" {
-  description = "The ARN to be used for invoking Lambda Function from API Gateway"
-  value       = element(concat(aws_lambda_alias.this.*.invoke_arn, [""]), 0)
-}
-
 # IAM Role
 output "lambda_role_arn" {
   description = "The ARN of the IAM role created for the Lambda Function"

@@ -98,29 +98,24 @@ resource "aws_s3_bucket_object" "lambda_package" {
   tags = merge(var.tags, var.s3_object_tags)
 }
 
-resource "aws_lambda_alias" "this" {
-  count = var.create && ((var.create_function && ! var.create_layer && var.create_alias) || var.create_alias) ? 1 : 0
+resource "aws_lambda_provisioned_concurrency_config" "current_version" {
+  count = var.create && var.create_function && ! var.create_layer && var.provisioned_concurrent_executions > -1 ? 1 : 0
 
-  name        = var.alias_name
-  description = var.alias_description
+  function_name = aws_lambda_function.this[0].function_name
+  qualifier     = aws_lambda_function.this[0].version
 
-  function_name    = element(concat(aws_lambda_function.this.*.function_name, [var.alias_function_name]), 0)
-  function_version = element(concat(aws_lambda_function.this.*.version, [var.alias_function_version]), 0)
+  provisioned_concurrent_executions = var.provisioned_concurrent_executions
+}
 
-  // $LATEST is not supported for an alias pointing to more than 1 version
-  dynamic "routing_config" {
-    for_each = length(keys(var.alias_routing_additional_version_weights)) == 0 ? [] : [true]
-    content {
-      additional_version_weights = var.alias_routing_additional_version_weights
-    }
-  }
+locals {
+  qualifiers = zipmap(["current_version", "unqualified_alias"], [var.create_current_version_async_event_config ? true : null, var.create_unqualified_alias_async_event_config ? true : null])
 }
 
 resource "aws_lambda_function_event_invoke_config" "this" {
-  count = var.create && var.create_function && ! var.create_layer && var.create_async_event_config ? 1 : 0
+  for_each = var.create && var.create_function && ! var.create_layer && var.create_async_event_config ? local.qualifiers : {}
 
   function_name = aws_lambda_function.this[0].function_name
-  qualifier     = element(concat(aws_lambda_function.this.*.version, aws_lambda_alias.this.*.name, ["$LATEST"]), 0)
+  qualifier     = each.key == "current_version" ? aws_lambda_function.this[0].version : null
 
   maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
   maximum_retry_attempts       = var.maximum_retry_attempts
@@ -145,23 +140,27 @@ resource "aws_lambda_function_event_invoke_config" "this" {
   }
 }
 
-resource "aws_lambda_provisioned_concurrency_config" "this" {
-  count = var.create && ((var.create_function && ! var.create_layer) || var.create_alias) && var.provisioned_concurrent_executions > 0 ? 1 : 0
+resource "aws_lambda_permission" "current_version_triggers" {
+  for_each = var.create && var.create_function && ! var.create_layer && var.create_current_version_allowed_triggers ? var.allowed_triggers : {}
 
   function_name = aws_lambda_function.this[0].function_name
-  qualifier     = element(concat(aws_lambda_function.this.*.version, aws_lambda_alias.this.*.name, [""]), 0)
+  qualifier     = aws_lambda_function.this[0].version
 
-  provisioned_concurrent_executions = var.provisioned_concurrent_executions
+  statement_id       = lookup(each.value, "statement_id", each.key)
+  action             = lookup(each.value, "action", "lambda:InvokeFunction")
+  principal          = lookup(each.value, "principal", format("%s.amazonaws.com", lookup(each.value, "service", "")))
+  source_arn         = lookup(each.value, "source_arn", lookup(each.value, "service", null) == "apigateway" ? "${lookup(each.value, "arn", "")}/*/*/*" : null)
+  source_account     = lookup(each.value, "source_account", null)
+  event_source_token = lookup(each.value, "event_source_token", null)
 }
 
-resource "aws_lambda_permission" "triggers" {
-  for_each = var.create && ((var.create_function && ! var.create_layer) || var.create_alias) ? var.allowed_triggers : {}
+// Error: Error adding new Lambda Permission for destined-tetra-lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
+resource "aws_lambda_permission" "unqualified_alias_triggers" {
+  for_each = var.create && var.create_function && ! var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.allowed_triggers : {}
 
-  statement_id = lookup(each.value, "statement_id", each.key)
+  function_name = aws_lambda_function.this[0].function_name
 
-  function_name = element(concat(aws_lambda_function.this.*.function_name, aws_lambda_alias.this.*.function_name, [""]), 0)
-  //  qualifier     = element(concat(aws_lambda_function.this.*.version, aws_lambda_alias.this.*.name, [""]), 0)
-
+  statement_id       = lookup(each.value, "statement_id", each.key)
   action             = lookup(each.value, "action", "lambda:InvokeFunction")
   principal          = lookup(each.value, "principal", format("%s.amazonaws.com", lookup(each.value, "service", "")))
   source_arn         = lookup(each.value, "source_arn", lookup(each.value, "service", null) == "apigateway" ? "${lookup(each.value, "arn", "")}/*/*/*" : null)

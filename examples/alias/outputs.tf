@@ -91,3 +91,31 @@ output "s3_object" {
   description = "The map with S3 object data of zip archive deployed (if deployment was from S3)"
   value       = module.lambda_function.s3_object
 }
+
+###############
+# Lambda Alias
+###############
+output "this_lambda_alias_name" {
+  description = "The name of the Lambda Function Alias"
+  value       = module.alias_refresh.this_lambda_alias_name
+}
+
+output "this_lambda_alias_arn" {
+  description = "The ARN of the Lambda Function Alias"
+  value       = module.alias_refresh.this_lambda_alias_arn
+}
+
+output "this_lambda_alias_invoke_arn" {
+  description = "The ARN to be used for invoking Lambda Function from API Gateway"
+  value       = module.alias_refresh.this_lambda_alias_invoke_arn
+}
+
+output "this_lambda_alias_description" {
+  description = "Description of alias"
+  value       = module.alias_refresh.this_lambda_alias_description
+}
+
+output "this_lambda_alias_function_version" {
+  description = "Lambda function version which the alias uses"
+  value       = module.alias_refresh.this_lambda_alias_function_version
+}
