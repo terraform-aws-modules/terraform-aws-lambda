@@ -37,7 +37,7 @@ resource "local_file" "archive_plan" {
   content              = data.external.archive_prepare[0].result.build_plan
   filename             = data.external.archive_prepare[0].result.build_plan_filename
   directory_permission = "0755"
-  file_permission      = "0664"
+  file_permission      = "0644"
 }
 
 # Build the zip archive whenever the filename changes.
