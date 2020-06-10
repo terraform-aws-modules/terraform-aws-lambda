@@ -639,12 +639,15 @@ def add_hidden_commands(sub_parsers):
                    nargs=argparse.OPTIONAL)
 
     def zip_cmd(args):
+        if args.verbose:
+            logger.setLevel(logging.DEBUG)
         make_zipfile(args.zipfile, *args.dir, timestamp=args.timestamp)
-        logger.info('-' * 80)
-        subprocess.call(['zipinfo', args.zipfile])
-        logger.info('-' * 80)
-        logger.info('Source code hash: %s',
-                    source_code_hash(open(args.zipfile, 'rb').read()))
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug('-' * 80)
+            subprocess.call(['zipinfo', args.zipfile])
+            logger.debug('-' * 80)
+            logger.debug('Source code hash: %s',
+                         source_code_hash(open(args.zipfile, 'rb').read()))
 
     p = hidden_parser('zip', help='Zip folder with provided files timestamp')
     p.set_defaults(command=zip_cmd)
@@ -653,6 +656,7 @@ def add_hidden_commands(sub_parsers):
                    help='Path to a directory for packaging')
     p.add_argument('-t', '--timestamp', type=int,
                    help='A timestamp to override for all zip members')
+    p.add_argument('-v', '--verbose', action='store_true')
 
 
 def args_parser():
