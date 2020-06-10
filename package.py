@@ -269,13 +269,19 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
 
     logger.info("creating '%s' archive", zip_filename)
 
-    with zipfile.ZipFile(zip_filename, "w", compression) as zf:
-        for base_dir in base_dirs:
-            logger.info("adding content of directory '%s'", base_dir)
-            with cd(base_dir, silent=True):
-                for path in emit_dir_files('.'):
-                    logger.info("adding '%s'", path)
-                    write(zf, path, path, date_time=date_time)
+    tmp_zip_filename = '{}.tmp'.format(zip_filename)
+    try:
+        with zipfile.ZipFile(tmp_zip_filename, "w", compression) as zf:
+            for base_dir in base_dirs:
+                logger.info("adding content of directory '%s'", base_dir)
+                with cd(base_dir, silent=True):
+                    for path in emit_dir_files('.'):
+                        logger.info("adding '%s'", path)
+                        write(zf, path, path, date_time=date_time)
+    except Exception:
+        os.unlink(tmp_zip_filename)
+    else:
+        os.replace(tmp_zip_filename, zip_filename)
     return zip_filename
 
 
