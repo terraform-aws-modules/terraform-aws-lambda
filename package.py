@@ -35,7 +35,6 @@ class LogFormatter(logging.Formatter):
     formats = {
         'root': default_format,
         'build': default_format,
-        'prepare': default_format,
         'cmd': '> %(message)s',
         '': '%(name)s: %(message)s'
     }
