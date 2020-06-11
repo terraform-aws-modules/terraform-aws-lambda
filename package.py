@@ -26,9 +26,14 @@ import logging
 
 PY38 = sys.version_info >= (3, 8)
 
-
 ################################################################################
 # Logging
+
+DEBUG2 = 9
+logging.addLevelName(DEBUG2, 'DEBUG2')
+DEBUG3 = 8
+logging.addLevelName(DEBUG3, 'DEBUG3')
+
 
 class LogFormatter(logging.Formatter):
     default_format = '%(message)s'
@@ -59,19 +64,6 @@ logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
 
 cmd_logger = logging.getLogger('cmd')
-
-
-################################################################################
-# Debug helpers
-
-def dump_env(command_name):
-    with open('{}.env'.format(command_name), 'a') as f:
-        json.dump(dict(os.environ), f, indent=2)
-
-
-def dump_query(command_name, query):
-    with open('{}.query'.format(command_name), 'a') as f:
-        json.dump(query, f, indent=2)
 
 
 ################################################################################
@@ -490,11 +482,14 @@ def prepare_command(args):
                     break
                 hash_obj.update(data)
 
-    args.dump_env and dump_env('prepare_command')
-
     # Load the query.
     query_data = json.load(sys.stdin)
-    args.dump_input and dump_query('prepare_command', query_data)
+
+    if logger.isEnabledFor(DEBUG3):
+        logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    if logger.isEnabledFor(DEBUG2):
+        logger.debug('QUERY: %s', json.dumps(query_data, indent=2))
+
     query = datatree('prepare_query', **query_data)
 
     tf_paths = query.paths
@@ -592,13 +587,11 @@ def build_command(args):
             os.makedirs(target_dir)
         make_zipfile(target_file, source_dir, timestamp=timestamp)
 
-    args.dump_env and dump_env('build_command')
-
-    args.dump_input and print(
-        args.filename,
-        args.runtime,
-        args.source_path,
-        file=open('build_command.args', 'a'))
+    if logger.isEnabledFor(DEBUG3):
+        logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    if logger.isEnabledFor(DEBUG2):
+        logger.debug('CMD: python3 %s %s %s',
+                     sys.argv[0], args.zip_file_timestamp, args.build_plan_file)
 
     with open(args.build_plan_file) as f:
         query_data = json.load(f)
@@ -771,8 +764,6 @@ def main():
         recreate_missing_package=os.environ.get(
             'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
         log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
-        dump_input=bool(os.environ.get('TF_DUMP_INPUT')),
-        dump_env=bool(os.environ.get('TF_DUMP_ENV')),
     )
     p = args_parser()
     args = p.parse_args(namespace=ns)
