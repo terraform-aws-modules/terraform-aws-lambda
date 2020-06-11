@@ -110,6 +110,28 @@ def tempdir():
         shutil.rmtree(path)
 
 
+def list_files(top_path, logger=None):
+    """
+    Returns a sorted list of all files in a directory.
+    """
+
+    if logger:
+        logger = logger.getChild('ls')
+
+    results = []
+
+    for root, dirs, files in os.walk(top_path):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            relative_path = os.path.relpath(file_path, top_path)
+            results.append(relative_path)
+            if logger:
+                logger.debug(relative_path)
+
+    results.sort()
+    return results
+
+
 def dataclass(name, **fields):
     typ = type(name, (object,), {
         '__slots__': fields.keys(),
@@ -420,24 +442,6 @@ def prepare_command(args):
 
     logger = logging.getLogger('prepare')
 
-    def list_files(top_path):
-        """
-        Returns a sorted list of all files in a directory.
-        """
-
-        _logger = logger.getChild('ls')
-
-        results = []
-
-        for root, dirs, files in os.walk(top_path):
-            for file_name in files:
-                file_path = os.path.join(root, file_name)
-                results.append(file_path)
-                _logger.debug(file_path)
-
-        results.sort()
-        return results
-
     def generate_content_hash(source_paths, hash_func=hashlib.sha256):
         """
         Generate a content hash of the source paths.
@@ -448,11 +452,11 @@ def prepare_command(args):
         for source_path in source_paths:
             if os.path.isdir(source_path):
                 source_dir = source_path
-                for source_file in list_files(source_dir):
+                for source_file in list_files(source_dir, logger=logger):
                     update_hash(hash_obj, source_dir, source_file)
             else:
                 source_dir = os.path.dirname(source_path)
-                source_file = source_path
+                source_file = os.path.relpath(source_path, source_dir)
                 update_hash(hash_obj, source_dir, source_file)
 
         return hash_obj
@@ -462,10 +466,10 @@ def prepare_command(args):
         Update a hashlib object with the relative path and contents of a file.
         """
 
-        relative_path = os.path.relpath(file_path, file_root)
+        relative_path = os.path.join(file_root, file_path)
         hash_obj.update(relative_path.encode())
 
-        with open(file_path, 'rb') as open_file:
+        with open(relative_path, 'rb') as open_file:
             while True:
                 data = open_file.read(1024 * 8)
                 if not data:
@@ -563,25 +567,6 @@ def build_command(args):
 
     logger = logging.getLogger('build')
 
-    def list_files(top_path):
-        """
-        Returns a sorted list of all files in a directory.
-        """
-
-        _logger = logger.getChild('ls')
-
-        results = []
-
-        for root, dirs, files in os.walk(top_path):
-            for file_name in files:
-                file_path = os.path.join(root, file_name)
-                relative_path = os.path.relpath(file_path, top_path)
-                results.append(relative_path)
-                _logger.debug(relative_path)
-
-        results.sort()
-        return results
-
     def create_zip_file(source_dir, target_file, timestamp):
         """
         Creates a zip file from a directory.
@@ -629,7 +614,7 @@ def build_command(args):
         # Find all source files.
         if os.path.isdir(source_path):
             source_dir = source_path
-            source_files = list_files(source_path)
+            source_files = list_files(source_path, logger=logger)
         else:
             source_dir = os.path.dirname(source_path)
             source_files = [os.path.basename(source_path)]
