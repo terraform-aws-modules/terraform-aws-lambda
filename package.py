@@ -502,8 +502,8 @@ def prepare_command(args):
         abort('source_path must be set.')
 
     # Expand a Terraform path.<cwd|root|module> references
+    hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
     content_hash_paths = [source_path] + hash_extra_paths
-    content_hash_paths = [p.format(path=tf_paths) for p in content_hash_paths]
 
     # Generate a hash based on file names and content. Also use the
     # runtime value, build command, and content of the build paths
