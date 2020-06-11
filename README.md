@@ -312,6 +312,15 @@ Hash of zip-archive created with the same content of the files is always identic
 
 When calling this module multiple times in one execution to create packages with the same `source_path`, zip-archives will be corrupted due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
 
+Building and packaging has been historically hard to debug (especially with Terraform), so we made an effort to make it easier for user to see debug info. There are 3 different debug levels: `DEBUG` - to see only what is happening during planning phase, `DEBUG2` - to see all logging values, `DEBUG3` - to see all logging values and env variables (be careful sharing your env variables as they may contain secrets!).
+
+User can specify debug level like this:
+
+```
+export TF_LAMBDA_PACKAGE_LOG_LEVEL=DEBUG2
+terraform apply 
+```
+
 ## <a name="build"></a> Build Dependencies
 
 You can specify `source_path` in a variety of ways to achieve desired flexibility when building deployment packages locally or in Docker. You can use absolute or relative paths.

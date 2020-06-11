@@ -6,6 +6,8 @@ if sys.version_info < (3, 7):
     raise RuntimeError("A python version 3.7 or newer is required")
 
 import os
+import time
+import stat
 import json
 import shlex
 import shutil
@@ -21,46 +23,52 @@ from contextlib import contextmanager
 from base64 import b64encode
 import logging
 
+PY38 = sys.version_info >= (3, 8)
 
 ################################################################################
 # Logging
 
-class LogFormatter(logging.Formatter):
-    default_format = '%(message)s'
-    formats = {
-        'root': default_format,
-        'build': default_format,
-        'prepare': default_format,
-        'cmd': '> %(message)s',
-        '': '%(name)s: %(message)s'
-    }
+DEBUG2 = 9
+DEBUG3 = 8
 
-    def formatMessage(self, record):
-        self._style._fmt = self.formats.get(record.name, self.formats[''])
-        return super().formatMessage(record)
-
-
-log_handler = logging.StreamHandler()
-log_handler.setFormatter(LogFormatter())
-
+log_handler = None
 logger = logging.getLogger()
-logger.addHandler(log_handler)
-logger.setLevel(logging.INFO)
-
 cmd_logger = logging.getLogger('cmd')
 
 
-################################################################################
-# Debug helpers
+def configure_logging(use_tf_stderr=False):
+    global log_handler
 
-def dump_env(command_name):
-    with open('{}.env'.format(command_name), 'a') as f:
-        json.dump(dict(os.environ), f, indent=2)
+    logging.addLevelName(DEBUG2, 'DEBUG2')
+    logging.addLevelName(DEBUG3, 'DEBUG3')
 
+    class LogFormatter(logging.Formatter):
+        default_format = '%(message)s'
+        formats = {
+            'root': default_format,
+            'build': default_format,
+            'cmd': '> %(message)s',
+            '': '%(name)s: %(message)s'
+        }
 
-def dump_query(command_name, query):
-    with open('{}.query'.format(command_name), 'a') as f:
-        json.dump(query, f, indent=2)
+        def formatMessage(self, record):
+            self._style._fmt = self.formats.get(record.name, self.formats[''])
+            return super().formatMessage(record)
+
+    tf_stderr_fd = 5
+    log_stream = sys.stderr
+    if use_tf_stderr:
+        try:
+            if os.isatty(tf_stderr_fd):
+                log_stream = os.fdopen(tf_stderr_fd, mode='w')
+        except OSError:
+            pass
+
+    log_handler = logging.StreamHandler(stream=log_stream)
+    log_handler.setFormatter(LogFormatter())
+
+    logger.addHandler(log_handler)
+    logger.setLevel(logging.INFO)
 
 
 ################################################################################
@@ -103,6 +111,28 @@ def tempdir():
         yield path
     finally:
         shutil.rmtree(path)
+
+
+def list_files(top_path, logger=None):
+    """
+    Returns a sorted list of all files in a directory.
+    """
+
+    if logger:
+        logger = logger.getChild('ls')
+
+    results = []
+
+    for root, dirs, files in os.walk(top_path):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            relative_path = os.path.relpath(file_path, top_path)
+            results.append(relative_path)
+            if logger:
+                logger.debug(relative_path)
+
+    results.sort()
+    return results
 
 
 def dataclass(name, **fields):
@@ -180,6 +210,45 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
     name of the output zip file.
     """
 
+    # Borrowed from python 3.8 zipfile.py library
+    # due to the need of strict_timestamps functionality.
+    def from_file(cls, filename, arcname=None, *, strict_timestamps=True):
+        """Construct an appropriate ZipInfo for a file on the filesystem.
+
+        filename should be the path to a file or directory on the filesystem.
+
+        arcname is the name which it will have within the archive (by default,
+        this will be the same as filename, but without a drive letter and with
+        leading path separators removed).
+        """
+        if isinstance(filename, os.PathLike):
+            filename = os.fspath(filename)
+        st = os.stat(filename)
+        isdir = stat.S_ISDIR(st.st_mode)
+        mtime = time.localtime(st.st_mtime)
+        date_time = mtime[0:6]
+        if not strict_timestamps and date_time[0] < 1980:
+            date_time = (1980, 1, 1, 0, 0, 0)
+        elif not strict_timestamps and date_time[0] > 2107:
+            date_time = (2107, 12, 31, 23, 59, 59)
+        # Create ZipInfo instance to store file information
+        if arcname is None:
+            arcname = filename
+        arcname = os.path.normpath(os.path.splitdrive(arcname)[1])
+        while arcname[0] in (os.sep, os.altsep):
+            arcname = arcname[1:]
+        if isdir:
+            arcname += '/'
+        zinfo = cls(arcname, date_time)
+        zinfo.external_attr = (st.st_mode & 0xFFFF) << 16  # Unix attributes
+        if isdir:
+            zinfo.file_size = 0
+            zinfo.external_attr |= 0x10  # MS-DOS directory flag
+        else:
+            zinfo.file_size = st.st_size
+
+        return zinfo
+
     # An extended version of a write method
     # from the original zipfile.py library module
     def write(self, filename, arcname=None,
@@ -195,8 +264,12 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
                 "Can't write to ZIP archive while an open writing handle exists"
             )
 
-        zinfo = zipfile.ZipInfo.from_file(
-            filename, arcname, strict_timestamps=self._strict_timestamps)
+        if PY38:
+            zinfo = zipfile.ZipInfo.from_file(
+                filename, arcname, strict_timestamps=self._strict_timestamps)
+        else:
+            zinfo = from_file(
+                zipfile.ZipInfo, filename, arcname, strict_timestamps=True)
 
         if date_time:
             zinfo.date_time = date_time
@@ -298,7 +371,7 @@ def docker_build_command(build_root, docker_file=None, tag=None):
     docker_cmd.append(build_root)
 
     cmd_logger.info(shlex_join(docker_cmd))
-    log_handler.flush()
+    log_handler and log_handler.flush()
     return docker_cmd
 
 
@@ -355,7 +428,7 @@ def docker_run_command(build_root, command, runtime,
     docker_cmd.extend(command)
 
     cmd_logger.info(shlex_join(docker_cmd))
-    log_handler.flush()
+    log_handler and log_handler.flush()
     return docker_cmd
 
 
@@ -372,28 +445,14 @@ def prepare_command(args):
 
     logger = logging.getLogger('prepare')
 
-    def list_files(top_path):
-        """
-        Returns a sorted list of all files in a directory.
-        """
-
-        _logger = logger.getChild('ls')
-
-        results = []
-
-        for root, dirs, files in os.walk(top_path):
-            for file_name in files:
-                file_path = os.path.join(root, file_name)
-                results.append(file_path)
-                _logger.debug(file_path)
-
-        results.sort()
-        return results
-
-    def generate_content_hash(source_paths, hash_func=hashlib.sha256):
+    def generate_content_hash(source_paths,
+                              hash_func=hashlib.sha256, logger=None):
         """
         Generate a content hash of the source paths.
         """
+
+        if logger:
+            logger = logger.getChild('hash')
 
         hash_obj = hash_func()
 
@@ -402,10 +461,14 @@ def prepare_command(args):
                 source_dir = source_path
                 for source_file in list_files(source_dir):
                     update_hash(hash_obj, source_dir, source_file)
+                    if logger:
+                        logger.debug(os.path.join(source_dir, source_file))
             else:
                 source_dir = os.path.dirname(source_path)
-                source_file = source_path
+                source_file = os.path.relpath(source_path, source_dir)
                 update_hash(hash_obj, source_dir, source_file)
+                if logger:
+                    logger.debug(source_path)
 
         return hash_obj
 
@@ -414,21 +477,24 @@ def prepare_command(args):
         Update a hashlib object with the relative path and contents of a file.
         """
 
-        relative_path = os.path.relpath(file_path, file_root)
+        relative_path = os.path.join(file_root, file_path)
         hash_obj.update(relative_path.encode())
 
-        with open(file_path, 'rb') as open_file:
+        with open(relative_path, 'rb') as open_file:
             while True:
                 data = open_file.read(1024 * 8)
                 if not data:
                     break
                 hash_obj.update(data)
 
-    args.dump_env and dump_env('prepare_command')
-
     # Load the query.
     query_data = json.load(sys.stdin)
-    args.dump_input and dump_query('prepare_command', query_data)
+
+    if logger.isEnabledFor(DEBUG3):
+        logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    if logger.isEnabledFor(DEBUG2):
+        logger.debug('QUERY: %s', json.dumps(query_data, indent=2))
+
     query = datatree('prepare_query', **query_data)
 
     tf_paths = query.paths
@@ -450,13 +516,14 @@ def prepare_command(args):
         abort('source_path must be set.')
 
     # Expand a Terraform path.<cwd|root|module> references
+    hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
     content_hash_paths = [source_path] + hash_extra_paths
-    content_hash_paths = [p.format(path=tf_paths) for p in content_hash_paths]
 
     # Generate a hash based on file names and content. Also use the
     # runtime value, build command, and content of the build paths
     # because they can have an effect on the resulting archive.
-    content_hash = generate_content_hash(content_hash_paths)
+    logger.debug("Computing content hash on files...")
+    content_hash = generate_content_hash(content_hash_paths, logger=logger)
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
@@ -515,25 +582,6 @@ def build_command(args):
 
     logger = logging.getLogger('build')
 
-    def list_files(top_path):
-        """
-        Returns a sorted list of all files in a directory.
-        """
-
-        _logger = logger.getChild('ls')
-
-        results = []
-
-        for root, dirs, files in os.walk(top_path):
-            for file_name in files:
-                file_path = os.path.join(root, file_name)
-                relative_path = os.path.relpath(file_path, top_path)
-                results.append(relative_path)
-                _logger.debug(relative_path)
-
-        results.sort()
-        return results
-
     def create_zip_file(source_dir, target_file, timestamp):
         """
         Creates a zip file from a directory.
@@ -544,13 +592,10 @@ def build_command(args):
             os.makedirs(target_dir)
         make_zipfile(target_file, source_dir, timestamp=timestamp)
 
-    args.dump_env and dump_env('build_command')
-
-    args.dump_input and print(
-        args.filename,
-        args.runtime,
-        args.source_path,
-        file=open('build_command.args', 'a'))
+    if logger.isEnabledFor(DEBUG3):
+        logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    if logger.isEnabledFor(DEBUG2):
+        logger.debug('CMD: python3 %s', shlex_join(sys.argv))
 
     with open(args.build_plan_file) as f:
         query_data = json.load(f)
@@ -569,7 +614,7 @@ def build_command(args):
     else:
         timestamp = 0
 
-    if os.path.exists(filename):
+    if os.path.exists(filename) and not args.force:
         logger.info('Reused: %s', shlex.quote(filename))
         return
 
@@ -581,7 +626,7 @@ def build_command(args):
         # Find all source files.
         if os.path.isdir(source_path):
             source_dir = source_path
-            source_files = list_files(source_path)
+            source_files = list_files(source_path, logger=logger)
         else:
             source_dir = os.path.dirname(source_path)
             source_files = [os.path.basename(source_path)]
@@ -636,7 +681,7 @@ def build_command(args):
                         ))
                     else:
                         cmd_logger.info(shlex_join(pip_command))
-                        log_handler.flush()
+                        log_handler and log_handler.flush()
                         check_call(pip_command)
 
         # Zip up the temporary directory and write it to the target filename.
@@ -709,6 +754,8 @@ def args_parser():
     p = sp.add_parser('build',
                       help='build and pack to a zip archive')
     p.set_defaults(command=build_command)
+    p.add_argument('--force', action='store_true',
+                   help='Force rebuilding even if a zip artifact exists')
     p.add_argument('-t', '--timestamp',
                    dest='zip_file_timestamp', required=True,
                    help='A zip file timestamp generated by the prepare command')
@@ -721,16 +768,21 @@ def args_parser():
 def main():
     ns = argparse.Namespace(
         recreate_missing_package=os.environ.get(
-            'TF_RECREATE_MISSING_LAMBDA_PACKAGE'),
-        log_level=os.environ.get('TF_PACKAGE_LOG_LEVEL', 'INFO'),
-        dump_input=bool(os.environ.get('TF_DUMP_INPUT')),
-        dump_env=bool(os.environ.get('TF_DUMP_ENV')),
+            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
+        log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
     )
     p = args_parser()
     args = p.parse_args(namespace=ns)
 
-    if args.log_level and logging._checkLevel(args.log_level):
-        logging.root.setLevel(args.log_level)
+    if args.command is prepare_command:
+        configure_logging(use_tf_stderr=True)
+    else:
+        configure_logging()
+
+    if args.log_level:
+        ll = logging._nameToLevel.get(args.log_level)
+        if ll and logging._checkLevel(ll):
+            logging.root.setLevel(args.log_level)
 
     exit(args.command(args))
 
