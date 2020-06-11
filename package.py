@@ -30,40 +30,44 @@ PY38 = sys.version_info >= (3, 8)
 # Logging
 
 DEBUG2 = 9
-logging.addLevelName(DEBUG2, 'DEBUG2')
 DEBUG3 = 8
-logging.addLevelName(DEBUG3, 'DEBUG3')
 
-
-class LogFormatter(logging.Formatter):
-    default_format = '%(message)s'
-    formats = {
-        'root': default_format,
-        'build': default_format,
-        'cmd': '> %(message)s',
-        '': '%(name)s: %(message)s'
-    }
-
-    def formatMessage(self, record):
-        self._style._fmt = self.formats.get(record.name, self.formats[''])
-        return super().formatMessage(record)
-
-
-log_stream = sys.stderr
-try:
-    if os.isatty(3):
-        log_stream = os.fdopen(3, mode='w')
-except OSError:
-    pass
-
-log_handler = logging.StreamHandler(stream=log_stream)
-log_handler.setFormatter(LogFormatter())
-
+log_handler = None
 logger = logging.getLogger()
-logger.addHandler(log_handler)
-logger.setLevel(logging.INFO)
-
 cmd_logger = logging.getLogger('cmd')
+
+
+def configure_logging():
+    global log_handler
+
+    logging.addLevelName(DEBUG2, 'DEBUG2')
+    logging.addLevelName(DEBUG3, 'DEBUG3')
+
+    class LogFormatter(logging.Formatter):
+        default_format = '%(message)s'
+        formats = {
+            'root': default_format,
+            'build': default_format,
+            'cmd': '> %(message)s',
+            '': '%(name)s: %(message)s'
+        }
+
+        def formatMessage(self, record):
+            self._style._fmt = self.formats.get(record.name, self.formats[''])
+            return super().formatMessage(record)
+
+    log_stream = sys.stderr
+    try:
+        if os.isatty(3):
+            log_stream = os.fdopen(3, mode='w')
+    except OSError:
+        pass
+
+    log_handler = logging.StreamHandler(stream=log_stream)
+    log_handler.setFormatter(LogFormatter())
+
+    logger.addHandler(log_handler)
+    logger.setLevel(logging.INFO)
 
 
 ################################################################################
@@ -366,7 +370,7 @@ def docker_build_command(build_root, docker_file=None, tag=None):
     docker_cmd.append(build_root)
 
     cmd_logger.info(shlex_join(docker_cmd))
-    log_handler.flush()
+    log_handler and log_handler.flush()
     return docker_cmd
 
 
@@ -423,7 +427,7 @@ def docker_run_command(build_root, command, runtime,
     docker_cmd.extend(command)
 
     cmd_logger.info(shlex_join(docker_cmd))
-    log_handler.flush()
+    log_handler and log_handler.flush()
     return docker_cmd
 
 
@@ -677,7 +681,7 @@ def build_command(args):
                         ))
                     else:
                         cmd_logger.info(shlex_join(pip_command))
-                        log_handler.flush()
+                        log_handler and log_handler.flush()
                         check_call(pip_command)
 
         # Zip up the temporary directory and write it to the target filename.
@@ -768,8 +772,12 @@ def main():
     p = args_parser()
     args = p.parse_args(namespace=ns)
 
-    if args.log_level and logging._checkLevel(args.log_level):
-        logging.root.setLevel(args.log_level)
+    configure_logging()
+
+    if args.log_level:
+        ll = logging._nameToLevel.get(args.log_level)
+        if ll and logging._checkLevel(ll):
+            logging.root.setLevel(args.log_level)
 
     exit(args.command(args))
 
