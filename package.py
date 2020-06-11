@@ -45,7 +45,14 @@ class LogFormatter(logging.Formatter):
         return super().formatMessage(record)
 
 
-log_handler = logging.StreamHandler()
+log_stream = sys.stderr
+try:
+    if os.isatty(3):
+        log_stream = os.fdopen(3, mode='w')
+except OSError:
+    pass
+
+log_handler = logging.StreamHandler(stream=log_stream)
 log_handler.setFormatter(LogFormatter())
 
 logger = logging.getLogger()
@@ -764,7 +771,7 @@ def main():
     ns = argparse.Namespace(
         recreate_missing_package=os.environ.get(
             'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
-        log_level=os.environ.get('TF_PACKAGE_LOG_LEVEL', 'INFO'),
+        log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
         dump_input=bool(os.environ.get('TF_DUMP_INPUT')),
         dump_env=bool(os.environ.get('TF_DUMP_ENV')),
     )
