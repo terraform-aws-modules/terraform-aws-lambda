@@ -360,6 +360,61 @@ def make_zipfile(zip_filename, *base_dirs, timestamp=None,
     return zip_filename
 
 
+def create_zipfile(source_dir, target_file, timestamp):
+    """
+    Creates a zip file from a directory.
+    """
+
+    target_dir = os.path.dirname(target_file)
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+    make_zipfile(target_file, source_dir, timestamp=timestamp)
+
+
+def generate_content_hash(source_paths,
+                          hash_func=hashlib.sha256, logger=None):
+    """
+    Generate a content hash of the source paths.
+    """
+
+    if logger:
+        logger = logger.getChild('hash')
+
+    hash_obj = hash_func()
+
+    for source_path in source_paths:
+        if os.path.isdir(source_path):
+            source_dir = source_path
+            for source_file in list_files(source_dir):
+                update_hash(hash_obj, source_dir, source_file)
+                if logger:
+                    logger.debug(os.path.join(source_dir, source_file))
+        else:
+            source_dir = os.path.dirname(source_path)
+            source_file = os.path.relpath(source_path, source_dir)
+            update_hash(hash_obj, source_dir, source_file)
+            if logger:
+                logger.debug(source_path)
+
+    return hash_obj
+
+
+def update_hash(hash_obj, file_root, file_path):
+    """
+    Update a hashlib object with the relative path and contents of a file.
+    """
+
+    relative_path = os.path.join(file_root, file_path)
+    hash_obj.update(relative_path.encode())
+
+    with open(relative_path, 'rb') as open_file:
+        while True:
+            data = open_file.read(1024 * 8)
+            if not data:
+                break
+            hash_obj.update(data)
+
+
 ################################################################################
 # Docker building
 
@@ -446,48 +501,6 @@ def prepare_command(args):
     """
 
     logger = logging.getLogger('prepare')
-
-    def generate_content_hash(source_paths,
-                              hash_func=hashlib.sha256, logger=None):
-        """
-        Generate a content hash of the source paths.
-        """
-
-        if logger:
-            logger = logger.getChild('hash')
-
-        hash_obj = hash_func()
-
-        for source_path in source_paths:
-            if os.path.isdir(source_path):
-                source_dir = source_path
-                for source_file in list_files(source_dir):
-                    update_hash(hash_obj, source_dir, source_file)
-                    if logger:
-                        logger.debug(os.path.join(source_dir, source_file))
-            else:
-                source_dir = os.path.dirname(source_path)
-                source_file = os.path.relpath(source_path, source_dir)
-                update_hash(hash_obj, source_dir, source_file)
-                if logger:
-                    logger.debug(source_path)
-
-        return hash_obj
-
-    def update_hash(hash_obj, file_root, file_path):
-        """
-        Update a hashlib object with the relative path and contents of a file.
-        """
-
-        relative_path = os.path.join(file_root, file_path)
-        hash_obj.update(relative_path.encode())
-
-        with open(relative_path, 'rb') as open_file:
-            while True:
-                data = open_file.read(1024 * 8)
-                if not data:
-                    break
-                hash_obj.update(data)
 
     # Load the query.
     query_data = json.load(sys.stdin)
@@ -584,16 +597,6 @@ def build_command(args):
 
     logger = logging.getLogger('build')
 
-    def create_zip_file(source_dir, target_file, timestamp):
-        """
-        Creates a zip file from a directory.
-        """
-
-        target_dir = os.path.dirname(target_file)
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
-        make_zipfile(target_file, source_dir, timestamp=timestamp)
-
     if logger.isEnabledFor(DEBUG3):
         logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
     if logger.isEnabledFor(DEBUG2):
@@ -688,7 +691,7 @@ def build_command(args):
 
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
-        create_zip_file(temp_dir, filename, timestamp=0)
+        create_zipfile(temp_dir, filename, timestamp=0)
         os.utime(filename, ns=(timestamp, timestamp))
         logger.info('Created: %s', shlex.quote(filename))
         if logger.isEnabledFor(logging.DEBUG):
