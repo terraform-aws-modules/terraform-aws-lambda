@@ -37,7 +37,7 @@ logger = logging.getLogger()
 cmd_logger = logging.getLogger('cmd')
 
 
-def configure_logging():
+def configure_logging(use_tf_stderr=False):
     global log_handler
 
     logging.addLevelName(DEBUG2, 'DEBUG2')
@@ -56,12 +56,14 @@ def configure_logging():
             self._style._fmt = self.formats.get(record.name, self.formats[''])
             return super().formatMessage(record)
 
+    tf_stderr_fd = 5
     log_stream = sys.stderr
-    try:
-        if os.isatty(3):
-            log_stream = os.fdopen(3, mode='w')
-    except OSError:
-        pass
+    if use_tf_stderr:
+        try:
+            if os.isatty(tf_stderr_fd):
+                log_stream = os.fdopen(tf_stderr_fd, mode='w')
+        except OSError:
+            pass
 
     log_handler = logging.StreamHandler(stream=log_stream)
     log_handler.setFormatter(LogFormatter())
@@ -772,7 +774,10 @@ def main():
     p = args_parser()
     args = p.parse_args(namespace=ns)
 
-    configure_logging()
+    if args.command is prepare_command:
+        configure_logging(use_tf_stderr=True)
+    else:
+        configure_logging()
 
     if args.log_level:
         ll = logging._nameToLevel.get(args.log_level)
