@@ -721,7 +721,7 @@ def args_parser():
 def main():
     ns = argparse.Namespace(
         recreate_missing_package=os.environ.get(
-            'TF_RECREATE_MISSING_LAMBDA_PACKAGE'),
+            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
         log_level=os.environ.get('TF_PACKAGE_LOG_LEVEL', 'INFO'),
         dump_input=bool(os.environ.get('TF_DUMP_INPUT')),
         dump_env=bool(os.environ.get('TF_DUMP_ENV')),
