@@ -442,22 +442,30 @@ def prepare_command(args):
 
     logger = logging.getLogger('prepare')
 
-    def generate_content_hash(source_paths, hash_func=hashlib.sha256):
+    def generate_content_hash(source_paths,
+                              hash_func=hashlib.sha256, logger=None):
         """
         Generate a content hash of the source paths.
         """
+
+        if logger:
+            logger = logger.getChild('hash')
 
         hash_obj = hash_func()
 
         for source_path in source_paths:
             if os.path.isdir(source_path):
                 source_dir = source_path
-                for source_file in list_files(source_dir, logger=logger):
+                for source_file in list_files(source_dir):
                     update_hash(hash_obj, source_dir, source_file)
+                    if logger:
+                        logger.debug(os.path.join(source_dir, source_file))
             else:
                 source_dir = os.path.dirname(source_path)
                 source_file = os.path.relpath(source_path, source_dir)
                 update_hash(hash_obj, source_dir, source_file)
+                if logger:
+                    logger.debug(source_path)
 
         return hash_obj
 
@@ -508,7 +516,8 @@ def prepare_command(args):
     # Generate a hash based on file names and content. Also use the
     # runtime value, build command, and content of the build paths
     # because they can have an effect on the resulting archive.
-    content_hash = generate_content_hash(content_hash_paths)
+    logger.debug("Computing content hash on files...")
+    content_hash = generate_content_hash(content_hash_paths, logger=logger)
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
