@@ -251,6 +251,16 @@ variable "allowed_triggers" {
   default     = {}
 }
 
+#################
+# CloudWatch Logs
+#################
+
+variable "cloudwatch_logs_retention" {
+  description = "Number of days to retain CloudWatch Logs (also requires `attach_cloudwatch_logs_policy`)"
+  type        = number
+  default     = 0
+}
+
 ######
 # IAM
 ######

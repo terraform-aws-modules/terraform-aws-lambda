@@ -556,6 +556,7 @@ A3: This probably mean that zip-archive has been deployed, but is currently abse
 | attach\_policy\_statements | Controls whether policy\_statements should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | attach\_tracing\_policy | Controls whether X-Ray tracing policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | build\_in\_docker | Whether to build dependencies in Docker | `bool` | `false` | no |
+| cloudwatch\_logs\_retention | Number of days to retain CloudWatch Logs (also requires `attach_cloudwatch_logs_policy`) | `number` | 0 | no |
 | compatible\_runtimes | A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified. | `list(string)` | `[]` | no |
 | create | Controls whether resources should be created | `bool` | `true` | no |
 | create\_async\_event\_config | Controls whether async event configuration for Lambda Function/Alias should be created | `bool` | `false` | no |

@@ -12,10 +12,7 @@ data "aws_region" "current" {
 
 locals {
   create_role = var.create && var.create_function && ! var.create_layer && var.create_role
-
-  lambda_log_group_arn      = local.create_role ? "arn:${data.aws_partition.current[0].partition}:logs:*:${data.aws_caller_identity.current[0].account_id}:log-group:/aws/lambda/${var.function_name}" : ""
-  lambda_edge_log_group_arn = local.create_role ? "arn:${data.aws_partition.current[0].partition}:logs:*:${data.aws_caller_identity.current[0].account_id}:log-group:/aws/lambda/us-east-1.${var.function_name}" : ""
-  log_group_arns            = slice(list(local.lambda_log_group_arn, local.lambda_edge_log_group_arn), 0, var.lambda_at_edge ? 2 : 1)
+  log_group_arns = concat(aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda-edge.*.arn)
 }
 
 ###########
@@ -55,18 +52,6 @@ resource "aws_iam_role" "lambda" {
 
 data "aws_iam_policy_document" "logs" {
   count = local.create_role && var.attach_cloudwatch_logs_policy ? 1 : 0
-
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "logs:CreateLogGroup",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
 
   statement {
     effect = "Allow"
