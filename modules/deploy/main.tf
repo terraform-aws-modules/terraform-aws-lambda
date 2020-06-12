@@ -1,6 +1,7 @@
 locals {
   # AWS CodeDeploy can't deploy when CurrentVersion is "$LATEST"
-  current_version = data.aws_lambda_function.this[0].qualifier == "$LATEST" ? 1 : data.aws_lambda_function.this[0].qualifier
+  qualifier       = element(concat(data.aws_lambda_function.this.*.qualifier, [""]), 0)
+  current_version = local.qualifier == "$LATEST" ? 1 : local.qualifier
 
   app_name              = element(concat(aws_codedeploy_app.this.*.name, [var.app_name]), 0)
   deployment_group_name = element(concat(aws_codedeploy_deployment_group.this.*.deployment_group_name, [var.deployment_group_name]), 0)
@@ -75,21 +76,21 @@ EOF
 }
 
 data "aws_lambda_alias" "this" {
-  count = var.create ? 1 : 0
+  count = var.create && var.create_deployment ? 1 : 0
 
   function_name = var.function_name
   name          = var.alias_name
 }
 
 data "aws_lambda_function" "this" {
-  count = var.create ? 1 : 0
+  count = var.create && var.create_deployment ? 1 : 0
 
   function_name = var.function_name
   qualifier     = data.aws_lambda_alias.this[0].function_version
 }
 
 resource "local_file" "deploy_script" {
-  count = var.create && var.save_deploy_script ? 1 : 0
+  count = var.create && var.create_deployment && var.save_deploy_script ? 1 : 0
 
   filename             = "deploy_script_${local.appspec_sha256}.txt"
   directory_permission = "0755"

@@ -101,13 +101,13 @@ resource "aws_s3_bucket_object" "lambda_package" {
 }
 
 data "aws_cloudwatch_log_group" "lambda" {
-  count = var.create && var.create_function && !var.create_layer && var.use_existing_cloudwatch_log_group ? 1 : 0
+  count = var.create && var.create_function && ! var.create_layer && var.use_existing_cloudwatch_log_group ? 1 : 0
 
   name = "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {
-  count = var.create && var.create_function && !var.create_layer && ! var.use_existing_cloudwatch_log_group ? 1 : 0
+  count = var.create && var.create_function && ! var.create_layer && ! var.use_existing_cloudwatch_log_group ? 1 : 0
 
   name              = "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
   retention_in_days = var.cloudwatch_logs_retention_in_days
