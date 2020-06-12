@@ -485,58 +485,123 @@ class ZipWriteStream:
 ################################################################################
 # Building
 
+class BuildPlanManager:
+    """"""
+
+    def __init__(self):
+        self._source_paths = None
+
+    def hash(self, extra_paths):
+        if not self._source_paths:
+            raise ValueError('BuildPlanManager.plan() should be called first')
+
+        content_hash_paths = self._source_paths + extra_paths
+
+        # Generate a hash based on file names and content. Also use the
+        # runtime value, build command, and content of the build paths
+        # because they can have an effect on the resulting archive.
+        logger.debug("Computing content hash on files...")
+        content_hash = generate_content_hash(content_hash_paths, logger=logger)
+        return content_hash
+
+    def plan(self, source_path, query):
+        claims = source_path
+        if not isinstance(source_path, list):
+            claims = [source_path]
+
+        source_paths = []
+        build_plan = []
+        for claim in claims:
+            if isinstance(claim, str):
+                # Validate the query.
+                if not os.path.exists(claim):
+                    abort('source_path must be set.')
+                build_plan.append(('zip', claim))
+                source_paths.append(claim)
+            elif isinstance(claim, dict):
+                pass
+            else:
+                raise ValueError(
+                    'Unsupported source_path item: {}'.format(claim))
+
+        self._source_paths = source_paths
+        return build_plan
+
+    def execute(self, build_plan, zip_stream, query):
+        runtime = query.runtime
+
+        zs = zip_stream
+        for action in build_plan:
+            cmd, source_path = action
+            if cmd == 'zip':
+                if os.path.isdir(source_path):
+                    if runtime.startswith('python'):
+                        with install_pip_requirements(
+                            query, zs,
+                            os.path.join(source_path, 'requirements.txt')
+                        ) as rd:
+                            rd and zs.write_dirs(
+                                rd, timestamp=0)  # XXX: temp ts=0
+                    zs.write_dirs(source_path)
+                else:
+                    zs.write_file(source_path)
+
+
 @contextmanager
 def install_pip_requirements(query, zip_stream, requirements_file):
+    if not os.path.exists(requirements_file):
+        yield
+        return
+
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
     docker = query.docker
 
     working_dir = os.getcwd()
 
-    if os.path.exists(requirements_file):
-        logger.info('Installing python requirements: %s', requirements_file)
-        with tempdir() as temp_dir:
-            requirements_filename = os.path.basename(requirements_file)
-            target_file = os.path.join(temp_dir, requirements_filename)
-            shutil.copyfile(requirements_file, target_file)
+    logger.info('Installing python requirements: %s', requirements_file)
+    with tempdir() as temp_dir:
+        requirements_filename = os.path.basename(requirements_file)
+        target_file = os.path.join(temp_dir, requirements_filename)
+        shutil.copyfile(requirements_file, target_file)
 
-            # Install dependencies into the temporary directory.
-            with cd(temp_dir):
-                if runtime.startswith('python3'):
-                    pip_command = ['pip3']
-                else:
-                    pip_command = ['pip2']
-                pip_command.extend([
-                    'install', '--no-compile',
-                    '--prefix=', '--target=.',
-                    '--requirement={}'.format(requirements_filename),
-                ])
-                if docker:
-                    pip_cache_dir = docker.docker_pip_cache
-                    if pip_cache_dir:
-                        if isinstance(pip_cache_dir, str):
-                            pip_cache_dir = os.path.abspath(
-                                os.path.join(working_dir, pip_cache_dir))
-                        else:
-                            pip_cache_dir = os.path.abspath(os.path.join(
-                                working_dir, artifacts_dir, 'cache/pip'))
+        # Install dependencies into the temporary directory.
+        with cd(temp_dir):
+            if runtime.startswith('python3'):
+                pip_command = ['pip3']
+            else:
+                pip_command = ['pip2']
+            pip_command.extend([
+                'install', '--no-compile',
+                '--prefix=', '--target=.',
+                '--requirement={}'.format(requirements_filename),
+            ])
+            if docker:
+                pip_cache_dir = docker.docker_pip_cache
+                if pip_cache_dir:
+                    if isinstance(pip_cache_dir, str):
+                        pip_cache_dir = os.path.abspath(
+                            os.path.join(working_dir, pip_cache_dir))
+                    else:
+                        pip_cache_dir = os.path.abspath(os.path.join(
+                            working_dir, artifacts_dir, 'cache/pip'))
 
-                    chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                    shell_command = [shlex_join(pip_command), '&&',
-                                     shlex_join(['chown', '-R',
-                                                 chown_mask, '.'])]
-                    shell_command = [' '.join(shell_command)]
-                    check_call(docker_run_command(
-                        '.', shell_command, runtime, shell=True,
-                        pip_cache_dir=pip_cache_dir
-                    ))
-                else:
-                    cmd_logger.info(shlex_join(pip_command))
-                    log_handler and log_handler.flush()
-                    check_call(pip_command)
+                chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
+                shell_command = [shlex_join(pip_command), '&&',
+                                 shlex_join(['chown', '-R',
+                                             chown_mask, '.'])]
+                shell_command = [' '.join(shell_command)]
+                check_call(docker_run_command(
+                    '.', shell_command, runtime, shell=True,
+                    pip_cache_dir=pip_cache_dir
+                ))
+            else:
+                cmd_logger.info(shlex_join(pip_command))
+                log_handler and log_handler.flush()
+                check_call(pip_command)
 
-                os.remove(target_file)
-                yield temp_dir
+            os.remove(target_file)
+            yield temp_dir
 
 
 def docker_build_command(build_root, docker_file=None, tag=None):
@@ -643,19 +708,13 @@ def prepare_command(args):
     recreate_missing_package = yesno_bool(args.recreate_missing_package)
     docker = query.docker
 
-    # Validate the query.
-    if not os.path.exists(source_path):
-        abort('source_path must be set.')
+    bpm = BuildPlanManager()
+    build_plan = bpm.plan(source_path, query)
 
     # Expand a Terraform path.<cwd|root|module> references
     hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
-    content_hash_paths = [source_path] + hash_extra_paths
 
-    # Generate a hash based on file names and content. Also use the
-    # runtime value, build command, and content of the build paths
-    # because they can have an effect on the resulting archive.
-    logger.debug("Computing content hash on files...")
-    content_hash = generate_content_hash(content_hash_paths, logger=logger)
+    content_hash = bpm.hash(hash_extra_paths)
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
@@ -683,6 +742,7 @@ def prepare_command(args):
         'runtime': runtime,
         'source_path': source_path,
         'artifacts_dir': artifacts_dir,
+        'build_plan': build_plan,
     }
     if docker:
         build_data['docker'] = docker
@@ -725,7 +785,7 @@ def build_command(args):
 
     runtime = query.runtime
     filename = query.filename
-    source_path = query.source_path
+    build_plan = query.build_plan
     _timestamp = args.zip_file_timestamp
 
     timestamp = 0
@@ -736,18 +796,11 @@ def build_command(args):
         logger.info('Reused: %s', shlex.quote(filename))
         return
 
-    # Zip up the temporary directory and write it to the target filename.
+    # Zip up the build plan and write it to the target filename.
     # This will be used by the Lambda function as the source code package.
     with ZipWriteStream(filename) as zs:
-        if os.path.isdir(source_path):
-            if runtime.startswith('python'):
-                with install_pip_requirements(
-                    query, zs, os.path.join(source_path, 'requirements.txt')
-                ) as rd:
-                    rd and zs.write_dirs(rd, timestamp=0)  # XXX: temp ts=0
-            zs.write_dirs(source_path)
-        else:
-            zs.write_file(source_path)
+        bpm = BuildPlanManager()
+        bpm.execute(build_plan, zs, query)
 
     os.utime(filename, ns=(timestamp, timestamp))
     logger.info('Created: %s', shlex.quote(filename))
