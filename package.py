@@ -216,7 +216,8 @@ def generate_content_hash(source_paths,
     for source_path in source_paths:
         if os.path.isdir(source_path):
             source_dir = source_path
-            for source_file in list_files(source_dir, logger=logger):
+            _logger = logger if logger.isEnabledFor(DEBUG3) else None
+            for source_file in list_files(source_dir, logger=_logger):
                 update_hash(hash_obj, source_dir, source_file)
                 if logger:
                     logger.debug(os.path.join(source_dir, source_file))
@@ -488,8 +489,9 @@ class ZipWriteStream:
 class BuildPlanManager:
     """"""
 
-    def __init__(self):
+    def __init__(self, logger=None):
         self._source_paths = None
+        self._logger = logger or logging.root
 
     def hash(self, extra_paths):
         if not self._source_paths:
@@ -500,8 +502,9 @@ class BuildPlanManager:
         # Generate a hash based on file names and content. Also use the
         # runtime value, build command, and content of the build paths
         # because they can have an effect on the resulting archive.
-        logger.debug("Computing content hash on files...")
-        content_hash = generate_content_hash(content_hash_paths, logger=logger)
+        self._logger.debug("Computing content hash on files...")
+        content_hash = generate_content_hash(content_hash_paths,
+                                             logger=self._logger)
         return content_hash
 
     def plan(self, source_path, query):
@@ -708,7 +711,7 @@ def prepare_command(args):
     recreate_missing_package = yesno_bool(args.recreate_missing_package)
     docker = query.docker
 
-    bpm = BuildPlanManager()
+    bpm = BuildPlanManager(logger=logger)
     build_plan = bpm.plan(source_path, query)
 
     # Expand a Terraform path.<cwd|root|module> references
@@ -799,7 +802,7 @@ def build_command(args):
     # Zip up the build plan and write it to the target filename.
     # This will be used by the Lambda function as the source code package.
     with ZipWriteStream(filename) as zs:
-        bpm = BuildPlanManager()
+        bpm = BuildPlanManager(logger=logger)
         bpm.execute(build_plan, zs, query)
 
     os.utime(filename, ns=(timestamp, timestamp))
