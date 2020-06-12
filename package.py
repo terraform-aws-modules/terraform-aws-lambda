@@ -6,6 +6,7 @@ if sys.version_info < (3, 7):
     raise RuntimeError("A python version 3.7 or newer is required")
 
 import os
+import re
 import time
 import stat
 import json
@@ -16,6 +17,7 @@ import zipfile
 import argparse
 import datetime
 import tempfile
+import operator
 import platform
 import subprocess
 from subprocess import check_call
@@ -321,7 +323,8 @@ class ZipWriteStream:
         Expects just files stream, directories will be created automatically
         """
         self._ensure_open()
-        raise NotImplementedError
+        for file_path, arcname in files_stream:
+            self._write_file(file_path, prefix, arcname, timestamp)
 
     def write_file(self, file_path, prefix=None, name=None, timestamp=None):
         """
@@ -346,7 +349,7 @@ class ZipWriteStream:
 
     def write_file_obj(self, file_path, data, prefix=None, timestamp=None):
         """
-        Write a data to a zip archive by a full qualified file path
+        Write a data to a zip archive by a full qualified archive file path
         """
         self._ensure_open()
         raise NotImplementedError
@@ -486,6 +489,85 @@ class ZipWriteStream:
 ################################################################################
 # Building
 
+def patterns_list(patterns):
+    if isinstance(patterns, str):
+        return list(map(str.strip, patterns.splitlines()))
+    return patterns
+
+
+class ZipContentFilter:
+    """"""
+
+    def __init__(self):
+        self._rules = None
+        self._excludes = set()
+        self._logger = logging.getLogger('zip')
+
+    def compile(self, patterns):
+        rules = []
+        for p in patterns_list(patterns):
+            self._logger.debug("pattern '%s'", p)
+            if p.startswith('!'):
+                r = re.compile(p[1:])
+                rules.append((operator.not_, r))
+            else:
+                r = re.compile(p)
+                rules.append((None, r))
+        self._rules = rules
+
+    def filter(self, path, prefix=None):
+        path = os.path.normpath(path)
+        if prefix:
+            prefix = os.path.normpath(prefix)
+        rules = self._rules
+
+        def norm_path(path, root, filename=None):
+            p = os.path.relpath(root, path)
+            if prefix:
+                p = os.path.normpath(os.path.join(prefix, p))
+            p = os.path.join(p, filename) if filename else p + os.sep
+            op = os.path.join(root, filename) if filename else root
+            return op, p
+
+        def apply(path):
+            d = True
+            for r in rules:
+                op, regex = r
+                neg = op is operator.not_
+                m = regex.fullmatch(path)
+                if neg and m:
+                    d = False
+                elif m:
+                    d = True
+            if d:
+                return path
+
+        def emit_dir(dpath, opath):
+            if apply(dpath):
+                yield opath
+
+        def emit_file(fpath, opath):
+            if apply(fpath):
+                yield opath
+
+        if os.path.isfile(path):
+            name = os.path.basename(path)
+            if prefix:
+                name = os.path.join(prefix, name)
+            if apply(name):
+                yield path
+        else:
+            for root, dirs, files in os.walk(path):
+                o, d = norm_path(path, root)
+                logger.info('od: %s %s', o, d)
+                if root != path:
+                    yield from emit_dir(d, o)
+                for name in files:
+                    o, f = norm_path(path, root, name)
+                    logger.info('of: %s %s', o, f)
+                    yield from emit_file(f, o)
+
+
 class BuildPlanManager:
     """"""
 
@@ -514,15 +596,84 @@ class BuildPlanManager:
 
         source_paths = []
         build_plan = []
+
+        step = lambda *x: build_plan.append(x)
+        hash = source_paths.append
+
+        def pip_requirements_step(path, prefix=None, required=False):
+            requirements = path
+            if os.path.isdir(path):
+                requirements = os.path.join(path, 'requirements.txt')
+            if not os.path.isfile(requirements):
+                if required:
+                    raise RuntimeError(
+                        'File not found: {}'.format(requirements))
+            else:
+                step('pip', runtime, requirements, prefix)
+                hash(requirements)
+
+        def commands_step(path, commands):
+            path = os.path.normpath(path)
+            batch = []
+            for c in commands:
+                if isinstance(c, str):
+                    if c.startswith(':zip'):
+                        if batch:
+                            step('sh', path, '\n'.join(batch))
+                            batch.clear()
+                        c = shlex.split(c)
+                        if len(c) == 3:
+                            _, _path, prefix = c
+                            prefix = prefix.strip()
+                            _path = os.path.normpath(os.path.join(path, _path))
+                            step('zip', _path, prefix)
+                        elif len(c) == 1:
+                            prefix = None
+                            step('zip', path, prefix)
+                        else:
+                            raise ValueError(
+                                ':zip command can have zero '
+                                'or 2 arguments: {}'.format(c))
+                        hash(path)
+                    else:
+                        batch.append(c)
+
         for claim in claims:
             if isinstance(claim, str):
-                # Validate the query.
-                if not os.path.exists(claim):
+                path = claim
+                if not os.path.exists(path):
                     abort('source_path must be set.')
-                build_plan.append(('zip', claim))
-                source_paths.append(claim)
+                runtime = query.runtime
+                if runtime.startswith('python'):
+                    pip_requirements_step(
+                        os.path.join(path, 'requirements.txt'))
+                step('zip', path, None)
+                hash(path)
+
             elif isinstance(claim, dict):
-                pass
+                path = claim.get('path')
+                patterns = claim.get('patterns')
+                commands = claim.get('commands')
+                if patterns:
+                    step('set:filter', patterns_list(patterns))
+                if commands:
+                    commands_step(path, commands)
+                else:
+                    prefix = claim.get('prefix_in_zip')
+                    pip_requirements = claim.get('pip_requirements')
+                    runtime = claim.get('runtime', query.runtime)
+
+                    if pip_requirements and runtime.startswith('python'):
+                        if isinstance(pip_requirements, bool) and path:
+                            pip_requirements_step(path, prefix, required=True)
+                        else:
+                            pip_requirements_step(pip_requirements, prefix,
+                                                  required=True)
+                    if path:
+                        step('zip', path, prefix)
+                        hash(path)
+                if patterns:
+                    step('clear:filter')
             else:
                 raise ValueError(
                     'Unsupported source_path item: {}'.format(claim))
@@ -531,23 +682,55 @@ class BuildPlanManager:
         return build_plan
 
     def execute(self, build_plan, zip_stream, query):
-        runtime = query.runtime
-
         zs = zip_stream
+        sh_work_dir = None
+        pf = None
+
         for action in build_plan:
-            cmd, source_path = action
+            cmd = action[0]
             if cmd == 'zip':
-                if os.path.isdir(source_path):
-                    if runtime.startswith('python'):
-                        with install_pip_requirements(
-                            query, zs,
-                            os.path.join(source_path, 'requirements.txt')
-                        ) as rd:
-                            rd and zs.write_dirs(
-                                rd, timestamp=0)  # XXX: temp ts=0
-                    zs.write_dirs(source_path)
+                source_path, prefix = action[1:]
+                if sh_work_dir:
+                    if source_path != sh_work_dir:
+                        source_path = sh_work_dir
+                if pf:
+                    for path in pf.filter(source_path, prefix):
+                        if os.path.isdir(source_path):
+                            arcname = os.path.relpath(path, source_path)
+                        else:
+                            arcname = os.path.basename(path)
+                        zs.write_file(path, prefix, arcname)
                 else:
-                    zs.write_file(source_path)
+                    if os.path.isdir(source_path):
+                        zs.write_dirs(source_path, prefix=prefix)
+                    else:
+                        zs.write_file(source_path, prefix=prefix)
+            elif cmd == 'pip':
+                runtime, pip_requirements, prefix = action[1:]
+                with install_pip_requirements(query, zs,
+                                              pip_requirements) as rd:
+                    if rd:
+                        # XXX: timestamp=0 - what actually do with it?
+                        zs.write_dirs(rd, prefix=prefix, timestamp=0)
+            elif cmd == 'sh':
+                r, w = os.pipe()
+                side_ch = os.fdopen(r)
+                path, script = action[1:]
+                script = "{}\npwd >&{}".format(script, w)
+
+                p = subprocess.Popen(script, shell=True, cwd=path,
+                                     pass_fds=(w,))
+                os.close(w)
+                sh_work_dir = side_ch.read().strip()
+                p.wait()
+                logger.info('WD: %s', sh_work_dir)
+                side_ch.close()
+            elif cmd == 'set:filter':
+                patterns = action[1]
+                pf = ZipContentFilter(args=self._args)
+                pf.compile(patterns)
+            elif cmd == 'clear:filter':
+                pf = None
 
 
 @contextmanager
@@ -570,15 +753,12 @@ def install_pip_requirements(query, zip_stream, requirements_file):
 
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
-            if runtime.startswith('python3'):
-                pip_command = ['pip3']
-            else:
-                pip_command = ['pip2']
-            pip_command.extend([
+            pip_command = [
+                runtime, '-m', 'pip',
                 'install', '--no-compile',
                 '--prefix=', '--target=.',
                 '--requirement={}'.format(requirements_filename),
-            ])
+            ]
             if docker:
                 pip_cache_dir = docker.docker_pip_cache
                 if pip_cache_dir:
@@ -713,6 +893,9 @@ def prepare_command(args):
 
     bpm = BuildPlanManager(logger=logger)
     build_plan = bpm.plan(source_path, query)
+
+    if logger.isEnabledFor(DEBUG2):
+        logger.debug('BUILD_PLAN: %s', json.dumps(build_plan, indent=2))
 
     # Expand a Terraform path.<cwd|root|module> references
     hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
