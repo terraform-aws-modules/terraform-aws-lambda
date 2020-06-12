@@ -641,11 +641,7 @@ def prepare_command(args):
     source_path = query.source_path
     hash_extra = query.hash_extra
     recreate_missing_package = yesno_bool(args.recreate_missing_package)
-
-    # Compacting docker vars
     docker = query.docker
-    if docker:
-        docker = {k: v for k, v in docker.items() if v} or True
 
     # Validate the query.
     if not os.path.exists(source_path):
