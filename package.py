@@ -194,9 +194,9 @@ def yesno_bool(val):
 ################################################################################
 # Packaging functions
 
-def emit_dir_files(base_dir):
+def emit_dir_content(base_dir):
     for root, dirs, files in os.walk(base_dir):
-        if root != '.':
+        if root != base_dir:
             yield os.path.normpath(root)
         for name in files:
             yield os.path.normpath(os.path.join(root, name))
@@ -216,7 +216,7 @@ def generate_content_hash(source_paths,
     for source_path in source_paths:
         if os.path.isdir(source_path):
             source_dir = source_path
-            for source_file in list_files(source_dir):
+            for source_file in list_files(source_dir, logger=logger):
                 update_hash(hash_obj, source_dir, source_file)
                 if logger:
                     logger.debug(os.path.join(source_dir, source_file))
@@ -297,12 +297,11 @@ class ZipWriteStream:
             raise zipfile.BadZipFile("ZipWriteStream object can't be reused")
         raise zipfile.BadZipFile('ZipWriteStream should be opened first')
 
-    @staticmethod
-    def _ensure_base_path(zip_filename):
+    def _ensure_base_path(self, zip_filename):
         archive_dir = os.path.dirname(zip_filename)
 
         if archive_dir and not os.path.exists(archive_dir):
-            logger.info("creating %s", archive_dir)
+            self._logger.info("creating %s", archive_dir)
             os.makedirs(archive_dir)
 
     def write_dirs(self, *base_dirs, prefix=None, timestamp=None):
@@ -312,16 +311,16 @@ class ZipWriteStream:
         self._ensure_open()
         for base_dir in base_dirs:
             self._logger.info("adding content of directory '%s'", base_dir)
-            with cd(base_dir, silent=True):
-                for path in emit_dir_files('.'):
-                    logger.info("adding '%s'", path)
-                    zinfo = self._make_zinfo_from_file(path, path)
-                    if timestamp is None:
-                        timestamp = self.timestamp
-                    date_time = self._timestamp_to_date_time(timestamp)
-                    if date_time:
-                        self._update_zinfo(zinfo, date_time=date_time)
-                    self._write_zinfo(zinfo, path)
+            for path in emit_dir_content(base_dir):
+                arcname = os.path.relpath(path, base_dir)
+                self._logger.info("adding '%s'", arcname)
+                zinfo = self._make_zinfo_from_file(path, arcname)
+                if timestamp is None:
+                    timestamp = self.timestamp
+                date_time = self._timestamp_to_date_time(timestamp)
+                if date_time:
+                    self._update_zinfo(zinfo, date_time=date_time)
+                self._write_zinfo(zinfo, path)
 
     def write_files(self, files_stream, prefix=None, timestamp=None):
         """
@@ -693,7 +692,7 @@ def build_command(args):
         # Find all source files.
         if os.path.isdir(source_path):
             source_dir = source_path
-            source_files = list_files(source_path, logger=logger)
+            source_files = list_files(source_path, logger=logging.root)
         else:
             source_dir = os.path.dirname(source_path)
             source_files = [os.path.basename(source_path)]
