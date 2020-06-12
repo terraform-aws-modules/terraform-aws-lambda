@@ -199,9 +199,7 @@ def emit_dir_files(base_dir):
         if root != '.':
             yield os.path.normpath(root)
         for name in files:
-            path = os.path.normpath(os.path.join(root, name))
-            if os.path.isfile(path):
-                yield path
+            yield os.path.normpath(os.path.join(root, name))
 
 
 def generate_content_hash(source_paths,
