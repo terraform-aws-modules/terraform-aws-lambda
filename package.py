@@ -47,12 +47,14 @@ def configure_logging(use_tf_stderr=False):
         formats = {
             'root': default_format,
             'build': default_format,
+            'prepare': '[{}] %(name)s: %(message)s'.format(os.getpid()),
             'cmd': '> %(message)s',
             '': '%(name)s: %(message)s'
         }
 
         def formatMessage(self, record):
-            self._style._fmt = self.formats.get(record.name, self.formats[''])
+            prefix = record.name.rsplit('.')
+            self._style._fmt = self.formats.get(prefix[0], self.formats[''])
             return super().formatMessage(record)
 
     tf_stderr_fd = 5
