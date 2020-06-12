@@ -318,7 +318,9 @@ class ZipWriteStream:
                 for path in emit_dir_files('.'):
                     logger.info("adding '%s'", path)
                     zinfo = self._make_zinfo_from_file(path, path)
-                    date_time = self._timestamp_to_date_time(self.timestamp)
+                    if timestamp is None:
+                        timestamp = self.timestamp
+                    date_time = self._timestamp_to_date_time(timestamp)
                     if date_time:
                         self._update_zinfo(zinfo, date_time=date_time)
                     self._write_zinfo(zinfo, path)
