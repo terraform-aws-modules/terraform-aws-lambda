@@ -810,6 +810,11 @@ def add_hidden_commands(sub_parsers):
                    help='A timestamp to override for all zip members')
     p.add_argument('-v', '--verbose', action='store_true')
 
+    p = hidden_parser('hash', help='Generate content hash for a file')
+    p.set_defaults(
+        command=lambda args: print(source_code_hash(args.file.read())))
+    p.add_argument('file', help='Path to a file', type=argparse.FileType('rb'))
+
 
 def args_parser():
     ap = argparse.ArgumentParser()
