@@ -1,21 +1,6 @@
-data "aws_caller_identity" "current" {
-  count = local.create_role ? 1 : 0
-}
-
-data "aws_partition" "current" {
-  count = local.create_role ? 1 : 0
-}
-
-data "aws_region" "current" {
-  count = local.create_role ? 1 : 0
-}
-
 locals {
-  create_role = var.create && var.create_function && ! var.create_layer && var.create_role
-
-  lambda_log_group_arn      = local.create_role ? "arn:${data.aws_partition.current[0].partition}:logs:*:${data.aws_caller_identity.current[0].account_id}:log-group:/aws/lambda/${var.function_name}" : ""
-  lambda_edge_log_group_arn = local.create_role ? "arn:${data.aws_partition.current[0].partition}:logs:*:${data.aws_caller_identity.current[0].account_id}:log-group:/aws/lambda/us-east-1.${var.function_name}" : ""
-  log_group_arns            = slice(list(local.lambda_log_group_arn, local.lambda_edge_log_group_arn), 0, var.lambda_at_edge ? 2 : 1)
+  create_role   = var.create && var.create_function && ! var.create_layer && var.create_role
+  log_group_arn = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
 }
 
 ###########
@@ -60,23 +45,11 @@ data "aws_iam_policy_document" "logs" {
     effect = "Allow"
 
     actions = [
-      "logs:CreateLogGroup",
-    ]
-
-    resources = [
-      "*",
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-
-    actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
 
-    resources = flatten([for _, v in ["%v:*", "%v:*:*"] : formatlist(v, local.log_group_arns)])
+    resources = flatten([for _, v in ["%v:*", "%v:*:*"] : format(v, local.log_group_arn)])
   }
 }
 

@@ -35,6 +35,7 @@ No input.
 
 | Name | Description |
 |------|-------------|
+| lambda\_cloudwatch\_log\_group\_arn | The ARN of the Cloudwatch Log Group |
 | lambda\_role\_arn | The ARN of the IAM role created for the Lambda Function |
 | lambda\_role\_name | The name of the IAM role created for the Lambda Function |
 | local\_filename | The filename of zip archive deployed (if deployment was from local) |

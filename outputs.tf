@@ -81,6 +81,12 @@ output "lambda_role_name" {
   value       = element(concat(aws_iam_role.lambda.*.name, [""]), 0)
 }
 
+# CloudWatch Log Group
+output "lambda_cloudwatch_log_group_arn" {
+  description = "The ARN of the Cloudwatch Log Group"
+  value       = local.log_group_arn
+}
+
 # Deployment package
 output "local_filename" {
   description = "The filename of zip archive deployed (if deployment was from local)"
