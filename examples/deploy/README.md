@@ -37,10 +37,11 @@ No input.
 | appspec | n/a |
 | appspec\_content | n/a |
 | appspec\_sha256 | n/a |
+| codedeploy\_app\_name | Name of CodeDeploy application |
+| codedeploy\_deployment\_group\_id | CodeDeploy deployment group id |
+| codedeploy\_deployment\_group\_name | CodeDeploy deployment group name |
 | codedeploy\_iam\_role\_name | Name of IAM role used by CodeDeploy |
 | deploy\_script | n/a |
 | script | n/a |
-| this\_codedeploy\_app\_name | Name of CodeDeploy application |
-| this\_codedeploy\_deployment\_group\_id | CodeDeploy deployment group name |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -1,11 +1,16 @@
-output "this_codedeploy_app_name" {
+output "codedeploy_app_name" {
   description = "Name of CodeDeploy application"
-  value       = module.deploy.this_codedeploy_app_name
+  value       = module.deploy.codedeploy_app_name
 }
 
-output "this_codedeploy_deployment_group_id" {
+output "codedeploy_deployment_group_name" {
   description = "CodeDeploy deployment group name"
-  value       = module.deploy.this_codedeploy_deployment_group_id
+  value       = module.deploy.codedeploy_deployment_group_name
+}
+
+output "codedeploy_deployment_group_id" {
+  description = "CodeDeploy deployment group id"
+  value       = module.deploy.codedeploy_deployment_group_id
 }
 
 output "codedeploy_iam_role_name" {
