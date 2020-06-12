@@ -477,7 +477,61 @@ class ZipWriteStream:
 
 
 ################################################################################
-# Docker building
+# Building
+
+@contextmanager
+def install_pip_requirements(query, zip_stream, requirements_file):
+    runtime = query.runtime
+    artifacts_dir = query.artifacts_dir
+    docker = query.docker
+
+    working_dir = os.getcwd()
+
+    if os.path.exists(requirements_file):
+        logger.info('Installing python requirements: %s', requirements_file)
+        with tempdir() as temp_dir:
+            requirements_filename = os.path.basename(requirements_file)
+            target_file = os.path.join(temp_dir, requirements_filename)
+            shutil.copyfile(requirements_file, target_file)
+
+            # Install dependencies into the temporary directory.
+            with cd(temp_dir):
+                if runtime.startswith('python3'):
+                    pip_command = ['pip3']
+                else:
+                    pip_command = ['pip2']
+                pip_command.extend([
+                    'install', '--no-compile',
+                    '--prefix=', '--target=.',
+                    '--requirement={}'.format(requirements_filename),
+                ])
+                if docker:
+                    pip_cache_dir = docker.docker_pip_cache
+                    if pip_cache_dir:
+                        if isinstance(pip_cache_dir, str):
+                            pip_cache_dir = os.path.abspath(
+                                os.path.join(working_dir, pip_cache_dir))
+                        else:
+                            pip_cache_dir = os.path.abspath(os.path.join(
+                                working_dir, artifacts_dir, 'cache/pip'))
+
+                    chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
+                    shell_command = [shlex_join(pip_command), '&&',
+                                     shlex_join(['chown', '-R',
+                                                 chown_mask, '.'])]
+                    shell_command = [' '.join(shell_command)]
+                    check_call(docker_run_command(
+                        '.', shell_command, runtime, shell=True,
+                        pip_cache_dir=pip_cache_dir
+                    ))
+                else:
+                    cmd_logger.info(shlex_join(pip_command))
+                    log_handler and log_handler.flush()
+                    check_call(pip_command)
+
+                os.remove(target_file)
+                yield temp_dir
+
 
 def docker_build_command(build_root, docker_file=None, tag=None):
     """"""
@@ -670,95 +724,34 @@ def build_command(args):
     runtime = query.runtime
     filename = query.filename
     source_path = query.source_path
+    _timestamp = args.zip_file_timestamp
 
-    timestamp = args.zip_file_timestamp
-    artifacts_dir = query.artifacts_dir
-    docker = query.docker
-
-    if timestamp.isnumeric():
-        timestamp = int(timestamp)
-    else:
-        timestamp = 0
+    timestamp = 0
+    if _timestamp.isnumeric():
+        timestamp = int(_timestamp)
 
     if os.path.exists(filename) and not args.force:
         logger.info('Reused: %s', shlex.quote(filename))
         return
 
-    working_dir = os.getcwd()
-
-    # Create a temporary directory for building the archive,
-    # so no changes will be made to the source directory.
-    with tempdir() as temp_dir:
-        # Find all source files.
+    # Zip up the temporary directory and write it to the target filename.
+    # This will be used by the Lambda function as the source code package.
+    with ZipWriteStream(filename) as zs:
         if os.path.isdir(source_path):
-            source_dir = source_path
-            source_files = list_files(source_path, logger=logging.root)
+            if runtime.startswith('python'):
+                with install_pip_requirements(
+                    query, zs, os.path.join(source_path, 'requirements.txt')
+                ) as rd:
+                    rd and zs.write_dirs(rd, timestamp=0)  # XXX: temp ts=0
+            zs.write_dirs(source_path)
         else:
-            source_dir = os.path.dirname(source_path)
-            source_files = [os.path.basename(source_path)]
+            zs.write_file(source_path)
 
-        # Copy them into the temporary directory.
-        with cd(source_dir):
-            for file_name in source_files:
-                target_path = os.path.join(temp_dir, file_name)
-                target_dir = os.path.dirname(target_path)
-                if not os.path.exists(target_dir):
-                    cmd_logger.info('mkdir -p %s', shlex.quote(target_dir))
-                    os.makedirs(target_dir)
-                cmd_logger.info('cp -t %s %s',
-                                shlex.quote(target_dir),
-                                shlex.quote(file_name))
-                shutil.copyfile(file_name, target_path)
-                shutil.copymode(file_name, target_path)
-                shutil.copystat(file_name, target_path)
-
-        # Install dependencies into the temporary directory.
-        if runtime.startswith('python'):
-            requirements = os.path.join(temp_dir, 'requirements.txt')
-            if os.path.exists(requirements):
-                with cd(temp_dir):
-                    if runtime.startswith('python3'):
-                        pip_command = ['pip3']
-                    else:
-                        pip_command = ['pip2']
-                    pip_command.extend([
-                        'install', '--no-compile',
-                        '--prefix=', '--target=.',
-                        '--requirement=requirements.txt',
-                    ])
-                    if docker:
-                        pip_cache_dir = docker.docker_pip_cache
-                        if pip_cache_dir:
-                            if isinstance(pip_cache_dir, str):
-                                pip_cache_dir = os.path.abspath(
-                                    os.path.join(working_dir, pip_cache_dir))
-                            else:
-                                pip_cache_dir = os.path.abspath(os.path.join(
-                                    working_dir, artifacts_dir, 'cache/pip'))
-
-                        chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                        shell_command = [shlex_join(pip_command), '&&',
-                                         shlex_join(['chown', '-R',
-                                                     chown_mask, '.'])]
-                        shell_command = [' '.join(shell_command)]
-                        check_call(docker_run_command(
-                            '.', shell_command, runtime, shell=True,
-                            pip_cache_dir=pip_cache_dir
-                        ))
-                    else:
-                        cmd_logger.info(shlex_join(pip_command))
-                        log_handler and log_handler.flush()
-                        check_call(pip_command)
-
-        # Zip up the temporary directory and write it to the target filename.
-        # This will be used by the Lambda function as the source code package.
-        with ZipWriteStream(filename) as zs:
-            zs.write_dirs(temp_dir, timestamp=0)
-        os.utime(filename, ns=(timestamp, timestamp))
-        logger.info('Created: %s', shlex.quote(filename))
-        if logger.isEnabledFor(logging.DEBUG):
-            with open(filename, 'rb') as f:
-                logger.info('Base64sha256: %s', source_code_hash(f.read()))
+    os.utime(filename, ns=(timestamp, timestamp))
+    logger.info('Created: %s', shlex.quote(filename))
+    if logger.isEnabledFor(logging.DEBUG):
+        with open(filename, 'rb') as f:
+            logger.info('Base64sha256: %s', source_code_hash(f.read()))
 
 
 def add_hidden_commands(sub_parsers):
