@@ -204,134 +204,6 @@ def emit_dir_files(base_dir):
                 yield path
 
 
-def make_zipfile(zip_filename, *base_dirs, timestamp=None,
-                 compression=zipfile.ZIP_DEFLATED):
-    """
-    Create a zip file from all the files under 'base_dir'.
-    The output zip file will be named 'base_name' + ".zip".  Returns the
-    name of the output zip file.
-    """
-
-    # An extended version of a write method
-    # from the original zipfile.py library module
-    def write(self, filename, arcname=None,
-              compress_type=None, compresslevel=None,
-              date_time=None):
-        """Put the bytes from filename into the archive under the name
-        arcname."""
-        if not self.fp:
-            raise ValueError(
-                "Attempt to write to ZIP archive that was already closed")
-        if self._writing:
-            raise ValueError(
-                "Can't write to ZIP archive while an open writing handle exists"
-            )
-
-        if PY38:
-            zinfo = zipfile.ZipInfo.from_file(
-                filename, arcname, strict_timestamps=self._strict_timestamps)
-        else:
-            zinfo = from_file(
-                zipfile.ZipInfo, filename, arcname, strict_timestamps=True)
-
-        if date_time:
-            zinfo.date_time = date_time
-
-        if zinfo.is_dir():
-            zinfo.compress_size = 0
-            zinfo.CRC = 0
-        else:
-            if compress_type is not None:
-                zinfo.compress_type = compress_type
-            else:
-                zinfo.compress_type = self.compression
-
-            if compresslevel is not None:
-                zinfo._compresslevel = compresslevel
-            else:
-                zinfo._compresslevel = self.compresslevel
-
-        if zinfo.is_dir():
-            with self._lock:
-                if self._seekable:
-                    self.fp.seek(self.start_dir)
-                zinfo.header_offset = self.fp.tell()  # Start of header bytes
-                if zinfo.compress_type == zipfile.ZIP_LZMA:
-                    # Compressed data includes an end-of-stream (EOS) marker
-                    zinfo.flag_bits |= 0x02
-
-                self._writecheck(zinfo)
-                self._didModify = True
-
-                self.filelist.append(zinfo)
-                self.NameToInfo[zinfo.filename] = zinfo
-                self.fp.write(zinfo.FileHeader(False))
-                self.start_dir = self.fp.tell()
-        else:
-            with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
-                shutil.copyfileobj(src, dest, 1024 * 8)
-
-    def str_int_to_timestamp(s):
-        min_zip_ts = datetime.datetime(1980, 1, 1).timestamp()
-        ts = int(s)
-        if ts < min_zip_ts:
-            return min_zip_ts
-        deg = len(str(int(s))) - 9
-        if deg < 0:
-            ts = ts * 10 ** deg
-        return ts
-
-    logger = logging.getLogger('zip')
-
-    date_time = None
-    if timestamp is not None:
-        if isinstance(timestamp, str):
-            if timestamp.isnumeric():
-                timestamp = str_int_to_timestamp(timestamp)
-            else:
-                timestamp = float(timestamp)
-        elif isinstance(timestamp, int):
-            timestamp = str_int_to_timestamp(str(timestamp))
-
-        date_time = datetime.datetime.fromtimestamp(timestamp).timetuple()[:6]
-        if date_time[0] < 1980:
-            raise ValueError('ZIP does not support timestamps before 1980')
-
-    archive_dir = os.path.dirname(zip_filename)
-
-    if archive_dir and not os.path.exists(archive_dir):
-        logger.info("creating %s", archive_dir)
-        os.makedirs(archive_dir)
-
-    logger.info("creating '%s' archive", zip_filename)
-
-    tmp_zip_filename = '{}.tmp'.format(zip_filename)
-    try:
-        with zipfile.ZipFile(tmp_zip_filename, "w", compression) as zf:
-            for base_dir in base_dirs:
-                logger.info("adding content of directory '%s'", base_dir)
-                with cd(base_dir, silent=True):
-                    for path in emit_dir_files('.'):
-                        logger.info("adding '%s'", path)
-                        write(zf, path, path, date_time=date_time)
-    except Exception:
-        os.unlink(tmp_zip_filename)
-    else:
-        os.replace(tmp_zip_filename, zip_filename)
-    return zip_filename
-
-
-def create_zipfile(source_dir, target_file, timestamp):
-    """
-    Creates a zip file from a directory.
-    """
-
-    target_dir = os.path.dirname(target_file)
-    if not os.path.exists(target_dir):
-        os.makedirs(target_dir)
-    make_zipfile(target_file, source_dir, timestamp=timestamp)
-
-
 def generate_content_hash(source_paths,
                           hash_func=hashlib.sha256, logger=None):
     """
@@ -378,62 +250,163 @@ def update_hash(hash_obj, file_root, file_path):
 
 class ZipWriteStream:
     """"""
-    def __init__(self, zip_file_path):
-        self.filename = zip_file_path
-        self._zip = None
 
-        if not self.filename:
+    def __init__(self, zip_filename,
+                 compress_type=zipfile.ZIP_DEFLATED,
+                 compresslevel=None,
+                 timestamp=None):
+
+        self.timestamp = timestamp
+        self.filename = zip_filename
+
+        if not (self.filename and isinstance(self.filename, str)):
             raise ValueError('Zip file path must be provided')
 
-    def open(self):
-        pass
-
-    def close(self):
+        self._tmp_filename = None
+        self._compress_type = compress_type
+        self._compresslevel = compresslevel
         self._zip = None
-        self.filename = None
+
+        self._logger = logging.getLogger('zip')
+
+    def open(self):
+        if self._tmp_filename:
+            raise zipfile.BadZipFile("ZipStream object can't be reused")
+        self._ensure_base_path(self.filename)
+        self._tmp_filename = '{}.tmp'.format(self.filename)
+        self._logger.info("creating '%s' archive", self.filename)
+        self._zip = zipfile.ZipFile(self._tmp_filename, "w",
+                                    self._compress_type)
+        return self
+
+    def close(self, failed=False):
+        if failed:
+            os.unlink(self._tmp_filename)
+        else:
+            os.replace(self._tmp_filename, self.filename)
+        self._zip = None
 
     def __enter__(self):
         return self.open()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        # TODO: Handle exceptions
-        self.close()
+        self.close(failed=exc_type is not None)
 
-    def _isopen(self):
+    def _ensure_open(self):
         if self._zip is not None:
             return True
-        if self.filename is None:
+        if self._tmp_filename:
             raise zipfile.BadZipFile("ZipWriteStream object can't be reused")
         raise zipfile.BadZipFile('ZipWriteStream should be opened first')
 
-    def write_dir(self, dir, prefix=None, timestamp=None):
+    @staticmethod
+    def _ensure_base_path(zip_filename):
+        archive_dir = os.path.dirname(zip_filename)
+
+        if archive_dir and not os.path.exists(archive_dir):
+            logger.info("creating %s", archive_dir)
+            os.makedirs(archive_dir)
+
+    def write_dirs(self, *base_dirs, prefix=None, timestamp=None):
         """
         Writes a directory content to a prefix inside of a zip archive
         """
-        if self._isopen():
-            raise NotImplementedError
+        self._ensure_open()
+        for base_dir in base_dirs:
+            self._logger.info("adding content of directory '%s'", base_dir)
+            with cd(base_dir, silent=True):
+                for path in emit_dir_files('.'):
+                    logger.info("adding '%s'", path)
+                    zinfo = self._make_zinfo_from_file(path, path)
+                    date_time = self._timestamp_to_date_time(self.timestamp)
+                    if date_time:
+                        self._update_zinfo(zinfo, date_time=date_time)
+                    self._write_zinfo(zinfo, path)
 
     def write_files(self, files_stream, prefix=None, timestamp=None):
         """
         Expects just files stream, directories will be created automatically
         """
-        if self._isopen():
-            raise NotImplementedError
+        self._ensure_open()
+        raise NotImplementedError
 
     def write_file(self, file_path, prefix=None, name=None, timestamp=None):
         """
         Reads a file and writes it to a prefix
         or a full qualified name in a zip archive
         """
-        if self._isopen():
-            raise NotImplementedError
+        self._ensure_open()
+        raise NotImplementedError
 
     def write_file_obj(self, file_path, data, prefix=None, timestamp=None):
         """
         Write a data to a zip archive by a full qualified file path
         """
-        if self._isopen():
-            raise NotImplementedError
+        self._ensure_open()
+        raise NotImplementedError
+
+    def _write_zinfo(self, zinfo, filename,
+                     compress_type=None, compresslevel=None):
+        self._ensure_open()
+
+        zip = self._zip
+
+        if not zip.fp:
+            raise ValueError(
+                "Attempt to write to ZIP archive that was already closed")
+        if zip._writing:
+            raise ValueError(
+                "Can't write to ZIP archive while an open writing handle exists"
+            )
+
+        if zinfo.is_dir():
+            zinfo.compress_size = 0
+            zinfo.CRC = 0
+        else:
+            if compress_type is not None:
+                zinfo.compress_type = compress_type
+            else:
+                zinfo.compress_type = self._compress_type
+
+            if compresslevel is not None:
+                zinfo._compresslevel = compresslevel
+            else:
+                zinfo._compresslevel = self._compresslevel
+
+        if zinfo.is_dir():
+            with zip._lock:
+                if zip._seekable:
+                    zip.fp.seek(zip.start_dir)
+                zinfo.header_offset = zip.fp.tell()  # Start of header bytes
+                if zinfo.compress_type == zipfile.ZIP_LZMA:
+                    # Compressed data includes an end-of-stream (EOS) marker
+                    zinfo.flag_bits |= 0x02
+
+                zip._writecheck(zinfo)
+                zip._didModify = True
+
+                zip.filelist.append(zinfo)
+                zip.NameToInfo[zinfo.filename] = zinfo
+                zip.fp.write(zinfo.FileHeader(False))
+                zip.start_dir = zip.fp.tell()
+        else:
+            with open(filename, "rb") as src, zip.open(zinfo, 'w') as dest:
+                shutil.copyfileobj(src, dest, 1024 * 8)
+
+    def _make_zinfo_from_file(self, filename, arcname=None):
+        if PY38:
+            zinfo_func = zipfile.ZipInfo.from_file
+            strict_timestamps = self._zip._strict_timestamps
+        else:
+            zinfo_func = self._zinfo_from_file
+            strict_timestamps = True
+
+        return zinfo_func(filename, arcname,
+                          strict_timestamps=strict_timestamps)
+
+    @staticmethod
+    def _update_zinfo(zinfo, date_time):
+        zinfo.date_time = date_time
 
     # Borrowed from python 3.8 zipfile.py library
     # due to the need of strict_timestamps functionality.
@@ -474,6 +447,34 @@ class ZipWriteStream:
             zinfo.file_size = st.st_size
 
         return zinfo
+
+    @staticmethod
+    def _timestamp_to_date_time(timestamp):
+        def str_int_to_timestamp(s):
+            min_zip_ts = datetime.datetime(1980, 1, 1).timestamp()
+            ts = int(s)
+            if ts < min_zip_ts:
+                return min_zip_ts
+            deg = len(str(int(s))) - 9
+            if deg < 0:
+                ts = ts * 10 ** deg
+            return ts
+
+        date_time = None
+        if timestamp is not None:
+            if isinstance(timestamp, str):
+                if timestamp.isnumeric():
+                    timestamp = str_int_to_timestamp(timestamp)
+                else:
+                    timestamp = float(timestamp)
+            elif isinstance(timestamp, int):
+                timestamp = str_int_to_timestamp(str(timestamp))
+
+            date_time = datetime.datetime.fromtimestamp(timestamp).timetuple()
+            date_time = date_time[:6]
+            if date_time[0] < 1980:
+                raise ValueError('ZIP does not support timestamps before 1980')
+        return date_time
 
 
 ################################################################################
@@ -750,13 +751,10 @@ def build_command(args):
                         log_handler and log_handler.flush()
                         check_call(pip_command)
 
-        with ZipWriteStream(filename) as zs:
-            zs.write_dir(temp_dir, timestamp=0)
-            zs.write_file(temp_file, timestamp=0)
-
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
-        create_zipfile(temp_dir, filename, timestamp=0)
+        with ZipWriteStream(filename) as zs:
+            zs.write_dirs(temp_dir, timestamp=0)
         os.utime(filename, ns=(timestamp, timestamp))
         logger.info('Created: %s', shlex.quote(filename))
         if logger.isEnabledFor(logging.DEBUG):
@@ -792,7 +790,8 @@ def add_hidden_commands(sub_parsers):
     def zip_cmd(args):
         if args.verbose:
             logger.setLevel(logging.DEBUG)
-        make_zipfile(args.zipfile, *args.dir, timestamp=args.timestamp)
+        with ZipWriteStream(args.zipfile) as zs:
+            zs.write_dirs(*args.dir, timestamp=args.timestamp)
         if logger.isEnabledFor(logging.DEBUG):
             zipinfo = shutil.which('zipinfo')
             if zipinfo:
