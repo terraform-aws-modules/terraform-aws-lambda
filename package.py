@@ -313,14 +313,7 @@ class ZipWriteStream:
             self._logger.info("adding content of directory '%s'", base_dir)
             for path in emit_dir_content(base_dir):
                 arcname = os.path.relpath(path, base_dir)
-                self._logger.info("adding '%s'", arcname)
-                zinfo = self._make_zinfo_from_file(path, arcname)
-                if timestamp is None:
-                    timestamp = self.timestamp
-                date_time = self._timestamp_to_date_time(timestamp)
-                if date_time:
-                    self._update_zinfo(zinfo, date_time=date_time)
-                self._write_zinfo(zinfo, path)
+                self._write_file(path, prefix, arcname, timestamp)
 
     def write_files(self, files_stream, prefix=None, timestamp=None):
         """
@@ -335,7 +328,20 @@ class ZipWriteStream:
         or a full qualified name in a zip archive
         """
         self._ensure_open()
-        raise NotImplementedError
+        self._write_file(file_path, prefix, name, timestamp)
+
+    def _write_file(self, file_path, prefix=None, name=None, timestamp=None):
+        arcname = name if name else os.path.basename(file_path)
+        if prefix:
+            arcname = os.path.join(prefix, arcname)
+        self._logger.info("adding '%s'", arcname)
+        zinfo = self._make_zinfo_from_file(file_path, arcname)
+        if timestamp is None:
+            timestamp = self.timestamp
+        date_time = self._timestamp_to_date_time(timestamp)
+        if date_time:
+            self._update_zinfo(zinfo, date_time=date_time)
+        self._write_zinfo(zinfo, file_path)
 
     def write_file_obj(self, file_path, data, prefix=None, timestamp=None):
         """

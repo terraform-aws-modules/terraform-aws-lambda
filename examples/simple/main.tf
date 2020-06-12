@@ -73,7 +73,7 @@ module "lambda_function" {
   //    }
   //  }
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python3.8-app1/"
   //  source_path = [
   //    "${path.module}/../fixtures/python3.8-app1-extra",
   //    {
