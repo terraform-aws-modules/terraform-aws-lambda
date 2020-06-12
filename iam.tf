@@ -1,18 +1,6 @@
-data "aws_caller_identity" "current" {
-  count = local.create_role ? 1 : 0
-}
-
-data "aws_partition" "current" {
-  count = local.create_role ? 1 : 0
-}
-
-data "aws_region" "current" {
-  count = local.create_role ? 1 : 0
-}
-
 locals {
-  create_role = var.create && var.create_function && ! var.create_layer && var.create_role
-  log_group_arns = concat(aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda-edge.*.arn)
+  create_role   = var.create && var.create_function && ! var.create_layer && var.create_role
+  log_group_arn = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
 }
 
 ###########
@@ -61,7 +49,7 @@ data "aws_iam_policy_document" "logs" {
       "logs:PutLogEvents",
     ]
 
-    resources = flatten([for _, v in ["%v:*", "%v:*:*"] : formatlist(v, local.log_group_arns)])
+    resources = flatten([for _, v in ["%v:*", "%v:*:*"] : format(v, local.log_group_arn)])
   }
 }
 

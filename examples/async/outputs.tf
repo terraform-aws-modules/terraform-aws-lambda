@@ -70,17 +70,6 @@ output "this_lambda_layer_version" {
   value       = module.lambda_function.this_lambda_layer_version
 }
 
-# Lambda Alias
-output "this_lambda_alias_arn" {
-  description = "The ARN of the Lambda Function Alias"
-  value       = module.lambda_function.this_lambda_alias_arn
-}
-
-output "this_lambda_alias_invoke_arn" {
-  description = "The ARN to be used for invoking Lambda Function from API Gateway"
-  value       = module.lambda_function.this_lambda_alias_invoke_arn
-}
-
 # IAM Role
 output "lambda_role_arn" {
   description = "The ARN of the IAM role created for the Lambda Function"
@@ -90,6 +79,12 @@ output "lambda_role_arn" {
 output "lambda_role_name" {
   description = "The name of the IAM role created for the Lambda Function"
   value       = module.lambda_function.lambda_role_name
+}
+
+# CloudWatch Log Group
+output "lambda_cloudwatch_log_group_arn" {
+  description = "The ARN of the Cloudwatch Log Group"
+  value       = module.lambda_function.lambda_cloudwatch_log_group_arn
 }
 
 # Deployment package

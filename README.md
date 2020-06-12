@@ -556,7 +556,9 @@ A3: This probably mean that zip-archive has been deployed, but is currently abse
 | attach\_policy\_statements | Controls whether policy\_statements should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | attach\_tracing\_policy | Controls whether X-Ray tracing policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | build\_in\_docker | Whether to build dependencies in Docker | `bool` | `false` | no |
-| cloudwatch\_logs\_retention | Number of days to retain CloudWatch Logs (also requires `attach_cloudwatch_logs_policy`) | `number` | 0 | no |
+| cloudwatch\_logs\_kms\_key\_id | The ARN of the KMS Key to use when encrypting log data. | `string` | `null` | no |
+| cloudwatch\_logs\_retention\_in\_days | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `null` | no |
+| cloudwatch\_logs\_tags | A map of tags to assign to the resource. | `map(string)` | `{}` | no |
 | compatible\_runtimes | A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified. | `list(string)` | `[]` | no |
 | create | Controls whether resources should be created | `bool` | `true` | no |
 | create\_async\_event\_config | Controls whether async event configuration for Lambda Function/Alias should be created | `bool` | `false` | no |
@@ -616,6 +618,7 @@ A3: This probably mean that zip-archive has been deployed, but is currently abse
 | timeout | The amount of time your Lambda Function has to run in seconds. | `number` | `3` | no |
 | tracing\_mode | Tracing mode of the Lambda Function. Valid value can be either PassThrough or Active. | `string` | `null` | no |
 | trusted\_entities | Lambda Function additional trusted entities for assuming roles (trust relationship) | `list(string)` | `[]` | no |
+| use\_existing\_cloudwatch\_log\_group | Whether to use an existing CloudWatch log group or create new | `bool` | `false` | no |
 | vpc\_security\_group\_ids | List of security group ids when Lambda Function should run in the VPC. | `list(string)` | `null` | no |
 | vpc\_subnet\_ids | List of subnet ids when Lambda Function should run in the VPC. Usually private or intra subnets. | `list(string)` | `null` | no |
 
@@ -623,6 +626,7 @@ A3: This probably mean that zip-archive has been deployed, but is currently abse
 
 | Name | Description |
 |------|-------------|
+| lambda\_cloudwatch\_log\_group\_arn | The ARN of the Cloudwatch Log Group |
 | lambda\_role\_arn | The ARN of the IAM role created for the Lambda Function |
 | lambda\_role\_name | The name of the IAM role created for the Lambda Function |
 | local\_filename | The filename of zip archive deployed (if deployment was from local) |

@@ -1,5 +1,6 @@
 provider "aws" {
   region = "eu-west-1"
+  //  region = "us-east-1"
 
   # Make it faster by skipping something
   skip_get_ec2_platforms      = true
@@ -13,6 +14,10 @@ resource "random_pet" "this" {
   length = 2
 }
 
+//resource "aws_cloudwatch_log_group" "this" {
+//  name = "/aws/lambda/us-east-1.${random_pet.this.id}-lambda-simple"
+//}
+
 module "lambda_function" {
   source = "../../"
 
@@ -22,7 +27,11 @@ module "lambda_function" {
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
 
-  attach_cloudwatch_logs_policy = false
+  //  attach_cloudwatch_logs_policy = false
+
+  //  use_existing_cloudwatch_log_group = true
+
+  //  lambda_at_edge = true
 
   //  independent_file_timestamps = true
 
