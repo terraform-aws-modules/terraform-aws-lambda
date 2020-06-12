@@ -415,6 +415,66 @@ def update_hash(hash_obj, file_root, file_path):
             hash_obj.update(data)
 
 
+class ZipWriteStream:
+    """"""
+    def __init__(self, zip_file_path):
+        self.filename = zip_file_path
+        self._zip = None
+
+        if not self.filename:
+            raise ValueError('Zip file path must be provided')
+
+    def open(self):
+        pass
+
+    def close(self):
+        self._zip = None
+        self.filename = None
+
+    def __enter__(self):
+        return self.open()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # TODO: Handle exceptions
+        self.close()
+
+    def _isopen(self):
+        if self._zip is not None:
+            return True
+        if self.filename is None:
+            raise zipfile.BadZipFile("ZipWriteStream object can't be reused")
+        raise zipfile.BadZipFile('ZipWriteStream should be opened first')
+
+    def write_dir(self, dir, prefix=None, timestamp=None):
+        """
+        Writes a directory content to a prefix inside of a zip archive
+        """
+        if self._isopen():
+            raise NotImplementedError
+
+    def write_files(self, files_stream, prefix=None, timestamp=None):
+        """
+        Expects just files stream, directories will be created automatically
+        """
+        if self._isopen():
+            raise NotImplementedError
+
+    def write_file(self, file_path, prefix=None, name=None, timestamp=None):
+        """
+        Reads a file and writes it to a prefix
+        or a full qualified name in a zip archive
+        """
+        if self._isopen():
+            raise NotImplementedError
+
+    def write_file_obj(self, file_path, data, prefix=None, timestamp=None):
+        """
+        Write a data to a zip archive by a full qualified file path
+        """
+        if self._isopen():
+            raise NotImplementedError
+
+
 ################################################################################
 # Docker building
 
@@ -688,6 +748,10 @@ def build_command(args):
                         cmd_logger.info(shlex_join(pip_command))
                         log_handler and log_handler.flush()
                         check_call(pip_command)
+
+        with ZipWriteStream(filename) as zs:
+            zs.write_dir(temp_dir, timestamp=0)
+            zs.write_file(temp_file, timestamp=0)
 
         # Zip up the temporary directory and write it to the target filename.
         # This will be used by the Lambda function as the source code package.
