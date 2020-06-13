@@ -650,10 +650,10 @@ class BuildPlanManager:
                             _, _path, prefix = c
                             prefix = prefix.strip()
                             _path = os.path.normpath(os.path.join(path, _path))
-                            step('zip', _path, prefix)
+                            step('zip:embedded', _path, prefix)
                         elif len(c) == 1:
                             prefix = None
-                            step('zip', path, prefix)
+                            step('zip:embedded', path, prefix)
                         else:
                             raise ValueError(
                                 ':zip command can have zero '
@@ -712,24 +712,27 @@ class BuildPlanManager:
 
         for action in build_plan:
             cmd = action[0]
-            if cmd == 'zip':
+            if cmd.startswith('zip'):
+                ts = 0 if cmd == 'zip:embedded' else None
                 source_path, prefix = action[1:]
                 if sh_work_dir:
                     if source_path != sh_work_dir:
                         source_path = sh_work_dir
                     if pf:
-                        self._zip_write_with_filter(zs, pf, source_path, prefix)
+                        self._zip_write_with_filter(zs, pf, source_path, prefix,
+                                                    timestamp=ts)
                 else:
                     if os.path.isdir(source_path):
-                        zs.write_dirs(source_path, prefix=prefix)
+                        zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
                     else:
-                        zs.write_file(source_path, prefix=prefix)
+                        zs.write_file(source_path, prefix=prefix, timestamp=ts)
             elif cmd == 'pip':
                 runtime, pip_requirements, prefix = action[1:]
                 with install_pip_requirements(query, pip_requirements) as rd:
                     if rd:
                         if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix)
+                            self._zip_write_with_filter(zs, pf, rd, prefix,
+                                                        timestamp=0)
                         else:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
@@ -754,13 +757,14 @@ class BuildPlanManager:
                 pf = None
 
     @staticmethod
-    def _zip_write_with_filter(zip_stream, path_filter, source_path, prefix):
+    def _zip_write_with_filter(zip_stream, path_filter, source_path, prefix,
+                               timestamp=None):
         for path in path_filter.filter(source_path, prefix):
             if os.path.isdir(source_path):
                 arcname = os.path.relpath(path, source_path)
             else:
                 arcname = os.path.basename(path)
-            zip_stream.write_file(path, prefix, arcname)
+            zip_stream.write_file(path, prefix, arcname, timestamp=timestamp)
 
 
 @contextmanager
