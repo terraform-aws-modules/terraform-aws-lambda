@@ -141,28 +141,29 @@ def list_files(top_path, log=None):
     return results
 
 
-def dataclass(name, **fields):
-    typ = type(name, (object,), {
-        '__slots__': fields.keys(),
-        '__getattr__': lambda *_: None,
+def dataclass(name):
+    typ = type(name, (dict,), {
+        '__getattr__': lambda self, x: self.get(x),
+        '__init__': lambda self, **k: self.update(k),
     })
-    for k, v in fields.items():
-        setattr(typ, k, v)
     return typ
 
 
 def datatree(name, **fields):
-    def decode_json(v):
+    def decode_json(k, v):
         if v and isinstance(v, str) and v[0] in '"[{':
             try:
-                return json.loads(v)
+                o = json.loads(v)
+                if isinstance(o, dict):
+                    return dataclass(k)(**o)
+                return o
             except json.JSONDecodeError:
                 pass
         return v
 
-    return dataclass(name, **dict(((
-        k, datatree(k, **v) if isinstance(v, dict) else decode_json(v))
-        for k, v in fields.items())))()
+    return dataclass(name)(**dict(((
+        k, datatree(k, **v) if isinstance(v, dict) else decode_json(k, v))
+        for k, v in fields.items())))
 
 
 def timestamp_now_ns():
@@ -637,11 +638,19 @@ class BuildPlanManager:
                 hash(requirements)
 
         def commands_step(path, commands):
-            path = os.path.normpath(path)
+            if path:
+                path = os.path.normpath(path)
             batch = []
             for c in commands:
                 if isinstance(c, str):
                     if c.startswith(':zip'):
+                        if path:
+                            hash(path)
+                        else:
+                            # If path doesn't defined for a block with
+                            # commands it will be set to Terraform's
+                            # current working directory
+                            path = query.paths.cwd
                         if batch:
                             step('sh', path, '\n'.join(batch))
                             batch.clear()
@@ -662,7 +671,6 @@ class BuildPlanManager:
                             raise ValueError(
                                 ":zip invalid call signature, use: "
                                 "':zip [path [prefix_in_zip]]'")
-                        hash(path)
                     else:
                         batch.append(c)
 
