@@ -32,6 +32,7 @@ PY38 = sys.version_info >= (3, 8)
 
 DEBUG2 = 9
 DEBUG3 = 8
+DUMP_ENV = 1
 
 log_handler = None
 log = logging.getLogger()
@@ -43,6 +44,7 @@ def configure_logging(use_tf_stderr=False):
 
     logging.addLevelName(DEBUG2, 'DEBUG2')
     logging.addLevelName(DEBUG3, 'DEBUG3')
+    logging.addLevelName(DUMP_ENV, 'DUMP_ENV')
 
     class LogFormatter(logging.Formatter):
         default_format = '%(message)s'
@@ -896,10 +898,15 @@ def prepare_command(args):
     # Load the query.
     query_data = json.load(sys.stdin)
 
-    if log.isEnabledFor(DEBUG3):
+    if log.isEnabledFor(DUMP_ENV):
         log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
     if log.isEnabledFor(DEBUG2):
-        log.debug('QUERY: %s', json.dumps(query_data, indent=2))
+        if log.isEnabledFor(DEBUG3):
+            log.debug('QUERY: %s', json.dumps(query_data, indent=2))
+        else:
+            log_excludes = ('source_path', 'hash_extra_paths', 'paths')
+            qd = {k: v for k, v in query_data.items() if k not in log_excludes}
+            log.debug('QUERY (excerpt): %s', json.dumps(qd, indent=2))
 
     query = datatree('prepare_query', **query_data)
 
@@ -1054,7 +1061,7 @@ def add_hidden_commands(sub_parsers):
                 subprocess.call([zipinfo, args.zipfile])
             log.debug('-' * 80)
             log.debug('Source code hash: %s',
-                         source_code_hash(open(args.zipfile, 'rb').read()))
+                      source_code_hash(open(args.zipfile, 'rb').read()))
 
     p = hidden_parser('zip', help='Zip folder with provided files timestamp')
     p.set_defaults(command=zip_cmd)
