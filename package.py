@@ -338,8 +338,11 @@ class ZipWriteStream:
         arcname = name if name else os.path.basename(file_path)
         if prefix:
             arcname = os.path.join(prefix, arcname)
-        self._log.info("adding: %s", arcname)
         zinfo = self._make_zinfo_from_file(file_path, arcname)
+        if zinfo.is_dir():
+            self._log.info("adding: %s/", arcname)
+        else:
+            self._log.info("adding: %s", arcname)
         if timestamp is None:
             timestamp = self.timestamp
         date_time = self._timestamp_to_date_time(timestamp)
@@ -556,13 +559,13 @@ class ZipContentFilter:
             if apply(dpath):
                 yield opath
             else:
-                self._log.info('skip dir:  %s', opath)
+                self._log.debug('skip:   %s', dpath)
 
         def emit_file(fpath, opath):
             if apply(fpath):
                 yield opath
             else:
-                self._log.info('skip file: %s', opath)
+                self._log.debug('skip:   %s', fpath)
 
         if os.path.isfile(path):
             name = os.path.basename(path)
