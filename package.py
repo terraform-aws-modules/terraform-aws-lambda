@@ -955,7 +955,6 @@ def prepare_command(args):
     build_data = {
         'filename': filename,
         'runtime': runtime,
-        'source_path': source_path,
         'artifacts_dir': artifacts_dir,
         'build_plan': build_plan,
     }
