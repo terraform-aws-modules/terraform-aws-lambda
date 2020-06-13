@@ -313,7 +313,7 @@ class ZipWriteStream:
         """
         self._ensure_open()
         for base_dir in base_dirs:
-            self._log.info("adding content of directory '%s'", base_dir)
+            self._log.info("adding content of directory: %s", base_dir)
             for path in emit_dir_content(base_dir):
                 arcname = os.path.relpath(path, base_dir)
                 self._write_file(path, prefix, arcname, timestamp)
@@ -338,7 +338,7 @@ class ZipWriteStream:
         arcname = name if name else os.path.basename(file_path)
         if prefix:
             arcname = os.path.join(prefix, arcname)
-        self._log.info("adding '%s'", arcname)
+        self._log.info("adding: %s", arcname)
         zinfo = self._make_zinfo_from_file(file_path, arcname)
         if timestamp is None:
             timestamp = self.timestamp
@@ -516,7 +516,7 @@ class ZipContentFilter:
     def compile(self, patterns):
         rules = []
         for p in patterns_list(self._args, patterns):
-            self._log.debug("pattern '%s'", p)
+            self._log.debug("filter pattern: %s", p)
             if p.startswith('!'):
                 r = re.compile(p[1:])
                 rules.append((operator.not_, r))
@@ -555,10 +555,14 @@ class ZipContentFilter:
         def emit_dir(dpath, opath):
             if apply(dpath):
                 yield opath
+            else:
+                self._log.info('skip dir:  %s', opath)
 
         def emit_file(fpath, opath):
             if apply(fpath):
                 yield opath
+            else:
+                self._log.info('skip file: %s', opath)
 
         if os.path.isfile(path):
             name = os.path.basename(path)
@@ -569,12 +573,12 @@ class ZipContentFilter:
         else:
             for root, dirs, files in os.walk(path):
                 o, d = norm_path(path, root)
-                log.info('od: %s %s', o, d)
+                # log.info('od: %s %s', o, d)
                 if root != path:
                     yield from emit_dir(d, o)
                 for name in files:
                     o, f = norm_path(path, root, name)
-                    log.info('of: %s %s', o, f)
+                    # log.info('of: %s %s', o, f)
                     yield from emit_file(f, o)
 
 
