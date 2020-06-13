@@ -291,7 +291,11 @@ class ZipWriteStream:
         return self.open()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close(failed=exc_type is not None)
+        if exc_type is not None:
+            self._log.exception("Error during zip archive creation")
+            self.close(failed=True)
+            raise SystemExit(1)
+        self.close()
 
     def _ensure_open(self):
         if self._zip is not None:
