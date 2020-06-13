@@ -717,13 +717,8 @@ class BuildPlanManager:
                 if sh_work_dir:
                     if source_path != sh_work_dir:
                         source_path = sh_work_dir
-                if pf:
-                    for path in pf.filter(source_path, prefix):
-                        if os.path.isdir(source_path):
-                            arcname = os.path.relpath(path, source_path)
-                        else:
-                            arcname = os.path.basename(path)
-                        zs.write_file(path, prefix, arcname)
+                    if pf:
+                        self._zip_write_with_filter(zs, pf, source_path, prefix)
                 else:
                     if os.path.isdir(source_path):
                         zs.write_dirs(source_path, prefix=prefix)
@@ -731,11 +726,13 @@ class BuildPlanManager:
                         zs.write_file(source_path, prefix=prefix)
             elif cmd == 'pip':
                 runtime, pip_requirements, prefix = action[1:]
-                with install_pip_requirements(query, zs,
-                                              pip_requirements) as rd:
+                with install_pip_requirements(query, pip_requirements) as rd:
                     if rd:
-                        # XXX: timestamp=0 - what actually do with it?
-                        zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                        if pf:
+                            self._zip_write_with_filter(zs, pf, rd, prefix)
+                        else:
+                            # XXX: timestamp=0 - what actually do with it?
+                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == 'sh':
                 r, w = os.pipe()
                 side_ch = os.fdopen(r)
@@ -756,9 +753,21 @@ class BuildPlanManager:
             elif cmd == 'clear:filter':
                 pf = None
 
+    @staticmethod
+    def _zip_write_with_filter(zip_stream, path_filter, source_path, prefix):
+        for path in path_filter.filter(source_path, prefix):
+            if os.path.isdir(source_path):
+                arcname = os.path.relpath(path, source_path)
+            else:
+                arcname = os.path.basename(path)
+            zip_stream.write_file(path, prefix, arcname)
+
 
 @contextmanager
-def install_pip_requirements(query, zip_stream, requirements_file):
+def install_pip_requirements(query, requirements_file):
+    # TODO:
+    #  1. Emit files instead of temp_dir
+
     if not os.path.exists(requirements_file):
         yield
         return
