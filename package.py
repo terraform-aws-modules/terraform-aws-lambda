@@ -489,23 +489,33 @@ class ZipWriteStream:
 ################################################################################
 # Building
 
-def patterns_list(patterns):
+def patterns_list(args, patterns):
+    _filter = str.strip
+    if args.pattern_comments:
+        def _filter(x):
+            x = x.strip()
+            p = re.search("^(.*?)[ \t]*(?:[ \t]{2}#.*)?$", x).group(1).rstrip()
+            if p.startswith('#'):
+                return
+            if p:
+                return p
     if isinstance(patterns, str):
-        return list(map(str.strip, patterns.splitlines()))
+        return list(filter(None, map(_filter, patterns.splitlines())))
     return patterns
 
 
 class ZipContentFilter:
     """"""
 
-    def __init__(self):
+    def __init__(self, args):
+        self._args = args
         self._rules = None
         self._excludes = set()
         self._log = logging.getLogger('zip')
 
     def compile(self, patterns):
         rules = []
-        for p in patterns_list(patterns):
+        for p in patterns_list(self._args, patterns):
             self._log.debug("pattern '%s'", p)
             if p.startswith('!'):
                 r = re.compile(p[1:])
@@ -571,7 +581,8 @@ class ZipContentFilter:
 class BuildPlanManager:
     """"""
 
-    def __init__(self, log=None):
+    def __init__(self, args, log=None):
+        self._args = args
         self._source_paths = None
         self._log = log or logging.root
 
@@ -655,7 +666,7 @@ class BuildPlanManager:
                 patterns = claim.get('patterns')
                 commands = claim.get('commands')
                 if patterns:
-                    step('set:filter', patterns_list(patterns))
+                    step('set:filter', patterns_list(self._args, patterns))
                 if commands:
                     commands_step(path, commands)
                 else:
@@ -891,7 +902,7 @@ def prepare_command(args):
     recreate_missing_package = yesno_bool(args.recreate_missing_package)
     docker = query.docker
 
-    bpm = BuildPlanManager(log=log)
+    bpm = BuildPlanManager(args, log=log)
     build_plan = bpm.plan(source_path, query)
 
     if log.isEnabledFor(DEBUG2):
@@ -985,7 +996,7 @@ def build_command(args):
     # Zip up the build plan and write it to the target filename.
     # This will be used by the Lambda function as the source code package.
     with ZipWriteStream(filename) as zs:
-        bpm = BuildPlanManager(log=log)
+        bpm = BuildPlanManager(args, log=log)
         bpm.execute(build_plan, zs, query)
 
     os.utime(filename, ns=(timestamp, timestamp))
@@ -1074,10 +1085,13 @@ def args_parser():
 
 def main():
     ns = argparse.Namespace(
+        pattern_comments=yesno_bool(os.environ.get(
+            'TF_LAMBDA_PACKAGE_PATTERN_COMMENTS', False)),
         recreate_missing_package=os.environ.get(
             'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
         log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
     )
+
     p = args_parser()
     args = p.parse_args(namespace=ns)
 
