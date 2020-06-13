@@ -34,8 +34,8 @@ DEBUG2 = 9
 DEBUG3 = 8
 
 log_handler = None
-logger = logging.getLogger()
-cmd_logger = logging.getLogger('cmd')
+log = logging.getLogger()
+cmd_log = logging.getLogger('cmd')
 
 
 def configure_logging(use_tf_stderr=False):
@@ -71,8 +71,8 @@ def configure_logging(use_tf_stderr=False):
     log_handler = logging.StreamHandler(stream=log_stream)
     log_handler.setFormatter(LogFormatter())
 
-    logger.addHandler(log_handler)
-    logger.setLevel(logging.INFO)
+    log.addHandler(log_handler)
+    log.setLevel(logging.INFO)
 
 
 ################################################################################
@@ -88,7 +88,7 @@ def shlex_join(split_command):
 
 def abort(message):
     """Exits with an error message."""
-    logger.error(message)
+    log.error(message)
     sys.exit(1)
 
 
@@ -97,7 +97,7 @@ def cd(path, silent=False):
     """Changes the working directory."""
     cwd = os.getcwd()
     if not silent:
-        cmd_logger.info('cd %s', shlex.quote(path))
+        cmd_log.info('cd %s', shlex.quote(path))
     try:
         os.chdir(path)
         yield
@@ -110,20 +110,20 @@ def tempdir():
     """Creates a temporary directory and then deletes it afterwards."""
     prefix = 'terraform-aws-lambda-'
     path = tempfile.mkdtemp(prefix=prefix)
-    cmd_logger.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
+    cmd_log.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
     try:
         yield path
     finally:
         shutil.rmtree(path)
 
 
-def list_files(top_path, logger=None):
+def list_files(top_path, log=None):
     """
     Returns a sorted list of all files in a directory.
     """
 
-    if logger:
-        logger = logger.getChild('ls')
+    if log:
+        log = log.getChild('ls')
 
     results = []
 
@@ -132,8 +132,8 @@ def list_files(top_path, logger=None):
             file_path = os.path.join(root, file_name)
             relative_path = os.path.relpath(file_path, top_path)
             results.append(relative_path)
-            if logger:
-                logger.debug(relative_path)
+            if log:
+                log.debug(relative_path)
 
     results.sort()
     return results
@@ -205,30 +205,30 @@ def emit_dir_content(base_dir):
 
 
 def generate_content_hash(source_paths,
-                          hash_func=hashlib.sha256, logger=None):
+                          hash_func=hashlib.sha256, log=None):
     """
     Generate a content hash of the source paths.
     """
 
-    if logger:
-        logger = logger.getChild('hash')
+    if log:
+        log = log.getChild('hash')
 
     hash_obj = hash_func()
 
     for source_path in source_paths:
         if os.path.isdir(source_path):
             source_dir = source_path
-            _logger = logger if logger.isEnabledFor(DEBUG3) else None
-            for source_file in list_files(source_dir, logger=_logger):
+            _log = log if log.isEnabledFor(DEBUG3) else None
+            for source_file in list_files(source_dir, log=_log):
                 update_hash(hash_obj, source_dir, source_file)
-                if logger:
-                    logger.debug(os.path.join(source_dir, source_file))
+                if log:
+                    log.debug(os.path.join(source_dir, source_file))
         else:
             source_dir = os.path.dirname(source_path)
             source_file = os.path.relpath(source_path, source_dir)
             update_hash(hash_obj, source_dir, source_file)
-            if logger:
-                logger.debug(source_path)
+            if log:
+                log.debug(source_path)
 
     return hash_obj
 
@@ -268,14 +268,14 @@ class ZipWriteStream:
         self._compresslevel = compresslevel
         self._zip = None
 
-        self._logger = logging.getLogger('zip')
+        self._log = logging.getLogger('zip')
 
     def open(self):
         if self._tmp_filename:
             raise zipfile.BadZipFile("ZipStream object can't be reused")
         self._ensure_base_path(self.filename)
         self._tmp_filename = '{}.tmp'.format(self.filename)
-        self._logger.info("creating '%s' archive", self.filename)
+        self._log.info("creating '%s' archive", self.filename)
         self._zip = zipfile.ZipFile(self._tmp_filename, "w",
                                     self._compress_type)
         return self
@@ -304,7 +304,7 @@ class ZipWriteStream:
         archive_dir = os.path.dirname(zip_filename)
 
         if archive_dir and not os.path.exists(archive_dir):
-            self._logger.info("creating %s", archive_dir)
+            self._log.info("creating %s", archive_dir)
             os.makedirs(archive_dir)
 
     def write_dirs(self, *base_dirs, prefix=None, timestamp=None):
@@ -313,7 +313,7 @@ class ZipWriteStream:
         """
         self._ensure_open()
         for base_dir in base_dirs:
-            self._logger.info("adding content of directory '%s'", base_dir)
+            self._log.info("adding content of directory '%s'", base_dir)
             for path in emit_dir_content(base_dir):
                 arcname = os.path.relpath(path, base_dir)
                 self._write_file(path, prefix, arcname, timestamp)
@@ -338,7 +338,7 @@ class ZipWriteStream:
         arcname = name if name else os.path.basename(file_path)
         if prefix:
             arcname = os.path.join(prefix, arcname)
-        self._logger.info("adding '%s'", arcname)
+        self._log.info("adding '%s'", arcname)
         zinfo = self._make_zinfo_from_file(file_path, arcname)
         if timestamp is None:
             timestamp = self.timestamp
@@ -501,12 +501,12 @@ class ZipContentFilter:
     def __init__(self):
         self._rules = None
         self._excludes = set()
-        self._logger = logging.getLogger('zip')
+        self._log = logging.getLogger('zip')
 
     def compile(self, patterns):
         rules = []
         for p in patterns_list(patterns):
-            self._logger.debug("pattern '%s'", p)
+            self._log.debug("pattern '%s'", p)
             if p.startswith('!'):
                 r = re.compile(p[1:])
                 rules.append((operator.not_, r))
@@ -559,21 +559,21 @@ class ZipContentFilter:
         else:
             for root, dirs, files in os.walk(path):
                 o, d = norm_path(path, root)
-                logger.info('od: %s %s', o, d)
+                log.info('od: %s %s', o, d)
                 if root != path:
                     yield from emit_dir(d, o)
                 for name in files:
                     o, f = norm_path(path, root, name)
-                    logger.info('of: %s %s', o, f)
+                    log.info('of: %s %s', o, f)
                     yield from emit_file(f, o)
 
 
 class BuildPlanManager:
     """"""
 
-    def __init__(self, logger=None):
+    def __init__(self, log=None):
         self._source_paths = None
-        self._logger = logger or logging.root
+        self._log = log or logging.root
 
     def hash(self, extra_paths):
         if not self._source_paths:
@@ -584,9 +584,9 @@ class BuildPlanManager:
         # Generate a hash based on file names and content. Also use the
         # runtime value, build command, and content of the build paths
         # because they can have an effect on the resulting archive.
-        self._logger.debug("Computing content hash on files...")
+        self._log.debug("Computing content hash on files...")
         content_hash = generate_content_hash(content_hash_paths,
-                                             logger=self._logger)
+                                             log=self._log)
         return content_hash
 
     def plan(self, source_path, query):
@@ -723,7 +723,7 @@ class BuildPlanManager:
                 os.close(w)
                 sh_work_dir = side_ch.read().strip()
                 p.wait()
-                logger.info('WD: %s', sh_work_dir)
+                log.info('WD: %s', sh_work_dir)
                 side_ch.close()
             elif cmd == 'set:filter':
                 patterns = action[1]
@@ -745,7 +745,7 @@ def install_pip_requirements(query, zip_stream, requirements_file):
 
     working_dir = os.getcwd()
 
-    logger.info('Installing python requirements: %s', requirements_file)
+    log.info('Installing python requirements: %s', requirements_file)
     with tempdir() as temp_dir:
         requirements_filename = os.path.basename(requirements_file)
         target_file = os.path.join(temp_dir, requirements_filename)
@@ -779,7 +779,7 @@ def install_pip_requirements(query, zip_stream, requirements_file):
                     pip_cache_dir=pip_cache_dir
                 ))
             else:
-                cmd_logger.info(shlex_join(pip_command))
+                cmd_log.info(shlex_join(pip_command))
                 log_handler and log_handler.flush()
                 check_call(pip_command)
 
@@ -796,7 +796,7 @@ def docker_build_command(build_root, docker_file=None, tag=None):
         docker_cmd.extend(['--tag', tag])
     docker_cmd.append(build_root)
 
-    cmd_logger.info(shlex_join(docker_cmd))
+    cmd_log.info(shlex_join(docker_cmd))
     log_handler and log_handler.flush()
     return docker_cmd
 
@@ -853,7 +853,7 @@ def docker_run_command(build_root, command, runtime,
         docker_cmd.extend([shell, '-c'])
     docker_cmd.extend(command)
 
-    cmd_logger.info(shlex_join(docker_cmd))
+    cmd_log.info(shlex_join(docker_cmd))
     log_handler and log_handler.flush()
     return docker_cmd
 
@@ -869,15 +869,15 @@ def prepare_command(args):
     Outputs a filename and a command to run if the archive needs to be built.
     """
 
-    logger = logging.getLogger('prepare')
+    log = logging.getLogger('prepare')
 
     # Load the query.
     query_data = json.load(sys.stdin)
 
-    if logger.isEnabledFor(DEBUG3):
-        logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
-    if logger.isEnabledFor(DEBUG2):
-        logger.debug('QUERY: %s', json.dumps(query_data, indent=2))
+    if log.isEnabledFor(DEBUG3):
+        log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    if log.isEnabledFor(DEBUG2):
+        log.debug('QUERY: %s', json.dumps(query_data, indent=2))
 
     query = datatree('prepare_query', **query_data)
 
@@ -891,11 +891,11 @@ def prepare_command(args):
     recreate_missing_package = yesno_bool(args.recreate_missing_package)
     docker = query.docker
 
-    bpm = BuildPlanManager(logger=logger)
+    bpm = BuildPlanManager(log=log)
     build_plan = bpm.plan(source_path, query)
 
-    if logger.isEnabledFor(DEBUG2):
-        logger.debug('BUILD_PLAN: %s', json.dumps(build_plan, indent=2))
+    if log.isEnabledFor(DEBUG2):
+        log.debug('BUILD_PLAN: %s', json.dumps(build_plan, indent=2))
 
     # Expand a Terraform path.<cwd|root|module> references
     hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
@@ -958,12 +958,12 @@ def build_command(args):
     Installs dependencies with pip automatically.
     """
 
-    logger = logging.getLogger('build')
+    log = logging.getLogger('build')
 
-    if logger.isEnabledFor(DEBUG3):
-        logger.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
-    if logger.isEnabledFor(DEBUG2):
-        logger.debug('CMD: python3 %s', shlex_join(sys.argv))
+    if log.isEnabledFor(DEBUG3):
+        log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    if log.isEnabledFor(DEBUG2):
+        log.debug('CMD: python3 %s', shlex_join(sys.argv))
 
     with open(args.build_plan_file) as f:
         query_data = json.load(f)
@@ -979,20 +979,20 @@ def build_command(args):
         timestamp = int(_timestamp)
 
     if os.path.exists(filename) and not args.force:
-        logger.info('Reused: %s', shlex.quote(filename))
+        log.info('Reused: %s', shlex.quote(filename))
         return
 
     # Zip up the build plan and write it to the target filename.
     # This will be used by the Lambda function as the source code package.
     with ZipWriteStream(filename) as zs:
-        bpm = BuildPlanManager(logger=logger)
+        bpm = BuildPlanManager(log=log)
         bpm.execute(build_plan, zs, query)
 
     os.utime(filename, ns=(timestamp, timestamp))
-    logger.info('Created: %s', shlex.quote(filename))
-    if logger.isEnabledFor(logging.DEBUG):
+    log.info('Created: %s', shlex.quote(filename))
+    if log.isEnabledFor(logging.DEBUG):
         with open(filename, 'rb') as f:
-            logger.info('Base64sha256: %s', source_code_hash(f.read()))
+            log.info('Base64sha256: %s', source_code_hash(f.read()))
 
 
 def add_hidden_commands(sub_parsers):
@@ -1022,16 +1022,16 @@ def add_hidden_commands(sub_parsers):
 
     def zip_cmd(args):
         if args.verbose:
-            logger.setLevel(logging.DEBUG)
+            log.setLevel(logging.DEBUG)
         with ZipWriteStream(args.zipfile) as zs:
             zs.write_dirs(*args.dir, timestamp=args.timestamp)
-        if logger.isEnabledFor(logging.DEBUG):
+        if log.isEnabledFor(logging.DEBUG):
             zipinfo = shutil.which('zipinfo')
             if zipinfo:
-                logger.debug('-' * 80)
+                log.debug('-' * 80)
                 subprocess.call([zipinfo, args.zipfile])
-            logger.debug('-' * 80)
-            logger.debug('Source code hash: %s',
+            log.debug('-' * 80)
+            log.debug('Source code hash: %s',
                          source_code_hash(open(args.zipfile, 'rb').read()))
 
     p = hidden_parser('zip', help='Zip folder with provided files timestamp')
