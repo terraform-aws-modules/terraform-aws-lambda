@@ -651,13 +651,17 @@ class BuildPlanManager:
                             prefix = prefix.strip()
                             _path = os.path.normpath(os.path.join(path, _path))
                             step('zip:embedded', _path, prefix)
+                        elif len(c) == 2:
+                            prefix = None
+                            _, _path = c
+                            step('zip:embedded', _path, prefix)
                         elif len(c) == 1:
                             prefix = None
                             step('zip:embedded', path, prefix)
                         else:
                             raise ValueError(
-                                ':zip command can have zero '
-                                'or 2 arguments: {}'.format(c))
+                                ":zip invalid call signature, use: "
+                                "':zip [path [prefix_in_zip]]'")
                         hash(path)
                     else:
                         batch.append(c)
