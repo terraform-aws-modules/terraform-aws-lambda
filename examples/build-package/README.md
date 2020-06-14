@@ -1,6 +1,6 @@
-# Lambda Build Package Examples
+# Build Package Examples
 
-Configuration in this directory creates Lambda Function and Layer using various build and package options.
+Configuration in this directory creates deployment packages in a variety of combinations.
 
 ## Usage
 

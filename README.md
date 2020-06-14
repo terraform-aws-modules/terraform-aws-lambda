@@ -312,6 +312,9 @@ Hash of zip-archive created with the same content of the files is always identic
 
 When calling this module multiple times in one execution to create packages with the same `source_path`, zip-archives will be corrupted due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
 
+
+## <a name="build"></a> Debug
+
 Building and packaging has been historically hard to debug (especially with Terraform), so we made an effort to make it easier for user to see debug info. There are 3 different debug levels: `DEBUG` - to see only what is happening during planning phase, `DEBUG2` - to see all logging values, `DEBUG3` - to see all logging values and env variables (be careful sharing your env variables as they may contain secrets!).
 
 User can specify debug level like this:
@@ -320,6 +323,14 @@ User can specify debug level like this:
 export TF_LAMBDA_PACKAGE_LOG_LEVEL=DEBUG2
 terraform apply 
 ```
+
+User can enable comments in heredoc strings in `patterns` which can be helpful in some situations. To do this set this environment variable:
+
+```
+export TF_LAMBDA_PACKAGE_PATTERN_COMMENTS=true
+terraform apply 
+```
+
 
 ## <a name="build"></a> Build Dependencies
 
@@ -340,11 +351,12 @@ When `source_path` is set to a list of directories the content of each will be t
 
 ### Combine various options for extreme flexibility
 
-This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing all the available options:
+This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing some of the available options (see [examples/build-package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) for more):
 
 ```hcl
 source_path = [
   "src/main-source",
+  "src/another-source/index.py",
   {
     path     = "src/function1-dep",
     patterns = [
@@ -357,6 +369,11 @@ source_path = [
   }, {
     path             = "src/python3.8-app2",
     pip_requirements = "requirements-large.txt",
+    patterns = [
+      "!vendor/colorful-0.5.4.dist-info/RECORD",
+      "!vendor/colorful-.+.dist-info/.*",
+      "!vendor/colorful/__pycache__/?.*",
+    ]
   }, {
     path     = "src/python3.8-app3",
     commands = ["npm install"],
@@ -394,7 +411,7 @@ Few notes:
 ```
 
 * `commands` - List of commands to run. If specified, this argument overrides `pip_requirements`.
-* `pip_requirements` - Set to `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
+* `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
 * `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
 
 
@@ -428,6 +445,7 @@ When creating archive locally outside of this module you need to set `create_pac
     key    = "existing_package.zip"
   }
 ```
+
 
 ### Using deployment package from remote URL
 
@@ -494,9 +512,9 @@ There is [deploy module](https://github.com/terraform-aws-modules/terraform-aws-
 
 ## FAQ
 
-Q1: Why deployment package not recreating every time I change something?
+Q1: Why deployment package not recreating every time I change something? Or why deployment package is being recreated every time but content has not been changed?
 
-A1: There can be tons of reasons. The most likely is that changes has happened inside of dependency which is not used in calculating content hash. You can force it by setting value of `hash_extra` or to delete previously built package locally.
+A1: There can be several reasons related to concurrent executions, or to content hash. Sometimes, changes has happened inside of dependency which is not used in calculating content hash. Or multiple packages are creating at the same time from the same sources. You can force it by setting value of `hash_extra` to distinct values.
 
 Q2: How to force recreate deployment package?
 
