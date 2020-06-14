@@ -2,8 +2,8 @@
 
 import sys
 
-if sys.version_info < (3, 7):
-    raise RuntimeError("A python version 3.7 or newer is required")
+if sys.version_info < (3, 6):
+    raise RuntimeError("A python version 3.6 or newer is required")
 
 import os
 import re
@@ -26,6 +26,8 @@ from base64 import b64encode
 import logging
 
 PY38 = sys.version_info >= (3, 8)
+PY37 = sys.version_info >= (3, 7)
+PY36 = sys.version_info >= (3, 6)
 
 ################################################################################
 # Logging
@@ -387,10 +389,11 @@ class ZipWriteStream:
             else:
                 zinfo.compress_type = self._compress_type
 
-            if compresslevel is not None:
-                zinfo._compresslevel = compresslevel
-            else:
-                zinfo._compresslevel = self._compresslevel
+            if PY37:
+                if compresslevel is not None:
+                    zinfo._compresslevel = compresslevel
+                else:
+                    zinfo._compresslevel = self._compresslevel
 
         if zinfo.is_dir():
             with zip._lock:
