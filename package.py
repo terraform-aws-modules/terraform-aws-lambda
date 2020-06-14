@@ -445,9 +445,9 @@ class ZipWriteStream:
         isdir = stat.S_ISDIR(st.st_mode)
         mtime = time.localtime(st.st_mtime)
         date_time = mtime[0:6]
-        if not strict_timestamps and date_time[0] < 1980:
+        if strict_timestamps and date_time[0] < 1980:
             date_time = (1980, 1, 1, 0, 0, 0)
-        elif not strict_timestamps and date_time[0] > 2107:
+        elif strict_timestamps and date_time[0] > 2107:
             date_time = (2107, 12, 31, 23, 59, 59)
         # Create ZipInfo instance to store file information
         if arcname is None:
