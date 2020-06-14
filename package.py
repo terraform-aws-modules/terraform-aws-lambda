@@ -2,8 +2,8 @@
 
 import sys
 
-if sys.version_info < (3, 7):
-    raise RuntimeError("A python version 3.7 or newer is required")
+if sys.version_info < (3, 6):
+    raise RuntimeError("A python version 3.6 or newer is required")
 
 import os
 import re
@@ -26,12 +26,15 @@ from base64 import b64encode
 import logging
 
 PY38 = sys.version_info >= (3, 8)
+PY37 = sys.version_info >= (3, 7)
+PY36 = sys.version_info >= (3, 6)
 
 ################################################################################
 # Logging
 
 DEBUG2 = 9
 DEBUG3 = 8
+DUMP_ENV = 1
 
 log_handler = None
 log = logging.getLogger()
@@ -43,6 +46,7 @@ def configure_logging(use_tf_stderr=False):
 
     logging.addLevelName(DEBUG2, 'DEBUG2')
     logging.addLevelName(DEBUG3, 'DEBUG3')
+    logging.addLevelName(DUMP_ENV, 'DUMP_ENV')
 
     class LogFormatter(logging.Formatter):
         default_format = '%(message)s'
@@ -139,28 +143,29 @@ def list_files(top_path, log=None):
     return results
 
 
-def dataclass(name, **fields):
-    typ = type(name, (object,), {
-        '__slots__': fields.keys(),
-        '__getattr__': lambda *_: None,
+def dataclass(name):
+    typ = type(name, (dict,), {
+        '__getattr__': lambda self, x: self.get(x),
+        '__init__': lambda self, **k: self.update(k),
     })
-    for k, v in fields.items():
-        setattr(typ, k, v)
     return typ
 
 
 def datatree(name, **fields):
-    def decode_json(v):
+    def decode_json(k, v):
         if v and isinstance(v, str) and v[0] in '"[{':
             try:
-                return json.loads(v)
+                o = json.loads(v)
+                if isinstance(o, dict):
+                    return dataclass(k)(**o)
+                return o
             except json.JSONDecodeError:
                 pass
         return v
 
-    return dataclass(name, **dict(((
-        k, datatree(k, **v) if isinstance(v, dict) else decode_json(v))
-        for k, v in fields.items())))()
+    return dataclass(name)(**dict(((
+        k, datatree(k, **v) if isinstance(v, dict) else decode_json(k, v))
+        for k, v in fields.items())))
 
 
 def timestamp_now_ns():
@@ -291,7 +296,11 @@ class ZipWriteStream:
         return self.open()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close(failed=exc_type is not None)
+        if exc_type is not None:
+            self._log.exception("Error during zip archive creation")
+            self.close(failed=True)
+            raise SystemExit(1)
+        self.close()
 
     def _ensure_open(self):
         if self._zip is not None:
@@ -380,10 +389,11 @@ class ZipWriteStream:
             else:
                 zinfo.compress_type = self._compress_type
 
-            if compresslevel is not None:
-                zinfo._compresslevel = compresslevel
-            else:
-                zinfo._compresslevel = self._compresslevel
+            if PY37:
+                if compresslevel is not None:
+                    zinfo._compresslevel = compresslevel
+                else:
+                    zinfo._compresslevel = self._compresslevel
 
         if zinfo.is_dir():
             with zip._lock:
@@ -438,9 +448,9 @@ class ZipWriteStream:
         isdir = stat.S_ISDIR(st.st_mode)
         mtime = time.localtime(st.st_mtime)
         date_time = mtime[0:6]
-        if not strict_timestamps and date_time[0] < 1980:
+        if strict_timestamps and date_time[0] < 1980:
             date_time = (1980, 1, 1, 0, 0, 0)
-        elif not strict_timestamps and date_time[0] > 2107:
+        elif strict_timestamps and date_time[0] > 2107:
             date_time = (2107, 12, 31, 23, 59, 59)
         # Create ZipInfo instance to store file information
         if arcname is None:
@@ -631,11 +641,19 @@ class BuildPlanManager:
                 hash(requirements)
 
         def commands_step(path, commands):
-            path = os.path.normpath(path)
+            if path:
+                path = os.path.normpath(path)
             batch = []
             for c in commands:
                 if isinstance(c, str):
                     if c.startswith(':zip'):
+                        if path:
+                            hash(path)
+                        else:
+                            # If path doesn't defined for a block with
+                            # commands it will be set to Terraform's
+                            # current working directory
+                            path = query.paths.cwd
                         if batch:
                             step('sh', path, '\n'.join(batch))
                             batch.clear()
@@ -644,15 +662,18 @@ class BuildPlanManager:
                             _, _path, prefix = c
                             prefix = prefix.strip()
                             _path = os.path.normpath(os.path.join(path, _path))
-                            step('zip', _path, prefix)
+                            step('zip:embedded', _path, prefix)
+                        elif len(c) == 2:
+                            prefix = None
+                            _, _path = c
+                            step('zip:embedded', _path, prefix)
                         elif len(c) == 1:
                             prefix = None
-                            step('zip', path, prefix)
+                            step('zip:embedded', path, prefix)
                         else:
                             raise ValueError(
-                                ':zip command can have zero '
-                                'or 2 arguments: {}'.format(c))
-                        hash(path)
+                                ":zip invalid call signature, use: "
+                                "':zip [path [prefix_in_zip]]'")
                     else:
                         batch.append(c)
 
@@ -706,30 +727,30 @@ class BuildPlanManager:
 
         for action in build_plan:
             cmd = action[0]
-            if cmd == 'zip':
+            if cmd.startswith('zip'):
+                ts = 0 if cmd == 'zip:embedded' else None
                 source_path, prefix = action[1:]
                 if sh_work_dir:
                     if source_path != sh_work_dir:
                         source_path = sh_work_dir
-                if pf:
-                    for path in pf.filter(source_path, prefix):
-                        if os.path.isdir(source_path):
-                            arcname = os.path.relpath(path, source_path)
-                        else:
-                            arcname = os.path.basename(path)
-                        zs.write_file(path, prefix, arcname)
+                    if pf:
+                        self._zip_write_with_filter(zs, pf, source_path, prefix,
+                                                    timestamp=ts)
                 else:
                     if os.path.isdir(source_path):
-                        zs.write_dirs(source_path, prefix=prefix)
+                        zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
                     else:
-                        zs.write_file(source_path, prefix=prefix)
+                        zs.write_file(source_path, prefix=prefix, timestamp=ts)
             elif cmd == 'pip':
                 runtime, pip_requirements, prefix = action[1:]
-                with install_pip_requirements(query, zs,
-                                              pip_requirements) as rd:
+                with install_pip_requirements(query, pip_requirements) as rd:
                     if rd:
-                        # XXX: timestamp=0 - what actually do with it?
-                        zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                        if pf:
+                            self._zip_write_with_filter(zs, pf, rd, prefix,
+                                                        timestamp=0)
+                        else:
+                            # XXX: timestamp=0 - what actually do with it?
+                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == 'sh':
                 r, w = os.pipe()
                 side_ch = os.fdopen(r)
@@ -750,9 +771,22 @@ class BuildPlanManager:
             elif cmd == 'clear:filter':
                 pf = None
 
+    @staticmethod
+    def _zip_write_with_filter(zip_stream, path_filter, source_path, prefix,
+                               timestamp=None):
+        for path in path_filter.filter(source_path, prefix):
+            if os.path.isdir(source_path):
+                arcname = os.path.relpath(path, source_path)
+            else:
+                arcname = os.path.basename(path)
+            zip_stream.write_file(path, prefix, arcname, timestamp=timestamp)
+
 
 @contextmanager
-def install_pip_requirements(query, zip_stream, requirements_file):
+def install_pip_requirements(query, requirements_file):
+    # TODO:
+    #  1. Emit files instead of temp_dir
+
     if not os.path.exists(requirements_file):
         yield
         return
@@ -892,10 +926,15 @@ def prepare_command(args):
     # Load the query.
     query_data = json.load(sys.stdin)
 
-    if log.isEnabledFor(DEBUG3):
+    if log.isEnabledFor(DUMP_ENV):
         log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
     if log.isEnabledFor(DEBUG2):
-        log.debug('QUERY: %s', json.dumps(query_data, indent=2))
+        if log.isEnabledFor(DEBUG3):
+            log.debug('QUERY: %s', json.dumps(query_data, indent=2))
+        else:
+            log_excludes = ('source_path', 'hash_extra_paths', 'paths')
+            qd = {k: v for k, v in query_data.items() if k not in log_excludes}
+            log.debug('QUERY (excerpt): %s', json.dumps(qd, indent=2))
 
     query = datatree('prepare_query', **query_data)
 
@@ -944,7 +983,6 @@ def prepare_command(args):
     build_data = {
         'filename': filename,
         'runtime': runtime,
-        'source_path': source_path,
         'artifacts_dir': artifacts_dir,
         'build_plan': build_plan,
     }
@@ -1050,7 +1088,7 @@ def add_hidden_commands(sub_parsers):
                 subprocess.call([zipinfo, args.zipfile])
             log.debug('-' * 80)
             log.debug('Source code hash: %s',
-                         source_code_hash(open(args.zipfile, 'rb').read()))
+                      source_code_hash(open(args.zipfile, 'rb').read()))
 
     p = hidden_parser('zip', help='Zip folder with provided files timestamp')
     p.set_defaults(command=zip_cmd)

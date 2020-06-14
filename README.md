@@ -17,7 +17,7 @@ Not supported, yet:
 
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform:
 
-1. Build and install dependencies - [read more](#build).
+1. Build and install dependencies - [read more](#build). Requires Python 3.6 or newer.
 2. Create, store, and use deployment packages - [read more](#package).
 3. Create, update, and publish AWS Lambda Function and Lambda Layer - [see usage](#usage).
 4. Create static and dynamic aliases for AWS Lambda Function - [see usage](#usage), see [modules/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias).
@@ -306,7 +306,7 @@ module "lambda" {
 
 This is one of the most complicated part done by the module and normally you don't have to know internals.
 
-`package.py` is Python script which does it. Make sure, Python 3.7 or newer is installed. The main functions of the script are to generate a filename of zip-archive based on the content of the files, verify if zip-archive has been already created, and create zip-archive only when it is necessary (during `apply`, not `plan`).
+`package.py` is Python script which does it. Make sure, Python 3.6 or newer is installed. The main functions of the script are to generate a filename of zip-archive based on the content of the files, verify if zip-archive has been already created, and create zip-archive only when it is necessary (during `apply`, not `plan`).
 
 Hash of zip-archive created with the same content of the files is always identical which prevents unnecessary force-updates of the Lambda resources unless content modifies. If you need to have different filenames for the same content you can specify extra string argument `hash_extra`.
 
@@ -315,7 +315,7 @@ When calling this module multiple times in one execution to create packages with
 
 ## <a name="build"></a> Debug
 
-Building and packaging has been historically hard to debug (especially with Terraform), so we made an effort to make it easier for user to see debug info. There are 3 different debug levels: `DEBUG` - to see only what is happening during planning phase, `DEBUG2` - to see all logging values, `DEBUG3` - to see all logging values and env variables (be careful sharing your env variables as they may contain secrets!).
+Building and packaging has been historically hard to debug (especially with Terraform), so we made an effort to make it easier for user to see debug info. There are 3 different debug levels: `DEBUG` - to see only what is happening during planning phase and how a zip file content filtering in case of applied patterns, `DEBUG2` - to see more logging output, `DEBUG3` - to see all logging values, `DUMP_ENV` - to see all logging values and env variables (be careful sharing your env variables as they may contain secrets!).
 
 User can specify debug level like this:
 
