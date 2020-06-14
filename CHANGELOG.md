@@ -7,6 +7,33 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v1.10.0"></a>
+## [v1.10.0] - 2020-06-14
+
+- feat: Added support for variety of options for source_path, closes [#12](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/12) ([#25](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/25))
+- Updated examples and readme
+- Added more samples to examples/simple/main.tf
+- package.py - Log directories with ending /
+- package.py - Log skipped items + made uniform some messages
+- package.py - Added support for comments in patterns
+- package.py - Renamed: logger -> log
+- feat: Added ZipContentFilter class to apply patterns filtering
+- package.py - Fixed and improved logging
+- package.py - Added BuildPlanManager initial implementation
+- package.py - Fixed building in docker
+- package.py - Implemented ZipFileStream.write_file
+- feat: In-place zip archiving
+- package.py - Removed dir changing on zip archive generation
+- package.py - Simplified emit_dir_files func
+- package.py - Fixed timestamp appling
+- package.py - Added hidden hash command to calculate Lambda's content hash
+- package.py - Finished ZipFileStream.write_dirs implementation
+- package.py - Moved borrowed ZipInfo.from_file to a ZipWriteStream class
+- package.py - Added initial ZipFileStream skel
+- package.py - Move out inner functions from *_command functions
+- feat: Added pid to the prepare stage log records
+
+
 <a name="v1.9.0"></a>
 ## [v1.9.0] - 2020-06-12
 
@@ -84,7 +111,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.10.0...HEAD
+[v1.10.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.9.0...v1.10.0
 [v1.9.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.8.0...v1.9.0
 [v1.8.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.7.0...v1.8.0
 [v1.7.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.6.0...v1.7.0
