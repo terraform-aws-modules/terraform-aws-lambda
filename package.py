@@ -550,12 +550,14 @@ class ZipContentFilter:
         rules = self._rules
 
         def norm_path(path, root, filename=None):
+            op = os.path.join(root, filename) if filename else root
             p = os.path.relpath(root, path)
             if prefix:
-                p = os.path.normpath(os.path.join(prefix, p))
-            p = os.path.join(p, filename) if filename else p + os.sep
-            op = os.path.join(root, filename) if filename else root
-            return op, p
+                p = os.path.join(prefix, p)
+            if filename:
+                p = os.path.normpath(os.path.join(p, filename))
+                return op, p
+            return op, p + os.sep
 
         def apply(path):
             d = True
