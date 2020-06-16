@@ -20,7 +20,7 @@ import tempfile
 import operator
 import platform
 import subprocess
-from subprocess import check_call
+from subprocess import check_call, check_output
 from contextlib import contextmanager
 from base64 import b64encode
 import logging
@@ -806,10 +806,31 @@ def install_pip_requirements(query, requirements_file):
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
     docker = query.docker
-    docker_file = query.docker_file
-    docker_image = query.docker_image
-    docker_build_root = query.docker_build_root
-    with_ssh_agent = query.with_ssh_agent
+    docker_image_tag_id = None
+
+    if docker:
+        docker_file = docker.docker_file
+        docker_image = docker.docker_image
+        docker_build_root = docker.docker_build_root
+
+        ok = False
+
+        while True:
+            output = check_output(docker_image_id_command(docker_image))
+            if output:
+                docker_image_tag_id = output.decode().strip()
+                log.debug("DOCKER TAG ID: %s -> %s",
+                          docker_image, docker_image_tag_id)
+                ok = True
+            if ok:
+                break
+            docker_cmd = docker_build_command(
+                build_root=docker_build_root,
+                docker_file=docker_file,
+                tag=docker_image,
+            )
+            check_call(docker_cmd)
+            ok = True
 
     working_dir = os.getcwd()
 
@@ -828,6 +849,7 @@ def install_pip_requirements(query, requirements_file):
                 '--requirement={}'.format(requirements_filename),
             ]
             if docker:
+                with_ssh_agent = docker.with_ssh_agent
                 pip_cache_dir = docker.docker_pip_cache
                 if pip_cache_dir:
                     if isinstance(pip_cache_dir, str):
@@ -843,8 +865,9 @@ def install_pip_requirements(query, requirements_file):
                                              chown_mask, '.'])]
                 shell_command = [' '.join(shell_command)]
                 check_call(docker_run_command(
-                    '.', shell_command, runtime, shell=True,
-                    ssh_agent=with_ssh_agent,
+                    '.', shell_command, runtime,
+                    image=docker_image_tag_id,
+                    shell=True, ssh_agent=with_ssh_agent,
                     pip_cache_dir=pip_cache_dir,
                 ))
             else:
@@ -856,11 +879,25 @@ def install_pip_requirements(query, requirements_file):
             yield temp_dir
 
 
-def docker_build_command(build_root, docker_file=None, tag=None):
+def docker_image_id_command(tag):
+    """"""
+    docker_cmd = ['docker', 'images', '--format={{.ID}}', tag]
+    cmd_log.info(shlex_join(docker_cmd))
+    log_handler and log_handler.flush()
+    return docker_cmd
+
+
+def docker_build_command(tag=None, docker_file=None, build_root=False):
     """"""
     docker_cmd = ['docker', 'build']
-    if docker_file:
-        docker_cmd.extend(['--file', docker_file])
+
+    if not build_root:
+        if docker_file:
+            docker_cmd.extend(['--file', docker_file])
+            build_root = os.path.dirname(docker_file)
+        else:
+            raise ValueError(
+                "docker_build_root or docker_file must be provided")
     if tag:
         docker_cmd.extend(['--tag', tag])
     docker_cmd.append(build_root)
