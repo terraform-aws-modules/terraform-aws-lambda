@@ -108,24 +108,52 @@ resource "aws_iam_policy_attachment" "dead_letter" {
 # VPC
 ######
 
+// Copying AWS managed policy to be able to attach the same policy with multiple roles without overwrites by another function
+data "aws_iam_policy" "vpc" {
+  count = local.create_role && var.attach_network_policy ? 1 : 0
+
+  arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+}
+
+resource "aws_iam_policy" "vpc" {
+  count = local.create_role && var.attach_network_policy ? 1 : 0
+
+  name   = "${var.function_name}-vpc"
+  policy = data.aws_iam_policy.vpc[0].policy
+}
+
 resource "aws_iam_policy_attachment" "vpc" {
   count = local.create_role && var.attach_network_policy ? 1 : 0
 
   name       = "${var.function_name}-vpc"
   roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+  policy_arn = aws_iam_policy.vpc[0].arn
 }
 
 #####################
 # Tracing with X-Ray
 #####################
 
+// Copying AWS managed policy to be able to attach the same policy with multiple roles without overwrites by another function
+data "aws_iam_policy" "tracing" {
+  count = local.create_role && var.attach_tracing_policy ? 1 : 0
+
+  arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+}
+
+resource "aws_iam_policy" "tracing" {
+  count = local.create_role && var.attach_tracing_policy ? 1 : 0
+
+  name   = "${var.function_name}-tracing"
+  policy = data.aws_iam_policy.tracing[0].policy
+}
+
 resource "aws_iam_policy_attachment" "tracing" {
   count = local.create_role && var.attach_tracing_policy ? 1 : 0
 
   name       = "${var.function_name}-tracing"
   roles      = [aws_iam_role.lambda[0].name]
-  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+  policy_arn = aws_iam_policy.tracing[0].arn
 }
 
 ###############################
