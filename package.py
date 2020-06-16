@@ -79,6 +79,11 @@ def configure_logging(use_tf_stderr=False):
     log.setLevel(logging.INFO)
 
 
+def dump_env():
+    if log.isEnabledFor(DUMP_ENV):
+        log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+
+
 ################################################################################
 # Backports
 
@@ -926,8 +931,7 @@ def prepare_command(args):
     # Load the query.
     query_data = json.load(sys.stdin)
 
-    if log.isEnabledFor(DUMP_ENV):
-        log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    dump_env()
     if log.isEnabledFor(DEBUG2):
         if log.isEnabledFor(DEBUG3):
             log.debug('QUERY: %s', json.dumps(query_data, indent=2))
@@ -1016,8 +1020,7 @@ def build_command(args):
 
     log = logging.getLogger('build')
 
-    if log.isEnabledFor(DEBUG3):
-        log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+    dump_env()
     if log.isEnabledFor(DEBUG2):
         log.debug('CMD: python3 %s', shlex_join(sys.argv))
 
