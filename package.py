@@ -646,6 +646,12 @@ class BuildPlanManager:
                 hash(requirements)
 
         def commands_step(path, commands):
+            if not commands:
+                return
+
+            if isinstance(commands, str):
+                commands = map(str.strip, commands.splitlines())
+
             if path:
                 path = os.path.normpath(path)
             batch = []
@@ -737,15 +743,16 @@ class BuildPlanManager:
                 source_path, prefix = action[1:]
                 if sh_work_dir:
                     if source_path != sh_work_dir:
-                        source_path = sh_work_dir
+                        if not os.path.isfile(source_path):
+                            source_path = sh_work_dir
+                if os.path.isdir(source_path):
                     if pf:
                         self._zip_write_with_filter(zs, pf, source_path, prefix,
                                                     timestamp=ts)
-                else:
-                    if os.path.isdir(source_path):
-                        zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
                     else:
-                        zs.write_file(source_path, prefix=prefix, timestamp=ts)
+                        zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
+                else:
+                    zs.write_file(source_path, prefix=prefix, timestamp=ts)
             elif cmd == 'pip':
                 runtime, pip_requirements, prefix = action[1:]
                 with install_pip_requirements(query, pip_requirements) as rd:
