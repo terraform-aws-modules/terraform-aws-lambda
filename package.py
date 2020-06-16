@@ -806,6 +806,10 @@ def install_pip_requirements(query, requirements_file):
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
     docker = query.docker
+    docker_file = query.docker_file
+    docker_image = query.docker_image
+    docker_build_root = query.docker_build_root
+    with_ssh_agent = query.with_ssh_agent
 
     working_dir = os.getcwd()
 
@@ -840,7 +844,8 @@ def install_pip_requirements(query, requirements_file):
                 shell_command = [' '.join(shell_command)]
                 check_call(docker_run_command(
                     '.', shell_command, runtime, shell=True,
-                    pip_cache_dir=pip_cache_dir
+                    ssh_agent=with_ssh_agent,
+                    pip_cache_dir=pip_cache_dir,
                 ))
             else:
                 cmd_log.info(shlex_join(pip_command))
@@ -866,9 +871,12 @@ def docker_build_command(build_root, docker_file=None, tag=None):
 
 
 def docker_run_command(build_root, command, runtime,
-                       image=None, shell=None, interactive=False,
-                       pip_cache_dir=None):
+                       image=None, shell=None, ssh_agent=False,
+                       interactive=False, pip_cache_dir=None):
     """"""
+    if platform.system() not in ('Linux', 'Darwin'):
+        raise RuntimeError("Unsupported platform for docker building")
+
     docker_cmd = ['docker', 'run', '--rm']
 
     if interactive:
@@ -883,27 +891,28 @@ def docker_run_command(build_root, command, runtime,
         '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
     ])
 
-    if platform.system() == 'Darwin':
-        # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding
-        docker_cmd.extend([
-            '--mount', 'type=bind,'
-                       'src=/run/host-services/ssh-auth.sock,'
-                       'target=/run/host-services/ssh-auth.sock',
-            '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
-        ])
-    elif platform.system() == 'Linux':
-        sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
-        docker_cmd.extend([
-            '-v', '{}:/tmp/ssh_sock:z'.format(sock),
-            '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
-        ])
+    if ssh_agent:
+        if platform.system() == 'Darwin':
+            # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding
+            docker_cmd.extend([
+                '--mount', 'type=bind,'
+                           'src=/run/host-services/ssh-auth.sock,'
+                           'target=/run/host-services/ssh-auth.sock',
+                '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
+            ])
+        elif platform.system() == 'Linux':
+            sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
+            docker_cmd.extend([
+                '-v', '{}:/tmp/ssh_sock:z'.format(sock),
+                '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
+            ])
+
+    if platform.system() == 'Linux':
         if pip_cache_dir:
             pip_cache_dir = os.path.abspath(pip_cache_dir)
             docker_cmd.extend([
                 '-v', '{}:/root/.cache/pip:z'.format(pip_cache_dir),
             ])
-    else:
-        raise RuntimeError("Unsupported platform for docker building")
 
     if not image:
         image = 'lambci/lambda:build-{}'.format(runtime)
