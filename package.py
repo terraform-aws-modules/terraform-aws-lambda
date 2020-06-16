@@ -738,9 +738,9 @@ class BuildPlanManager:
                 if sh_work_dir:
                     if source_path != sh_work_dir:
                         source_path = sh_work_dir
-                    if pf:
-                        self._zip_write_with_filter(zs, pf, source_path, prefix,
-                                                    timestamp=ts)
+                if pf:
+                    self._zip_write_with_filter(zs, pf, source_path, prefix,
+                                                timestamp=ts)
                 else:
                     if os.path.isdir(source_path):
                         zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
