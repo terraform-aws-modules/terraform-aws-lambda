@@ -14,10 +14,11 @@ data "external" "archive_prepare" {
     })
 
     docker = var.build_in_docker ? jsonencode({
-      docker_pip_cache = var.docker_pip_cache
-      docker_file      = var.docker_file
-      docker_image     = var.docker_image
-      with_ssh_agent   = var.docker_with_ssh_agent
+      docker_pip_cache  = var.docker_pip_cache
+      docker_build_root = var.docker_build_root
+      docker_file       = var.docker_file
+      docker_image      = var.docker_image
+      with_ssh_agent    = var.docker_with_ssh_agent
     }) : null
 
     artifacts_dir    = var.artifacts_dir

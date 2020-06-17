@@ -20,7 +20,7 @@ import tempfile
 import operator
 import platform
 import subprocess
-from subprocess import check_call
+from subprocess import check_call, check_output
 from contextlib import contextmanager
 from base64 import b64encode
 import logging
@@ -550,12 +550,14 @@ class ZipContentFilter:
         rules = self._rules
 
         def norm_path(path, root, filename=None):
+            op = os.path.join(root, filename) if filename else root
             p = os.path.relpath(root, path)
             if prefix:
-                p = os.path.normpath(os.path.join(prefix, p))
-            p = os.path.join(p, filename) if filename else p + os.sep
-            op = os.path.join(root, filename) if filename else root
-            return op, p
+                p = os.path.join(prefix, p)
+            if filename:
+                p = os.path.normpath(os.path.join(p, filename))
+                return op, p
+            return op, p + os.sep
 
         def apply(path):
             d = True
@@ -806,6 +808,34 @@ def install_pip_requirements(query, requirements_file):
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
     docker = query.docker
+    docker_image_tag_id = None
+
+    if docker:
+        docker_file = docker.docker_file
+        docker_image = docker.docker_image
+        docker_build_root = docker.docker_build_root
+
+        if docker_image:
+            ok = False
+            while True:
+                output = check_output(docker_image_id_command(docker_image))
+                if output:
+                    docker_image_tag_id = output.decode().strip()
+                    log.debug("DOCKER TAG ID: %s -> %s",
+                              docker_image, docker_image_tag_id)
+                    ok = True
+                if ok:
+                    break
+                docker_cmd = docker_build_command(
+                    build_root=docker_build_root,
+                    docker_file=docker_file,
+                    tag=docker_image,
+                )
+                check_call(docker_cmd)
+                ok = True
+        elif docker_file or docker_build_root:
+            raise ValueError('docker_image must be specified '
+                             'for a custom image future references')
 
     working_dir = os.getcwd()
 
@@ -824,6 +854,7 @@ def install_pip_requirements(query, requirements_file):
                 '--requirement={}'.format(requirements_filename),
             ]
             if docker:
+                with_ssh_agent = docker.with_ssh_agent
                 pip_cache_dir = docker.docker_pip_cache
                 if pip_cache_dir:
                     if isinstance(pip_cache_dir, str):
@@ -839,8 +870,10 @@ def install_pip_requirements(query, requirements_file):
                                              chown_mask, '.'])]
                 shell_command = [' '.join(shell_command)]
                 check_call(docker_run_command(
-                    '.', shell_command, runtime, shell=True,
-                    pip_cache_dir=pip_cache_dir
+                    '.', shell_command, runtime,
+                    image=docker_image_tag_id,
+                    shell=True, ssh_agent=with_ssh_agent,
+                    pip_cache_dir=pip_cache_dir,
                 ))
             else:
                 cmd_log.info(shlex_join(pip_command))
@@ -851,13 +884,29 @@ def install_pip_requirements(query, requirements_file):
             yield temp_dir
 
 
-def docker_build_command(build_root, docker_file=None, tag=None):
+def docker_image_id_command(tag):
     """"""
+    docker_cmd = ['docker', 'images', '--format={{.ID}}', tag]
+    cmd_log.info(shlex_join(docker_cmd))
+    log_handler and log_handler.flush()
+    return docker_cmd
+
+
+def docker_build_command(tag=None, docker_file=None, build_root=False):
+    """"""
+    if not (build_root or docker_file):
+        raise ValueError('docker_build_root or docker_file must be provided')
+
     docker_cmd = ['docker', 'build']
-    if docker_file:
-        docker_cmd.extend(['--file', docker_file])
+
     if tag:
         docker_cmd.extend(['--tag', tag])
+    else:
+        raise ValueError('docker_image must be specified')
+    if not build_root:
+        build_root = os.path.dirname(docker_file)
+    if docker_file:
+        docker_cmd.extend(['--file', docker_file])
     docker_cmd.append(build_root)
 
     cmd_log.info(shlex_join(docker_cmd))
@@ -866,9 +915,12 @@ def docker_build_command(build_root, docker_file=None, tag=None):
 
 
 def docker_run_command(build_root, command, runtime,
-                       image=None, shell=None, interactive=False,
-                       pip_cache_dir=None):
+                       image=None, shell=None, ssh_agent=False,
+                       interactive=False, pip_cache_dir=None):
     """"""
+    if platform.system() not in ('Linux', 'Darwin'):
+        raise RuntimeError("Unsupported platform for docker building")
+
     docker_cmd = ['docker', 'run', '--rm']
 
     if interactive:
@@ -883,27 +935,28 @@ def docker_run_command(build_root, command, runtime,
         '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
     ])
 
-    if platform.system() == 'Darwin':
-        # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding
-        docker_cmd.extend([
-            '--mount', 'type=bind,'
-                       'src=/run/host-services/ssh-auth.sock,'
-                       'target=/run/host-services/ssh-auth.sock',
-            '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
-        ])
-    elif platform.system() == 'Linux':
-        sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
-        docker_cmd.extend([
-            '-v', '{}:/tmp/ssh_sock:z'.format(sock),
-            '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
-        ])
+    if ssh_agent:
+        if platform.system() == 'Darwin':
+            # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding
+            docker_cmd.extend([
+                '--mount', 'type=bind,'
+                           'src=/run/host-services/ssh-auth.sock,'
+                           'target=/run/host-services/ssh-auth.sock',
+                '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
+            ])
+        elif platform.system() == 'Linux':
+            sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
+            docker_cmd.extend([
+                '-v', '{}:/tmp/ssh_sock:z'.format(sock),
+                '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
+            ])
+
+    if platform.system() == 'Linux':
         if pip_cache_dir:
             pip_cache_dir = os.path.abspath(pip_cache_dir)
             docker_cmd.extend([
                 '-v', '{}:/root/.cache/pip:z'.format(pip_cache_dir),
             ])
-    else:
-        raise RuntimeError("Unsupported platform for docker building")
 
     if not image:
         image = 'lambci/lambda:build-{}'.format(runtime)
