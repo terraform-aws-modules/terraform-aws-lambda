@@ -29,6 +29,9 @@ PY38 = sys.version_info >= (3, 8)
 PY37 = sys.version_info >= (3, 7)
 PY36 = sys.version_info >= (3, 6)
 
+WINDOWS = platform.system() == 'Windows'
+OSX = platform.system() == 'Darwin'
+
 ################################################################################
 # Logging
 
@@ -846,10 +849,14 @@ def install_pip_requirements(query, requirements_file):
         target_file = os.path.join(temp_dir, requirements_filename)
         shutil.copyfile(requirements_file, target_file)
 
+        python_exec = runtime
+        if WINDOWS and not docker:
+            python_exec = 'python.exe'
+
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
             pip_command = [
-                runtime, '-m', 'pip',
+                python_exec, '-m', 'pip',
                 'install', '--no-compile',
                 '--prefix=', '--target=.',
                 '--requirement={}'.format(requirements_filename),
