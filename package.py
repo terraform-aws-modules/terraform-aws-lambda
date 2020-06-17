@@ -815,24 +815,27 @@ def install_pip_requirements(query, requirements_file):
         docker_image = docker.docker_image
         docker_build_root = docker.docker_build_root
 
-        ok = False
-
-        while True:
-            output = check_output(docker_image_id_command(docker_image))
-            if output:
-                docker_image_tag_id = output.decode().strip()
-                log.debug("DOCKER TAG ID: %s -> %s",
-                          docker_image, docker_image_tag_id)
+        if docker_image:
+            ok = False
+            while True:
+                output = check_output(docker_image_id_command(docker_image))
+                if output:
+                    docker_image_tag_id = output.decode().strip()
+                    log.debug("DOCKER TAG ID: %s -> %s",
+                              docker_image, docker_image_tag_id)
+                    ok = True
+                if ok:
+                    break
+                docker_cmd = docker_build_command(
+                    build_root=docker_build_root,
+                    docker_file=docker_file,
+                    tag=docker_image,
+                )
+                check_call(docker_cmd)
                 ok = True
-            if ok:
-                break
-            docker_cmd = docker_build_command(
-                build_root=docker_build_root,
-                docker_file=docker_file,
-                tag=docker_image,
-            )
-            check_call(docker_cmd)
-            ok = True
+        elif docker_file or docker_build_root:
+            raise ValueError('docker_image must be specified '
+                             'for a custom image future references')
 
     working_dir = os.getcwd()
 
@@ -891,17 +894,19 @@ def docker_image_id_command(tag):
 
 def docker_build_command(tag=None, docker_file=None, build_root=False):
     """"""
+    if not (build_root or docker_file):
+        raise ValueError('docker_build_root or docker_file must be provided')
+
     docker_cmd = ['docker', 'build']
 
-    if not build_root:
-        if docker_file:
-            docker_cmd.extend(['--file', docker_file])
-            build_root = os.path.dirname(docker_file)
-        else:
-            raise ValueError(
-                "docker_build_root or docker_file must be provided")
     if tag:
         docker_cmd.extend(['--tag', tag])
+    else:
+        raise ValueError('docker_image must be specified')
+    if not build_root:
+        build_root = os.path.dirname(docker_file)
+    if docker_file:
+        docker_cmd.extend(['--file', docker_file])
     docker_cmd.append(build_root)
 
     cmd_log.info(shlex_join(docker_cmd))
