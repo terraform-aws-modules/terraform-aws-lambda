@@ -26,7 +26,7 @@ data "external" "archive_prepare" {
     }) : null
 
     artifacts_dir    = var.artifacts_dir
-    runtime          = var.runtime
+    runtime          = local.python
     source_path      = jsonencode(var.source_path)
     hash_extra       = var.hash_extra
     hash_extra_paths = jsonencode(["${path.module}/package.py"])
