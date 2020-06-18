@@ -1,9 +1,13 @@
+locals {
+  python = (substr(pathexpand("~"), 0, 1) == "/") ? "python3" : "python.exe"
+}
+
 # Generates a filename for the zip archive based on the content of the files
 # in source_path. The filename will change when the source code changes.
 data "external" "archive_prepare" {
   count = var.create && var.create_package ? 1 : 0
 
-  program     = ["python3", "${path.module}/package.py", "prepare"]
+  program     = [local.python, "${path.module}/package.py", "prepare"]
   working_dir = path.cwd
 
   query = {
@@ -52,7 +56,7 @@ resource "null_resource" "archive" {
 
   provisioner "local-exec" {
     interpreter = [
-      "python3", "${path.module}/package.py", "build",
+      local.python, "${path.module}/package.py", "build",
       "--timestamp", data.external.archive_prepare[0].result.timestamp
     ]
     command     = data.external.archive_prepare[0].result.build_plan_filename
