@@ -1,6 +1,10 @@
 locals {
-  create_role   = var.create && var.create_function && ! var.create_layer && var.create_role
-  log_group_arn = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
+  create_role = var.create && var.create_function && ! var.create_layer && var.create_role
+
+  # Lambda@Edge uses the Cloudwatch region closest to the location where the function is executed
+  # The region part of the LogGroup ARN is then replaced with a wildcard (*) so Lambda@Edge is able to log in every region
+  log_group_arn_regional = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
+  log_group_arn          = var.lambda_at_edge ? join(":", ["arn", data.aws_arn.log_group_arn.partition, data.aws_arn.log_group_arn.service, "*", data.aws_arn.log_group_arn.account, data.aws_arn.log_group_arn.resource]) : local.log_group_arn_regional
 }
 
 ###########
@@ -37,6 +41,10 @@ resource "aws_iam_role" "lambda" {
 ##################
 # Cloudwatch Logs
 ##################
+
+data "aws_arn" "log_group_arn" {
+  arn = local.log_group_arn_regional
+}
 
 data "aws_iam_policy_document" "logs" {
   count = local.create_role && var.attach_cloudwatch_logs_policy ? 1 : 0
