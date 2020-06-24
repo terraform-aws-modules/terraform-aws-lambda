@@ -14,6 +14,19 @@ resource "random_pet" "this" {
   length = 2
 }
 
+//module "lambda_at_edge" {
+//  source = "../../"
+//
+//  function_name = "${random_pet.this.id}-lambda-edge"
+//  handler       = "index.lambda_handler"
+//  runtime       = "python3.8"
+//  lambda_at_edge = true
+//
+//  attach_cloudwatch_logs_policy = true
+//
+//  source_path = "${path.module}/../fixtures/python3.8-app1/"
+//}
+
 //resource "aws_cloudwatch_log_group" "this" {
 //  name = "/aws/lambda/us-east-1.${random_pet.this.id}-lambda-simple"
 //}
