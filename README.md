@@ -313,7 +313,7 @@ Hash of zip-archive created with the same content of the files is always identic
 When calling this module multiple times in one execution to create packages with the same `source_path`, zip-archives will be corrupted due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
 
 
-## <a name="build"></a> Debug
+## <a name="debug"></a> Debug
 
 Building and packaging has been historically hard to debug (especially with Terraform), so we made an effort to make it easier for user to see debug info. There are 3 different debug levels: `DEBUG` - to see only what is happening during planning phase and how a zip file content filtering in case of applied patterns, `DEBUG2` - to see more logging output, `DEBUG3` - to see all logging values, `DUMP_ENV` - to see all logging values and env variables (be careful sharing your env variables as they may contain secrets!).
 
@@ -514,15 +514,23 @@ There is [deploy module](https://github.com/terraform-aws-modules/terraform-aws-
 
 Q1: Why deployment package not recreating every time I change something? Or why deployment package is being recreated every time but content has not been changed?
 
-A1: There can be several reasons related to concurrent executions, or to content hash. Sometimes, changes has happened inside of dependency which is not used in calculating content hash. Or multiple packages are creating at the same time from the same sources. You can force it by setting value of `hash_extra` to distinct values.
+> Answer: There can be several reasons related to concurrent executions, or to content hash. Sometimes, changes has happened inside of dependency which is not used in calculating content hash. Or multiple packages are creating at the same time from the same sources. You can force it by setting value of `hash_extra` to distinct values.
 
 Q2: How to force recreate deployment package?
 
-A2: Delete an existing zip-archive from `builds` directory, or make a change in your source code. If there is no zip-archive for the current content hash, it will be recreated during `terraform apply`.
+> Answer: Delete an existing zip-archive from `builds` directory, or make a change in your source code. If there is no zip-archive for the current content hash, it will be recreated during `terraform apply`.
 
 Q3: `null_resource.archive[0] must be replaced`
 
-A3: This probably mean that zip-archive has been deployed, but is currently absent locally, and it has to be recreated locally. When you run into this issue during CI/CD process (where workspace is clean), you can set environment variable `TF_RECREATE_MISSING_LAMBDA_PACKAGE=false` and run `terraform apply`.
+> Answer: This probably mean that zip-archive has been deployed, but is currently absent locally, and it has to be recreated locally. When you run into this issue during CI/CD process (where workspace is clean), you can set environment variable `TF_RECREATE_MISSING_LAMBDA_PACKAGE=false` and run `terraform apply`.
+
+Q4: What does this error mean - `"We currently do not support adding policies for $LATEST."` ?
+
+> Answer: When the Lambda function is created with `publish = true` the new version is automatically increased and a qualified identifier (version number) becomes available and will be used when setting Lambda permissions.
+>
+> When `publish = false` (default), only unqualified identifier (`$LATEST`) is available which leads to the error.
+>
+> The solution is to either disable the creation of Lambda permissions for the current version by setting `create_current_version_allowed_triggers = false`, or to enable publish of Lambda function (`publish = true`).
 
 
 ## Notes
