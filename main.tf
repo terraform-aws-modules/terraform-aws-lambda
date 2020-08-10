@@ -62,6 +62,14 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "file_system_config" {
+    for_each = var.file_system_arn != null && var.file_system_local_mount_path != null ? [true] : []
+    content {
+      local_mount_path = var.file_system_local_mount_path
+      arn              = var.file_system_arn
+    }
+  }
+
   tags = var.tags
 
   depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package]

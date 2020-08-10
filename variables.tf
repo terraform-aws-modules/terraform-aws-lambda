@@ -413,6 +413,18 @@ variable "policy_statements" {
   default     = {}
 }
 
+variable "file_system_arn" {
+  description = "The Amazon Resource Name (ARN) of the Amazon EFS Access Point that provides access to the file system."
+  type        = string
+  default     = null
+}
+
+variable "file_system_local_mount_path" {
+  description = "The path where the function can access the file system, starting with /mnt/."
+  type        = string
+  default     = null
+}
+
 ##########################
 # Build artifact settings
 ##########################

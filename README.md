@@ -606,6 +606,8 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | docker\_pip\_cache | Whether to mount a shared pip cache folder into docker environment or not | `any` | `null` | no |
 | docker\_with\_ssh\_agent | Whether to pass SSH\_AUTH\_SOCK into docker environment or not | `bool` | `false` | no |
 | environment\_variables | A map that defines environment variables for the Lambda Function. | `map(string)` | `{}` | no |
+| file\_system\_arn | The Amazon Resource Name (ARN) of the Amazon EFS Access Point that provides access to the file system. | `string` | `null` | no |
+| file\_system\_local\_mount\_path | The path where the function can access the file system, starting with /mnt/. | `string` | `null` | no |
 | function\_name | A unique name for your Lambda Function | `string` | `""` | no |
 | handler | Lambda Function entrypoint in your code | `string` | `""` | no |
 | hash\_extra | The string to add into hashing function. Useful when building same source path for different functions. | `string` | `""` | no |
