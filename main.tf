@@ -22,7 +22,7 @@ resource "aws_lambda_function" "this" {
   reserved_concurrent_executions = var.reserved_concurrent_executions
   runtime                        = var.runtime
   layers                         = var.layers
-  timeout                        = var.lambda_at_edge ? min(var.timeout, 5) : var.timeout
+  timeout                        = var.lambda_at_edge ? min(var.timeout, 15) : var.timeout
   publish                        = var.lambda_at_edge ? true : var.publish
   kms_key_arn                    = var.kms_key_arn
 
