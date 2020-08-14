@@ -34,7 +34,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 - [x] Lambda@Edge
 - [x] Conditional creation for many types of resources.
 - [x] Control execution of nearly any step in the process - build, package, store package, deploy, update.
-- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, dead-letter notification, tracing, async events, IAM role, IAM policies, and more).
+- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, EFS, dead-letter notification, tracing, async events, IAM role, IAM policies, and more).
 - [x] Support integration with other `serverless.tf` modules like [HTTP API Gateway](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2) (see [examples there](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2/tree/master/examples/complete-http)).
 
 
@@ -547,6 +547,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 * [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
 * [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS and SNS integration).
 * [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.
+* [With EFS](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-efs) - Create Lambda Function with Elastic File System attached (Terraform 0.13+ is recommended).
 
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

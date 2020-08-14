@@ -56,14 +56,6 @@ module "lambda_function" {
     }
   }
 
-
-  ######################
-  # Elastic File System
-  ######################
-
-  file_system_arn              = aws_efs_access_point.lambda.arn
-  file_system_local_mount_path = "/mnt/shared-storage/"
-
   ######################
   # Additional policies
   ######################
@@ -240,27 +232,6 @@ module "s3_bucket" {
   bucket        = "${random_pet.this.id}-bucket"
   force_destroy = true
 }
-
-resource "aws_efs_file_system" "shared" {}
-
-resource "aws_efs_access_point" "lambda" {
-  file_system_id = aws_efs_file_system.shared.id
-
-  posix_user {
-    gid = 1000
-    uid = 1000
-  }
-
-  root_directory {
-    path = "/lambda"
-    creation_info {
-      owner_gid   = 1000
-      owner_uid   = 1000
-      permissions = "0777"
-    }
-  }
-}
-
 
 resource "aws_sqs_queue" "dlq" {
   name = random_pet.this.id
