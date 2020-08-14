@@ -63,7 +63,7 @@ resource "aws_efs_file_system" "shared" {}
 resource "aws_efs_mount_target" "alpha" {
   file_system_id  = aws_efs_file_system.shared.id
   subnet_id       = module.vpc.intra_subnets[0]
-    security_groups = [module.vpc.default_security_group_id]
+  security_groups = [module.vpc.default_security_group_id]
 }
 
 resource "aws_efs_access_point" "lambda" {
