@@ -529,13 +529,13 @@ A3: This probably mean that zip-archive has been deployed, but is currently abse
 | Name | Version |
 |------|---------|
 | terraform | ~> 0.12.6 |
-| aws | ~> 2.46 |
+| aws | >= 2.46, < 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | ~> 2.46 |
+| aws | >= 2.46, < 4.0 |
 | external | n/a |
 | local | n/a |
 | null | n/a |
