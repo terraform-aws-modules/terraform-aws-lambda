@@ -627,7 +627,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | policy | An additional policy document ARN to attach to the Lambda Function role | `string` | `null` | no |
 | policy\_json | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |
 | policy\_statements | Map of dynamic policy statements to attach to Lambda Function role | `any` | `{}` | no |
-| provisioned\_concurrent\_executions | Amount of capacity to allocate. Must be greater than or equal to 1. | `number` | `-1` | no |
+| provisioned\_concurrent\_executions | Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency. | `number` | `-1` | no |
 | publish | Whether to publish creation/change as new Lambda Function Version. | `bool` | `false` | no |
 | reserved\_concurrent\_executions | The amount of reserved concurrent executions for this Lambda Function. A value of 0 disables Lambda Function from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1. | `number` | `-1` | no |
 | role\_description | Description of IAM role to use for Lambda Function | `string` | `null` | no |
