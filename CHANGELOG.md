@@ -7,6 +7,54 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v1.20.0"></a>
+## [v1.20.0] - 2020-08-19
+
+- fix: Fix policy attachments for managed policies ([#45](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/45))
+- feat: Add support for EFS File System Config ([#46](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/46))
+- feat: Bump version of AWS provider to support v3
+- feat: Upgraded Terraform version supported
+- docs: Updated FAQ with info about "We currently do not support adding policies for "
+- fix: Adds region wildcard to log group arn when lambda[@edge](https://github.com/edge) ([#35](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/35))
+- fix: Fixed issue with zip renaming on Windows platform ([#32](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/32))
+- feat: docker image building for installing pip requirements independently from OS ([#31](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/31))
+- fix: Fixed patterns applying ([#30](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/30))
+- fix: Fixed DUMP_ENV logging level ([#28](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/28))
+- fix: Fixed IAM policy attachment with multiple functions ([#26](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/26))
+- feat: Added support for variety of options for source_path, closes [#12](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/12) ([#25](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/25))
+- Updated examples and readme
+- Added more samples to examples/simple/main.tf
+- package.py - Log directories with ending /
+- package.py - Log skipped items + made uniform some messages
+- package.py - Added support for comments in patterns
+- package.py - Renamed: logger -> log
+- feat: Added ZipContentFilter class to apply patterns filtering
+- package.py - Fixed and improved logging
+- package.py - Added BuildPlanManager initial implementation
+- package.py - Fixed building in docker
+- package.py - Implemented ZipFileStream.write_file
+- feat: In-place zip archiving
+- package.py - Removed dir changing on zip archive generation
+- package.py - Simplified emit_dir_files func
+- package.py - Fixed timestamp appling
+- package.py - Added hidden hash command to calculate Lambda's content hash
+- package.py - Finished ZipFileStream.write_dirs implementation
+- package.py - Moved borrowed ZipInfo.from_file to a ZipWriteStream class
+- package.py - Added initial ZipFileStream skel
+- package.py - Move out inner functions from *_command functions
+- feat: Added pid to the prepare stage log records
+- feat: Added AWS CodeDeploy group name to outputs
+- fix: Create AWS CodeDeploy resources conditionally
+- fix: Do not create AWS Cloudwatch log group for Lambda Layers
+- feat: Add Cloudwatch Logs resources (or use existing) ([#24](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/24))
+
+
+<a name="v1.6.1"></a>
+## [v1.6.1] - 2020-08-14
+
+- fix: Added support for AWS provider v3 used by notify-slack module with Terraform 0.12
+
+
 <a name="v1.19.0"></a>
 ## [v1.19.0] - 2020-08-14
 
@@ -166,7 +214,9 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.19.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.20.0...HEAD
+[v1.20.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.6.1...v1.20.0
+[v1.6.1]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.19.0...v1.6.1
 [v1.19.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.18.0...v1.19.0
 [v1.18.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.17.0...v1.18.0
 [v1.17.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.16.0...v1.17.0
