@@ -896,7 +896,14 @@ def install_pip_requirements(query, requirements_file):
             else:
                 cmd_log.info(shlex_join(pip_command))
                 log_handler and log_handler.flush()
-                check_call(pip_command, env=subproc_env)
+                try:
+                    check_call(pip_command, env=subproc_env)
+                except FileNotFoundError as e:
+                    raise RuntimeError(
+                        "Python interpreter version equal "
+                        "to defined lambda runtime ({}) should be "
+                        "available in system PATH".format(runtime)
+                    ) from e
 
             os.remove(target_file)
             yield temp_dir
