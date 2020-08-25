@@ -850,8 +850,18 @@ def install_pip_requirements(query, requirements_file):
         shutil.copyfile(requirements_file, target_file)
 
         python_exec = runtime
-        if WINDOWS and not docker:
-            python_exec = 'python.exe'
+        subproc_env = None
+
+        if not docker:
+            if WINDOWS:
+                python_exec = 'python.exe'
+            elif OSX:
+                # Workaround for OSX when XCode command line tools'
+                # python becomes the main system python interpreter
+                os_path = '{}:/Library/Developer/CommandLineTools' \
+                          '/usr/bin'.format(os.environ['PATH'])
+                subproc_env = os.environ.copy()
+                subproc_env['PATH'] = os_path
 
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
@@ -886,7 +896,7 @@ def install_pip_requirements(query, requirements_file):
             else:
                 cmd_log.info(shlex_join(pip_command))
                 log_handler and log_handler.flush()
-                check_call(pip_command)
+                check_call(pip_command, env=subproc_env)
 
             os.remove(target_file)
             yield temp_dir
