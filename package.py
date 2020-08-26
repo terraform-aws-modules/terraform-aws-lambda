@@ -1047,6 +1047,7 @@ def prepare_command(args):
     hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
 
     content_hash = bpm.hash(hash_extra_paths)
+    content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
