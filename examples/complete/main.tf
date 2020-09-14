@@ -76,6 +76,24 @@ module "lambda_function" {
 }
 EOF
 
+  attach_policy_jsons = true
+  policy_jsons = [<<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "xray:*"
+            ],
+            "Resource": ["*"]
+        }
+    ]
+}
+EOF
+  ]
+  number_of_policy_jsons = 1
+
   attach_policy = true
   policy        = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 
@@ -206,7 +224,7 @@ module "lambda_with_provisioned_concurrency" {
 
   hash_extra = "hash-extra-lambda-provisioned"
 
-  provisioned_concurrent_executions = 2
+  provisioned_concurrent_executions = -1 # 2
 }
 
 ###########
