@@ -219,6 +219,25 @@ resource "aws_iam_policy_attachment" "additional_json" {
   policy_arn = aws_iam_policy.additional_json[0].arn
 }
 
+#####################################
+# Additional policies (list of JSON)
+#####################################
+
+resource "aws_iam_policy" "additional_jsons" {
+  count = local.create_role && var.attach_policy_jsons ? var.number_of_policy_jsons : 0
+
+  name   = "${var.function_name}-${count.index}"
+  policy = var.policy_jsons[count.index]
+}
+
+resource "aws_iam_policy_attachment" "additional_jsons" {
+  count = local.create_role && var.attach_policy_jsons ? var.number_of_policy_jsons : 0
+
+  name       = "${var.function_name}-${count.index}"
+  roles      = [aws_iam_role.lambda[0].name]
+  policy_arn = aws_iam_policy.additional_jsons[count.index].arn
+}
+
 ###########################
 # ARN of additional policy
 ###########################

@@ -359,6 +359,12 @@ variable "attach_policy_json" {
   default     = false
 }
 
+variable "attach_policy_jsons" {
+  description = "Controls whether policy_jsons should be added to IAM role for Lambda Function"
+  type        = bool
+  default     = false
+}
+
 variable "attach_policy" {
   description = "Controls whether policy should be added to IAM role for Lambda Function"
   type        = bool
@@ -369,6 +375,12 @@ variable "attach_policies" {
   description = "Controls whether list of policies should be added to IAM role for Lambda Function"
   type        = bool
   default     = false
+}
+
+variable "number_of_policy_jsons" {
+  description = "Number of policies JSON to attach to IAM role for Lambda Function"
+  type        = number
+  default     = 0
 }
 
 variable "number_of_policies" {
@@ -393,6 +405,12 @@ variable "policy_json" {
   description = "An additional policy document as JSON to attach to the Lambda Function role"
   type        = string
   default     = null
+}
+
+variable "policy_jsons" {
+  description = "List of additional policy documents as JSON to attach to Lambda Function role"
+  type        = list(string)
+  default     = []
 }
 
 variable "policy" {
