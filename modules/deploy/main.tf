@@ -219,18 +219,18 @@ resource "aws_iam_role_policy_attachment" "triggers" {
   policy_arn = aws_iam_policy.triggers[0].arn
 }
 
-// https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
-// https://www.terraform.io/docs/providers/aws/r/codedeploy_deployment_config.html
-//resource "aws_codedeploy_deployment_config" "this" {
-//  deployment_config_name = "test-deployment-config"
-//  compute_platform       = "Lambda"
-//
-//  traffic_routing_config {
-//    type = "TimeBasedLinear"
-//
-//    time_based_linear {
-//      interval   = 10
-//      percentage = 10
-//    }
-//  }
-//}
+# https:#docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
+# https:#www.terraform.io/docs/providers/aws/r/codedeploy_deployment_config.html
+#resource "aws_codedeploy_deployment_config" "this" {
+#  deployment_config_name = "test-deployment-config"
+#  compute_platform       = "Lambda"
+#
+#  traffic_routing_config {
+#    type = "TimeBasedLinear"
+#
+#    time_based_linear {
+#      interval   = 10
+#      percentage = 10
+#    }
+#  }
+#}

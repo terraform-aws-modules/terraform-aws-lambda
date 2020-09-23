@@ -118,7 +118,7 @@ resource "aws_iam_policy_attachment" "dead_letter" {
 # VPC
 ######
 
-// Copying AWS managed policy to be able to attach the same policy with multiple roles without overwrites by another function
+# Copying AWS managed policy to be able to attach the same policy with multiple roles without overwrites by another function
 data "aws_iam_policy" "vpc" {
   count = local.create_role && var.attach_network_policy ? 1 : 0
 
@@ -144,7 +144,7 @@ resource "aws_iam_policy_attachment" "vpc" {
 # Tracing with X-Ray
 #####################
 
-// Copying AWS managed policy to be able to attach the same policy with multiple roles without overwrites by another function
+# Copying AWS managed policy to be able to attach the same policy with multiple roles without overwrites by another function
 data "aws_iam_policy" "tracing" {
   count = local.create_role && var.attach_tracing_policy ? 1 : 0
 

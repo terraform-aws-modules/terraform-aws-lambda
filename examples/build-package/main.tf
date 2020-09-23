@@ -204,7 +204,7 @@ module "package_with_docker" {
   build_in_docker       = true
   docker_pip_cache      = true
   docker_with_ssh_agent = true
-  //  docker_file           = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
+  #  docker_file           = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
   docker_build_root = "${path.module}/../../docker"
   docker_image      = "lambci/lambda:build-python3.8"
 }

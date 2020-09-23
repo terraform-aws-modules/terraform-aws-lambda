@@ -180,7 +180,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
   event_source_token = lookup(each.value, "event_source_token", null)
 }
 
-// Error: Error adding new Lambda Permission for destined-tetra-lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
+# Error: Error adding new Lambda Permission for destined-tetra-lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
   for_each = var.create && var.create_function && ! var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.allowed_triggers : {}
 
