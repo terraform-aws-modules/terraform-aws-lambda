@@ -19,7 +19,7 @@ resource "aws_lambda_alias" "no_refresh" {
   function_name    = var.function_name
   function_version = var.function_version != "" ? var.function_version : "$LATEST"
 
-  // $LATEST is not supported for an alias pointing to more than 1 version
+  # $LATEST is not supported for an alias pointing to more than 1 version
   dynamic "routing_config" {
     for_each = length(keys(var.routing_additional_version_weights)) == 0 ? [] : [true]
     content {
@@ -37,7 +37,7 @@ resource "aws_lambda_alias" "with_refresh" {
   function_name    = var.function_name
   function_version = var.function_version != "" ? var.function_version : "$LATEST"
 
-  // $LATEST is not supported for an alias pointing to more than 1 version
+  # $LATEST is not supported for an alias pointing to more than 1 version
   dynamic "routing_config" {
     for_each = length(keys(var.routing_additional_version_weights)) == 0 ? [] : [true]
     content {
@@ -84,7 +84,7 @@ resource "aws_lambda_permission" "version_triggers" {
 
   function_name = var.function_name
 
-  // Error: Error adding new Lambda Permission for ... InvalidParameterValueException: We currently do not support adding policies for $LATEST.
+  # Error: Error adding new Lambda Permission for ... InvalidParameterValueException: We currently do not support adding policies for $LATEST.
   qualifier = local.version != "$LATEST" ? local.version : null
 
   statement_id       = lookup(each.value, "statement_id", each.key)

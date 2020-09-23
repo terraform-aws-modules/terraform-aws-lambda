@@ -19,13 +19,17 @@ Note that this example may create resources which cost money. Run `terraform des
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12.6, < 0.14 |
+| aws | >= 2.67, < 4.0 |
+| random | ~> 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| random | n/a |
+| random | ~> 2 |
 
 ## Inputs
 

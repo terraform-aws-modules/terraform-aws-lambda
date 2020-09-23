@@ -101,14 +101,16 @@ module "lambda" {
 |------|---------|
 | terraform | >= 0.12.6, < 0.14 |
 | aws | >= 2.67, < 4.0 |
+| local | ~> 1 |
+| null | ~> 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | aws | >= 2.67, < 4.0 |
-| local | n/a |
-| null | n/a |
+| local | ~> 1 |
+| null | ~> 2 |
 
 ## Inputs
 
@@ -149,15 +151,15 @@ module "lambda" {
 
 | Name | Description |
 |------|-------------|
-| appspec | n/a |
-| appspec\_content | n/a |
-| appspec\_sha256 | n/a |
+| appspec | Appspec data as HCL |
+| appspec\_content | Appspec data as valid JSON |
+| appspec\_sha256 | SHA256 of Appspec JSON |
 | codedeploy\_app\_name | Name of CodeDeploy application |
 | codedeploy\_deployment\_group\_id | CodeDeploy deployment group id |
 | codedeploy\_deployment\_group\_name | CodeDeploy deployment group name |
 | codedeploy\_iam\_role\_name | Name of IAM role used by CodeDeploy |
-| deploy\_script | n/a |
-| script | n/a |
+| deploy\_script | Path to a deployment script |
+| script | Deployment script |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

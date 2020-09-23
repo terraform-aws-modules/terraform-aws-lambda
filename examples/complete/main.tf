@@ -139,11 +139,11 @@ module "lambda_function_existing_package_local" {
 
   create_package         = false
   local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
-  //  s3_existing_package = {
-  //    bucket = "humane-bear-bucket"
-  //    key = "builds/506df8bef5a4fb01883cce3673c9ff0ed88fb52e8583410e0cca7980a72211a0.zip"
-  //    version_id = null
-  //  }
+  #  s3_existing_package = {
+  #    bucket = "humane-bear-bucket"
+  #    key = "builds/506df8bef5a4fb01883cce3673c9ff0ed88fb52e8583410e0cca7980a72211a0.zip"
+  #    version_id = null
+  #  }
 
   layers = [
     module.lambda_layer_local.this_lambda_layer_arn,
@@ -201,7 +201,7 @@ module "lambda_at_edge" {
   runtime       = "python3.8"
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
-  hash_extra  = "this string should be included in hash function to produce different filename for the same source" // this is also a build trigger if this changes
+  hash_extra  = "this string should be included in hash function to produce different filename for the same source" # this is also a build trigger if this changes
 
   tags = {
     Module = "lambda-at-edge"
