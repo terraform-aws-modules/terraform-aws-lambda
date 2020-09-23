@@ -299,7 +299,7 @@ module "lambda_function" {
 # Download from remote and upload to S3
 ####
 #locals {
-#  package_url = "https:#github.com/antonbabenko/terraform-aws-anything/archive/master.zip"
+#  package_url = "https://github.com/antonbabenko/terraform-aws-anything/archive/master.zip"
 #  downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 #}
 #

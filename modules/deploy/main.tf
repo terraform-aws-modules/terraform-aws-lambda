@@ -219,8 +219,8 @@ resource "aws_iam_role_policy_attachment" "triggers" {
   policy_arn = aws_iam_policy.triggers[0].arn
 }
 
-# https:#docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
-# https:#www.terraform.io/docs/providers/aws/r/codedeploy_deployment_config.html
+# https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations.html
+# https://www.terraform.io/docs/providers/aws/r/codedeploy_deployment_config.html
 #resource "aws_codedeploy_deployment_config" "this" {
 #  deployment_config_name = "test-deployment-config"
 #  compute_platform       = "Lambda"
