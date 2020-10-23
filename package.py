@@ -139,7 +139,7 @@ def list_files(top_path, log=None):
 
     results = []
 
-    for root, dirs, files in os.walk(top_path):
+    for root, dirs, files in os.walk(top_path, followlinks=True):
         for file_name in files:
             file_path = os.path.join(root, file_name)
             relative_path = os.path.relpath(file_path, top_path)
@@ -210,7 +210,7 @@ def yesno_bool(val):
 # Packaging functions
 
 def emit_dir_content(base_dir):
-    for root, dirs, files in os.walk(base_dir):
+    for root, dirs, files in os.walk(base_dir, followlinks=True):
         if root != base_dir:
             yield os.path.normpath(root)
         for name in files:
@@ -595,7 +595,7 @@ class ZipContentFilter:
             if apply(name):
                 yield path
         else:
-            for root, dirs, files in os.walk(path):
+            for root, dirs, files in os.walk(path, followlinks=True):
                 o, d = norm_path(path, root)
                 # log.info('od: %s %s', o, d)
                 if root != path:
