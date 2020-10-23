@@ -323,7 +323,7 @@ class ZipWriteStream:
 
         if archive_dir and not os.path.exists(archive_dir):
             self._log.info("creating %s", archive_dir)
-            os.makedirs(archive_dir)
+            os.makedirs(archive_dir, exist_ok=True)
 
     def write_dirs(self, *base_dirs, prefix=None, timestamp=None):
         """
@@ -1083,7 +1083,7 @@ def prepare_command(args):
     build_plan_filename = os.path.join(artifacts_dir,
                                        '{}.plan.json'.format(content_hash))
     if not os.path.exists(artifacts_dir):
-        os.makedirs(artifacts_dir)
+        os.makedirs(artifacts_dir, exist_ok=True)
     with open(build_plan_filename, 'w') as f:
         f.write(build_plan)
 
