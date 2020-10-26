@@ -139,7 +139,7 @@ def list_files(top_path, log=None):
 
     results = []
 
-    for root, dirs, files in os.walk(top_path):
+    for root, dirs, files in os.walk(top_path, followlinks=True):
         for file_name in files:
             file_path = os.path.join(root, file_name)
             relative_path = os.path.relpath(file_path, top_path)
@@ -210,7 +210,7 @@ def yesno_bool(val):
 # Packaging functions
 
 def emit_dir_content(base_dir):
-    for root, dirs, files in os.walk(base_dir):
+    for root, dirs, files in os.walk(base_dir, followlinks=True):
         if root != base_dir:
             yield os.path.normpath(root)
         for name in files:
@@ -323,7 +323,7 @@ class ZipWriteStream:
 
         if archive_dir and not os.path.exists(archive_dir):
             self._log.info("creating %s", archive_dir)
-            os.makedirs(archive_dir)
+            os.makedirs(archive_dir, exist_ok=True)
 
     def write_dirs(self, *base_dirs, prefix=None, timestamp=None):
         """
@@ -595,7 +595,7 @@ class ZipContentFilter:
             if apply(name):
                 yield path
         else:
-            for root, dirs, files in os.walk(path):
+            for root, dirs, files in os.walk(path, followlinks=True):
                 o, d = norm_path(path, root)
                 # log.info('od: %s %s', o, d)
                 if root != path:
@@ -1047,6 +1047,7 @@ def prepare_command(args):
     hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
 
     content_hash = bpm.hash(hash_extra_paths)
+    content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
@@ -1082,7 +1083,7 @@ def prepare_command(args):
     build_plan_filename = os.path.join(artifacts_dir,
                                        '{}.plan.json'.format(content_hash))
     if not os.path.exists(artifacts_dir):
-        os.makedirs(artifacts_dir)
+        os.makedirs(artifacts_dir, exist_ok=True)
     with open(build_plan_filename, 'w') as f:
         f.write(build_plan)
 
