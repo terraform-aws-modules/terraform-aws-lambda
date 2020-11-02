@@ -25,10 +25,10 @@ data "external" "archive_prepare" {
       with_ssh_agent    = var.docker_with_ssh_agent
     }) : null
 
-    artifacts_dir    = var.artifacts_dir
-    runtime          = var.runtime
-    source_path      = jsonencode(var.source_path)
-    hash_extra       = var.hash_extra
+    artifacts_dir = var.artifacts_dir
+    runtime       = var.runtime
+    source_path   = jsonencode(var.source_path)
+    hash_extra    = var.hash_extra
     hash_extra_paths = jsonencode(
       [
         # Temporary fix when building from multiple locations
