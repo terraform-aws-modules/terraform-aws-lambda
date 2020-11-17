@@ -556,21 +556,21 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6, < 0.14 |
-| aws | >= 2.67, < 4.0 |
-| external | ~> 1 |
-| local | ~> 1 |
-| null | ~> 2 |
-| random | ~> 2 |
+| terraform | >= 0.12.6 |
+| aws | >= 2.67 |
+| external | >= 1 |
+| local | >= 1 |
+| null | >= 2 |
+| random | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.67, < 4.0 |
-| external | ~> 1 |
-| local | ~> 1 |
-| null | ~> 2 |
+| aws | >= 2.67 |
+| external | >= 1 |
+| local | >= 1 |
+| null | >= 2 |
 
 ## Inputs
 
