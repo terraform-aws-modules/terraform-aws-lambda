@@ -25,7 +25,7 @@ locals {
     Hooks = [for k, v in zipmap(["BeforeAllowTraffic", "AfterAllowTraffic"], [
       var.before_allow_traffic_hook_arn != "" ? var.before_allow_traffic_hook_arn : null,
       var.after_allow_traffic_hook_arn != "" ? var.after_allow_traffic_hook_arn : null
-    ]) : map(k, v)]
+    ]) : map(k, v) if v != null]
   } : {})
 
   appspec_content = replace(jsonencode(local.appspec), "\"", "\\\"")
