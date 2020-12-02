@@ -151,6 +151,36 @@ variable "s3_object_tags" {
   default     = {}
 }
 
+variable "image_uri" {
+  description = "The ECR image URI containing the function's deployment package."
+  type        = string
+  default     = null
+}
+
+variable "package_type" {
+  description = "The Lambda deployment package type."
+  type        = string
+  default     = "Zip"
+}
+
+variable "image_config_entry_point" {
+  description = "The ENTRYPOINT for the docker image"
+  type        = string
+  default     = null
+
+}
+variable "image_config_command" {
+  description = "The CMD for the docker image"
+  type        = string
+  default     = null
+
+}
+variable "image_config_working_directory" {
+  description = "The working directory for the docker image"
+  type        = string
+  default     = null
+}
+
 ########
 # Layer
 ########

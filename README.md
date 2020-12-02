@@ -619,6 +619,11 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | function\_name | A unique name for your Lambda Function | `string` | `""` | no |
 | handler | Lambda Function entrypoint in your code | `string` | `""` | no |
 | hash\_extra | The string to add into hashing function. Useful when building same source path for different functions. | `string` | `""` | no |
+| image\_uri | The ECR image URI containing the function's deployment package. | `string` | `null` | no |
+| image\_config\_entry_point | The ENTRYPOINT for the docker image. | `string` | `null` | no |
+| image\_config\_command | The CMD for the docker image. | `string` | `null` | no |
+| image\_config\_working_directory | The working directory for the docker image. | `string` | `null` | no |
+| package\_type | The Lambda deployment package type. | `string` | `Zip` | no |
 | kms\_key\_arn | The ARN of KMS key to use by your Lambda Function | `string` | `null` | no |
 | lambda\_at\_edge | Set this to true if using Lambda@Edge, to enable publishing, limit the timeout, and allow edgelambda.amazonaws.com to invoke the function | `bool` | `false` | no |
 | lambda\_role | IAM role attached to the Lambda Function. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details. | `string` | `""` | no |
