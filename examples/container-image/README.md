@@ -1,6 +1,6 @@
-# AWS Lambda with EFS example
+# AWS Lambda launched from Docker Container Image example
 
-Configuration in this directory creates AWS Lambda Function deployed with Elastic File System (EFS) attached.
+Configuration in this directory creates AWS Lambda Function deployed with a Container Image.
 
 ## Usage
 

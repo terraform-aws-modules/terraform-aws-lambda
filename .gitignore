@@ -3,6 +3,7 @@
 *.tfstate
 *.tfvars
 *.tfplan
+.terraform.lock.hcl
 
 builds/
 

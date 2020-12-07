@@ -28,7 +28,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 
 - [x] Build dependencies for your Lambda Function and Layer.
 - [x] Support builds locally and in Docker (with or without SSH agent support for private builds).
-- [x] Create deployment package or deploy existing (previously built package) from local, from S3, from URL.
+- [x] Create deployment package or deploy existing (previously built package) from local, from S3, from URL, or from AWS ECR repository.
 - [x] Store deployment packages locally or in the S3 bucket.
 - [x] Support almost all features of Lambda resources (function, layer, alias, etc.)
 - [x] Lambda@Edge
@@ -150,6 +150,22 @@ module "lambda_function_existing_package_s3" {
     bucket = "my-bucket-with-lambda-builds"
     key    = aws_s3_bucket_object.my_function.id
   }
+}
+```
+
+### Lambda Functions from Container Image stored on AWS ECR
+
+```hcl
+module "lambda_function_container_image" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "my-lambda-existing-package-local"
+  description   = "My awesome lambda function"
+
+  create_package = false
+  
+  image_uri    = "132367819851.dkr.ecr.eu-west-1.amazonaws.com/complete-cow:1.0"
+  package_type = "Image"
 }
 ```
 
@@ -543,6 +559,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 ## Examples
 
 * [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
+* [Container Image](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/container-image) - Create Docker image (using [docker provider](https://registry.terraform.io/providers/kreuzwerker/docker)), push it to AWS ECR, and create Lambda function from it.
 * [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
 * [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
 * [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
