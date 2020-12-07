@@ -17,14 +17,16 @@ resource "aws_lambda_function" "this" {
   function_name                  = var.function_name
   description                    = var.description
   role                           = var.create_role ? aws_iam_role.lambda[0].arn : var.lambda_role
-  handler                        = var.handler
+  handler                        = var.package_type != "Zip" ? null : var.handler
   memory_size                    = var.memory_size
   reserved_concurrent_executions = var.reserved_concurrent_executions
-  runtime                        = var.runtime
+  runtime                        = var.package_type != "Zip" ? null : var.runtime
   layers                         = var.layers
   timeout                        = var.lambda_at_edge ? min(var.timeout, 5) : var.timeout
   publish                        = var.lambda_at_edge ? true : var.publish
   kms_key_arn                    = var.kms_key_arn
+  image_uri                      = var.image_uri
+  package_type                   = var.package_type
 
   filename         = local.filename
   source_code_hash = (local.filename == null ? false : fileexists(local.filename)) && ! local.was_missing ? filebase64sha256(local.filename) : null
@@ -32,6 +34,15 @@ resource "aws_lambda_function" "this" {
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
   s3_object_version = local.s3_object_version
+
+  dynamic "image_config" {
+    for_each = length(var.image_config_entry_point) > 0 || length(var.image_config_command) > 0 || var.image_config_working_directory != null ? [true] : []
+    content {
+      entry_point       = var.image_config_entry_point
+      command           = var.image_config_command
+      working_directory = var.image_config_working_directory
+    }
+  }
 
   dynamic "environment" {
     for_each = length(keys(var.environment_variables)) == 0 ? [] : [true]

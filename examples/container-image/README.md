@@ -1,7 +1,6 @@
-# AWS Lambda with EFS Example
+# AWS Lambda launched from Docker Container Image example
 
-Configuration in this directory creates AWS Lambda Function deployed with Elastic File System (EFS) attached.
-
+Configuration in this directory creates AWS Lambda Function deployed with a Container Image.
 
 ## Usage
 
@@ -21,14 +20,14 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.6 |
-| aws | >= 3.19.0 |
+| aws | >= 2.67 |
 | random | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.19.0 |
+| aws | >= 2.67 |
 | random | >= 2 |
 
 ## Inputs
