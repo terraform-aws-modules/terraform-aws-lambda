@@ -45,7 +45,7 @@ data "aws_ecr_authorization_token" "token" {}
 
 locals {
   ecr_address = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.this.account_id, data.aws_region.current.name)
-  ecr_image = format("%v/%v:%v", local.ecr_address, aws_ecr_repository.this.id, "1.0")
+  ecr_image   = format("%v/%v:%v", local.ecr_address, aws_ecr_repository.this.id, "1.0")
 }
 
 provider "docker" {
