@@ -33,6 +33,12 @@ locals {
 
   script = <<EOF
 #!/bin/bash
+
+if [[ "${var.target_version}" == "${var.current_version != "" ? var.current_version : local.current_version}" ]]; then
+  echo "Skipping deployment because target version (${var.target_version}) is already the current version"
+  exit 0
+fi
+
 ID=$(${var.aws_cli_command} deploy create-deployment \
     --application-name ${local.app_name} \
     --deployment-group-name ${local.deployment_group_name} \
