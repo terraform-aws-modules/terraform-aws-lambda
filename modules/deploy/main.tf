@@ -34,7 +34,7 @@ locals {
   script = <<EOF
 #!/bin/bash
 
-if [[ "${var.target_version}" == "${var.current_version != "" ? var.current_version : local.current_version}" ]]; then
+if [[ '${var.target_version}' == '${var.current_version != "" ? var.current_version : local.current_version}' ]]; then
   echo "Skipping deployment because target version (${var.target_version}) is already the current version"
   exit 0
 fi
