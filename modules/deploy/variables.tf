@@ -29,13 +29,13 @@ variable "target_version" {
 }
 
 variable "before_allow_traffic_hook_arn" {
-  description = "ARN of Lambda function to execute before allow traffic during deployment"
+  description = "ARN of Lambda function to execute before allow traffic during deployment. This function should be named CodeDeployHook_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role"
   type        = string
   default     = ""
 }
 
 variable "after_allow_traffic_hook_arn" {
-  description = "ARN of Lambda function to execute after allow traffic during deployment"
+  description = "ARN of Lambda function to execute after allow traffic during deployment. This function should be named CodeDeployHook_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role"
   type        = string
   default     = ""
 }

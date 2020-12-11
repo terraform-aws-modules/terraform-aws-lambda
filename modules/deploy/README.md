@@ -100,7 +100,7 @@ module "lambda" {
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.6 |
-| aws | >= 2.67 |
+| aws | >= 3.19 |
 | local | >= 1 |
 | null | >= 2 |
 
@@ -108,7 +108,7 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.67 |
+| aws | >= 3.19 |
 | local | >= 1 |
 | null | >= 2 |
 
@@ -116,7 +116,7 @@ module "lambda" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| after\_allow\_traffic\_hook\_arn | ARN of Lambda function to execute after allow traffic during deployment | `string` | `""` | no |
+| after\_allow\_traffic\_hook\_arn | ARN of Lambda function to execute after allow traffic during deployment. This function should be named CodeDeployHook\_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role | `string` | `""` | no |
 | alarm\_enabled | Indicates whether the alarm configuration is enabled. This option is useful when you want to temporarily deactivate alarm monitoring for a deployment group without having to add the same alarms again later. | `bool` | `false` | no |
 | alarm\_ignore\_poll\_alarm\_failure | Indicates whether a deployment should continue if information about the current state of alarms cannot be retrieved from CloudWatch. | `bool` | `false` | no |
 | alarms | A list of alarms configured for the deployment group. A maximum of 10 alarms can be added to a deployment group. | `list(string)` | `[]` | no |
@@ -126,7 +126,7 @@ module "lambda" {
 | auto\_rollback\_enabled | Indicates whether a defined automatic rollback configuration is currently enabled for this Deployment Group. | `bool` | `true` | no |
 | auto\_rollback\_events | List of event types that trigger a rollback. Supported types are DEPLOYMENT\_FAILURE and DEPLOYMENT\_STOP\_ON\_ALARM. | `list(string)` | <pre>[<br>  "DEPLOYMENT_STOP_ON_ALARM"<br>]</pre> | no |
 | aws\_cli\_command | Command to run as AWS CLI. May include extra arguments like region and profile. | `string` | `"aws"` | no |
-| before\_allow\_traffic\_hook\_arn | ARN of Lambda function to execute before allow traffic during deployment | `string` | `""` | no |
+| before\_allow\_traffic\_hook\_arn | ARN of Lambda function to execute before allow traffic during deployment. This function should be named CodeDeployHook\_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role | `string` | `""` | no |
 | codedeploy\_principals | List of CodeDeploy service principals to allow. The list can include global or regional endpoints. | `list(string)` | <pre>[<br>  "codedeploy.amazonaws.com"<br>]</pre> | no |
 | codedeploy\_role\_name | IAM role name to create or use by CodeDeploy | `string` | `""` | no |
 | create | Controls whether resources should be created | `bool` | `true` | no |
