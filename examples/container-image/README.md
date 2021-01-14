@@ -20,14 +20,16 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.6 |
-| aws | >= 2.67 |
+| aws | >= 3.19 |
+| docker | >= 2.8.0 |
 | random | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.67 |
+| aws | >= 3.19 |
+| docker | >= 2.8.0 |
 | random | >= 2 |
 
 ## Inputs
@@ -41,8 +43,6 @@ No input.
 | lambda\_cloudwatch\_log\_group\_arn | The ARN of the Cloudwatch Log Group |
 | lambda\_role\_arn | The ARN of the IAM role created for the Lambda Function |
 | lambda\_role\_name | The name of the IAM role created for the Lambda Function |
-| local\_filename | The filename of zip archive deployed (if deployment was from local) |
-| s3\_object | The map with S3 object data of zip archive deployed (if deployment was from S3) |
 | this\_lambda\_function\_arn | The ARN of the Lambda Function |
 | this\_lambda\_function\_invoke\_arn | The Invoke ARN of the Lambda Function |
 | this\_lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key of Lambda Function |
