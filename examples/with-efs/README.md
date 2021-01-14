@@ -21,14 +21,14 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.6 |
-| aws | >= 3.19.0 |
+| aws | >= 3.19 |
 | random | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.19.0 |
+| aws | >= 3.19 |
 | random | >= 2 |
 
 ## Inputs

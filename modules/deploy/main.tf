@@ -112,14 +112,14 @@ resource "null_resource" "deploy" {
 }
 
 resource "aws_codedeploy_app" "this" {
-  count = var.create && var.create_app && ! var.use_existing_app ? 1 : 0
+  count = var.create && var.create_app && !var.use_existing_app ? 1 : 0
 
   name             = var.app_name
   compute_platform = "Lambda"
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
-  count = var.create && var.create_deployment_group && ! var.use_existing_deployment_group ? 1 : 0
+  count = var.create && var.create_deployment_group && !var.use_existing_deployment_group ? 1 : 0
 
   app_name               = local.app_name
   deployment_group_name  = var.deployment_group_name
@@ -158,7 +158,7 @@ resource "aws_codedeploy_deployment_group" "this" {
 }
 
 data "aws_iam_role" "codedeploy" {
-  count = var.create && ! var.create_codedeploy_role ? 1 : 0
+  count = var.create && !var.create_codedeploy_role ? 1 : 0
 
   name = var.codedeploy_role_name
 }

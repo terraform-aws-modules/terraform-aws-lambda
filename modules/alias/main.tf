@@ -11,7 +11,7 @@ data "aws_lambda_alias" "existing" {
 }
 
 resource "aws_lambda_alias" "no_refresh" {
-  count = var.create && ! var.use_existing_alias && ! var.refresh_alias ? 1 : 0
+  count = var.create && !var.use_existing_alias && !var.refresh_alias ? 1 : 0
 
   name        = var.name
   description = var.description
@@ -29,7 +29,7 @@ resource "aws_lambda_alias" "no_refresh" {
 }
 
 resource "aws_lambda_alias" "with_refresh" {
-  count = var.create && ! var.use_existing_alias && var.refresh_alias ? 1 : 0
+  count = var.create && !var.use_existing_alias && var.refresh_alias ? 1 : 0
 
   name        = var.name
   description = var.description

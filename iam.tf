@@ -1,5 +1,5 @@
 locals {
-  create_role = var.create && var.create_function && ! var.create_layer && var.create_role
+  create_role = var.create && var.create_function && !var.create_layer && var.create_role
 
   # Lambda@Edge uses the Cloudwatch region closest to the location where the function is executed
   # The region part of the LogGroup ARN is then replaced with a wildcard (*) so Lambda@Edge is able to log in every region
