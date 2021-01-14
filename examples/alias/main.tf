@@ -31,8 +31,8 @@ module "lambda_function" {
 
   allowed_triggers = {
     APIGatewayAny = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
     }
   }
 
@@ -62,8 +62,8 @@ module "alias_no_refresh" {
 
   allowed_triggers = {
     AnotherAPIGatewayAny = { # keys should be unique
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse/*/*/*"
     }
   }
 
@@ -94,8 +94,8 @@ module "alias_existing" {
 
   allowed_triggers = {
     ThirdAPIGatewayAny = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
     }
   }
 
