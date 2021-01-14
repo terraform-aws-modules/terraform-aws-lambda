@@ -277,8 +277,8 @@ module "lambda_function" {
 
   allowed_triggers = {
     APIGatewayAny = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
     },
     APIGatewayDevPost = {
       service    = "apigateway"
@@ -291,8 +291,6 @@ module "lambda_function" {
   }
 }
 ```
-
-Note: `service = "apigateway" with arn` is a short form to allow invocations of a Lambda Function from any stage, any method, any resource of an API Gateway.
 
 ## Conditional creation
 

@@ -34,8 +34,8 @@ module "alias_no_refresh" {
 
   allowed_triggers = {
     AnotherAPIGatewayAny = {
-      service = "apigateway"
-      arn = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse/*/*/*"
     }
   }
 }
@@ -76,8 +76,8 @@ module "alias_existing" {
 
   allowed_triggers = {
     AnotherAwesomeAPIGateway = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:999967859851:aqnku8akd0"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:999967859851:aqnku8akd0/*/*/*"
     }
   }
 }
