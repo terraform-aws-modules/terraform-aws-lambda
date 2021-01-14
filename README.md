@@ -277,8 +277,8 @@ module "lambda_function" {
 
   allowed_triggers = {
     APIGatewayAny = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
     },
     APIGatewayDevPost = {
       service    = "apigateway"
@@ -291,8 +291,6 @@ module "lambda_function" {
   }
 }
 ```
-
-Note: `service = "apigateway" with arn` is a short form to allow invocations of a Lambda Function from any stage, any method, any resource of an API Gateway.
 
 ## Conditional creation
 
@@ -351,7 +349,7 @@ terraform apply
 
 ## <a name="build"></a> Build Dependencies
 
-You can specify `source_path` in a variety of ways to achieve desired flexibility when building deployment packages locally or in Docker. You can use absolute or relative paths.
+You can specify `source_path` in a variety of ways to achieve desired flexibility when building deployment packages locally or in Docker. You can use absolute or relative paths.  If you have placed terraform files in subdirectories, note that relative paths are specified from the directory where `terraform plan` is run and not the location of your terraform file. 
 
 Note that, when building locally, files are not copying anywhere from the source directories when making packages, we use fast Python regular expressions to find matching files and directories, which makes packaging very fast and easy to understand.
 
@@ -643,7 +641,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | package\_type | The Lambda deployment package type. | `string` | `Zip` | no |
 | kms\_key\_arn | The ARN of KMS key to use by your Lambda Function | `string` | `null` | no |
 | lambda\_at\_edge | Set this to true if using Lambda@Edge, to enable publishing, limit the timeout, and allow edgelambda.amazonaws.com to invoke the function | `bool` | `false` | no |
-| lambda\_role | IAM role attached to the Lambda Function. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details. | `string` | `""` | no |
+| lambda\_role | IAM role ARN attached to the Lambda Function. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details. | `string` | `""` | no |
 | layer\_name | Name of Lambda Layer to create | `string` | `""` | no |
 | layers | List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function. | `list(string)` | `null` | no |
 | license\_info | License info for your Lambda Layer. Eg, MIT or full url of a license. | `string` | `""` | no |

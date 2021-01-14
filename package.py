@@ -698,7 +698,10 @@ class BuildPlanManager:
             if isinstance(claim, str):
                 path = claim
                 if not os.path.exists(path):
-                    abort('source_path must be set.')
+                    abort('Could not locate source_path "{path}".  Paths are relative to directory where `terraform plan` is being run ("{pwd}")'.format(
+                        path=path,
+                        pwd=os.getcwd()
+                    ))
                 runtime = query.runtime
                 if runtime.startswith('python'):
                     pip_requirements_step(
