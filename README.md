@@ -647,7 +647,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | local\_existing\_package | The absolute path to an existing zip-file to use | `string` | `null` | no |
 | maximum\_event\_age\_in\_seconds | Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600. | `number` | `null` | no |
 | maximum\_retry\_attempts | Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2. | `number` | `null` | no |
-| memory\_size | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 3008 MB, in 64 MB increments. | `number` | `128` | no |
+| memory\_size | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments. | `number` | `128` | no |
 | number\_of\_policies | Number of policies to attach to IAM role for Lambda Function | `number` | `0` | no |
 | number\_of\_policy\_jsons | Number of policies JSON to attach to IAM role for Lambda Function | `number` | `0` | no |
 | package\_type | The Lambda deployment package type. Valid options: Zip or Image | `string` | `"Zip"` | no |
