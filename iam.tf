@@ -56,10 +56,11 @@ data "aws_iam_policy_document" "logs" {
   statement {
     effect = "Allow"
 
-    actions = concat([
+    actions = compact([
+      !var.use_existing_cloudwatch_log_group ? "logs:CreateLogGroup" : "",
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ], compact([!var.use_existing_cloudwatch_log_group ? "logs:CreateLogGroup" : ""]))
+      "logs:PutLogEvents"
+    ])
 
     resources = flatten([for _, v in ["%v:*", "%v:*:*"] : format(v, local.log_group_arn)])
   }
