@@ -182,6 +182,7 @@ data "aws_iam_policy_document" "async" {
     actions = [
       "sns:Publish",
       "sqs:SendMessage",
+      "events:PutEvents",
     ]
 
     resources = compact(distinct([var.destination_on_failure, var.destination_on_success]))
