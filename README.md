@@ -10,8 +10,6 @@ These types of resources supported:
 * [Lambda Provisioned Concurrency](https://www.terraform.io/docs/providers/aws/r/lambda_provisioned_concurrency_config.html)
 * [Lambda Async Event Configuration](https://www.terraform.io/docs/providers/aws/r/lambda_function_event_invoke_config.html)
 * [Lambda Permission](https://www.terraform.io/docs/providers/aws/r/lambda_permission.html)
-
-Not supported, yet:
 * [Lambda Event Source Mapping](https://www.terraform.io/docs/providers/aws/r/lambda_event_source_mapping.html)
 
 
@@ -34,7 +32,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 - [x] Lambda@Edge
 - [x] Conditional creation for many types of resources.
 - [x] Control execution of nearly any step in the process - build, package, store package, deploy, update.
-- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, EFS, dead-letter notification, tracing, async events, IAM role, IAM policies, and more).
+- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, EFS, dead-letter notification, tracing, async events, event source mappig, IAM role, IAM policies, and more).
 - [x] Support integration with other `serverless.tf` modules like [HTTP API Gateway](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2) (see [examples there](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2/tree/master/examples/complete-http)).
 
 
@@ -565,6 +563,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 * [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.
 * [With EFS](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-efs) - Create Lambda Function with Elastic File System attached (Terraform 0.13+ is recommended).
 * [Multiple regions](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/multiple-regions) - Create the same Lambda Function in multiple regions with non-conflicting IAM roles and policies.
+* [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (with SQS and DynamoDB).
 
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -629,6 +628,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | docker\_pip\_cache | Whether to mount a shared pip cache folder into docker environment or not | `any` | `null` | no |
 | docker\_with\_ssh\_agent | Whether to pass SSH\_AUTH\_SOCK into docker environment or not | `bool` | `false` | no |
 | environment\_variables | A map that defines environment variables for the Lambda Function. | `map(string)` | `{}` | no |
+| event\_source\_mapping | Map of event source mapping | `map(any)` | `{}` | no |
 | file\_system\_arn | The Amazon Resource Name (ARN) of the Amazon EFS Access Point that provides access to the file system. | `string` | `null` | no |
 | file\_system\_local\_mount\_path | The path where the function can access the file system, starting with /mnt/. | `string` | `null` | no |
 | function\_name | A unique name for your Lambda Function | `string` | `""` | no |

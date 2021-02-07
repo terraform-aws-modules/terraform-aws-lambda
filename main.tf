@@ -204,3 +204,20 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
   source_account     = lookup(each.value, "source_account", null)
   event_source_token = lookup(each.value, "event_source_token", null)
 }
+
+resource "aws_lambda_event_source_mapping" "this" {
+  for_each = var.create && var.create_function && ! var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.event_source_mapping : {}
+
+  function_name = aws_lambda_function.this[0].function_name
+
+  batch_size                         = lookup(each.value, "batch_size", null)
+  maximum_batching_window_in_seconds = lookup(each.value, "maximum_batching_window_in_seconds", null)
+  event_source_arn                   = lookup(each.value, "event_source_arn", null)
+  enabled                            = lookup(each.value, "enabled", null)
+  starting_position                  = lookup(each.value, "starting_position", null)
+  starting_position_timestamp        = lookup(each.value, "starting_position_timestamp", null)
+  parallelization_factor             = lookup(each.value, "parallelization_factor", null)
+  maximum_retry_attempts             = lookup(each.value, "maximum_retry_attempts", null)
+  maximum_record_age_in_seconds      = lookup(each.value, "maximum_record_age_in_seconds", null)
+  bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
+}

@@ -560,3 +560,9 @@ variable "docker_pip_cache" {
   type        = any
   default     = null
 }
+
+variable "event_source_mapping" {
+  description = "Map of event source mapping"
+  type        = map(any)
+  default     = {}
+}
