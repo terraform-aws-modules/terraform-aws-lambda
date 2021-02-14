@@ -281,6 +281,16 @@ variable "allowed_triggers" {
   default     = {}
 }
 
+############################################
+# Lambda Event Source Mapping
+############################################
+
+variable "event_source_mapping" {
+  description = "Map of event source mapping"
+  type        = any
+  default     = {}
+}
+
 #################
 # CloudWatch Logs
 #################
