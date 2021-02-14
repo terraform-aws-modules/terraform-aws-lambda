@@ -1,6 +1,6 @@
 # Event Source Mapping configuration
 
-Configuration in this directory creates Lambda Function with event source mapping configuration, SQS queue and DynamoDB table.
+Configuration in this directory creates Lambda Function with event source mapping configuration for SQS queue, Kinesis stream, and DynamoDB table.
 
 ## Usage
 

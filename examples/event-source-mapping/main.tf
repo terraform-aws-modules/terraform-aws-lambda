@@ -9,9 +9,9 @@ provider "aws" {
   skip_requesting_account_id  = true
 }
 
-resource "random_pet" "this" {
-  length = 2
-}
+####################################################
+# Lambda Function with event source mapping
+####################################################
 
 module "lambda_function" {
   source = "../../"
@@ -22,40 +22,76 @@ module "lambda_function" {
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
-  attach_policies    = true
-  number_of_policies = 2
-
   event_source_mapping = {
     sqs = {
-      event_source_arn = aws_sqs_queue.one.arn
+      event_source_arn = aws_sqs_queue.this.arn
     }
     dynamodb = {
-      event_source_arn = aws_dynamodb_table.two.stream_arn
+      event_source_arn  = aws_dynamodb_table.this.stream_arn
+      starting_position = "LATEST"
+      # This can be created but it won't be updated/removed. To be reviewed in the future.
+      #      destination_config = {
+      #        on_failure = {
+      #          destination_arn = aws_sqs_queue.failure.arn
+      #        }
+      #      }
+    }
+    kinesis = {
+      event_source_arn  = aws_kinesis_stream.this.arn
+      starting_position = "LATEST"
     }
   }
 
   allowed_triggers = {
     sqs = {
       principal  = "sqs.amazonaws.com"
-      source_arn = aws_sqs_queue.one.arn
+      source_arn = aws_sqs_queue.this.arn
     }
     dynamodb = {
       principal  = "dynamodb.amazonaws.com"
-      source_arn = aws_dynamodb_table.two.stream_arn
+      source_arn = aws_dynamodb_table.this.stream_arn
+    }
+    kinesis = {
+      principal  = "kinesis.amazonaws.com"
+      source_arn = aws_kinesis_stream.this.arn
     }
   }
 
+  create_current_version_allowed_triggers = false
+
+  # Allow failures to be sent to SQS queue
+  attach_policy_statements = true
+  policy_statements = {
+    sqs_failure = {
+      effect    = "Allow",
+      actions   = ["sqs:SendMessage"],
+      resources = [aws_sqs_queue.failure.arn]
+    }
+  }
+
+  attach_policies    = true
+  number_of_policies = 3
+
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole",
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole",
   ]
 }
 
-resource "aws_sqs_queue" "one" {
-  name_prefix = random_pet.this.id
+##################
+# Extra resources
+##################
+
+resource "random_pet" "this" {
+  length = 2
 }
 
-resource "aws_dynamodb_table" "two" {
+resource "aws_sqs_queue" "this" {
+  name = random_pet.this.id
+}
+
+resource "aws_dynamodb_table" "this" {
   name             = random_pet.this.id
   billing_mode     = "PAY_PER_REQUEST"
   hash_key         = "UserId"
@@ -74,3 +110,11 @@ resource "aws_dynamodb_table" "two" {
   }
 }
 
+resource "aws_kinesis_stream" "this" {
+  name        = random_pet.this.id
+  shard_count = 1
+}
+
+resource "aws_sqs_queue" "failure" {
+  name = "${random_pet.this.id}-failure"
+}

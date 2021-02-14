@@ -191,7 +191,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
   event_source_token = lookup(each.value, "event_source_token", null)
 }
 
-# Error: Error adding new Lambda Permission for destined-tetra-lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
+# Error: Error adding new Lambda Permission for lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
   for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.allowed_triggers : {}
 
@@ -206,13 +206,14 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
-  for_each = var.create && var.create_function && ! var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.event_source_mapping : {}
+  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.event_source_mapping : tomap({})
 
-  function_name = aws_lambda_function.this[0].function_name
+  function_name = aws_lambda_function.this[0].arn
+
+  event_source_arn = each.value.event_source_arn
 
   batch_size                         = lookup(each.value, "batch_size", null)
   maximum_batching_window_in_seconds = lookup(each.value, "maximum_batching_window_in_seconds", null)
-  event_source_arn                   = lookup(each.value, "event_source_arn", null)
   enabled                            = lookup(each.value, "enabled", null)
   starting_position                  = lookup(each.value, "starting_position", null)
   starting_position_timestamp        = lookup(each.value, "starting_position_timestamp", null)
@@ -221,13 +222,15 @@ resource "aws_lambda_event_source_mapping" "this" {
   maximum_record_age_in_seconds      = lookup(each.value, "maximum_record_age_in_seconds", null)
   bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
 
+  /* @todo: fix this
   dynamic "destination_config" {
     for_each = lookup(each.value, "destination_config", {})
 
     content {
       on_failure {
-        destination_arn = lookup(each.value.destination_config.on_failure, "destination_arn", null)
+        destination_arn = lookup(destination_config.value, "on_failure") #"destination_arn"]
       }
     }
   }
+  */
 }

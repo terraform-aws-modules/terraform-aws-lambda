@@ -281,6 +281,16 @@ variable "allowed_triggers" {
   default     = {}
 }
 
+############################################
+# Lambda Event Source Mapping
+############################################
+
+variable "event_source_mapping" {
+  description = "Map of event source mapping"
+  type        = any
+  default     = {}
+}
+
 #################
 # CloudWatch Logs
 #################
@@ -559,10 +569,4 @@ variable "docker_pip_cache" {
   description = "Whether to mount a shared pip cache folder into docker environment or not"
   type        = any
   default     = null
-}
-
-variable "event_source_mapping" {
-  description = "Map of event source mapping"
-  type        = map(any)
-  default     = {}
 }
