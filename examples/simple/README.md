@@ -29,6 +29,18 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | random | >= 2 |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| lambda_function | ../../ |  |
+
+## Resources
+
+| Name |
+|------|
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+
 ## Inputs
 
 No input.
@@ -56,5 +68,4 @@ No input.
 | this\_lambda\_layer\_layer\_arn | The ARN of the Lambda Layer without version |
 | this\_lambda\_layer\_source\_code\_size | The size in bytes of the Lambda Layer .zip file |
 | this\_lambda\_layer\_version | The Lambda Layer version |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
