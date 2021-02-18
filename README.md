@@ -596,8 +596,8 @@ No Modules.
 | Name |
 |------|
 | [aws_arn](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/arn) |
-| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/cloudwatch_log_group) |
 | [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/cloudwatch_log_group) |
+| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/cloudwatch_log_group) |
 | [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_policy) |
 | [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/iam_policy) |
 | [aws_iam_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_policy_attachment) |
