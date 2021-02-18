@@ -124,6 +124,19 @@ module "lambda" {
 |------|---------|
 | aws | >= 3.19 |
 
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/lambda_alias) |
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_alias) |
+| [aws_lambda_function_event_invoke_config](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_function_event_invoke_config) |
+| [aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_permission) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -156,7 +169,6 @@ module "lambda" {
 | this\_lambda\_alias\_function\_version | Lambda function version which the alias uses |
 | this\_lambda\_alias\_invoke\_arn | The ARN to be used for invoking Lambda Function from API Gateway |
 | this\_lambda\_alias\_name | The name of the Lambda Function Alias |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Authors
