@@ -29,6 +29,27 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | random | >= 2 |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| lambda_function_from_package | ../../ |  |
+| lambda_layer | ../../ |  |
+| package_dir | ../../ |  |
+| package_dir_without_pip_install | ../../ |  |
+| package_file | ../../ |  |
+| package_file_with_pip_requirements | ../../ |  |
+| package_with_commands_and_patterns | ../../ |  |
+| package_with_docker | ../../ |  |
+| package_with_patterns | ../../ |  |
+| package_with_pip_requirements_in_docker | ../../ |  |
+
+## Resources
+
+| Name |
+|------|
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+
 ## Inputs
 
 No input.
@@ -36,5 +57,4 @@ No input.
 ## Outputs
 
 No output.
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

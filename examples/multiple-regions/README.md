@@ -32,6 +32,20 @@ Note that this example may create resources which cost money. Run `terraform des
 | aws.us-east-1 | >= 3.19 |
 | random | >= 2 |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| lambda_function | ../../ |  |
+| lambda_function_another_region | ../../ |  |
+
+## Resources
+
+| Name |
+|------|
+| [aws_sqs_queue](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/sqs_queue) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+
 ## Inputs
 
 No input.
@@ -59,5 +73,4 @@ No input.
 | this\_lambda\_layer\_layer\_arn | The ARN of the Lambda Layer without version |
 | this\_lambda\_layer\_source\_code\_size | The size in bytes of the Lambda Layer .zip file |
 | this\_lambda\_layer\_version | The Lambda Layer version |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
