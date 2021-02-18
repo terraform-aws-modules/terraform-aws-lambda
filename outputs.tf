@@ -107,6 +107,11 @@ output "lambda_cloudwatch_log_group_arn" {
   description = "The ARN of the Cloudwatch Log Group"
   value       = local.log_group_arn
 }
+  
+output "lambda_cloudwatch_log_group_name" {
+  description = "The name of the Cloudwatch Log Group"
+  value       = "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
+}
 
 # Deployment package
 output "local_filename" {
