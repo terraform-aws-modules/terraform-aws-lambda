@@ -54,7 +54,7 @@ jobs:
       - name: Execute pre-commit
         # Run only validate pre-commit check on min version supported
         if: ${{ matrix.version ==  needs.getBaseVersion.outputs.minVersion }}
-        run: pre-commit run --color=always --show-diff-on-failure terraform_validate
+        run: pre-commit run --color=always --show-diff-on-failure --all-files terraform_validate
 
       - name: Execute pre-commit
         # Run all pre-commit checks on max version supported
