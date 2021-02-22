@@ -20,7 +20,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6 |
+| terraform | >= 0.13 |
 | aws | >= 2.67 |
 | random | >= 2 |
 

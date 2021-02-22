@@ -115,7 +115,7 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6 |
+| terraform | >= 0.13 |
 | aws | >= 3.19 |
 
 ## Providers
