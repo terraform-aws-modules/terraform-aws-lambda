@@ -120,17 +120,17 @@ No Modules.
 
 | Name |
 |------|
-| [aws_codedeploy_app](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/codedeploy_app) |
-| [aws_codedeploy_deployment_group](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/codedeploy_deployment_group) |
-| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/iam_policy_document) |
-| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_policy) |
-| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_role_policy_attachment) |
-| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/iam_role) |
-| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_role) |
-| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/lambda_alias) |
-| [aws_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/lambda_function) |
-| [local_file](https://registry.terraform.io/providers/hashicorp/local/1/docs/resources/file) |
-| [null_resource](https://registry.terraform.io/providers/hashicorp/null/2/docs/resources/resource) |
+| [aws_codedeploy_app](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codedeploy_app) |
+| [aws_codedeploy_deployment_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codedeploy_deployment_group) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_role) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) |
+| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) |
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_alias) |
+| [aws_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_function) |
+| [local_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) |
+| [null_resource](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) |
 
 ## Inputs
 

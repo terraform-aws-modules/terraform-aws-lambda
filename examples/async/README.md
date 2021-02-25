@@ -40,9 +40,9 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name |
 |------|
-| [aws_sns_topic](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/sns_topic) |
-| [aws_sqs_queue](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/sqs_queue) |
-| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+| [aws_sns_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) |
+| [aws_sqs_queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
 
 ## Inputs
 

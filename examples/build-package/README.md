@@ -48,7 +48,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name |
 |------|
-| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
 
 ## Inputs
 
