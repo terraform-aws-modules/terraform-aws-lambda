@@ -42,12 +42,12 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name |
 |------|
-| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/caller_identity) |
-| [aws_ecr_authorization_token](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/ecr_authorization_token) |
-| [aws_ecr_repository](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/ecr_repository) |
-| [aws_region](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/region) |
-| [docker_registry_image](https://registry.terraform.io/providers/kreuzwerker/docker/2.8.0/docs/resources/registry_image) |
-| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) |
+| [aws_ecr_authorization_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecr_authorization_token) |
+| [aws_ecr_repository](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) |
+| [aws_region](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) |
+| [docker_registry_image](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/registry_image) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
 
 ## Inputs
 

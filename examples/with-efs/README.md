@@ -42,10 +42,10 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name |
 |------|
-| [aws_efs_access_point](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/efs_access_point) |
-| [aws_efs_file_system](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/efs_file_system) |
-| [aws_efs_mount_target](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/efs_mount_target) |
-| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+| [aws_efs_access_point](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_access_point) |
+| [aws_efs_file_system](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) |
+| [aws_efs_mount_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
 
 ## Inputs
 

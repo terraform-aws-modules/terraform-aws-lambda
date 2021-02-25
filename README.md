@@ -595,25 +595,25 @@ No Modules.
 
 | Name |
 |------|
-| [aws_arn](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/arn) |
-| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/cloudwatch_log_group) |
-| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/cloudwatch_log_group) |
-| [aws_iam_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_policy_attachment) |
-| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/iam_policy_document) |
-| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/iam_policy) |
-| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_policy) |
-| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_role_policy_attachment) |
-| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/iam_role) |
-| [aws_lambda_event_source_mapping](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_event_source_mapping) |
-| [aws_lambda_function_event_invoke_config](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_function_event_invoke_config) |
-| [aws_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_function) |
-| [aws_lambda_layer_version](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_layer_version) |
-| [aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_permission) |
-| [aws_lambda_provisioned_concurrency_config](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_provisioned_concurrency_config) |
-| [aws_s3_bucket_object](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/s3_bucket_object) |
-| [external_external](https://registry.terraform.io/providers/hashicorp/external/1/docs/data-sources/external) |
-| [local_file](https://registry.terraform.io/providers/hashicorp/local/1/docs/resources/file) |
-| [null_resource](https://registry.terraform.io/providers/hashicorp/null/2/docs/resources/resource) |
+| [aws_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/arn) |
+| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/cloudwatch_log_group) |
+| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) |
+| [aws_iam_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy_attachment) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) |
+| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) |
+| [aws_lambda_event_source_mapping](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_event_source_mapping) |
+| [aws_lambda_function](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function) |
+| [aws_lambda_function_event_invoke_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_event_invoke_config) |
+| [aws_lambda_layer_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_layer_version) |
+| [aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) |
+| [aws_lambda_provisioned_concurrency_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_provisioned_concurrency_config) |
+| [aws_s3_bucket_object](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object) |
+| [external_external](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) |
+| [local_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) |
+| [null_resource](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) |
 
 ## Inputs
 

@@ -132,10 +132,10 @@ No Modules.
 
 | Name |
 |------|
-| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/data-sources/lambda_alias) |
-| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_alias) |
-| [aws_lambda_function_event_invoke_config](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_function_event_invoke_config) |
-| [aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/3.19/docs/resources/lambda_permission) |
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_alias) |
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_alias) |
+| [aws_lambda_function_event_invoke_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_event_invoke_config) |
+| [aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) |
 
 ## Inputs
 
