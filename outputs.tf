@@ -121,9 +121,9 @@ output "local_filename" {
 
 output "s3_object" {
   description = "The map with S3 object data of zip archive deployed (if deployment was from S3)"
-  value       = {
-    bucket = local.s3_bucket
-    key = local.s3_key
+  value = {
+    bucket     = local.s3_bucket
+    key        = local.s3_key
     version_id = local.s3_object_version
   }
 }
