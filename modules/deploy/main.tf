@@ -113,7 +113,8 @@ resource "null_resource" "deploy" {
   }
 
   provisioner "local-exec" {
-    command = local.script
+    command     = local.script
+    interpreter = var.interpreter
   }
 }
 
