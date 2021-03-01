@@ -41,7 +41,7 @@ variable "after_allow_traffic_hook_arn" {
 }
 
 variable "interpreter" {
-  description = "list of interpreter arguments used to execute deploy script, first arg is path"
+  description = "List of interpreter arguments used to execute deploy script, first arg is path"
   type        = list(string)
   default     = ["/bin/bash", "-c"]
 }

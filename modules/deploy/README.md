@@ -160,7 +160,7 @@ No Modules.
 | description | Description to use for the deployment | `string` | `""` | no |
 | force\_deploy | Force deployment every time (even when nothing changes) | `bool` | `false` | no |
 | function\_name | The name of the Lambda function to deploy | `string` | `""` | no |
-| interpreter | The interpreter used to execute deploy script | `list(string)` | `["/bin/bash", "-c]` | no |
+| interpreter | List of interpreter arguments used to execute deploy script, first arg is path | `list(string)` | <pre>[<br>  "/bin/bash",<br>  "-c"<br>]</pre> | no |
 | save\_deploy\_script | Save deploy script locally | `bool` | `false` | no |
 | target\_version | Target version of Lambda function version to deploy | `string` | `""` | no |
 | triggers | Map of triggers which will be notified when event happens. Valid options for event types are DeploymentStart, DeploymentSuccess, DeploymentFailure, DeploymentStop, DeploymentRollback, DeploymentReady (Applies only to replacement instances in a blue/green deployment), InstanceStart, InstanceSuccess, InstanceFailure, InstanceReady. Note that not all are applicable for Lambda deployments. | `map(any)` | `{}` | no |
