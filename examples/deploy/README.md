@@ -19,16 +19,31 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6 |
-| aws | >= 2.67 |
+| terraform | >= 0.12.26 |
+| aws | >= 3.19 |
 | random | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.67 |
+| aws | >= 3.19 |
 | random | >= 2 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| alias_refresh | ../../modules/alias |  |
+| deploy | ../../modules/deploy |  |
+| lambda_function | ../../ |  |
+
+## Resources
+
+| Name |
+|------|
+| [aws_sns_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
 
 ## Inputs
 
@@ -47,5 +62,4 @@ No input.
 | codedeploy\_iam\_role\_name | Name of IAM role used by CodeDeploy |
 | deploy\_script | Path to a deployment script |
 | script | Deployment script |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

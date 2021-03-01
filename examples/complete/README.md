@@ -20,7 +20,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6 |
+| terraform | >= 0.12.26 |
 | aws | >= 2.67 |
 | random | >= 2 |
 
@@ -30,6 +30,26 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | aws | >= 2.67 |
 | random | >= 2 |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| disabled_lambda | ../../ |  |
+| lambda_at_edge | ../../ |  |
+| lambda_function | ../../ |  |
+| lambda_function_existing_package_local | ../../ |  |
+| lambda_layer_local | ../../ |  |
+| lambda_layer_s3 | ../../ |  |
+| lambda_with_provisioned_concurrency | ../../ |  |
+| s3_bucket | terraform-aws-modules/s3-bucket/aws |  |
+
+## Resources
+
+| Name |
+|------|
+| [aws_sqs_queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
 
 ## Inputs
 
@@ -58,5 +78,4 @@ No input.
 | this\_lambda\_layer\_layer\_arn | The ARN of the Lambda Layer without version |
 | this\_lambda\_layer\_source\_code\_size | The size in bytes of the Lambda Layer .zip file |
 | this\_lambda\_layer\_version | The Lambda Layer version |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

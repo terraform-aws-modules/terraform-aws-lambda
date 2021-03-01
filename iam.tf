@@ -1,9 +1,10 @@
 locals {
-  create_role = var.create && var.create_function && ! var.create_layer && var.create_role
+  create_role = var.create && var.create_function && !var.create_layer && var.create_role
 
   # Lambda@Edge uses the Cloudwatch region closest to the location where the function is executed
   # The region part of the LogGroup ARN is then replaced with a wildcard (*) so Lambda@Edge is able to log in every region
   log_group_arn_regional = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
+  log_group_name         = element(concat(data.aws_cloudwatch_log_group.lambda.*.name, aws_cloudwatch_log_group.lambda.*.name, [""]), 0)
   log_group_arn          = local.create_role && var.lambda_at_edge ? format("arn:%s:%s:%s:%s:%s", data.aws_arn.log_group_arn[0].partition, data.aws_arn.log_group_arn[0].service, "*", data.aws_arn.log_group_arn[0].account, data.aws_arn.log_group_arn[0].resource) : local.log_group_arn_regional
 
   role_name = local.create_role ? coalesce(var.role_name, var.function_name) : null
@@ -56,10 +57,11 @@ data "aws_iam_policy_document" "logs" {
   statement {
     effect = "Allow"
 
-    actions = [
+    actions = compact([
+      !var.use_existing_cloudwatch_log_group ? "logs:CreateLogGroup" : "",
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
+      "logs:PutLogEvents"
+    ])
 
     resources = flatten([for _, v in ["%v:*", "%v:*:*"] : format(v, local.log_group_arn)])
   }
@@ -181,6 +183,7 @@ data "aws_iam_policy_document" "async" {
     actions = [
       "sns:Publish",
       "sqs:SendMessage",
+      "events:PutEvents",
     ]
 
     resources = compact(distinct([var.destination_on_failure, var.destination_on_success]))

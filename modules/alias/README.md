@@ -34,8 +34,8 @@ module "alias_no_refresh" {
 
   allowed_triggers = {
     AnotherAPIGatewayAny = {
-      service = "apigateway"
-      arn = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse/*/*/*"
     }
   }
 }
@@ -76,8 +76,8 @@ module "alias_existing" {
 
   allowed_triggers = {
     AnotherAwesomeAPIGateway = {
-      service = "apigateway"
-      arn     = "arn:aws:execute-api:eu-west-1:999967859851:aqnku8akd0"
+      service    = "apigateway"
+      source_arn = "arn:aws:execute-api:eu-west-1:999967859851:aqnku8akd0/*/*/*"
     }
   }
 }
@@ -115,14 +115,27 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6 |
-| aws | >= 2.67 |
+| terraform | >= 0.12.26 |
+| aws | >= 3.19 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.67 |
+| aws | >= 3.19 |
+
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_alias) |
+| [aws_lambda_alias](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_alias) |
+| [aws_lambda_function_event_invoke_config](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_event_invoke_config) |
+| [aws_lambda_permission](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) |
 
 ## Inputs
 
@@ -156,7 +169,6 @@ module "lambda" {
 | this\_lambda\_alias\_function\_version | Lambda function version which the alias uses |
 | this\_lambda\_alias\_invoke\_arn | The ARN to be used for invoking Lambda Function from API Gateway |
 | this\_lambda\_alias\_name | The name of the Lambda Function Alias |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Authors
