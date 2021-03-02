@@ -523,6 +523,18 @@ variable "s3_bucket" {
   default     = null
 }
 
+variable "s3_acl" {
+  description = "The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private."
+  type        = string
+  default     = "private"
+}
+
+variable "s3_server_side_encryption" {
+  description = "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\"."
+  type        = string
+  default     = null
+}
+
 variable "source_path" {
   description = "The absolute path to a local file or directory containing your Lambda source code"
   type        = any # string | list(string | map(any))
