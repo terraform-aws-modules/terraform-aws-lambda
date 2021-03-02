@@ -523,6 +523,17 @@ variable "s3_bucket" {
   default     = null
 }
 
+variable "acl" {
+  description = "(Optional) The canned ACL to apply. Defaults to 'private'. Conflicts with `grant`"
+  type        = string
+  default     = "private"
+}
+
+variable "server_side_encryption" {
+  description = "Map containing server-side encryption configuration."
+  type        = string
+  default     = null
+}
 variable "source_path" {
   description = "The absolute path to a local file or directory containing your Lambda source code"
   type        = any # string | list(string | map(any))

@@ -619,6 +619,7 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| acl | (Optional) The canned ACL to apply. Defaults to 'private'. Conflicts with `grant` | `string` | `"private"` | no |
 | allowed\_triggers | Map of allowed triggers to create Lambda permissions | `map(any)` | `{}` | no |
 | artifacts\_dir | Directory name where artifacts should be stored | `string` | `"builds"` | no |
 | attach\_async\_event\_policy | Controls whether async event policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
@@ -698,6 +699,7 @@ No Modules.
 | s3\_existing\_package | The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use | `map(string)` | `null` | no |
 | s3\_object\_storage\_class | Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED\_REDUNDANCY, ONEZONE\_IA, INTELLIGENT\_TIERING, or STANDARD\_IA. | `string` | `"ONEZONE_IA"` | no |
 | s3\_object\_tags | A map of tags to assign to S3 bucket object. | `map(string)` | `{}` | no |
+| server\_side\_encryption | Map containing server-side encryption configuration. | `string` | `null` | no |
 | source\_path | The absolute path to a local file or directory containing your Lambda source code | `any` | `null` | no |
 | store\_on\_s3 | Whether to store produced artifacts on S3 or locally. | `bool` | `false` | no |
 | tags | A map of tags to assign to resources. | `map(string)` | `{}` | no |
