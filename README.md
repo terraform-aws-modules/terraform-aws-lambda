@@ -619,7 +619,6 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| s3\_acl | The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private. | `string` | `"private"` | no |
 | allowed\_triggers | Map of allowed triggers to create Lambda permissions | `map(any)` | `{}` | no |
 | artifacts\_dir | Directory name where artifacts should be stored | `string` | `"builds"` | no |
 | attach\_async\_event\_policy | Controls whether async event policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
@@ -695,6 +694,7 @@ No Modules.
 | role\_permissions\_boundary | The ARN of the policy that is used to set the permissions boundary for the IAM role used by Lambda Function | `string` | `null` | no |
 | role\_tags | A map of tags to assign to IAM role | `map(string)` | `{}` | no |
 | runtime | Lambda Function runtime | `string` | `""` | no |
+| s3\_acl | The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private. | `string` | `"private"` | no |
 | s3\_bucket | S3 bucket to store artifacts | `string` | `null` | no |
 | s3\_existing\_package | The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use | `map(string)` | `null` | no |
 | s3\_object\_storage\_class | Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED\_REDUNDANCY, ONEZONE\_IA, INTELLIGENT\_TIERING, or STANDARD\_IA. | `string` | `"ONEZONE_IA"` | no |
