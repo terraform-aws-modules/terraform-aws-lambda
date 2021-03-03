@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v1.43.0"></a>
+## [v1.43.0] - 2021-03-03
+
+- fix: Defaults the role_name coalesce to * to workaround import error ([#121](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/121))
+
+
 <a name="v1.42.0"></a>
 ## [v1.42.0] - 2021-03-02
 
@@ -356,7 +362,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.42.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.43.0...HEAD
+[v1.43.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.42.0...v1.43.0
 [v1.42.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.41.0...v1.42.0
 [v1.41.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.40.0...v1.41.0
 [v1.40.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.39.0...v1.40.0
