@@ -7,7 +7,11 @@ locals {
   log_group_name         = element(concat(data.aws_cloudwatch_log_group.lambda.*.name, aws_cloudwatch_log_group.lambda.*.name, [""]), 0)
   log_group_arn          = local.create_role && var.lambda_at_edge ? format("arn:%s:%s:%s:%s:%s", data.aws_arn.log_group_arn[0].partition, data.aws_arn.log_group_arn[0].service, "*", data.aws_arn.log_group_arn[0].account, data.aws_arn.log_group_arn[0].resource) : local.log_group_arn_regional
 
-  role_name = local.create_role ? coalesce(var.role_name, var.function_name) : null
+  # Defaulting to "*" (an invalid character for an IAM Role name) will cause an error when
+  #   attempting to plan if the role_name and function_name are not set.  This is a workaround
+  #   for #83 that will allow one to import resources without receiving an error from coalesce.
+  # @see https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/83
+  role_name = local.create_role ? coalesce(var.role_name, var.function_name, "*") : null
 }
 
 ###########
