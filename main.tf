@@ -83,7 +83,7 @@ resource "aws_lambda_function" "this" {
 
   tags = var.tags
 
-  depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package]
+  depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package, aws_cloudwatch_log_group.lambda]
 }
 
 resource "aws_lambda_layer_version" "this" {
