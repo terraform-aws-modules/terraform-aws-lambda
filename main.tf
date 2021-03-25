@@ -83,6 +83,10 @@ resource "aws_lambda_function" "this" {
 
   tags = var.tags
 
+  # Depending on the log group is necessary to allow Terraform to create the log group before AWS can.
+  # When a lambda function is invoked, AWS creates the log group automatically if it doesn't exist yet.
+  # Without the dependency, this can result in a race condition if the lambda function is invoked before
+  # Terraform can create the log group.
   depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package, aws_cloudwatch_log_group.lambda]
 }
 
