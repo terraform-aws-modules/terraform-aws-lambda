@@ -19,59 +19,59 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13 |
-| aws | >= 3.19 |
-| docker | >= 2.8.0 |
-| random | >= 2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.19 |
+| <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 2.8.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.19 |
-| docker | >= 2.8.0 |
-| random | >= 2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.19 |
+| <a name="provider_docker"></a> [docker](#provider\_docker) | >= 2.8.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| lambda_function_from_container_image | ../../ |  |
+| <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ |  |
 
 ## Resources
 
-| Name |
-|------|
-| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) |
-| [aws_ecr_authorization_token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecr_authorization_token) |
-| [aws_ecr_repository](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) |
-| [aws_region](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) |
-| [docker_registry_image](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/registry_image) |
-| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
+| Name | Type |
+|------|------|
+| [aws_ecr_repository.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) | resource |
+| [docker_registry_image.app](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/registry_image) | resource |
+| [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
+| [aws_caller_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_ecr_authorization_token.token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecr_authorization_token) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
-No input.
+No inputs.
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| lambda\_cloudwatch\_log\_group\_arn | The ARN of the Cloudwatch Log Group |
-| lambda\_role\_arn | The ARN of the IAM role created for the Lambda Function |
-| lambda\_role\_name | The name of the IAM role created for the Lambda Function |
-| this\_lambda\_function\_arn | The ARN of the Lambda Function |
-| this\_lambda\_function\_invoke\_arn | The Invoke ARN of the Lambda Function |
-| this\_lambda\_function\_kms\_key\_arn | The ARN for the KMS encryption key of Lambda Function |
-| this\_lambda\_function\_last\_modified | The date Lambda Function resource was last modified |
-| this\_lambda\_function\_name | The name of the Lambda Function |
-| this\_lambda\_function\_qualified\_arn | The ARN identifying your Lambda Function Version |
-| this\_lambda\_function\_source\_code\_hash | Base64-encoded representation of raw SHA-256 sum of the zip file |
-| this\_lambda\_function\_source\_code\_size | The size in bytes of the function .zip file |
-| this\_lambda\_function\_version | Latest published version of Lambda Function |
-| this\_lambda\_layer\_arn | The ARN of the Lambda Layer with version |
-| this\_lambda\_layer\_created\_date | The date Lambda Layer resource was created |
-| this\_lambda\_layer\_layer\_arn | The ARN of the Lambda Layer without version |
-| this\_lambda\_layer\_source\_code\_size | The size in bytes of the Lambda Layer .zip file |
-| this\_lambda\_layer\_version | The Lambda Layer version |
+| <a name="output_lambda_cloudwatch_log_group_arn"></a> [lambda\_cloudwatch\_log\_group\_arn](#output\_lambda\_cloudwatch\_log\_group\_arn) | The ARN of the Cloudwatch Log Group |
+| <a name="output_lambda_role_arn"></a> [lambda\_role\_arn](#output\_lambda\_role\_arn) | The ARN of the IAM role created for the Lambda Function |
+| <a name="output_lambda_role_name"></a> [lambda\_role\_name](#output\_lambda\_role\_name) | The name of the IAM role created for the Lambda Function |
+| <a name="output_this_lambda_function_arn"></a> [this\_lambda\_function\_arn](#output\_this\_lambda\_function\_arn) | The ARN of the Lambda Function |
+| <a name="output_this_lambda_function_invoke_arn"></a> [this\_lambda\_function\_invoke\_arn](#output\_this\_lambda\_function\_invoke\_arn) | The Invoke ARN of the Lambda Function |
+| <a name="output_this_lambda_function_kms_key_arn"></a> [this\_lambda\_function\_kms\_key\_arn](#output\_this\_lambda\_function\_kms\_key\_arn) | The ARN for the KMS encryption key of Lambda Function |
+| <a name="output_this_lambda_function_last_modified"></a> [this\_lambda\_function\_last\_modified](#output\_this\_lambda\_function\_last\_modified) | The date Lambda Function resource was last modified |
+| <a name="output_this_lambda_function_name"></a> [this\_lambda\_function\_name](#output\_this\_lambda\_function\_name) | The name of the Lambda Function |
+| <a name="output_this_lambda_function_qualified_arn"></a> [this\_lambda\_function\_qualified\_arn](#output\_this\_lambda\_function\_qualified\_arn) | The ARN identifying your Lambda Function Version |
+| <a name="output_this_lambda_function_source_code_hash"></a> [this\_lambda\_function\_source\_code\_hash](#output\_this\_lambda\_function\_source\_code\_hash) | Base64-encoded representation of raw SHA-256 sum of the zip file |
+| <a name="output_this_lambda_function_source_code_size"></a> [this\_lambda\_function\_source\_code\_size](#output\_this\_lambda\_function\_source\_code\_size) | The size in bytes of the function .zip file |
+| <a name="output_this_lambda_function_version"></a> [this\_lambda\_function\_version](#output\_this\_lambda\_function\_version) | Latest published version of Lambda Function |
+| <a name="output_this_lambda_layer_arn"></a> [this\_lambda\_layer\_arn](#output\_this\_lambda\_layer\_arn) | The ARN of the Lambda Layer with version |
+| <a name="output_this_lambda_layer_created_date"></a> [this\_lambda\_layer\_created\_date](#output\_this\_lambda\_layer\_created\_date) | The date Lambda Layer resource was created |
+| <a name="output_this_lambda_layer_layer_arn"></a> [this\_lambda\_layer\_layer\_arn](#output\_this\_lambda\_layer\_layer\_arn) | The ARN of the Lambda Layer without version |
+| <a name="output_this_lambda_layer_source_code_size"></a> [this\_lambda\_layer\_source\_code\_size](#output\_this\_lambda\_layer\_source\_code\_size) | The size in bytes of the Lambda Layer .zip file |
+| <a name="output_this_lambda_layer_version"></a> [this\_lambda\_layer\_version](#output\_this\_lambda\_layer\_version) | The Lambda Layer version |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
