@@ -8,7 +8,6 @@ data "external" "archive_prepare" {
   count = var.create && var.create_package ? 1 : 0
 
   program     = [local.python, "${path.module}/package.py", "prepare"]
-  working_dir = path.cwd
 
   query = {
     paths = jsonencode({
@@ -67,7 +66,6 @@ resource "null_resource" "archive" {
       "--timestamp", data.external.archive_prepare[0].result.timestamp
     ]
     command     = data.external.archive_prepare[0].result.build_plan_filename
-    working_dir = path.cwd
   }
 
   depends_on = [local_file.archive_plan]
