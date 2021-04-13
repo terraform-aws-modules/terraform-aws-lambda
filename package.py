@@ -670,6 +670,8 @@ class BuildPlanManager:
                             # If path doesn't defined for a block with
                             # commands it will be set to Terraform's
                             # current working directory
+                            # NB: cwd may vary when using Terraform 0.14+ like:
+                            # `terraform -chdir=...`
                             path = query.paths.cwd
                         if batch:
                             step('sh', path, '\n'.join(batch))
