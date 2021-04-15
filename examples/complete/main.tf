@@ -227,6 +227,33 @@ module "lambda_with_provisioned_concurrency" {
   provisioned_concurrent_executions = -1 # 2
 }
 
+###############################################
+# Lambda Function with trusted entities
+###############################################
+
+module "lambda_with_trusted_entities" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-trusted-entities"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  source_path = "${path.module}/../fixtures/python3.8-app1"
+
+  trusted_entities = [
+    {
+      type = "AWS",
+      identifiers = [
+        "arn:aws:iam::123456789012:root",
+        "999999999999",
+        "arn:aws:sts::123456789012:assumed-role/RoleName/myaccount@myprovider.com"
+      ]
+    }
+  ]
+  # trusted_entities also accepts a list of aws services :
+  # trusted_entities = ["service-name.amazonaws.com", "ecs.amazonaws.com"]
+}
+
 ###########
 # Disabled
 ###########
