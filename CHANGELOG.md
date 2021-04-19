@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v1.47.0"></a>
+## [v1.47.0] - 2021-04-19
+
+- feat: Extended `trusted_entities` variable to support multiple types ([#143](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/143))
+
+
 <a name="v1.46.0"></a>
 ## [v1.46.0] - 2021-04-13
 
@@ -393,7 +399,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.46.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.47.0...HEAD
+[v1.47.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.46.0...v1.47.0
 [v1.46.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.45.0...v1.46.0
 [v1.45.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.44.0...v1.45.0
 [v1.44.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.43.0...v1.44.0
