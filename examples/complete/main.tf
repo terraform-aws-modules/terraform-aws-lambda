@@ -227,6 +227,37 @@ module "lambda_with_provisioned_concurrency" {
   provisioned_concurrent_executions = -1 # 2
 }
 
+###############################################
+# Lambda Function with mixed trusted entities
+###############################################
+
+module "lambda_with_mixed_trusted_entities" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-mixed-trusted-entities"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  source_path = "${path.module}/../fixtures/python3.8-app1"
+
+  trusted_entities = [
+    "appsync.amazonaws.com",
+    {
+      type = "AWS",
+      identifiers = [
+        "arn:aws:iam::307990089504:root",
+      ]
+    },
+    {
+      type = "Service",
+      identifiers = [
+        "codedeploy.amazonaws.com",
+        "ecs.amazonaws.com"
+      ]
+    }
+  ]
+}
+
 ###########
 # Disabled
 ###########
