@@ -436,8 +436,8 @@ variable "attach_policy_statements" {
 }
 
 variable "trusted_entities" {
-  description = "Lambda Function additional trusted entities for assuming roles (trust relationship)"
-  type        = list(any)
+  description = "List of additional trusted entities for assuming Lambda Function role (trust relationship)"
+  type        = any
   default     = []
 }
 

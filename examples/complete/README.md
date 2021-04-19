@@ -41,8 +41,8 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_function_existing_package_local"></a> [lambda\_function\_existing\_package\_local](#module\_lambda\_function\_existing\_package\_local) | ../../ |  |
 | <a name="module_lambda_layer_local"></a> [lambda\_layer\_local](#module\_lambda\_layer\_local) | ../../ |  |
 | <a name="module_lambda_layer_s3"></a> [lambda\_layer\_s3](#module\_lambda\_layer\_s3) | ../../ |  |
+| <a name="module_lambda_with_mixed_trusted_entities"></a> [lambda\_with\_mixed\_trusted\_entities](#module\_lambda\_with\_mixed\_trusted\_entities) | ../../ |  |
 | <a name="module_lambda_with_provisioned_concurrency"></a> [lambda\_with\_provisioned\_concurrency](#module\_lambda\_with\_provisioned\_concurrency) | ../../ |  |
-| <a name="module_lambda_with_trusted_entities"></a> [lambda\_with\_trusted\_entities](#module\_lambda\_with\_trusted\_entities) | ../../ |  |
 | <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws |  |
 
 ## Resources

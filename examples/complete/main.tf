@@ -228,30 +228,34 @@ module "lambda_with_provisioned_concurrency" {
 }
 
 ###############################################
-# Lambda Function with trusted entities
+# Lambda Function with mixed trusted entities
 ###############################################
 
-module "lambda_with_trusted_entities" {
+module "lambda_with_mixed_trusted_entities" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda-trusted-entities"
+  function_name = "${random_pet.this.id}-lambda-mixed-trusted-entities"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   trusted_entities = [
+    "appsync.amazonaws.com",
     {
       type = "AWS",
       identifiers = [
-        "arn:aws:iam::123456789012:root",
-        "999999999999",
-        "arn:aws:sts::123456789012:assumed-role/RoleName/myaccount@myprovider.com"
+        "arn:aws:iam::307990089504:root",
+      ]
+    },
+    {
+      type = "Service",
+      identifiers = [
+        "codedeploy.amazonaws.com",
+        "ecs.amazonaws.com"
       ]
     }
   ]
-  # trusted_entities also accepts a list of aws services :
-  # trusted_entities = ["service-name.amazonaws.com", "ecs.amazonaws.com"]
 }
 
 ###########
