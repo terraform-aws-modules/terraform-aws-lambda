@@ -265,7 +265,7 @@ module "lambda_with_mixed_trusted_entities" {
 module "lambda_function_for_each" {
   source = "../../"
 
-  for_each       = toset(["dev", "staging", "prod"])
+  for_each = toset(["dev", "staging", "prod"])
 
   function_name = "my-${each.value}"
   description   = "My awesome lambda function"
@@ -273,7 +273,7 @@ module "lambda_function_for_each" {
   runtime       = "python3.8"
   publish       = true
 
-  create_package = false
+  create_package         = false
   local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
 }
 
