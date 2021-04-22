@@ -20,7 +20,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.26 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.67 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2 |
 
@@ -39,6 +39,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_at_edge"></a> [lambda\_at\_edge](#module\_lambda\_at\_edge) | ../../ |  |
 | <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ |  |
 | <a name="module_lambda_function_existing_package_local"></a> [lambda\_function\_existing\_package\_local](#module\_lambda\_function\_existing\_package\_local) | ../../ |  |
+| <a name="module_lambda_function_for_each"></a> [lambda\_function\_for\_each](#module\_lambda\_function\_for\_each) | ../../ |  |
 | <a name="module_lambda_layer_local"></a> [lambda\_layer\_local](#module\_lambda\_layer\_local) | ../../ |  |
 | <a name="module_lambda_layer_s3"></a> [lambda\_layer\_s3](#module\_lambda\_layer\_s3) | ../../ |  |
 | <a name="module_lambda_with_mixed_trusted_entities"></a> [lambda\_with\_mixed\_trusted\_entities](#module\_lambda\_with\_mixed\_trusted\_entities) | ../../ |  |
