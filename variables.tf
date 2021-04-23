@@ -301,6 +301,12 @@ variable "use_existing_cloudwatch_log_group" {
   default     = false
 }
 
+variable "cloudwatch_logs_group_name" {
+  description = "Name of custom Log Group to use."
+  type        = string
+  default     = ""
+}
+
 variable "cloudwatch_logs_retention_in_days" {
   description = "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653."
   type        = number

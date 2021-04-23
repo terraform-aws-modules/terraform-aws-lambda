@@ -83,7 +83,7 @@ resource "aws_lambda_function" "this" {
 
   tags = var.tags
 
-  depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package]
+  depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package, aws_cloudwatch_log_group.lambda]
 }
 
 resource "aws_lambda_layer_version" "this" {
@@ -125,13 +125,13 @@ resource "aws_s3_bucket_object" "lambda_package" {
 data "aws_cloudwatch_log_group" "lambda" {
   count = var.create && var.create_function && !var.create_layer && var.use_existing_cloudwatch_log_group ? 1 : 0
 
-  name = "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
+  name = var.cloudwatch_logs_group_name != "" ? var.cloudwatch_logs_group_name : "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {
   count = var.create && var.create_function && !var.create_layer && !var.use_existing_cloudwatch_log_group ? 1 : 0
 
-  name              = "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
+  name              = var.cloudwatch_logs_group_name != "" ? var.cloudwatch_logs_group_name : "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}"
   retention_in_days = var.cloudwatch_logs_retention_in_days
   kms_key_id        = var.cloudwatch_logs_kms_key_id
 
