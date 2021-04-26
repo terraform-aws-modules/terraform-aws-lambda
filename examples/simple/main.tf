@@ -255,7 +255,10 @@ module "lambda_function" {
   #    },
   #    {
   #      path = "${path.module}/../fixtures/python3.8-app1"
-  #      commands = ["npm install"]
+  #      commands = [
+  #        "npm install",
+  #        ":zip"
+  #      ]
   #      prefix_in_zip = "foo/bar",
   #      patterns = [
   #        "!.*/.*\\.txt", # Filter all txt files recursively
@@ -264,7 +267,10 @@ module "lambda_function" {
   #    },
   #    {
   #      path = "${path.module}/../fixtures/python3.8-app1"
-  #      commands = ["npm install"]
+  #      commands = [
+  #        "npm install",
+  #        ":zip"
+  #      ]
   #      prefix_in_zip = "foo/bar", # By default everything installs into the root of a zip package
   #      patterns = <<END
   #        !.*/.*\.txt       # Filter all txt files recursively
@@ -281,7 +287,10 @@ module "lambda_function" {
   #    },
   #    {
   #      path = "${path.module}/../fixtures/python3.8-app1"
-  #      commands = ["npm install"]
+  #      commands = [
+  #        "npm install",
+  #        ":zip"
+  #      ]
   #      prefix_in_zip = "foo/bar",
   #      patterns = [".*"]  # default
   #    }
