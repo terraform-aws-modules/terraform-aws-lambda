@@ -166,11 +166,11 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_this_lambda_alias_arn"></a> [this\_lambda\_alias\_arn](#output\_this\_lambda\_alias\_arn) | The ARN of the Lambda Function Alias |
-| <a name="output_this_lambda_alias_description"></a> [this\_lambda\_alias\_description](#output\_this\_lambda\_alias\_description) | Description of alias |
-| <a name="output_this_lambda_alias_function_version"></a> [this\_lambda\_alias\_function\_version](#output\_this\_lambda\_alias\_function\_version) | Lambda function version which the alias uses |
-| <a name="output_this_lambda_alias_invoke_arn"></a> [this\_lambda\_alias\_invoke\_arn](#output\_this\_lambda\_alias\_invoke\_arn) | The ARN to be used for invoking Lambda Function from API Gateway |
-| <a name="output_this_lambda_alias_name"></a> [this\_lambda\_alias\_name](#output\_this\_lambda\_alias\_name) | The name of the Lambda Function Alias |
+| <a name="output_lambda_alias_arn"></a> [lambda\_alias\_arn](#output\_lambda\_alias\_arn) | The ARN of the Lambda Function Alias |
+| <a name="output_lambda_alias_description"></a> [lambda\_alias\_description](#output\_lambda\_alias\_description) | Description of alias |
+| <a name="output_lambda_alias_function_version"></a> [lambda\_alias\_function\_version](#output\_lambda\_alias\_function\_version) | Lambda function version which the alias uses |
+| <a name="output_lambda_alias_invoke_arn"></a> [lambda\_alias\_invoke\_arn](#output\_lambda\_alias\_invoke\_arn) | The ARN to be used for invoking Lambda Function from API Gateway |
+| <a name="output_lambda_alias_name"></a> [lambda\_alias\_name](#output\_lambda\_alias\_name) | The name of the Lambda Function Alias |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Authors

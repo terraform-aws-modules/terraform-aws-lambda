@@ -39,20 +39,20 @@ module "alias_refresh" {
 
   name = "current-with-refresh"
 
-  function_name = module.lambda_function.this_lambda_function_name
+  function_name = module.lambda_function.lambda_function_name
 
   # Set function_version when creating alias to be able to deploy using it,
   # because AWS CodeDeploy doesn't understand $LATEST as CurrentVersion.
-  function_version = module.lambda_function.this_lambda_function_version
+  function_version = module.lambda_function.lambda_function_version
 }
 
 module "deploy" {
   source = "../../modules/deploy"
 
-  alias_name    = module.alias_refresh.this_lambda_alias_name
-  function_name = module.lambda_function.this_lambda_function_name
+  alias_name    = module.alias_refresh.lambda_alias_name
+  function_name = module.lambda_function.lambda_function_name
 
-  target_version = module.lambda_function.this_lambda_function_version
+  target_version = module.lambda_function.lambda_function_version
   description    = "This is my awesome deploy!"
 
   create_app = true
