@@ -26,7 +26,7 @@ module "lambda_function" {
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   store_on_s3 = true
-  s3_bucket   = module.s3_bucket.this_s3_bucket_id
+  s3_bucket   = module.s3_bucket.s3_bucket_id
 
   layers = [
     module.lambda_layer_local.this_lambda_layer_arn,
@@ -183,7 +183,7 @@ module "lambda_layer_s3" {
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   store_on_s3 = true
-  s3_bucket   = module.s3_bucket.this_s3_bucket_id
+  s3_bucket   = module.s3_bucket.s3_bucket_id
 }
 
 ##############
