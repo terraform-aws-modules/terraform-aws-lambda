@@ -29,8 +29,8 @@ module "lambda_function" {
   s3_bucket   = module.s3_bucket.s3_bucket_id
 
   layers = [
-    module.lambda_layer_local.this_lambda_layer_arn,
-    module.lambda_layer_s3.this_lambda_layer_arn,
+    module.lambda_layer_local.lambda_layer_arn,
+    module.lambda_layer_s3.lambda_layer_arn,
   ]
 
   environment_variables = {
@@ -146,8 +146,8 @@ module "lambda_function_existing_package_local" {
   #  }
 
   layers = [
-    module.lambda_layer_local.this_lambda_layer_arn,
-    module.lambda_layer_s3.this_lambda_layer_arn,
+    module.lambda_layer_local.lambda_layer_arn,
+    module.lambda_layer_s3.lambda_layer_arn,
   ]
 }
 

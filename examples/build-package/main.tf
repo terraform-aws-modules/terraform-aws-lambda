@@ -244,6 +244,6 @@ module "lambda_function_from_package" {
   runtime       = "python3.8"
 
   layers = [
-    module.lambda_layer.this_lambda_layer_arn
+    module.lambda_layer.lambda_layer_arn
   ]
 }

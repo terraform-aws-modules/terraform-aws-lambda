@@ -61,5 +61,5 @@ EOF
 
 resource "aws_cloudwatch_event_target" "scan_ami_lambda_function" {
   rule = aws_cloudwatch_event_rule.scan_ami.name
-  arn  = module.lambda_function.this_lambda_function_arn
+  arn  = module.lambda_function.lambda_function_arn
 }
