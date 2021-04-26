@@ -12,6 +12,20 @@ locals {
   #   for #83 that will allow one to import resources without receiving an error from coalesce.
   # @see https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/83
   role_name = local.create_role ? coalesce(var.role_name, var.function_name, "*") : null
+
+  # IAM Role trusted entities is a list of any (allow strings (services) and maps (type+identifiers))
+  trusted_entities_services = distinct(compact(concat(
+    slice(["lambda.amazonaws.com", "edgelambda.amazonaws.com"], 0, var.lambda_at_edge ? 2 : 1),
+    [for service in var.trusted_entities : try(tostring(service), "")]
+  )))
+
+  trusted_entities_principals = [
+    for principal in var.trusted_entities : {
+      type        = principal.type
+      identifiers = tolist(principal.identifiers)
+    }
+    if !can(tostring(principal))
+  ]
 }
 
 ###########
@@ -27,7 +41,15 @@ data "aws_iam_policy_document" "assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = distinct(concat(slice(["lambda.amazonaws.com", "edgelambda.amazonaws.com"], 0, var.lambda_at_edge ? 2 : 1), var.trusted_entities))
+      identifiers = local.trusted_entities_services
+    }
+
+    dynamic "principals" {
+      for_each = local.trusted_entities_principals
+      content {
+        type        = principals.value.type
+        identifiers = principals.value.identifiers
+      }
     }
   }
 }
@@ -188,6 +210,7 @@ data "aws_iam_policy_document" "async" {
       "sns:Publish",
       "sqs:SendMessage",
       "events:PutEvents",
+      "lambda:InvokeFunction",
     ]
 
     resources = compact(distinct([var.destination_on_failure, var.destination_on_success]))
