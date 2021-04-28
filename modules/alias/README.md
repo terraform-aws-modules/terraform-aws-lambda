@@ -29,8 +29,8 @@ module "alias_no_refresh" {
 
   name = "current-no-refresh"
 
-  function_name    = module.lambda_function.this_lambda_function_name
-  function_version = module.lambda_function.this_lambda_function_version
+  function_name    = module.lambda_function.lambda_function_name
+  function_version = module.lambda_function.lambda_function_version
 
   allowed_triggers = {
     AnotherAPIGatewayAny = {
@@ -50,7 +50,7 @@ module "alias_refresh" {
   source = "terraform-aws-modules/lambda/aws//modules/alias"
 
   name          = "current-with-refresh"
-  function_name = module.lambda_function.this_lambda_function_name
+  function_name = module.lambda_function.lambda_function_name
 }
 ```
 
@@ -63,7 +63,7 @@ module "alias_refresh" {
   source = "terraform-aws-modules/lambda/aws//modules/alias"
 
   name          = "current-with-refresh"
-  function_name = module.lambda_function.this_lambda_function_name
+  function_name = module.lambda_function.lambda_function_name
 }
 
 module "alias_existing" {
@@ -71,8 +71,8 @@ module "alias_existing" {
 
   use_existing_alias = true
 
-  name          = module.alias_refresh.this_lambda_alias_name
-  function_name = module.lambda_function.this_lambda_function_name
+  name          = module.alias_refresh.lambda_alias_name
+  function_name = module.lambda_function.lambda_function_name
 
   allowed_triggers = {
     AnotherAwesomeAPIGateway = {
