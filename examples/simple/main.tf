@@ -49,7 +49,7 @@ module "lambda_function" {
   #  independent_file_timestamps = true
 
   #  store_on_s3 = true
-  #  s3_bucket   = module.s3_bucket.this_s3_bucket_id
+  #  s3_bucket   = module.s3_bucket.s3_bucket_id
 
   #  create_package         = false
   #  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
