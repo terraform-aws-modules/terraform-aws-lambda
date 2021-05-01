@@ -2,17 +2,6 @@
 
 Terraform module, which creates almost all supported AWS Lambda resources as well as taking care of building and packaging of required Lambda dependencies for functions and layers.
 
-These types of resources supported:
-
-* [Lambda Function](https://www.terraform.io/docs/providers/aws/r/lambda_function.html)
-* [Lambda Layer](https://www.terraform.io/docs/providers/aws/r/lambda_layer_version.html)
-* [Lambda Alias](https://www.terraform.io/docs/providers/aws/r/lambda_alias.html) - using [alias module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias)
-* [Lambda Provisioned Concurrency](https://www.terraform.io/docs/providers/aws/r/lambda_provisioned_concurrency_config.html)
-* [Lambda Async Event Configuration](https://www.terraform.io/docs/providers/aws/r/lambda_function_event_invoke_config.html)
-* [Lambda Permission](https://www.terraform.io/docs/providers/aws/r/lambda_permission.html)
-* [Lambda Event Source Mapping](https://www.terraform.io/docs/providers/aws/r/lambda_event_source_mapping.html)
-
-
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform:
 
 1. Build and install dependencies - [read more](#build). Requires Python 3.6 or newer.
@@ -20,7 +9,6 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 3. Create, update, and publish AWS Lambda Function and Lambda Layer - [see usage](#usage).
 4. Create static and dynamic aliases for AWS Lambda Function - [see usage](#usage), see [modules/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias).
 5. Do complex deployments (eg, rolling, canary, rollbacks, triggers) - [read more](#deployment), see [modules/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy).
-
 
 ## Features
 
@@ -34,7 +22,6 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 - [x] Control execution of nearly any step in the process - build, package, store package, deploy, update.
 - [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, EFS, dead-letter notification, tracing, async events, event source mapping, IAM role, IAM policies, and more).
 - [x] Support integration with other `serverless.tf` modules like [HTTP API Gateway](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2) (see [examples there](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2/tree/master/examples/complete-http)).
-
 
 ## Usage
 
@@ -101,7 +88,6 @@ module "lambda_layer_s3" {
   store_on_s3 = true
   s3_bucket   = "my-bucket-with-lambda-builds"
 }
-
 ```
 
 ### Lambda Functions with existing package (prebuilt) stored locally
@@ -161,7 +147,7 @@ module "lambda_function_container_image" {
   description   = "My awesome lambda function"
 
   create_package = false
-  
+
   image_uri    = "132367819851.dkr.ecr.eu-west-1.amazonaws.com/complete-cow:1.0"
   package_type = "Image"
 }
@@ -251,7 +237,6 @@ module "vpc" {
 }
 ```
 
-
 ## Additional IAM policies for Lambda Functions
 
 There are 5 supported ways to attach IAM policies to IAM role used by Lambda Function:
@@ -262,15 +247,14 @@ There are 5 supported ways to attach IAM policies to IAM role used by Lambda Fun
 1. `policies` - List of ARNs of existing IAM policies, when `attach_policies = true` and `number_of_policies > 0`.
 1. `policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy. Requires `attach_policy_statements = true`. See `examples/complete` for more information.
 
-
 ## Lambda Permissions for allowed triggers
 
 Lambda Permissions should be specified to allow certain resources to invoke Lambda Function.
- 
+
 ```hcl
 module "lambda_function" {
   source = "terraform-aws-modules/lambda/aws"
-  
+
   # ...omitted for brevity
 
   allowed_triggers = {
@@ -325,7 +309,6 @@ Hash of zip-archive created with the same content of the files is always identic
 
 When calling this module multiple times in one execution to create packages with the same `source_path`, zip-archives will be corrupted due to concurrent writes into the same file. There are two solutions - set different values for `hash_extra` to create different archives, or create package once outside (using this module) and then pass `local_existing_package` argument to create other Lambda resources.
 
-
 ## <a name="debug"></a> Debug
 
 Building and packaging has been historically hard to debug (especially with Terraform), so we made an effort to make it easier for user to see debug info. There are 3 different debug levels: `DEBUG` - to see only what is happening during planning phase and how a zip file content filtering in case of applied patterns, `DEBUG2` - to see more logging output, `DEBUG3` - to see all logging values, `DUMP_ENV` - to see all logging values and env variables (be careful sharing your env variables as they may contain secrets!).
@@ -334,20 +317,19 @@ User can specify debug level like this:
 
 ```
 export TF_LAMBDA_PACKAGE_LOG_LEVEL=DEBUG2
-terraform apply 
+terraform apply
 ```
 
 User can enable comments in heredoc strings in `patterns` which can be helpful in some situations. To do this set this environment variable:
 
 ```
 export TF_LAMBDA_PACKAGE_PATTERN_COMMENTS=true
-terraform apply 
+terraform apply
 ```
-
 
 ## <a name="build"></a> Build Dependencies
 
-You can specify `source_path` in a variety of ways to achieve desired flexibility when building deployment packages locally or in Docker. You can use absolute or relative paths.  If you have placed terraform files in subdirectories, note that relative paths are specified from the directory where `terraform plan` is run and not the location of your terraform file. 
+You can specify `source_path` in a variety of ways to achieve desired flexibility when building deployment packages locally or in Docker. You can use absolute or relative paths. If you have placed terraform files in subdirectories, note that relative paths are specified from the directory where `terraform plan` is run and not the location of your terraform file.
 
 Note that, when building locally, files are not copying anywhere from the source directories when making packages, we use fast Python regular expressions to find matching files and directories, which makes packaging very fast and easy to understand.
 
@@ -360,7 +342,6 @@ When `source_path` is set to a string, the content of that path will be used to 
 ### Static build from multiple source directories
 
 When `source_path` is set to a list of directories the content of each will be taken and one archive will be created.
-
 
 ### Combine various options for extreme flexibility
 
@@ -410,8 +391,8 @@ source_path = [
 
 Few notes:
 
-* All arguments except `path` are optional.
-* `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
+- All arguments except `path` are optional.
+- `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
 
 ```txt
     !.*/.*\.txt        # Filter all txt files recursively
@@ -426,11 +407,10 @@ Few notes:
     !abc/def/hgk/.*    # Filter out again in abc/def/hgk sub folder
 ```
 
-* `commands` - List of commands to run. If specified, this argument overrides `pip_requirements`.
-  * `:zip [source] [destination]` is a special command which creates content of current working directory (first argument) and places it inside of path (second argument).
-* `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
-* `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
-
+- `commands` - List of commands to run. If specified, this argument overrides `pip_requirements`.
+  - `:zip [source] [destination]` is a special command which creates content of current working directory (first argument) and places it inside of path (second argument).
+- `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
+- `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
 
 ### Building in Docker
 
@@ -445,7 +425,6 @@ If your Lambda Function or Layer uses some dependencies you can build them in Do
 Using this module you can install dependencies from private hosts. To do this, you need for forward SSH agent:
 
     docker_with_ssh_agent = true
-
 
 ## <a name="package"></a> Deployment package - Create or use existing
 
@@ -462,7 +441,6 @@ When creating archive locally outside of this module you need to set `create_pac
     key    = "existing_package.zip"
   }
 ```
-
 
 ### Using deployment package from remote URL
 
@@ -504,7 +482,6 @@ module "lambda_function_existing_package_from_remote_url" {
 }
 ```
 
-
 ## <a name="deployment"></a> How to deploy and manage Lambda Functions?
 
 ### Simple deployments
@@ -512,7 +489,6 @@ module "lambda_function_existing_package_from_remote_url" {
 Typically, Lambda Function resource updates when source code changes. If `publish = true` is specified a new [Lambda Function version](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html) will also be created.
 
 Published Lambda Function can be invoked using either by version number or using `$LATEST`. This is the simplest way of deployment which does not required any additional tool or service.
-
 
 ### Controlled deployments (rolling, canary, rollbacks)
 
@@ -525,7 +501,6 @@ One Lambda Function can be used in multiple aliases. Using aliases gives large c
 There is [alias module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias), which simplifies working with alias (create, manage configurations, updates, etc). See [examples/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) for various use-cases how aliases can be configured and used.
 
 There is [deploy module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy), which creates required resources to do deployments using AWS CodeDeploy. It also creates the deployment, and wait for completion. See [examples/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) for complete end-to-end build/update/deploy process.
-
 
 ## FAQ
 
@@ -549,27 +524,24 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 >
 > The solution is to either disable the creation of Lambda permissions for the current version by setting `create_current_version_allowed_triggers = false`, or to enable publish of Lambda function (`publish = true`).
 
-
 ## Notes
 
 1. Creation of Lambda Functions and Lambda Layers is very similar and both support the same features (building from source path, using existing package, storing package locally or on S3)
 2. Check out this [Awesome list of AWS Lambda Layers](https://github.com/mthenw/awesome-layers)
 
-
 ## Examples
 
-* [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
-* [Container Image](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/container-image) - Create Docker image (using [docker provider](https://registry.terraform.io/providers/kreuzwerker/docker)), push it to AWS ECR, and create Lambda function from it.
-* [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
-* [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
-* [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
-* [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS, SNS, and EventBridge integration).
-* [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.
-* [With EFS](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-efs) - Create Lambda Function with Elastic File System attached (Terraform 0.13+ is recommended).
-* [Multiple regions](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/multiple-regions) - Create the same Lambda Function in multiple regions with non-conflicting IAM roles and policies.
-* [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (SQS, DynamoDB, and Kinesis).
-* [Triggers](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/triggers) - Create Lambda Function with some triggers (eg, Cloudwatch Events, EventBridge).
-
+- [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
+- [Container Image](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/container-image) - Create Docker image (using [docker provider](https://registry.terraform.io/providers/kreuzwerker/docker)), push it to AWS ECR, and create Lambda function from it.
+- [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
+- [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
+- [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
+- [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS, SNS, and EventBridge integration).
+- [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.
+- [With EFS](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-efs) - Create Lambda Function with Elastic File System attached (Terraform 0.13+ is recommended).
+- [Multiple regions](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/multiple-regions) - Create the same Lambda Function in multiple regions with non-conflicting IAM roles and policies.
+- [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (SQS, DynamoDB, and Kinesis).
+- [Triggers](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/triggers) - Create Lambda Function with some triggers (eg, Cloudwatch Events, EventBridge).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -772,7 +744,6 @@ Module managed by [Anton Babenko](https://github.com/antonbabenko). Check out [s
 
 Please reach out to [Betajob](https://www.betajob.com/) if you are looking for commercial support for your Terraform, AWS, or serverless project.
 
-
 ## License
 
-Apache 2 Licensed. See LICENSE for full details.
+Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/LICENSE) for full details.
