@@ -7,6 +7,15 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.1.0"></a>
+## [v2.1.0] - 2021-05-20
+
+- feat: Added destination_config in aws_lambda_event_source_mapping ([#152](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/152))
+- chore: update CI/CD to use stable `terraform-docs` release artifact and discoverable Apache2.0 license ([#149](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/149))
+- chore: Updated versions&comments in examples
+- chore: Updated versions in README
+
+
 <a name="v2.0.0"></a>
 ## [v2.0.0] - 2021-04-26
 
@@ -393,18 +402,6 @@ All notable changes to this project will be documented in this file.
 - Initial terraform-aws-lambda implementation
 - Added example of Dockerfile for custom AWS Lambda build env
 - Added initial draft implementation of lambda.py and package.tf
-- Merge pull request [#8](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/8) from terraform-aws-modules/terraform-provider-githubfile-1591109277277141000
-- [ci skip] Create ".gitignore".
-- Merge pull request [#7](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/7) from terraform-aws-modules/terraform-provider-githubfile-1591109259601315000
-- [ci skip] Create ".pre-commit-config.yaml".
-- Merge pull request [#5](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/5) from terraform-aws-modules/terraform-provider-githubfile-1591109219976213000
-- Merge pull request [#3](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/3) from terraform-aws-modules/terraform-provider-githubfile-1591109219975583000
-- Merge pull request [#1](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/1) from terraform-aws-modules/terraform-provider-githubfile-1591109219975771000
-- Merge pull request [#4](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/4) from terraform-aws-modules/terraform-provider-githubfile-1591109219975843000
-- [ci skip] Create ".editorconfig".
-- [ci skip] Create "Makefile".
-- [ci skip] Create "LICENSE".
-- [ci skip] Create ".chglog/CHANGELOG.tpl.md".
 
 
 <a name="v0.0.1"></a>
@@ -413,7 +410,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.1.0...HEAD
+[v2.1.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.0.0...v2.1.0
 [v2.0.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.48.0...v2.0.0
 [v1.48.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.47.0...v1.48.0
 [v1.47.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v1.46.0...v1.47.0
