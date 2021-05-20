@@ -27,14 +27,9 @@ module "lambda_function" {
       event_source_arn = aws_sqs_queue.this.arn
     }
     dynamodb = {
-      event_source_arn  = aws_dynamodb_table.this.stream_arn
-      starting_position = "LATEST"
-      # This can be created but it won't be updated/removed. To be reviewed in the future.
-      #      destination_config = {
-      #        on_failure = {
-      #          destination_arn = aws_sqs_queue.failure.arn
-      #        }
-      #      }
+      event_source_arn           = aws_dynamodb_table.this.stream_arn
+      starting_position          = "LATEST"
+      destination_arn_on_failure = aws_sqs_queue.failure.arn
     }
     kinesis = {
       event_source_arn  = aws_kinesis_stream.this.arn

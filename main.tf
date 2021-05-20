@@ -213,7 +213,7 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.event_source_mapping : tomap({})
+  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? tomap(var.event_source_mapping) : tomap({})
 
   function_name = aws_lambda_function.this[0].arn
 
@@ -229,15 +229,12 @@ resource "aws_lambda_event_source_mapping" "this" {
   maximum_record_age_in_seconds      = lookup(each.value, "maximum_record_age_in_seconds", null)
   bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
 
-  /* @todo: fix this
   dynamic "destination_config" {
-    for_each = lookup(each.value, "destination_config", {})
-
+    for_each = lookup(each.value, "destination_arn_on_failure", null) != null ? [true] : []
     content {
       on_failure {
-        destination_arn = lookup(destination_config.value, "on_failure") #"destination_arn"]
+        destination_arn = each.value["destination_arn_on_failure"]
       }
     }
   }
-  */
 }
