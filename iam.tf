@@ -98,6 +98,7 @@ resource "aws_iam_policy" "logs" {
 
   name   = "${local.role_name}-logs"
   policy = data.aws_iam_policy_document.logs[0].json
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "logs" {
@@ -134,6 +135,7 @@ resource "aws_iam_policy" "dead_letter" {
 
   name   = "${local.role_name}-dl"
   policy = data.aws_iam_policy_document.dead_letter[0].json
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "dead_letter" {
@@ -160,6 +162,7 @@ resource "aws_iam_policy" "vpc" {
 
   name   = "${local.role_name}-vpc"
   policy = data.aws_iam_policy.vpc[0].policy
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "vpc" {
@@ -186,6 +189,7 @@ resource "aws_iam_policy" "tracing" {
 
   name   = "${local.role_name}-tracing"
   policy = data.aws_iam_policy.tracing[0].policy
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "tracing" {
@@ -222,6 +226,7 @@ resource "aws_iam_policy" "async" {
 
   name   = "${local.role_name}-async"
   policy = data.aws_iam_policy_document.async[0].json
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "async" {
@@ -241,6 +246,7 @@ resource "aws_iam_policy" "additional_json" {
 
   name   = local.role_name
   policy = var.policy_json
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "additional_json" {
@@ -260,6 +266,7 @@ resource "aws_iam_policy" "additional_jsons" {
 
   name   = "${local.role_name}-${count.index}"
   policy = var.policy_jsons[count.index]
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "additional_jsons" {
@@ -343,6 +350,7 @@ resource "aws_iam_policy" "additional_inline" {
 
   name   = "${local.role_name}-inline"
   policy = data.aws_iam_policy_document.additional_inline[0].json
+  tags   = var.tags
 }
 
 resource "aws_iam_policy_attachment" "additional_inline" {
