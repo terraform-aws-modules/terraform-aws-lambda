@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "tags" {
+  description = "A map of tags to assign to resources."
+  type        = map(string)
+  default     = {}
+}
+
 variable "alias_name" {
   description = "Name for the alias"
   type        = string

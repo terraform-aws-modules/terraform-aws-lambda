@@ -123,6 +123,7 @@ resource "aws_codedeploy_app" "this" {
 
   name             = var.app_name
   compute_platform = "Lambda"
+  tags             = var.tags
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
@@ -162,6 +163,8 @@ resource "aws_codedeploy_deployment_group" "this" {
       trigger_target_arn = trigger_configuration.value.target_arn
     }
   }
+
+  tags = var.tags
 }
 
 data "aws_iam_role" "codedeploy" {
@@ -175,6 +178,7 @@ resource "aws_iam_role" "codedeploy" {
 
   name               = coalesce(var.codedeploy_role_name, "${local.app_name}-codedeploy")
   assume_role_policy = data.aws_iam_policy_document.assume_role[0].json
+  tags               = var.tags
 }
 
 
@@ -217,6 +221,7 @@ resource "aws_iam_policy" "triggers" {
   count = var.create && var.create_codedeploy_role && var.attach_triggers_policy ? 1 : 0
 
   policy = data.aws_iam_policy_document.triggers[0].json
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "triggers" {
