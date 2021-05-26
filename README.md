@@ -12,16 +12,16 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 
 ## Features
 
-- [x] Build dependencies for your Lambda Function and Layer.
-- [x] Support builds locally and in Docker (with or without SSH agent support for private builds).
-- [x] Create deployment package or deploy existing (previously built package) from local, from S3, from URL, or from AWS ECR repository.
-- [x] Store deployment packages locally or in the S3 bucket.
-- [x] Support almost all features of Lambda resources (function, layer, alias, etc.)
-- [x] Lambda@Edge
-- [x] Conditional creation for many types of resources.
-- [x] Control execution of nearly any step in the process - build, package, store package, deploy, update.
-- [x] Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, EFS, dead-letter notification, tracing, async events, event source mapping, IAM role, IAM policies, and more).
-- [x] Support integration with other `serverless.tf` modules like [HTTP API Gateway](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2) (see [examples there](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2/tree/master/examples/complete-http)).
+- Build dependencies for your Lambda Function and Layer.
+- Support builds locally and in Docker (with or without SSH agent support for private builds).
+- Create deployment package or deploy existing (previously built package) from local, from S3, from URL, or from AWS ECR repository.
+- Store deployment packages locally or in the S3 bucket.
+- Support almost all features of Lambda resources (function, layer, alias, etc.)
+- Lambda@Edge
+- Conditional creation for many types of resources.
+- Control execution of nearly any step in the process - build, package, store package, deploy, update.
+- Control nearly all aspects of Lambda resources (provisioned concurrency, VPC, EFS, dead-letter notification, tracing, async events, event source mapping, IAM role, IAM policies, and more).
+- Support integration with other `serverless.tf` modules like [HTTP API Gateway](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2) (see [examples there](https://github.com/terraform-aws-modules/terraform-aws-apigateway-v2/tree/master/examples/complete-http)).
 
 ## Usage
 
