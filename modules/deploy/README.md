@@ -100,7 +100,7 @@ module "lambda" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.26 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.19 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2 |
 
@@ -108,7 +108,7 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.19 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2 |
 
@@ -164,6 +164,7 @@ No modules.
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | The name of the Lambda function to deploy | `string` | `""` | no |
 | <a name="input_interpreter"></a> [interpreter](#input\_interpreter) | List of interpreter arguments used to execute deploy script, first arg is path | `list(string)` | <pre>[<br>  "/bin/bash",<br>  "-c"<br>]</pre> | no |
 | <a name="input_save_deploy_script"></a> [save\_deploy\_script](#input\_save\_deploy\_script) | Save deploy script locally | `bool` | `false` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to resources. | `map(string)` | `{}` | no |
 | <a name="input_target_version"></a> [target\_version](#input\_target\_version) | Target version of Lambda function version to deploy | `string` | `""` | no |
 | <a name="input_triggers"></a> [triggers](#input\_triggers) | Map of triggers which will be notified when event happens. Valid options for event types are DeploymentStart, DeploymentSuccess, DeploymentFailure, DeploymentStop, DeploymentRollback, DeploymentReady (Applies only to replacement instances in a blue/green deployment), InstanceStart, InstanceSuccess, InstanceFailure, InstanceReady. Note that not all are applicable for Lambda deployments. | `map(any)` | `{}` | no |
 | <a name="input_use_existing_app"></a> [use\_existing\_app](#input\_use\_existing\_app) | Whether to use existing AWS CodeDeploy app | `bool` | `false` | no |
