@@ -518,7 +518,7 @@ variable "s3_object_storage_class" {
 }
 
 variable "s3_bucket" {
-  description = "S3 bucket id to store artifacts"
+  description = "S3 bucket to store artifacts"
   type        = string
   default     = null
 }
