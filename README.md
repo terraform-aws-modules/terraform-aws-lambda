@@ -59,7 +59,7 @@ module "lambda_function" {
   source_path = "../src/lambda-function1"
 
   store_on_s3 = true
-  s3_bucket   = "my-bucket-with-lambda-builds"
+  s3_bucket   = "my-bucket-id-with-lambda-builds"
 
   layers = [
     module.lambda_layer_s3.lambda_layer_arn,
@@ -86,7 +86,7 @@ module "lambda_layer_s3" {
   source_path = "../src/lambda-layer"
 
   store_on_s3 = true
-  s3_bucket   = "my-bucket-with-lambda-builds"
+  s3_bucket   = "my-bucket-id-with-lambda-builds"
 }
 ```
 
@@ -115,8 +115,13 @@ locals {
   my_function_source = "../path/to/package.zip"
 }
 
+resource "aws_s3_bucket" "builds" {
+  bucket = "my-builds"
+  acl    = "private"
+}
+
 resource "aws_s3_bucket_object" "my_function" {
-  bucket = "my-bucket-with-lambda-builds"
+  bucket = aws_s3_bucket.builds.id
   key    = "${filemd5(local.my_function_source)}.zip"
   source = local.my_function_source
 }
@@ -131,7 +136,7 @@ module "lambda_function_existing_package_s3" {
 
   create_package      = false
   s3_existing_package = {
-    bucket = "my-bucket-with-lambda-builds"
+    bucket = aws_s3_bucket.builds.id
     key    = aws_s3_bucket_object.my_function.id
   }
 }
@@ -180,7 +185,7 @@ module "lambda_layer_s3" {
   source_path = "../fixtures/python3.8-app1"
 
   store_on_s3 = true
-  s3_bucket   = "my-bucket-with-lambda-builds"
+  s3_bucket   = "my-bucket-id-with-lambda-builds"
 }
 ```
 
