@@ -32,3 +32,6 @@ terraform.rc
 # Lambda directories
 builds/
 __pycache__/
+
+#Intellij
+.idea

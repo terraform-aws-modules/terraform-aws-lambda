@@ -11,6 +11,17 @@ locals {
 
 }
 
+module "build_docker_image" {
+  source = "./modules/build"
+  create_image = var.create_image
+  source_path = var.source_path
+
+  create_repo = var.create_repo
+  image_uri = var.image_uri
+  image_repo = var.image_repo
+  image_tag = var.image_tag
+}
+
 resource "aws_lambda_function" "this" {
   count = var.create && var.create_function && !var.create_layer ? 1 : 0
 
@@ -25,7 +36,7 @@ resource "aws_lambda_function" "this" {
   timeout                        = var.lambda_at_edge ? min(var.timeout, 5) : var.timeout
   publish                        = var.lambda_at_edge ? true : var.publish
   kms_key_arn                    = var.kms_key_arn
-  image_uri                      = var.image_uri
+  image_uri                      = module.build_docker_image.image_uri
   package_type                   = var.package_type
 
   filename         = local.filename

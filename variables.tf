@@ -10,6 +10,12 @@ variable "create_package" {
   default     = true
 }
 
+variable "create_image" {
+  description = "Controls whether Lambda image should be created"
+  type        = bool
+  default     = false
+}
+
 variable "create_function" {
   description = "Controls whether Lambda Function resource should be created"
   type        = bool
@@ -581,4 +587,35 @@ variable "docker_pip_cache" {
   description = "Whether to mount a shared pip cache folder into docker environment or not"
   type        = any
   default     = null
+}
+
+#Build docker image variables
+variable "create_repo" {
+  description = "Controls whether docker repository is provided or should be created"
+  type        = bool
+  default     = false
+}
+
+variable "image_repo" {
+  description = "Lambda function image repository name"
+  type=string
+  default = null
+}
+
+variable "image_name" {
+  description = "Lambda function image name"
+  type=string
+  default = null
+}
+
+variable "image_tag" {
+  description = "Lambda function image tag"
+  type = string
+  default = null
+}
+
+variable "docker_file_path" {
+  description = "Path to Dockerfile in source package"
+  type= string
+  default = "Dockerfile"
 }
