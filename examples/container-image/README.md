@@ -28,15 +28,15 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.19 |
-| <a name="provider_docker"></a> [docker](#provider\_docker) | >= 2.8.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.46.0 |
+| <a name="provider_docker"></a> [docker](#provider\_docker) | 2.12.2 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ |  |
+| <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ | n/a |
 
 ## Resources
 

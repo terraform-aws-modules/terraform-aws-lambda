@@ -598,24 +598,18 @@ variable "create_repo" {
 
 variable "image_repo" {
   description = "Lambda function image repository name"
-  type=string
-  default = null
-}
-
-variable "image_name" {
-  description = "Lambda function image name"
-  type=string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "image_tag" {
-  description = "Lambda function image tag"
-  type = string
-  default = null
+  description = "Lambda function image tag. When not specified timestamp will be generated as tag"
+  type        = string
+  default     = null
 }
 
 variable "docker_file_path" {
   description = "Path to Dockerfile in source package"
-  type= string
-  default = "Dockerfile"
+  type        = string
+  default     = "Dockerfile"
 }

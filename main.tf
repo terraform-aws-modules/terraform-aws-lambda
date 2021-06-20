@@ -12,14 +12,15 @@ locals {
 }
 
 module "build_docker_image" {
-  source = "./modules/build"
-  create_image = var.create_image
-  source_path = var.source_path
+  source           = "./modules/build"
+  create_image     = var.create_image
+  source_path      = var.source_path
+  docker_file_path = var.docker_file_path
 
   create_repo = var.create_repo
-  image_uri = var.image_uri
-  image_repo = var.image_repo
-  image_tag = var.image_tag
+  image_uri   = var.image_uri
+  image_repo  = var.image_repo
+  image_tag   = var.image_tag
 }
 
 resource "aws_lambda_function" "this" {
