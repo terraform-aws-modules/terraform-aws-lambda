@@ -27,22 +27,22 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lambda_function_from_package"></a> [lambda\_function\_from\_package](#module\_lambda\_function\_from\_package) | ../../ |  |
-| <a name="module_lambda_layer"></a> [lambda\_layer](#module\_lambda\_layer) | ../../ |  |
-| <a name="module_package_dir"></a> [package\_dir](#module\_package\_dir) | ../../ |  |
-| <a name="module_package_dir_without_pip_install"></a> [package\_dir\_without\_pip\_install](#module\_package\_dir\_without\_pip\_install) | ../../ |  |
-| <a name="module_package_file"></a> [package\_file](#module\_package\_file) | ../../ |  |
-| <a name="module_package_file_with_pip_requirements"></a> [package\_file\_with\_pip\_requirements](#module\_package\_file\_with\_pip\_requirements) | ../../ |  |
-| <a name="module_package_with_commands_and_patterns"></a> [package\_with\_commands\_and\_patterns](#module\_package\_with\_commands\_and\_patterns) | ../../ |  |
-| <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ |  |
-| <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ |  |
-| <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ |  |
+| <a name="module_lambda_function_from_package"></a> [lambda\_function\_from\_package](#module\_lambda\_function\_from\_package) | ../../ | n/a |
+| <a name="module_lambda_layer"></a> [lambda\_layer](#module\_lambda\_layer) | ../../ | n/a |
+| <a name="module_package_dir"></a> [package\_dir](#module\_package\_dir) | ../../ | n/a |
+| <a name="module_package_dir_without_pip_install"></a> [package\_dir\_without\_pip\_install](#module\_package\_dir\_without\_pip\_install) | ../../ | n/a |
+| <a name="module_package_file"></a> [package\_file](#module\_package\_file) | ../../ | n/a |
+| <a name="module_package_file_with_pip_requirements"></a> [package\_file\_with\_pip\_requirements](#module\_package\_file\_with\_pip\_requirements) | ../../ | n/a |
+| <a name="module_package_with_commands_and_patterns"></a> [package\_with\_commands\_and\_patterns](#module\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
+| <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ | n/a |
+| <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
+| <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ | n/a |
 
 ## Resources
 
