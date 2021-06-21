@@ -27,16 +27,16 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alias_existing"></a> [alias\_existing](#module\_alias\_existing) | ../../modules/alias | n/a |
-| <a name="module_alias_no_refresh"></a> [alias\_no\_refresh](#module\_alias\_no\_refresh) | ../../modules/alias | n/a |
-| <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias | n/a |
-| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
+| <a name="module_alias_existing"></a> [alias\_existing](#module\_alias\_existing) | ../../modules/alias |  |
+| <a name="module_alias_no_refresh"></a> [alias\_no\_refresh](#module\_alias\_no\_refresh) | ../../modules/alias |  |
+| <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias |  |
+| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ |  |
 
 ## Resources
 
