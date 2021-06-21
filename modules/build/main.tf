@@ -20,8 +20,6 @@ data "aws_caller_identity" "this" {}
 data "aws_ecr_authorization_token" "token" {}
 
 resource "docker_registry_image" "lambda_image" {
-  count = var.create_image ? 1 : 0
-
   name = local.ecr_name
 
   build {

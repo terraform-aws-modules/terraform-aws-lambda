@@ -1,19 +1,7 @@
-variable "create_image" {
-  description = "Controls whether Lambda image should be created"
-  type        = bool
-  default     = false
-}
-
 variable "create_repo" {
   description = "Controls whether Lambda image repository should be created"
   type        = bool
   default     = false
-}
-
-variable "image_uri" {
-  description = "The ECR image URI containing the function's deployment package."
-  type        = string
-  default     = null
 }
 
 variable "image_repo" {
@@ -23,7 +11,7 @@ variable "image_repo" {
 }
 
 variable "image_tag" {
-  description = "Lambda function image tag"
+  description = "Lambda function image tag. When null it will be replaced with timestamp in format: 'YYYYMMDDhhmmss'"
   type        = string
   default     = null
 }
