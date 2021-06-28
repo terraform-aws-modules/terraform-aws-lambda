@@ -24,15 +24,15 @@ module "lambda_function_from_container_image" {
   ##################
   # Container Image
   ##################
-  image_uri    = module.build_container_image.image_uri
+  image_uri    = module.docker_image.image_uri
   package_type = "Image"
 }
 
-module "build_container_image" {
-  source = "../../modules/build"
+module "docker_image" {
+  source = "../../modules/docker-build"
 
-  create_repo = true
-  image_repo  = random_pet.this.id
-  image_tag   = "1.0"
-  source_path = "context"
+  create_ecr_repo = true
+  ecr_repo        = random_pet.this.id
+  image_tag       = "1.0"
+  source_path     = "context"
 }

@@ -33,7 +33,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_build_container_image"></a> [build\_container\_image](#module\_build\_container\_image) | ../../modules/build |  |
+| <a name="module_docker_image"></a> [docker\_image](#module\_docker\_image) | ../../modules/docker-build |  |
 | <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ |  |
 
 ## Resources
@@ -50,7 +50,7 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_docker_image_uri"></a> [docker\_image\_uri](#output\_docker\_image\_uri) | The ECR Docker image URI used to deploy lambda function |
+| <a name="output_docker_image_uri"></a> [docker\_image\_uri](#output\_docker\_image\_uri) | The ECR Docker image URI used to deploy Lambda Function |
 | <a name="output_lambda_cloudwatch_log_group_arn"></a> [lambda\_cloudwatch\_log\_group\_arn](#output\_lambda\_cloudwatch\_log\_group\_arn) | The ARN of the Cloudwatch Log Group |
 | <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | The ARN of the Lambda Function |
 | <a name="output_lambda_function_invoke_arn"></a> [lambda\_function\_invoke\_arn](#output\_lambda\_function\_invoke\_arn) | The Invoke ARN of the Lambda Function |

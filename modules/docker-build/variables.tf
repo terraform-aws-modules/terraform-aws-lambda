@@ -1,17 +1,17 @@
-variable "create_repo" {
-  description = "Controls whether Lambda image repository should be created"
+variable "create_ecr_repo" {
+  description = "Controls whether ECR repository for Lambda image should be created"
   type        = bool
   default     = false
 }
 
-variable "image_repo" {
-  description = "Lambda function image repository name"
+variable "ecr_repo" {
+  description = "Name of ECR repository to use or to create"
   type        = string
   default     = null
 }
 
 variable "image_tag" {
-  description = "Lambda function image tag. When null it will be replaced with timestamp in format: 'YYYYMMDDhhmmss'"
+  description = "Image tag to use. If not specified current timestamp in format 'YYYYMMDDhhmmss' will be used. This can lead to unnecessary rebuilds."
   type        = string
   default     = null
 }
