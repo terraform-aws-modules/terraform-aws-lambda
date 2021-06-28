@@ -86,3 +86,9 @@ output "lambda_cloudwatch_log_group_arn" {
   description = "The ARN of the Cloudwatch Log Group"
   value       = module.lambda_function_from_container_image.lambda_cloudwatch_log_group_arn
 }
+
+# Docker Image
+output "docker_image_uri" {
+  description = "The ECR Docker image URI used to deploy Lambda Function"
+  value       = module.docker_image.image_uri
+}

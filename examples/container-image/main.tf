@@ -24,42 +24,15 @@ module "lambda_function_from_container_image" {
   ##################
   # Container Image
   ##################
-  image_uri    = docker_registry_image.app.name
+  image_uri    = module.docker_image.image_uri
   package_type = "Image"
 }
 
-#################
-# ECR Repository
-#################
-resource "aws_ecr_repository" "this" {
-  name = random_pet.this.id
-}
+module "docker_image" {
+  source = "../../modules/docker-build"
 
-###############################################
-# Create Docker Image and push to ECR registry
-###############################################
-
-data "aws_caller_identity" "this" {}
-data "aws_region" "current" {}
-data "aws_ecr_authorization_token" "token" {}
-
-locals {
-  ecr_address = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.this.account_id, data.aws_region.current.name)
-  ecr_image   = format("%v/%v:%v", local.ecr_address, aws_ecr_repository.this.id, "1.0")
-}
-
-provider "docker" {
-  registry_auth {
-    address  = local.ecr_address
-    username = data.aws_ecr_authorization_token.token.user_name
-    password = data.aws_ecr_authorization_token.token.password
-  }
-}
-
-resource "docker_registry_image" "app" {
-  name = local.ecr_image
-
-  build {
-    context = "context"
-  }
+  create_ecr_repo = true
+  ecr_repo        = random_pet.this.id
+  image_tag       = "1.0"
+  source_path     = "context"
 }
