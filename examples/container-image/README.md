@@ -27,14 +27,14 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_build_container_image"></a> [build\_container\_image](#module\_build\_container\_image) | ../../modules/build | n/a |
-| <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ | n/a |
+| <a name="module_build_container_image"></a> [build\_container\_image](#module\_build\_container\_image) | ../../modules/build |  |
+| <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ |  |
 
 ## Resources
 

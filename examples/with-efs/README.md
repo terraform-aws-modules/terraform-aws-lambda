@@ -28,15 +28,15 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.46.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.19 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lambda_function_with_efs"></a> [lambda\_function\_with\_efs](#module\_lambda\_function\_with\_efs) | ../../ | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | n/a |
+| <a name="module_lambda_function_with_efs"></a> [lambda\_function\_with\_efs](#module\_lambda\_function\_with\_efs) | ../../ |  |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws |  |
 
 ## Resources
 

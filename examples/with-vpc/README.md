@@ -29,14 +29,14 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lambda_function_in_vpc"></a> [lambda\_function\_in\_vpc](#module\_lambda\_function\_in\_vpc) | ../../ | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | n/a |
+| <a name="module_lambda_function_in_vpc"></a> [lambda\_function\_in\_vpc](#module\_lambda\_function\_in\_vpc) | ../../ |  |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws |  |
 
 ## Resources
 

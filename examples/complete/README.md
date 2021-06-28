@@ -28,23 +28,23 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.46.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.67 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_disabled_lambda"></a> [disabled\_lambda](#module\_disabled\_lambda) | ../../ | n/a |
-| <a name="module_lambda_at_edge"></a> [lambda\_at\_edge](#module\_lambda\_at\_edge) | ../../ | n/a |
-| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
-| <a name="module_lambda_function_existing_package_local"></a> [lambda\_function\_existing\_package\_local](#module\_lambda\_function\_existing\_package\_local) | ../../ | n/a |
-| <a name="module_lambda_function_for_each"></a> [lambda\_function\_for\_each](#module\_lambda\_function\_for\_each) | ../../ | n/a |
-| <a name="module_lambda_layer_local"></a> [lambda\_layer\_local](#module\_lambda\_layer\_local) | ../../ | n/a |
-| <a name="module_lambda_layer_s3"></a> [lambda\_layer\_s3](#module\_lambda\_layer\_s3) | ../../ | n/a |
-| <a name="module_lambda_with_mixed_trusted_entities"></a> [lambda\_with\_mixed\_trusted\_entities](#module\_lambda\_with\_mixed\_trusted\_entities) | ../../ | n/a |
-| <a name="module_lambda_with_provisioned_concurrency"></a> [lambda\_with\_provisioned\_concurrency](#module\_lambda\_with\_provisioned\_concurrency) | ../../ | n/a |
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | n/a |
+| <a name="module_disabled_lambda"></a> [disabled\_lambda](#module\_disabled\_lambda) | ../../ |  |
+| <a name="module_lambda_at_edge"></a> [lambda\_at\_edge](#module\_lambda\_at\_edge) | ../../ |  |
+| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ |  |
+| <a name="module_lambda_function_existing_package_local"></a> [lambda\_function\_existing\_package\_local](#module\_lambda\_function\_existing\_package\_local) | ../../ |  |
+| <a name="module_lambda_function_for_each"></a> [lambda\_function\_for\_each](#module\_lambda\_function\_for\_each) | ../../ |  |
+| <a name="module_lambda_layer_local"></a> [lambda\_layer\_local](#module\_lambda\_layer\_local) | ../../ |  |
+| <a name="module_lambda_layer_s3"></a> [lambda\_layer\_s3](#module\_lambda\_layer\_s3) | ../../ |  |
+| <a name="module_lambda_with_mixed_trusted_entities"></a> [lambda\_with\_mixed\_trusted\_entities](#module\_lambda\_with\_mixed\_trusted\_entities) | ../../ |  |
+| <a name="module_lambda_with_provisioned_concurrency"></a> [lambda\_with\_provisioned\_concurrency](#module\_lambda\_with\_provisioned\_concurrency) | ../../ |  |
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws |  |
 
 ## Resources
 
