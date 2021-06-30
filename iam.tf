@@ -3,8 +3,8 @@ locals {
 
   # Lambda@Edge uses the Cloudwatch region closest to the location where the function is executed
   # The region part of the LogGroup ARN is then replaced with a wildcard (*) so Lambda@Edge is able to log in every region
-  log_group_arn_regional = element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
-  log_group_name         = element(concat(data.aws_cloudwatch_log_group.lambda.*.name, aws_cloudwatch_log_group.lambda.*.name, [""]), 0)
+  log_group_arn_regional = var.use_existing_cloudwatch_log_group ? element(concat(data.aws_cloudwatch_log_group.lambda.*.arn, [""]), 0) : element(concat(aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
+  log_group_name         = var.use_existing_cloudwatch_log_group ? element(concat(data.aws_cloudwatch_log_group.lambda.*.name, [""]), 0) : element(concat(aws_cloudwatch_log_group.lambda.*.arn, [""]), 0)
   log_group_arn          = local.create_role && var.lambda_at_edge ? format("arn:%s:%s:%s:%s:%s", data.aws_arn.log_group_arn[0].partition, data.aws_arn.log_group_arn[0].service, "*", data.aws_arn.log_group_arn[0].account, data.aws_arn.log_group_arn[0].resource) : local.log_group_arn_regional
 
   # Defaulting to "*" (an invalid character for an IAM Role name) will cause an error when
