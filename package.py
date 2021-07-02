@@ -730,9 +730,19 @@ class BuildPlanManager:
                         else:
                             pip_requirements_step(pip_requirements, prefix,
                                                   required=True)
+
                     if path:
                         step('zip', path, prefix)
-                        hash(path)
+                        if patterns:
+                            # Take patterns into account when computing hash
+                            pf = ZipContentFilter(args=self._args)
+                            pf.compile(patterns)
+
+                            for path in pf.filter(path, prefix):
+                                hash(path)
+                        else:
+                            hash(path)
+
                 if patterns:
                     step('clear:filter')
             else:
