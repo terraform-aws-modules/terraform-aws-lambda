@@ -228,6 +228,7 @@ resource "aws_lambda_event_source_mapping" "this" {
   maximum_retry_attempts             = lookup(each.value, "maximum_retry_attempts", null)
   maximum_record_age_in_seconds      = lookup(each.value, "maximum_record_age_in_seconds", null)
   bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
+  topics                             = lookup(each.value, "topics", null)
 
   dynamic "destination_config" {
     for_each = lookup(each.value, "destination_arn_on_failure", null) != null ? [true] : []
