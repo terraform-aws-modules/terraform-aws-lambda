@@ -103,7 +103,7 @@ output "lambda_role_name" {
 }
   
 output "lambda_role_unique_id" {
-  description = "The name of the IAM role created for the Lambda Function"
+  description = "The unique id of the IAM role created for the Lambda Function"
   value       = element(concat(aws_iam_role.lambda.*.unique_id, [""]), 0)
 }
 
