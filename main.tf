@@ -116,7 +116,6 @@ resource "aws_s3_bucket_object" "lambda_package" {
   acl           = var.s3_acl
   key           = data.external.archive_prepare[0].result.filename
   source        = data.external.archive_prepare[0].result.filename
-  etag          = fileexists(data.external.archive_prepare[0].result.filename) ? filemd5(data.external.archive_prepare[0].result.filename) : null
   storage_class = var.s3_object_storage_class
 
   server_side_encryption = var.s3_server_side_encryption
