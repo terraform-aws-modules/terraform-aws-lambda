@@ -81,6 +81,13 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "lifecycle" {
+    for_each = var.ignore_changes_package ? [true] : []
+    content {
+      ignore_changes = [source_code_hash]
+    }
+  }
+
   tags = var.tags
 
   # Depending on the log group is necessary to allow Terraform to create the log group before AWS can.

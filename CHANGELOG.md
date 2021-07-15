@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 <a name="unreleased"></a>
 ## [Unreleased]
 
-
+- feat: Add `ignore_changes_package` variable to allow the lambda function resource to be managed by terraform but have the function code managed externally
 
 <a name="v2.7.0"></a>
 ## [v2.7.0] - 2021-07-08

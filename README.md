@@ -106,6 +106,28 @@ module "lambda_function_existing_package_local" {
 }
 ```
 
+### Lambda Function where package deployments are maintained separately to infrastructure
+
+If using this method you need to be aware of the following:
+
+1. A 'dummy' package will need to be included with your terraform code/module. This is deployed to the function when the lambda component is initialised.
+1. You will need to redeploy the real function code after the terraform apply every time the lambda function resource is recreated / force replaced; the 'dummy' package is deployed every time the lambda resource is created.
+
+```hcl
+module "lambda_function_externally_managed_package" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "my-lambda-externally-managed-package"
+  description   = "My lambda function code is deployed separately"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../dummy_package.zip"
+  ignore_changes_package = true
+}
+```
+
 ### Lambda Function with existing package (prebuilt) stored in S3 bucket
 
 Note that this module does not copy prebuilt packages into S3 bucket. This module can only store packages it builds locally and in S3 bucket.
@@ -664,6 +686,7 @@ No modules.
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | A unique name for your Lambda Function | `string` | `""` | no |
 | <a name="input_handler"></a> [handler](#input\_handler) | Lambda Function entrypoint in your code | `string` | `""` | no |
 | <a name="input_hash_extra"></a> [hash\_extra](#input\_hash\_extra) | The string to add into hashing function. Useful when building same source path for different functions. | `string` | `""` | no |
+| <a name="input_ignore_changes_package"></a> [ignore\_changes\_package](#input\_ignore\_changes\_package) | Set to true to ignore changes to the function's source code package/hash. Useful when infrastructure and code deployments are managed by separate pipelines | `bool` | `false` | no |
 | <a name="input_image_config_command"></a> [image\_config\_command](#input\_image\_config\_command) | The CMD for the docker image | `list(string)` | `[]` | no |
 | <a name="input_image_config_entry_point"></a> [image\_config\_entry\_point](#input\_image\_config\_entry\_point) | The ENTRYPOINT for the docker image | `list(string)` | `[]` | no |
 | <a name="input_image_config_working_directory"></a> [image\_config\_working\_directory](#input\_image\_config\_working\_directory) | The working directory for the docker image | `string` | `null` | no |
