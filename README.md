@@ -122,9 +122,9 @@ module "lambda_function_externally_managed_package" {
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
 
-  create_package         = false
-  local_existing_package = "../dummy_package.zip"
-  ignore_changes_package = true
+  create_package          = false
+  local_existing_package  = "./lambda_functions/dummy_lambda.zip"
+  ignore_source_code_hash = true
 }
 ```
 

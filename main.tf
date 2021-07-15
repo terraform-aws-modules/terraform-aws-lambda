@@ -29,7 +29,7 @@ resource "aws_lambda_function" "this" {
   package_type                   = var.package_type
 
   filename         = local.filename
-  source_code_hash = (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
@@ -78,13 +78,6 @@ resource "aws_lambda_function" "this" {
     content {
       local_mount_path = var.file_system_local_mount_path
       arn              = var.file_system_arn
-    }
-  }
-
-  dynamic "lifecycle" {
-    for_each = var.ignore_changes_package ? [true] : []
-    content {
-      ignore_changes = [source_code_hash]
     }
   }
 
