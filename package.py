@@ -960,12 +960,12 @@ def docker_run_command(build_root, command, runtime,
     docker_cmd.extend(['-v', "{}:/var/task:z".format(bind_path)])
 
     home = os.environ['HOME']
-    docker_cmd.extend([
-        # '-v', '{}/.ssh/id_rsa:/root/.ssh/id_rsa:z'.format(home),
-        '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
-    ])
 
     if ssh_agent:
+        docker_cmd.extend([
+            # '-v', '{}/.ssh/id_rsa:/root/.ssh/id_rsa:z'.format(home),
+            '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
+        ])
         if platform.system() == 'Darwin':
             # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding
             docker_cmd.extend([
