@@ -301,7 +301,7 @@ module "lambda_function" {
   #  docker_with_ssh_agent = true
   #  docker_file = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
   #  docker_build_root = "${path.module}/../../docker"
-  #  docker_image = "lambci/lambda:build-python3.8"
+  #  docker_image = "public.ecr.aws/sam/build-python3.8"
 }
 
 ####
