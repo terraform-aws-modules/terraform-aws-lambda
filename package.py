@@ -852,6 +852,7 @@ def install_pip_requirements(query, requirements_file):
     with tempdir(dir=docker_build_root) as temp_dir:
         requirements_filename = os.path.basename(requirements_file)
         target_file = os.path.join(temp_dir, requirements_filename)
+        log.info('Copying %s to %s' % (requirements_filename, target_file))
         shutil.copyfile(requirements_file, target_file)
 
         python_exec = runtime
@@ -910,7 +911,7 @@ def install_pip_requirements(query, requirements_file):
                         "available in system PATH".format(runtime)
                     ) from e
 
-            os.remove(target_file)
+            # os.remove(target_file)
             yield temp_dir
 
 
