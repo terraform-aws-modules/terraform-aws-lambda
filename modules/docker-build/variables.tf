@@ -40,3 +40,9 @@ variable "scan_on_push" {
   type        = bool
   default     = false
 }
+
+variable "ecr_repo_tags" {
+  description = "A map of tags to assign to ECR repository"
+  type        = map(string)
+  default     = {}
+}
