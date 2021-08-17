@@ -238,4 +238,12 @@ resource "aws_lambda_event_source_mapping" "this" {
       }
     }
   }
+
+  dynamic "source_access_configuration" {
+    for_each = lookup(each.value, "source_access_configuration", [])
+    content {
+      type = source_access_configuration.value["type"]
+      uri  = source_access_configuration.value["uri"]
+    }
+  }
 }
