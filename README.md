@@ -558,7 +558,6 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 1 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2 |
 
 ## Providers
 

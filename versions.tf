@@ -5,7 +5,6 @@ terraform {
     aws      = ">= 3.35"
     external = ">= 1"
     local    = ">= 1"
-    random   = ">= 2"
     null     = ">= 2"
   }
 }
