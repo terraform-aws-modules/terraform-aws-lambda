@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 - feat: Add `ignore_source_code_hash` variable to allow the lambda function resource to be managed by terraform but have the function code managed externally
 
+<a name="v2.9.0"></a>
+## [v2.9.0] - 2021-08-20
+
+- feat: Add topics parameter support for lambda event source ([#166](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/166))
+
+
 <a name="v2.8.0"></a>
 ## [v2.8.0] - 2021-08-14
 
@@ -452,7 +458,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.8.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.9.0...HEAD
+[v2.9.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.8.0...v2.9.0
 [v2.8.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.7.0...v2.8.0
 [v2.7.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.6.0...v2.7.0
 [v2.6.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.5.0...v2.6.0
