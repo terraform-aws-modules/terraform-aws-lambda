@@ -29,7 +29,7 @@ resource "aws_lambda_function" "this" {
   package_type                   = var.package_type
 
   filename         = local.filename
-  source_code_hash = (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
@@ -100,7 +100,7 @@ resource "aws_lambda_layer_version" "this" {
   compatible_runtimes = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : [var.runtime]
 
   filename         = local.filename
-  source_code_hash = (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
@@ -227,6 +227,7 @@ resource "aws_lambda_event_source_mapping" "this" {
   maximum_retry_attempts             = lookup(each.value, "maximum_retry_attempts", null)
   maximum_record_age_in_seconds      = lookup(each.value, "maximum_record_age_in_seconds", null)
   bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
+  topics                             = lookup(each.value, "topics", null)
 
   dynamic "destination_config" {
     for_each = lookup(each.value, "destination_arn_on_failure", null) != null ? [true] : []
