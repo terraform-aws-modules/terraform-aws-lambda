@@ -494,7 +494,7 @@ variable "artifacts_dir" {
 }
 
 variable "ignore_source_code_hash" {
-  description = "Set to true to ignore changes to the function's source code hash. Useful when infrastructure and code deployments are managed by separate pipelines"
+  description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
   type        = bool
   default     = false
 }
