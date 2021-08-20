@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.11.0"></a>
+## [v2.11.0] - 2021-08-20
+
+- fix: No need to set `aws_s3_bucket_object` `etag` as filename is already a hash of the content ([#180](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/180))
+
+
 <a name="v2.10.0"></a>
 ## [v2.10.0] - 2021-08-20
 
@@ -464,7 +470,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.10.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.11.0...HEAD
+[v2.11.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.10.0...v2.11.0
 [v2.10.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.9.0...v2.10.0
 [v2.9.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.8.0...v2.9.0
 [v2.8.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.7.0...v2.8.0
