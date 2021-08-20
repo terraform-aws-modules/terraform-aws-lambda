@@ -167,6 +167,26 @@ module "lambda_layer_local" {
   source_path = "${path.module}/../fixtures/python3.8-app1"
 }
 
+####################################################
+# Lambda Layer with package deploying externally
+# (e.g., using separate CI/CD pipeline)
+####################################################
+
+module "lambda_layer_with_package_deploying_externally" {
+  source = "../../"
+
+  create_layer = true
+
+  layer_name          = "${random_pet.this.id}-layer-local"
+  description         = "My amazing lambda layer (deployed from local)"
+  compatible_runtimes = ["python3.8"]
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  ignore_source_code_hash = true
+}
+
 ###############################
 # Lambda Layer (storing on S3)
 ###############################
@@ -275,6 +295,24 @@ module "lambda_function_for_each" {
 
   create_package         = false
   local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
+}
+
+####################################################
+# Lambda Function with package deploying externally
+# (e.g., using separate CI/CD pipeline)
+####################################################
+
+module "lambda_function_with_package_deploying_externally" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-package-deploying-externally"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  ignore_source_code_hash = true
 }
 
 ###########

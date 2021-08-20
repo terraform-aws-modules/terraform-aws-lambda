@@ -106,12 +106,15 @@ module "lambda_function_existing_package_local" {
 }
 ```
 
-### Lambda Function where package deployments are maintained separately to infrastructure
+### Lambda Function or Lambda Layer with the deployable artifact maintained separately from the infrastructure
 
-If using this method you need to be aware of the following:
+If you want to manage function code and infrastructure resources (such as IAM permissions, policies, events, etc) in separate flows (e.g., different repositories, teams, CI/CD pipelines).
 
-1. A 'dummy' package will need to be included with your terraform code/module. This is deployed to the function when the lambda component is initialised.
-1. You will need to redeploy the real function code after the terraform apply every time the lambda function resource is recreated / force replaced; the 'dummy' package is deployed every time the lambda resource is created.
+Disable source code tracking to turn off deployments (and rollbacks) using the module by setting `ignore_source_code_hash = true` and deploy a _dummy function_.
+
+When the infrastructure and the dummy function is deployed, you can use external tool to update the source code of the function (eg, using [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/lambda/update-function-code.html)) and keep using this module via Terraform to manage the infrastructure.
+
+Be aware that changes in `local_existing_package` value may trigger deployment via Terraform.
 
 ```hcl
 module "lambda_function_externally_managed_package" {
@@ -122,8 +125,9 @@ module "lambda_function_externally_managed_package" {
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
 
-  create_package          = false
-  local_existing_package  = "./lambda_functions/dummy_lambda.zip"
+  create_package         = false
+  local_existing_package = "./lambda_functions/code.zip"
+
   ignore_source_code_hash = true
 }
 ```
