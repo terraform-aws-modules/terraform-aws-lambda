@@ -493,6 +493,12 @@ variable "artifacts_dir" {
   default     = "builds"
 }
 
+variable "ignore_source_code_hash" {
+  description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
+  type        = bool
+  default     = false
+}
+
 variable "local_existing_package" {
   description = "The absolute path to an existing zip-file to use"
   type        = string

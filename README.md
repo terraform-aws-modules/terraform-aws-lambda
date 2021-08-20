@@ -106,6 +106,32 @@ module "lambda_function_existing_package_local" {
 }
 ```
 
+### Lambda Function or Lambda Layer with the deployable artifact maintained separately from the infrastructure
+
+If you want to manage function code and infrastructure resources (such as IAM permissions, policies, events, etc) in separate flows (e.g., different repositories, teams, CI/CD pipelines).
+
+Disable source code tracking to turn off deployments (and rollbacks) using the module by setting `ignore_source_code_hash = true` and deploy a _dummy function_.
+
+When the infrastructure and the dummy function is deployed, you can use external tool to update the source code of the function (eg, using [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/lambda/update-function-code.html)) and keep using this module via Terraform to manage the infrastructure.
+
+Be aware that changes in `local_existing_package` value may trigger deployment via Terraform.
+
+```hcl
+module "lambda_function_externally_managed_package" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "my-lambda-externally-managed-package"
+  description   = "My lambda function code is deployed separately"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "./lambda_functions/code.zip"
+
+  ignore_source_code_hash = true
+}
+```
+
 ### Lambda Function with existing package (prebuilt) stored in S3 bucket
 
 Note that this module does not copy prebuilt packages into S3 bucket. This module can only store packages it builds locally and in S3 bucket.
@@ -664,6 +690,7 @@ No modules.
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | A unique name for your Lambda Function | `string` | `""` | no |
 | <a name="input_handler"></a> [handler](#input\_handler) | Lambda Function entrypoint in your code | `string` | `""` | no |
 | <a name="input_hash_extra"></a> [hash\_extra](#input\_hash\_extra) | The string to add into hashing function. Useful when building same source path for different functions. | `string` | `""` | no |
+| <a name="input_ignore_source_code_hash"></a> [ignore\_source\_code\_hash](#input\_ignore\_source\_code\_hash) | Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately. | `bool` | `false` | no |
 | <a name="input_image_config_command"></a> [image\_config\_command](#input\_image\_config\_command) | The CMD for the docker image | `list(string)` | `[]` | no |
 | <a name="input_image_config_entry_point"></a> [image\_config\_entry\_point](#input\_image\_config\_entry\_point) | The ENTRYPOINT for the docker image | `list(string)` | `[]` | no |
 | <a name="input_image_config_working_directory"></a> [image\_config\_working\_directory](#input\_image\_config\_working\_directory) | The working directory for the docker image | `string` | `null` | no |
