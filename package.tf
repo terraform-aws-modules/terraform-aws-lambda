@@ -36,6 +36,8 @@ data "external" "archive_prepare" {
         # "${path.module}/package.py"
       ]
     )
+
+    recreate_missing_package = var.recreate_missing_package
   }
 }
 

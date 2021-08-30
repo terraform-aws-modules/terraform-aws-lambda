@@ -140,6 +140,9 @@ def list_files(top_path, log=None):
     results = []
 
     for root, dirs, files in os.walk(top_path, followlinks=True):
+        # Sort directories and files to ensure they are always processed in the same order
+        dirs.sort()
+        files.sort()
         for file_name in files:
             file_path = os.path.join(root, file_name)
             relative_path = os.path.relpath(file_path, top_path)
@@ -211,6 +214,9 @@ def yesno_bool(val):
 
 def emit_dir_content(base_dir):
     for root, dirs, files in os.walk(base_dir, followlinks=True):
+        # Sort directories and files to ensure they are always processed in the same order
+        dirs.sort()
+        files.sort()
         if root != base_dir:
             yield os.path.normpath(root)
         for name in files:
@@ -596,6 +602,9 @@ class ZipContentFilter:
                 yield path
         else:
             for root, dirs, files in os.walk(path, followlinks=True):
+                # Sort directories and files to ensure they are always processed in the same order
+                dirs.sort()
+                files.sort()
                 o, d = norm_path(path, root)
                 # log.info('od: %s %s', o, d)
                 if root != path:
@@ -730,9 +739,19 @@ class BuildPlanManager:
                         else:
                             pip_requirements_step(pip_requirements, prefix,
                                                   required=True)
+
                     if path:
                         step('zip', path, prefix)
-                        hash(path)
+                        if patterns:
+                            # Take patterns into account when computing hash
+                            pf = ZipContentFilter(args=self._args)
+                            pf.compile(patterns)
+
+                            for path_from_pattern in pf.filter(path, prefix):
+                                hash(path_from_pattern)
+                        else:
+                            hash(path)
+
                 if patterns:
                     step('clear:filter')
             else:
@@ -982,7 +1001,7 @@ def docker_run_command(build_root, command, runtime,
                 '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
             ])
 
-    if platform.system() == 'Linux':
+    if platform.system() in ('Linux', 'Darwin'):
         if pip_cache_dir:
             pip_cache_dir = os.path.abspath(pip_cache_dir)
             docker_cmd.extend([
@@ -1040,7 +1059,7 @@ def prepare_command(args):
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
-    recreate_missing_package = yesno_bool(args.recreate_missing_package)
+    recreate_missing_package = yesno_bool(args.recreate_missing_package if args.recreate_missing_package is not None else query.recreate_missing_package)
     docker = query.docker
 
     bpm = BuildPlanManager(args, log=log)
@@ -1228,7 +1247,7 @@ def main():
         pattern_comments=yesno_bool(os.environ.get(
             'TF_LAMBDA_PACKAGE_PATTERN_COMMENTS', False)),
         recreate_missing_package=os.environ.get(
-            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
+            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', None),
         log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
     )
 

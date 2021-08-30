@@ -115,7 +115,7 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.26 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.31 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
 
 ## Providers
