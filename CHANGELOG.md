@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.12.0"></a>
+## [v2.12.0] - 2021-08-30
+
+- feat: Add Amazon MQ event source type support ([#190](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/190))
+
+
 <a name="v2.11.0"></a>
 ## [v2.11.0] - 2021-08-20
 
@@ -470,7 +476,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.11.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.12.0...HEAD
+[v2.12.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.11.0...v2.12.0
 [v2.11.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.10.0...v2.11.0
 [v2.10.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.9.0...v2.10.0
 [v2.9.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.8.0...v2.9.0
