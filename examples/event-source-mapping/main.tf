@@ -42,6 +42,10 @@ module "lambda_function" {
         {
           type = "BASIC_AUTH"
           uri  = aws_secretsmanager_secret.this.arn
+        },
+        {
+          type = "VIRTUAL_HOST"
+          uri  = "/"
         }
       ]
     }
@@ -111,6 +115,7 @@ module "lambda_function" {
 # Extra resources
 ##################
 
+# Shared resources
 resource "random_pet" "this" {
   length = 2
 }
@@ -120,10 +125,16 @@ resource "random_password" "this" {
   special = false
 }
 
+# SQS
 resource "aws_sqs_queue" "this" {
   name = random_pet.this.id
 }
 
+resource "aws_sqs_queue" "failure" {
+  name = "${random_pet.this.id}-failure"
+}
+
+# DynamoDB
 resource "aws_dynamodb_table" "this" {
   name             = random_pet.this.id
   billing_mode     = "PAY_PER_REQUEST"
@@ -143,20 +154,28 @@ resource "aws_dynamodb_table" "this" {
   }
 }
 
+# Kinesis
 resource "aws_kinesis_stream" "this" {
   name        = random_pet.this.id
   shard_count = 1
 }
 
-resource "aws_sqs_queue" "failure" {
-  name = "${random_pet.this.id}-failure"
+# Amazon MQ
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_security_group" "default" {
+  vpc_id = data.aws_vpc.default.id
+  name   = "default"
 }
 
 resource "aws_mq_broker" "this" {
   broker_name        = random_pet.this.id
   engine_type        = "RabbitMQ"
-  engine_version     = "3.8.17"
+  engine_version     = "3.8.11"
   host_instance_type = "mq.t3.micro"
+  security_groups    = [data.aws_security_group.default.id]
 
   user {
     username = random_pet.this.id
