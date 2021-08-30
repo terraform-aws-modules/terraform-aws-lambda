@@ -1058,7 +1058,7 @@ def prepare_command(args):
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
-    recreate_missing_package = yesno_bool(args.recreate_missing_package)
+    recreate_missing_package = yesno_bool(args.recreate_missing_package if args.recreate_missing_package is not None else query.recreate_missing_package)
     docker = query.docker
 
     bpm = BuildPlanManager(args, log=log)
@@ -1246,7 +1246,7 @@ def main():
         pattern_comments=yesno_bool(os.environ.get(
             'TF_LAMBDA_PACKAGE_PATTERN_COMMENTS', False)),
         recreate_missing_package=os.environ.get(
-            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', True),
+            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', None),
         log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
     )
 
