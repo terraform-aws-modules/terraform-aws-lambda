@@ -1,12 +1,15 @@
 locals {
+  archive_filename    = element(concat(data.external.archive_prepare.*.result.filename, [null]), 0)
+  archive_was_missing = element(concat(data.external.archive_prepare.*.result.was_missing, [false]), 0)
+
   # Use a generated filename to determine when the source code has changed.
   # filename - to get package from local
-  filename    = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : element(concat(data.external.archive_prepare.*.result.filename, [null]), 0))
-  was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : element(concat(data.external.archive_prepare.*.result.was_missing, [false]), 0)
+  filename    = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
+  was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : local.archive_was_missing
 
   # s3_* - to get package from S3
   s3_bucket         = var.s3_existing_package != null ? lookup(var.s3_existing_package, "bucket", null) : (var.store_on_s3 ? var.s3_bucket : null)
-  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(element(concat(data.external.archive_prepare.*.result.filename, [null]), 0), "/^.*//", "")) : replace(element(concat(data.external.archive_prepare.*.result.filename, [null]), 0), "/^\\.//", "") : null)
+  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename, "/^.*//", "")) : replace(local.archive_filename, "/^\\.//", "") : null)
   s3_object_version = var.s3_existing_package != null ? lookup(var.s3_existing_package, "version_id", null) : (var.store_on_s3 ? element(concat(aws_s3_bucket_object.lambda_package.*.version_id, [null]), 0) : null)
 
 }
@@ -114,7 +117,7 @@ resource "aws_s3_bucket_object" "lambda_package" {
 
   bucket        = var.s3_bucket
   acl           = var.s3_acl
-  key           = data.external.archive_prepare[0].result.filename
+  key           = local.s3_key
   source        = data.external.archive_prepare[0].result.filename
   storage_class = var.s3_object_storage_class
 
