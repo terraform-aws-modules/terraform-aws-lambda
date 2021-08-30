@@ -981,7 +981,7 @@ def docker_run_command(build_root, command, runtime,
                 '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
             ])
 
-    if platform.system() == 'Linux':
+    if platform.system() in ('Linux', 'Darwin'):
         if pip_cache_dir:
             pip_cache_dir = os.path.abspath(pip_cache_dir)
             docker_cmd.extend([
