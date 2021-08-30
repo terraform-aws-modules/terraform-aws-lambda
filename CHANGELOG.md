@@ -7,6 +7,43 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.13.0"></a>
+## [v2.13.0] - 2021-08-30
+
+- fix: Sort directories and files to ensure they are always processed in the same order ([#177](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/177))
+- feat: Added docker pip cache support for macOS ([#192](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/192))
+
+
+<a name="v2.12.0"></a>
+## [v2.12.0] - 2021-08-30
+
+- feat: Add Amazon MQ event source type support ([#190](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/190))
+
+
+<a name="v2.11.0"></a>
+## [v2.11.0] - 2021-08-20
+
+- fix: No need to set `aws_s3_bucket_object` `etag` as filename is already a hash of the content ([#180](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/180))
+
+
+<a name="v2.10.0"></a>
+## [v2.10.0] - 2021-08-20
+
+- feat: Add support for separate deployments of infra and code ([#175](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/175))
+
+
+<a name="v2.9.0"></a>
+## [v2.9.0] - 2021-08-20
+
+- feat: Add topics parameter support for lambda event source ([#166](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/166))
+
+
+<a name="v2.8.0"></a>
+## [v2.8.0] - 2021-08-14
+
+- feat: Expose ecr tag & scan variables in docker-build module ([#189](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/189))
+
+
 <a name="v2.7.0"></a>
 ## [v2.7.0] - 2021-07-08
 
@@ -446,7 +483,13 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.13.0...HEAD
+[v2.13.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.12.0...v2.13.0
+[v2.12.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.11.0...v2.12.0
+[v2.11.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.10.0...v2.11.0
+[v2.10.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.9.0...v2.10.0
+[v2.9.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.8.0...v2.9.0
+[v2.8.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.7.0...v2.8.0
 [v2.7.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.6.0...v2.7.0
 [v2.6.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.5.0...v2.6.0
 [v2.5.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.4.0...v2.5.0

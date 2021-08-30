@@ -31,5 +31,12 @@ resource "docker_registry_image" "this" {
 resource "aws_ecr_repository" "this" {
   count = var.create_ecr_repo ? 1 : 0
 
-  name = var.ecr_repo
+  name                 = var.ecr_repo
+  image_tag_mutability = var.image_tag_mutability
+
+  image_scanning_configuration {
+    scan_on_push = var.scan_on_push
+  }
+
+  tags = var.ecr_repo_tags
 }
