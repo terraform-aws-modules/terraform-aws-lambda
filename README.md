@@ -533,6 +533,10 @@ There is [alias module](https://github.com/terraform-aws-modules/terraform-aws-l
 
 There is [deploy module](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy), which creates required resources to do deployments using AWS CodeDeploy. It also creates the deployment, and wait for completion. See [examples/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) for complete end-to-end build/update/deploy process.
 
+## <a name="terraform-cloud"></a> Terraform CI/CD
+
+Terraform Cloud, Terraform Enterprise, and many other SaaS for running Terraform do not have Python pre-installed on the workers. You will need to provide an [alternative Docker image](https://www.terraform.io/docs/enterprise/install/installer.html#alternative-terraform-worker-image) with Python installed to be able to use this module there.
+
 ## FAQ
 
 Q1: Why deployment package not recreating every time I change something? Or why deployment package is being recreated every time but content has not been changed?
