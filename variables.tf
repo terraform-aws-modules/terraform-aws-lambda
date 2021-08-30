@@ -493,6 +493,12 @@ variable "artifacts_dir" {
   default     = "builds"
 }
 
+variable "s3_prefix" {
+  description = "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used"
+  type        = string
+  default     = null
+}
+
 variable "ignore_source_code_hash" {
   description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
   type        = bool
