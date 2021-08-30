@@ -102,6 +102,11 @@ output "lambda_role_name" {
   value       = element(concat(aws_iam_role.lambda.*.name, [""]), 0)
 }
 
+output "lambda_role_unique_id" {
+  description = "The unique id of the IAM role created for the Lambda Function"
+  value       = element(concat(aws_iam_role.lambda.*.unique_id, [""]), 0)
+}
+
 # CloudWatch Log Group
 output "lambda_cloudwatch_log_group_arn" {
   description = "The ARN of the Cloudwatch Log Group"
