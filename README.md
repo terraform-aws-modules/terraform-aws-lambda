@@ -571,7 +571,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 - [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.
 - [With EFS](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-efs) - Create Lambda Function with Elastic File System attached (Terraform 0.13+ is recommended).
 - [Multiple regions](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/multiple-regions) - Create the same Lambda Function in multiple regions with non-conflicting IAM roles and policies.
-- [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (SQS, DynamoDB, and Kinesis).
+- [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (SQS, DynamoDB, Amazon MQ, and Kinesis).
 - [Triggers](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/triggers) - Create Lambda Function with some triggers (eg, Cloudwatch Events, EventBridge).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -579,8 +579,8 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.26 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.31 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.43 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 1 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2 |
@@ -589,7 +589,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.43 |
 | <a name="provider_external"></a> [external](#provider\_external) | >= 1 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2 |
