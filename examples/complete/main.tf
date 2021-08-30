@@ -27,6 +27,9 @@ module "lambda_function" {
 
   store_on_s3 = true
   s3_bucket   = module.s3_bucket.s3_bucket_id
+  s3_prefix   = "lambda-builds/"
+
+  artifacts_dir = "${path.root}/.terraform/lambda-builds/"
 
   layers = [
     module.lambda_layer_local.lambda_layer_arn,
