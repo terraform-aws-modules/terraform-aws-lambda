@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.18.0"></a>
+## [v2.18.0] - 2021-09-25
+
+- feat: Added support for partition in IAM policies to work in GovCloud ([#201](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/201))
+- docs: Added a mention of good examples - 1Mill/serverless-tf-examples ([#197](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/197))
+
+
 <a name="v2.17.0"></a>
 ## [v2.17.0] - 2021-09-11
 
@@ -509,7 +516,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.17.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.18.0...HEAD
+[v2.18.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.17.0...v2.18.0
 [v2.17.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.16.0...v2.17.0
 [v2.16.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.15.0...v2.16.0
 [v2.15.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.14.0...v2.15.0
