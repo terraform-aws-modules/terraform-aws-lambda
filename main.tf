@@ -1,3 +1,5 @@
+data "aws_partition" "current" {}
+
 locals {
   archive_filename    = element(concat(data.external.archive_prepare.*.result.filename, [null]), 0)
   archive_was_missing = element(concat(data.external.archive_prepare.*.result.was_missing, [false]), 0)

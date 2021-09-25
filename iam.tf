@@ -152,7 +152,7 @@ resource "aws_iam_role_policy_attachment" "dead_letter" {
 data "aws_iam_policy" "vpc" {
   count = local.create_role && var.attach_network_policy ? 1 : 0
 
-  arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
+  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaENIManagementAccess"
 }
 
 resource "aws_iam_policy" "vpc" {
@@ -178,7 +178,7 @@ resource "aws_iam_role_policy_attachment" "vpc" {
 data "aws_iam_policy" "tracing" {
   count = local.create_role && var.attach_tracing_policy ? 1 : 0
 
-  arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }
 
 resource "aws_iam_policy" "tracing" {
