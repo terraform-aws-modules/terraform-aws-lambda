@@ -441,6 +441,12 @@ variable "trusted_entities" {
   default     = []
 }
 
+variable "assume_role_policy_statements" {
+  description = "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)"
+  type        = any
+  default     = {}
+}
+
 variable "policy_json" {
   description = "An additional policy document as JSON to attach to the Lambda Function role"
   type        = string

@@ -270,13 +270,14 @@ module "vpc" {
 
 ## Additional IAM policies for Lambda Functions
 
-There are 5 supported ways to attach IAM policies to IAM role used by Lambda Function:
+There are 6 supported ways to attach IAM policies to IAM role used by Lambda Function:
 
 1. `policy_json` - JSON string or heredoc, when `attach_policy_json = true`.
 1. `policy_jsons` - List of JSON strings or heredoc, when `attach_policy_jsons = true` and `number_of_policy_jsons > 0`.
 1. `policy` - ARN of existing IAM policy, when `attach_policy = true`.
 1. `policies` - List of ARNs of existing IAM policies, when `attach_policies = true` and `number_of_policies > 0`.
 1. `policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy. Requires `attach_policy_statements = true`. See `examples/complete` for more information.
+1. `assume_role_policy_statements` - Map of maps to define IAM statements which will be generated as IAM policy for assuming Lambda Function role (trust relationship). See `examples/complete` for more information.
 
 ## Lambda Permissions for allowed triggers
 
@@ -659,6 +660,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_allowed_triggers"></a> [allowed\_triggers](#input\_allowed\_triggers) | Map of allowed triggers to create Lambda permissions | `map(any)` | `{}` | no |
 | <a name="input_artifacts_dir"></a> [artifacts\_dir](#input\_artifacts\_dir) | Directory name where artifacts should be stored | `string` | `"builds"` | no |
+| <a name="input_assume_role_policy_statements"></a> [assume\_role\_policy\_statements](#input\_assume\_role\_policy\_statements) | Map of dynamic policy statements for assuming Lambda Function role (trust relationship) | `any` | `{}` | no |
 | <a name="input_attach_async_event_policy"></a> [attach\_async\_event\_policy](#input\_attach\_async\_event\_policy) | Controls whether async event policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | <a name="input_attach_cloudwatch_logs_policy"></a> [attach\_cloudwatch\_logs\_policy](#input\_attach\_cloudwatch\_logs\_policy) | Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function | `bool` | `true` | no |
 | <a name="input_attach_dead_letter_policy"></a> [attach\_dead\_letter\_policy](#input\_attach\_dead\_letter\_policy) | Controls whether SNS/SQS dead letter notification policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
