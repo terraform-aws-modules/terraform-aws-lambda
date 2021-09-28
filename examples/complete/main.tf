@@ -41,6 +41,9 @@ module "lambda_function" {
     Serverless = "Terraform"
   }
 
+  role_path           = "/tf-managed/"
+  created_policy_path = "/tf-managed/"
+
   attach_dead_letter_policy = true
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
 
