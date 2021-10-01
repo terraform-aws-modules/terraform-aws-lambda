@@ -65,15 +65,15 @@ module "lambda_function" {
 
   assume_role_policy_statements = {
     account_root = {
-      effect     = "Allow",
-      actions    = ["sts:AssumeRole"],
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
       principals = {
         account_principal = {
           type        = "AWS",
           identifiers = ["arn:aws:iam::135367859851:root"]
         }
       }
-      condition  = {
+      condition = {
         stringequals_condition = {
           test     = "StringEquals"
           variable = "sts:ExternalId"

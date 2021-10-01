@@ -57,10 +57,10 @@ data "aws_iam_policy_document" "assume_role" {
     for_each = var.assume_role_policy_statements
 
     content {
-      sid           = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
-      effect        = lookup(statement.value, "effect", null)
-      actions       = lookup(statement.value, "actions", null)
-      not_actions   = lookup(statement.value, "not_actions", null)
+      sid         = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
+      effect      = lookup(statement.value, "effect", null)
+      actions     = lookup(statement.value, "actions", null)
+      not_actions = lookup(statement.value, "not_actions", null)
 
       dynamic "principals" {
         for_each = lookup(statement.value, "principals", [])
