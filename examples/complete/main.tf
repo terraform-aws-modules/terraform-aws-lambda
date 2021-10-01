@@ -63,6 +63,26 @@ module "lambda_function" {
   # Additional policies
   ######################
 
+  assume_role_policy_statements = {
+    account_root = {
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
+      principals = {
+        account_principal = {
+          type        = "AWS",
+          identifiers = ["arn:aws:iam::135367859851:root"]
+        }
+      }
+      condition = {
+        stringequals_condition = {
+          test     = "StringEquals"
+          variable = "sts:ExternalId"
+          values   = ["12345"]
+        }
+      }
+    }
+  }
+
   attach_policy_json = true
   policy_json        = <<EOF
 {
