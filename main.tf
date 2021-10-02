@@ -32,6 +32,7 @@ resource "aws_lambda_function" "this" {
   kms_key_arn                    = var.kms_key_arn
   image_uri                      = var.image_uri
   package_type                   = var.package_type
+  architectures                  = var.architectures
 
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
@@ -102,7 +103,8 @@ resource "aws_lambda_layer_version" "this" {
   description  = var.description
   license_info = var.license_info
 
-  compatible_runtimes = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : [var.runtime]
+  compatible_runtimes      = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : [var.runtime]
+  compatible_architectures = var.compatible_architectures
 
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null

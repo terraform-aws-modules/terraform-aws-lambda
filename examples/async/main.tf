@@ -19,6 +19,7 @@ module "lambda_function" {
   function_name = "${random_pet.this.id}-lambda-async"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
+  architectures = ["arm64"]
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
