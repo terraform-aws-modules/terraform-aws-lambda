@@ -523,6 +523,12 @@ variable "ignore_source_code_hash" {
   default     = false
 }
 
+variable "ignore_timestamp" {
+  description = "Whether to ignore changes to the timestamp of the build. Set to true if you do not have a persistent build directory, such as in CI/CD environments."
+  type        = bool
+  default     = false
+}
+
 variable "local_existing_package" {
   description = "The absolute path to an existing zip-file to use"
   type        = string
