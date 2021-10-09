@@ -247,3 +247,25 @@ module "lambda_function_from_package" {
     module.lambda_layer.lambda_layer_arn
   ]
 }
+
+################################################
+# Layer that supports requirements.txt install #
+###############################################
+module "lambda_layer_pip_requirements" {
+  source = "../.."
+
+  create_function = false
+  create_layer    = true
+
+  layer_name          = "${random_pet.this.id}-layer-pip-requirements"
+  compatible_runtimes = ["python3.8"]
+  runtime             = "python3.8" # required to force layers to do pip install
+
+  source_path = [
+    {
+      path             = "${path.module}/../fixtures/python3.8-app1"
+      pip_requirements = true
+      prefix_in_zip    = "python" # required to get the path correct
+    }
+  ]
+}
