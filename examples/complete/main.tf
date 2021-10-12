@@ -21,6 +21,7 @@ module "lambda_function" {
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
+  architectures = ["x86_64"]
   publish       = true
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
@@ -65,6 +66,26 @@ module "lambda_function" {
   ######################
   # Additional policies
   ######################
+
+  assume_role_policy_statements = {
+    account_root = {
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
+      principals = {
+        account_principal = {
+          type        = "AWS",
+          identifiers = ["arn:aws:iam::135367859851:root"]
+        }
+      }
+      condition = {
+        stringequals_condition = {
+          test     = "StringEquals"
+          variable = "sts:ExternalId"
+          values   = ["12345"]
+        }
+      }
+    }
+  }
 
   attach_policy_json = true
   policy_json        = <<EOF
@@ -166,9 +187,10 @@ module "lambda_layer_local" {
 
   create_layer = true
 
-  layer_name          = "${random_pet.this.id}-layer-local"
-  description         = "My amazing lambda layer (deployed from local)"
-  compatible_runtimes = ["python3.8"]
+  layer_name               = "${random_pet.this.id}-layer-local"
+  description              = "My amazing lambda layer (deployed from local)"
+  compatible_runtimes      = ["python3.8"]
+  compatible_architectures = ["arm64"]
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 }

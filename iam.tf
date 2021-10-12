@@ -52,6 +52,42 @@ data "aws_iam_policy_document" "assume_role" {
       }
     }
   }
+
+  dynamic "statement" {
+    for_each = var.assume_role_policy_statements
+
+    content {
+      sid         = lookup(statement.value, "sid", replace(statement.key, "/[^0-9A-Za-z]*/", ""))
+      effect      = lookup(statement.value, "effect", null)
+      actions     = lookup(statement.value, "actions", null)
+      not_actions = lookup(statement.value, "not_actions", null)
+
+      dynamic "principals" {
+        for_each = lookup(statement.value, "principals", [])
+        content {
+          type        = principals.value.type
+          identifiers = principals.value.identifiers
+        }
+      }
+
+      dynamic "not_principals" {
+        for_each = lookup(statement.value, "not_principals", [])
+        content {
+          type        = not_principals.value.type
+          identifiers = not_principals.value.identifiers
+        }
+      }
+
+      dynamic "condition" {
+        for_each = lookup(statement.value, "condition", [])
+        content {
+          test     = condition.value.test
+          variable = condition.value.variable
+          values   = condition.value.values
+        }
+      }
+    }
+  }
 }
 
 resource "aws_iam_role" "lambda" {
@@ -181,7 +217,7 @@ resource "aws_iam_role_policy_attachment" "vpc" {
 data "aws_iam_policy" "tracing" {
   count = local.create_role && var.attach_tracing_policy ? 1 : 0
 
-  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSXrayWriteOnlyAccess"
+  arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AWSXRayDaemonWriteAccess"
 }
 
 resource "aws_iam_policy" "tracing" {

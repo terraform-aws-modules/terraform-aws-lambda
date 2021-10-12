@@ -79,6 +79,12 @@ variable "layers" {
   default     = null
 }
 
+variable "architectures" {
+  description = "Instruction set architecture for your Lambda function. Valid values are [\"x86_64\"] and [\"arm64\"]."
+  type        = list(string)
+  default     = null
+}
+
 variable "kms_key_arn" {
   description = "The ARN of KMS key to use by your Lambda Function"
   type        = string
@@ -201,6 +207,12 @@ variable "compatible_runtimes" {
   description = "A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified."
   type        = list(string)
   default     = []
+}
+
+variable "compatible_architectures" {
+  description = "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified."
+  type        = list(string)
+  default     = null
 }
 
 ############################
@@ -445,6 +457,12 @@ variable "trusted_entities" {
   description = "List of additional trusted entities for assuming Lambda Function role (trust relationship)"
   type        = any
   default     = []
+}
+
+variable "assume_role_policy_statements" {
+  description = "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)"
+  type        = any
+  default     = {}
 }
 
 variable "policy_json" {
