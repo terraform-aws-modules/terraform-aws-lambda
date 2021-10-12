@@ -429,6 +429,12 @@ variable "attach_policies" {
   default     = false
 }
 
+variable "policy_path" {
+  description = "Path of policies to that should be added to IAM role for Lambda Function"
+  type        = string
+  default     = null
+}
+
 variable "number_of_policy_jsons" {
   description = "Number of policies JSON to attach to IAM role for Lambda Function"
   type        = number
