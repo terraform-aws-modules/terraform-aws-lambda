@@ -35,4 +35,7 @@ module "docker_image" {
   ecr_repo        = random_pet.this.id
   image_tag       = "1.0"
   source_path     = "context"
+  build_args = {
+    FOO = "bar"
+  }
 }

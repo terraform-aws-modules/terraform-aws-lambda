@@ -46,3 +46,9 @@ variable "ecr_repo_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "build_args" {
+  description = "A map of Docker build arguments."
+  type        = map(string)
+  default     = {}
+}

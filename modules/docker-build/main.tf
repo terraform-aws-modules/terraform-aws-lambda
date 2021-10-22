@@ -25,6 +25,7 @@ resource "docker_registry_image" "this" {
   build {
     context    = var.source_path
     dockerfile = var.docker_file_path
+    build_args = var.build_args
   }
 }
 
