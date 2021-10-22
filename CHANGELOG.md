@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.23.0"></a>
+## [v2.23.0] - 2021-10-22
+
+- feat: Allow passing build_args for building with docker-build module ([#217](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/217))
+
+
 <a name="v2.22.0"></a>
 ## [v2.22.0] - 2021-10-12
 
@@ -541,7 +547,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.22.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.23.0...HEAD
+[v2.23.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.22.0...v2.23.0
 [v2.22.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.21.0...v2.22.0
 [v2.21.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.20.0...v2.21.0
 [v2.20.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.19.0...v2.20.0
