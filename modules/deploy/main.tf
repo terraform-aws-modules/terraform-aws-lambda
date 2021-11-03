@@ -67,6 +67,7 @@ if [[ $STATUS == "Succeeded" ]]; then
     echo "Deployment succeeded."
 else
     echo "Deployment failed!"
+    exit 1
 fi
 
 ${var.aws_cli_command} deploy get-deployment --deployment-id $ID
