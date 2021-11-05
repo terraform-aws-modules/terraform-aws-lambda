@@ -4,6 +4,12 @@ variable "create_ecr_repo" {
   default     = false
 }
 
+variable "ecr_address" {
+  description = "Address of ECR repository for cross-account container image pulling (optional). Option `create_ecr_repo` must be `false`"
+  type        = string
+  default     = null
+}
+
 variable "ecr_repo" {
   description = "Name of ECR repository to use or to create"
   type        = string
