@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.24.0"></a>
+## [v2.24.0] - 2021-11-05
+
+- feat: Added support for Cross-Account ECR for docker-build module ([#227](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/227))
+- fix: Raise failure when CodeDeploy deployment fails ([#225](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/225))
+
+
 <a name="v2.23.0"></a>
 ## [v2.23.0] - 2021-10-22
 
@@ -547,7 +554,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.23.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.24.0...HEAD
+[v2.24.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.23.0...v2.24.0
 [v2.23.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.22.0...v2.23.0
 [v2.22.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.21.0...v2.22.0
 [v2.21.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.20.0...v2.21.0
