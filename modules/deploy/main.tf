@@ -63,18 +63,19 @@ while [[ $STATUS == "Created" || $STATUS == "InProgress" || $STATUS == "Pending"
     sleep 5
 done
 
+${var.aws_cli_command} deploy get-deployment --deployment-id $ID
+
 if [[ $STATUS == "Succeeded" ]]; then
     echo "Deployment succeeded."
 else
     echo "Deployment failed!"
+    exit 1
 fi
-
-${var.aws_cli_command} deploy get-deployment --deployment-id $ID
 
 %{else}
 
-echo "Deployment started, but wait deployment completion is disabled!"
 ${var.aws_cli_command} deploy get-deployment --deployment-id $ID
+echo "Deployment started, but wait deployment completion is disabled!"
 
 %{endif}
 EOF
