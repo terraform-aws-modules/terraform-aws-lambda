@@ -117,6 +117,10 @@ resource "null_resource" "deploy" {
     command     = local.script
     interpreter = var.interpreter
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.hooks
+  ]
 }
 
 resource "aws_codedeploy_app" "this" {
@@ -202,6 +206,35 @@ resource "aws_iam_role_policy_attachment" "codedeploy" {
 
   role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+}
+
+data "aws_iam_policy_document" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "lambda:InvokeFunction",
+    ]
+
+    resources = compact([var.before_allow_traffic_hook_arn, var.after_allow_traffic_hook_arn])
+  }
+
+}
+
+resource "aws_iam_policy" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  policy = data.aws_iam_policy_document.hooks[0].json
+  tags   = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  policy_arn = aws_iam_policy.hooks[0].arn
 }
 
 data "aws_iam_policy_document" "triggers" {
