@@ -200,6 +200,12 @@ variable "codedeploy_principals" {
   default     = ["codedeploy.amazonaws.com"]
 }
 
+variable "attach_hooks_policy" {
+  description = "Whether to attach Invoke policy to CodeDeploy role when before allow traffic or after allow traffic hooks are defined."
+  type        = bool
+  default     = true
+}
+
 variable "attach_triggers_policy" {
   description = "Whether to attach SNS policy to CodeDeploy role when triggers are defined"
   type        = bool
