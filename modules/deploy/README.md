@@ -109,9 +109,9 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 1 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.64.2 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.1.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.0 |
 
 ## Modules
 

@@ -122,7 +122,7 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.64.2 |
 
 ## Modules
 

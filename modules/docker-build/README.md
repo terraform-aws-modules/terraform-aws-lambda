@@ -50,8 +50,8 @@ module "docker_image" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
-| <a name="provider_docker"></a> [docker](#provider\_docker) | >= 2.8.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.64.2 |
+| <a name="provider_docker"></a> [docker](#provider\_docker) | 2.15.0 |
 
 ## Modules
 
