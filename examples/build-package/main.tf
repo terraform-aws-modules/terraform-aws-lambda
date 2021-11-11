@@ -33,10 +33,10 @@ module "package_dir_pip_dir" {
 
   create_function = false
 
-  runtime     = "python3.8"
+  runtime = "python3.8"
   source_path = [{
-    path = "${path.module}/../fixtures/python3.8-app1"
-    pip_tmp_dir = "${path.cwd}/../fixtures"
+    path             = "${path.module}/../fixtures/python3.8-app1"
+    pip_tmp_dir      = "${path.cwd}/../fixtures"
     pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
   }]
 }
