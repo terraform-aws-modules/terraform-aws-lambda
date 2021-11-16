@@ -158,7 +158,8 @@ No modules.
 | <a name="input_create"></a> [create](#input\_create) | Controls whether resources should be created | `bool` | `true` | no |
 | <a name="input_create_app"></a> [create\_app](#input\_create\_app) | Whether to create new AWS CodeDeploy app | `bool` | `false` | no |
 | <a name="input_create_codedeploy_role"></a> [create\_codedeploy\_role](#input\_create\_codedeploy\_role) | Whether to create new AWS CodeDeploy IAM role | `bool` | `true` | no |
-| <a name="input_create_deployment"></a> [create\_deployment](#input\_create\_deployment) | Run AWS CLI command to create deployment | `bool` | `false` | no |
+| <a name="input_create_deployment"></a> [create\_deployment](#input\_create\_deployment) | Create the AWS resources and script for CodeDeploy | `bool` | `false` | no |
+| <a name="input_run_deployment"></a> [run\_deployment](#input\_run\_deployment) | Run AWS CLI command to start the deployment | `bool` | `false` | no |
 | <a name="input_create_deployment_group"></a> [create\_deployment\_group](#input\_create\_deployment\_group) | Whether to create new AWS CodeDeploy Deployment Group | `bool` | `false` | no |
 | <a name="input_current_version"></a> [current\_version](#input\_current\_version) | Current version of Lambda function version to deploy (can't be $LATEST) | `string` | `""` | no |
 | <a name="input_deployment_config_name"></a> [deployment\_config\_name](#input\_deployment\_config\_name) | Name of deployment config to use | `string` | `"CodeDeployDefault.LambdaAllAtOnce"` | no |
@@ -174,6 +175,7 @@ No modules.
 | <a name="input_use_existing_app"></a> [use\_existing\_app](#input\_use\_existing\_app) | Whether to use existing AWS CodeDeploy app | `bool` | `false` | no |
 | <a name="input_use_existing_deployment_group"></a> [use\_existing\_deployment\_group](#input\_use\_existing\_deployment\_group) | Whether to use existing AWS CodeDeploy Deployment Group | `bool` | `false` | no |
 | <a name="input_wait_deployment_completion"></a> [wait\_deployment\_completion](#input\_wait\_deployment\_completion) | Wait until deployment completes. It can take a lot of time and your terraform process may lock execution for long time. | `bool` | `false` | no |
+| <a name="input_get_deployment_sleep_timer"></a> [get\_deployment\_sleep\_timer](#get\_deployment\_sleep\_timer) | Adds additional sleep time to get-deployment command to avoid the service throttling. | `number` | `0` | no |
 
 ## Outputs
 

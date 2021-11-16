@@ -161,7 +161,13 @@ variable "save_deploy_script" {
 }
 
 variable "create_deployment" {
-  description = "Run AWS CLI command to create deployment"
+  description = "Create the AWS resources and script for CodeDeploy"
+  type        = bool
+  default     = false
+}
+
+variable "run_deployment" {
+  description = "Run AWS CLI command to start the deployment"
   type        = bool
   default     = false
 }
@@ -210,4 +216,10 @@ variable "attach_triggers_policy" {
   description = "Whether to attach SNS policy to CodeDeploy role when triggers are defined"
   type        = bool
   default     = false
+}
+
+variable "get_deployment_sleep_timer" {
+  description = "Adds additional sleep time to get-deployment command to avoid the service throttling"
+  type        = number
+  default     = 0
 }
