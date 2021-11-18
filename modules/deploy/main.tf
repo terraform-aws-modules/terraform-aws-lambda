@@ -109,7 +109,7 @@ resource "local_file" "deploy_script" {
 }
 
 resource "null_resource" "deploy" {
-  count = var.run_deployment ? 1 : 0
+  count = var.create && var.create_deployment && var.run_deployment ? 1 : 0
 
   triggers = {
     appspec_sha256 = local.appspec_sha256
