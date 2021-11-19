@@ -221,5 +221,5 @@ variable "attach_triggers_policy" {
 variable "get_deployment_sleep_timer" {
   description = "Adds additional sleep time to get-deployment command to avoid the service throttling"
   type        = number
-  default     = 0
+  default     = 5
 }

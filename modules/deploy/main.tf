@@ -61,7 +61,7 @@ while [[ $STATUS == "Created" || $STATUS == "InProgress" || $STATUS == "Pending"
         --output text \
         --query '[deploymentInfo.status]')
 
-    SLEEP_TIME=$(( $RANDOM % 10 ) + ${var.get_deployment_sleep_timer})
+    SLEEP_TIME=$(( $RANDOM % 5 ) + ${var.get_deployment_sleep_timer})
     echo "Sleeping for: $SLEEP_TIME Seconds"
     sleep $SLEEP_TIME
 done
