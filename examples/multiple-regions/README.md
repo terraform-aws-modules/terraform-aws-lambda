@@ -36,8 +36,8 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ |  |
-| <a name="module_lambda_function_another_region"></a> [lambda\_function\_another\_region](#module\_lambda\_function\_another\_region) | ../../ |  |
+| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
+| <a name="module_lambda_function_another_region"></a> [lambda\_function\_another\_region](#module\_lambda\_function\_another\_region) | ../../ | n/a |
 
 ## Resources
 
