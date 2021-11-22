@@ -34,9 +34,9 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias |  |
-| <a name="module_deploy"></a> [deploy](#module\_deploy) | ../../modules/deploy |  |
-| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ |  |
+| <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias | n/a |
+| <a name="module_deploy"></a> [deploy](#module\_deploy) | ../../modules/deploy | n/a |
+| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
 
 ## Resources
 
