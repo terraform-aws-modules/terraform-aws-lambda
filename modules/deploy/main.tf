@@ -60,7 +60,10 @@ while [[ $STATUS == "Created" || $STATUS == "InProgress" || $STATUS == "Pending"
         --deployment-id $ID \
         --output text \
         --query '[deploymentInfo.status]')
-    sleep 5
+
+    SLEEP_TIME=$(( $RANDOM % 5 ) + ${var.get_deployment_sleep_timer})
+    echo "Sleeping for: $SLEEP_TIME Seconds"
+    sleep $SLEEP_TIME
 done
 
 ${var.aws_cli_command} deploy get-deployment --deployment-id $ID
@@ -106,7 +109,7 @@ resource "local_file" "deploy_script" {
 }
 
 resource "null_resource" "deploy" {
-  count = var.create && var.create_deployment ? 1 : 0
+  count = var.create && var.create_deployment && var.run_deployment ? 1 : 0
 
   triggers = {
     appspec_sha256 = local.appspec_sha256
