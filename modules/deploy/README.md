@@ -8,7 +8,7 @@ This module can create AWS CodeDeploy application and deployment group, if neces
 
 During deployment this module does the following:
 1. Create JSON object with required AppSpec configuration. Optionally, you can store deploy script for debug purposes by setting `save_deploy_script = true`.
-1. Run [`aws deploy create-deployment` command](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html) if `create_deployment = true` was set
+1. Run [`aws deploy create-deployment` command](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html) if `create_deployment = true` and `run_deployment = true` was set.
 1. After deployment is created, it can wait for the completion if `wait_deployment_completion = true`. Be aware, that Terraform will lock the execution and it can fail if it runs for a long period of time. Set this flag for fast deployments (eg, `deployment_config_name = "CodeDeployDefault.LambdaAllAtOnce"`).
 
 
@@ -53,6 +53,7 @@ module "deploy" {
   deployment_group_name   = "something"
 
   create_deployment          = true
+  run_deployment             = true
   wait_deployment_completion = true
 
   triggers = {
@@ -159,7 +160,6 @@ No modules.
 | <a name="input_create_app"></a> [create\_app](#input\_create\_app) | Whether to create new AWS CodeDeploy app | `bool` | `false` | no |
 | <a name="input_create_codedeploy_role"></a> [create\_codedeploy\_role](#input\_create\_codedeploy\_role) | Whether to create new AWS CodeDeploy IAM role | `bool` | `true` | no |
 | <a name="input_create_deployment"></a> [create\_deployment](#input\_create\_deployment) | Create the AWS resources and script for CodeDeploy | `bool` | `false` | no |
-| <a name="input_run_deployment"></a> [run\_deployment](#input\_run\_deployment) | Run AWS CLI command to start the deployment | `bool` | `false` | no |
 | <a name="input_create_deployment_group"></a> [create\_deployment\_group](#input\_create\_deployment\_group) | Whether to create new AWS CodeDeploy Deployment Group | `bool` | `false` | no |
 | <a name="input_current_version"></a> [current\_version](#input\_current\_version) | Current version of Lambda function version to deploy (can't be $LATEST) | `string` | `""` | no |
 | <a name="input_deployment_config_name"></a> [deployment\_config\_name](#input\_deployment\_config\_name) | Name of deployment config to use | `string` | `"CodeDeployDefault.LambdaAllAtOnce"` | no |
@@ -167,7 +167,9 @@ No modules.
 | <a name="input_description"></a> [description](#input\_description) | Description to use for the deployment | `string` | `""` | no |
 | <a name="input_force_deploy"></a> [force\_deploy](#input\_force\_deploy) | Force deployment every time (even when nothing changes) | `bool` | `false` | no |
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | The name of the Lambda function to deploy | `string` | `""` | no |
+| <a name="input_get_deployment_sleep_timer"></a> [get\_deployment\_sleep\_timer](#input\_get\_deployment\_sleep\_timer) | Adds additional sleep time to get-deployment command to avoid the service throttling | `number` | `5` | no |
 | <a name="input_interpreter"></a> [interpreter](#input\_interpreter) | List of interpreter arguments used to execute deploy script, first arg is path | `list(string)` | <pre>[<br>  "/bin/bash",<br>  "-c"<br>]</pre> | no |
+| <a name="input_run_deployment"></a> [run\_deployment](#input\_run\_deployment) | Run AWS CLI command to start the deployment | `bool` | `false` | no |
 | <a name="input_save_deploy_script"></a> [save\_deploy\_script](#input\_save\_deploy\_script) | Save deploy script locally | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to resources. | `map(string)` | `{}` | no |
 | <a name="input_target_version"></a> [target\_version](#input\_target\_version) | Target version of Lambda function version to deploy | `string` | `""` | no |
@@ -175,7 +177,6 @@ No modules.
 | <a name="input_use_existing_app"></a> [use\_existing\_app](#input\_use\_existing\_app) | Whether to use existing AWS CodeDeploy app | `bool` | `false` | no |
 | <a name="input_use_existing_deployment_group"></a> [use\_existing\_deployment\_group](#input\_use\_existing\_deployment\_group) | Whether to use existing AWS CodeDeploy Deployment Group | `bool` | `false` | no |
 | <a name="input_wait_deployment_completion"></a> [wait\_deployment\_completion](#input\_wait\_deployment\_completion) | Wait until deployment completes. It can take a lot of time and your terraform process may lock execution for long time. | `bool` | `false` | no |
-| <a name="input_get_deployment_sleep_timer"></a> [get\_deployment\_sleep\_timer](#get\_deployment\_sleep\_timer) | Adds additional sleep time to get-deployment command to avoid the service throttling. | `number` | `0` | no |
 
 ## Outputs
 
