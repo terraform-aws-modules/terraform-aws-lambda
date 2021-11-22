@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+<a name="v2.27.0"></a>
+## [v2.27.0] - 2021-11-22
+
+- feat: Added support for random sleep delay in deploy submodule ([#233](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/233))
+
+
 <a name="v2.26.0"></a>
 ## [v2.26.0] - 2021-11-12
 
@@ -566,7 +572,8 @@ All notable changes to this project will be documented in this file.
 - first commit
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.26.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.27.0...HEAD
+[v2.27.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.26.0...v2.27.0
 [v2.26.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.25.0...v2.26.0
 [v2.25.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.24.0...v2.25.0
 [v2.24.0]: https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.23.0...v2.24.0
