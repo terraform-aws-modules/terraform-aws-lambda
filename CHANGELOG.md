@@ -1,3 +1,14 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [2.27.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.27.0...v2.27.1) (2021-11-27)
+
+
+### Bug Fixes
+
+* update CI/CD process to enable auto-release workflow ([#234](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/234)) ([e882a07](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e882a072ff587d7271e0fdd647f180f9b61ceefc))
+
 <a name="v2.27.0"></a>
 ## [v2.27.0] - 2021-11-22
 
