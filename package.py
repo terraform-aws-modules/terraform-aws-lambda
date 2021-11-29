@@ -825,7 +825,7 @@ class BuildPlanManager:
 
 
 @contextmanager
-def install_pip_requirements(query, requirements_file, tmp_dir=None):
+def install_pip_requirements(query, requirements_file, tmp_dir):
     # TODO:
     #  1. Emit files instead of temp_dir
 
