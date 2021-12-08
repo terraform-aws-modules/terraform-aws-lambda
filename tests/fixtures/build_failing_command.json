@@ -1,0 +1,17 @@
+{
+  "filename": "builds/c4bb5f3e29f5400f4f5cf75f6daf82ed15ca58c693252682f22bff95f4e69c40.zip",
+  "runtime": "provided.al2",
+  "artifacts_dir": "builds",
+  "build_plan": [
+    [
+      "sh",
+      ".",
+      "exit 1"
+    ],
+    [
+      "zip:embedded",
+      "builds/lambdas/my-lambda/bootstrap",
+      null
+    ]
+  ]
+}

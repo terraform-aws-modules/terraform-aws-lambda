@@ -314,7 +314,7 @@ class ZipWriteStream:
         if exc_type is not None:
             self._log.exception("Error during zip archive creation")
             self.close(failed=True)
-            raise SystemExit(1)
+            raise exc_val
         self.close()
 
     def _ensure_open(self):
@@ -797,13 +797,15 @@ class BuildPlanManager:
                 r, w = os.pipe()
                 side_ch = os.fdopen(r)
                 path, script = action[1:]
-                script = "{}\npwd >&{}".format(script, w)
+                script = "set -e && {} && pwd >&{}".format(script, w)
 
                 p = subprocess.Popen(script, shell=True, cwd=path,
                                      pass_fds=(w,))
                 os.close(w)
                 sh_work_dir = side_ch.read().strip()
                 p.wait()
+                if p.returncode != 0 :
+                    raise subprocess.CalledProcessError(p.returncode, script)
                 log.info('WD: %s', sh_work_dir)
                 side_ch.close()
             elif cmd == 'set:filter':
