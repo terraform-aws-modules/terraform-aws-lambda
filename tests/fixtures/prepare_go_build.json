@@ -1,0 +1,9 @@
+{
+  "artifacts_dir": "builds",
+  "hash_extra": "",
+  "hash_extra_paths": "[\"Makefile\"]",
+  "paths": "{\"cwd\":\"./\",\"module\":\".terraform/modules/lambda\",\"root\":\".\"}",
+  "recreate_missing_package": "false",
+  "runtime": "provided.al2",
+  "source_path": "[{\"commands\":[\"make LAMBDA=lambdas/my-lambda\",\":zip builds/lambdas/my-lambda/bootstrap\"],\"path\":\".\"}]"
+}

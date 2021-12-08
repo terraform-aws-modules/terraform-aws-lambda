@@ -1039,7 +1039,9 @@ def prepare_command(args):
 
     # Load the query.
     query_data = json.load(sys.stdin)
+    _prepare_command(args, query_data, log)
 
+def _prepare_command(args, query_data, log):
     dump_env()
     if log.isEnabledFor(DEBUG2):
         if log.isEnabledFor(DEBUG3):
@@ -1053,7 +1055,6 @@ def prepare_command(args):
 
     tf_paths = query.paths
     runtime = query.runtime
-    function_name = query.function_name
     artifacts_dir = query.artifacts_dir
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
@@ -1138,7 +1139,6 @@ def build_command(args):
         query_data = json.load(f)
     query = datatree('build_query', **query_data)
 
-    runtime = query.runtime
     filename = query.filename
     build_plan = query.build_plan
     _timestamp = args.zip_file_timestamp
@@ -1242,16 +1242,7 @@ def args_parser():
 
 
 def main():
-    ns = argparse.Namespace(
-        pattern_comments=yesno_bool(os.environ.get(
-            'TF_LAMBDA_PACKAGE_PATTERN_COMMENTS', False)),
-        recreate_missing_package=os.environ.get(
-            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', None),
-        log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
-    )
-
-    p = args_parser()
-    args = p.parse_args(namespace=ns)
+    args = parse_args(sys.argv[1:])
 
     if args.command is prepare_command:
         configure_logging(use_tf_stderr=True)
@@ -1265,6 +1256,18 @@ def main():
 
     exit(args.command(args))
 
+
+def parse_args(args):
+    ns = argparse.Namespace(
+        pattern_comments=yesno_bool(os.environ.get(
+            'TF_LAMBDA_PACKAGE_PATTERN_COMMENTS', False)),
+        recreate_missing_package=os.environ.get(
+            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', None),
+        log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
+    )
+
+    p = args_parser()
+    return p.parse_args(args, namespace=ns)
 
 if __name__ == '__main__':
     main()
