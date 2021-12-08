@@ -583,6 +583,11 @@ variable "hash_extra" {
   default     = ""
 }
 
+variable "hash_extra_paths" {
+  description = "Extra paths to be hashed"
+  type = list(string)
+  default = []
+}
 variable "build_in_docker" {
   description = "Whether to build dependencies in Docker"
   type        = bool

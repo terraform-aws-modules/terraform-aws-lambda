@@ -28,14 +28,7 @@ data "external" "archive_prepare" {
     runtime       = var.runtime
     source_path   = jsonencode(var.source_path)
     hash_extra    = var.hash_extra
-    hash_extra_paths = jsonencode(
-      [
-        # Temporary fix when building from multiple locations
-        # We should take into account content of package.py when counting hash
-        # Related issue: https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/63
-        # "${path.module}/package.py"
-      ]
-    )
+    hash_extra_paths = jsonencode(var.hash_extra_paths)
 
     recreate_missing_package = var.recreate_missing_package
   }
