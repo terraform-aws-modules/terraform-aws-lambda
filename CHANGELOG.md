@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.28.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.27.1...v2.28.0) (2021-12-10)
+
+
+### Features
+
+* Add `pip_tmp_dir` to allow setting the location of the pip temporary directory ([#230](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/230)) ([f5f86b5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f5f86b593f6d72408464ae5124e34dc01f73387c))
+
 ## [2.27.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.27.0...v2.27.1) (2021-11-27)
 
 
