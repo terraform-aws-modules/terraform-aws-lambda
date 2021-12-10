@@ -391,6 +391,7 @@ source_path = [
   }, {
     path             = "src/python3.8-app1",
     pip_requirements = true,
+    pip_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
     path             = "src/python3.8-app2",
@@ -442,6 +443,7 @@ Few notes:
 - `commands` - List of commands to run. If specified, this argument overrides `pip_requirements`.
   - `:zip [source] [destination]` is a special command which creates content of current working directory (first argument) and places it inside of path (second argument).
 - `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
+- `pip_tmp_dir` - Set the base directory to make the temporary directory for pip installs. Can be useful for Docker in Docker builds.
 - `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
 
 ### Building in Docker

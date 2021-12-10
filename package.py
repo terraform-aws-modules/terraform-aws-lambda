@@ -118,10 +118,10 @@ def cd(path, silent=False):
 
 
 @contextmanager
-def tempdir():
+def tempdir(dir=None):
     """Creates a temporary directory and then deletes it afterwards."""
     prefix = 'terraform-aws-lambda-'
-    path = tempfile.mkdtemp(prefix=prefix)
+    path = tempfile.mkdtemp(prefix=prefix, dir=dir)
     cmd_log.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
     try:
         yield path
@@ -648,7 +648,7 @@ class BuildPlanManager:
         step = lambda *x: build_plan.append(x)
         hash = source_paths.append
 
-        def pip_requirements_step(path, prefix=None, required=False):
+        def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, 'requirements.txt')
@@ -657,7 +657,7 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                step('pip', runtime, requirements, prefix)
+                step('pip', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
         def commands_step(path, commands):
@@ -735,10 +735,10 @@ class BuildPlanManager:
 
                     if pip_requirements and runtime.startswith('python'):
                         if isinstance(pip_requirements, bool) and path:
-                            pip_requirements_step(path, prefix, required=True)
+                            pip_requirements_step(path, prefix, required=True, tmp_dir=claim.get('pip_tmp_dir'))
                         else:
                             pip_requirements_step(pip_requirements, prefix,
-                                                  required=True)
+                                                  required=True, tmp_dir=claim.get('pip_tmp_dir'))
 
                     if path:
                         step('zip', path, prefix)
@@ -784,8 +784,8 @@ class BuildPlanManager:
                 else:
                     zs.write_file(source_path, prefix=prefix, timestamp=ts)
             elif cmd == 'pip':
-                runtime, pip_requirements, prefix = action[1:]
-                with install_pip_requirements(query, pip_requirements) as rd:
+                runtime, pip_requirements, prefix, tmp_dir = action[1:]
+                with install_pip_requirements(query, pip_requirements, tmp_dir) as rd:
                     if rd:
                         if pf:
                             self._zip_write_with_filter(zs, pf, rd, prefix,
@@ -825,7 +825,7 @@ class BuildPlanManager:
 
 
 @contextmanager
-def install_pip_requirements(query, requirements_file):
+def install_pip_requirements(query, requirements_file, tmp_dir):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -836,6 +836,7 @@ def install_pip_requirements(query, requirements_file):
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
     docker = query.docker
+    temp_dir = query.temp_dir
     docker_image_tag_id = None
 
     if docker:
@@ -868,7 +869,7 @@ def install_pip_requirements(query, requirements_file):
     working_dir = os.getcwd()
 
     log.info('Installing python requirements: %s', requirements_file)
-    with tempdir() as temp_dir:
+    with tempdir(tmp_dir) as temp_dir:
         requirements_filename = os.path.basename(requirements_file)
         target_file = os.path.join(temp_dir, requirements_filename)
         shutil.copyfile(requirements_file, target_file)
