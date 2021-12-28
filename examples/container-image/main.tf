@@ -38,4 +38,22 @@ module "docker_image" {
   build_args = {
     FOO = "bar"
   }
+  ecr_repo_lifecycle_policy = <<EOF
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Keep only the last 2 images",
+      "selection": {
+        "tagStatus": "any",
+        "countType": "imageCountMoreThan",
+        "countNumber": 2
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}
+EOF
 }
