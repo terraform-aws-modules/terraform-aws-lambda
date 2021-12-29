@@ -27,8 +27,10 @@ module "lambda_function" {
       event_source_arn = aws_sqs_queue.this.arn
       filter_criteria = {
         pattern = jsonencode({
-          Temperature : [{ numeric : [">", 0, "<=", 100] }]
-          Location : ["Bangkok"]
+          body : {
+            Temperature : [{ numeric : [">", 0, "<=", 100] }]
+            Location : ["Bangkok"]
+          }
         })
       }
     }
@@ -47,8 +49,10 @@ module "lambda_function" {
       starting_position = "LATEST"
       filter_criteria = {
         pattern = jsonencode({
-          Temperature : [{ numeric : [">", 0, "<=", 100] }]
-          Location : ["Oslo"]
+          data : {
+            Temperature : [{ numeric : [">", 0, "<=", 100] }]
+            Location : ["Oslo"]
+          }
         })
       }
     }
