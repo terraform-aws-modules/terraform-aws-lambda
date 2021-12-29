@@ -197,6 +197,12 @@ variable "layer_name" {
   default     = ""
 }
 
+variable "layer_skip_destroy" {
+  description = "Whether to retain the old version of a previously deployed Lambda Layer."
+  type        = bool
+  default     = false
+}
+
 variable "license_info" {
   description = "License info for your Lambda Layer. Eg, MIT or full url of a license."
   type        = string
