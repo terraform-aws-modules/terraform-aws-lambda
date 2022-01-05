@@ -62,5 +62,5 @@ variable "build_args" {
 variable "ecr_repo_lifecycle_policy" {
   description = "A JSON formatted ECR lifecycle policy to automate the cleaning up of unused images."
   type        = string
-  default     = ""
+  default     = null
 }
