@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.29.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.28.0...v2.29.0) (2022-01-05)
+
+
+### Features
+
+* Add ECR Lifecycle Policy Option to docker-build module ([#243](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/243)) ([577b077](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/577b07768be37c0c24ea16294e2a9760833762bf))
+
 # [2.28.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.27.1...v2.28.0) (2021-12-10)
 
 
