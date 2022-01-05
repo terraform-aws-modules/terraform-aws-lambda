@@ -43,7 +43,7 @@ resource "aws_ecr_repository" "this" {
 }
 
 resource "aws_ecr_lifecycle_policy" "this" {
-  count = length(var.ecr_repo_lifecycle_policy) > 0 ? 1 : 0
+  count = var.ecr_repo_lifecycle_policy != null ? 1 : 0
 
   policy     = var.ecr_repo_lifecycle_policy
   repository = local.ecr_repo
