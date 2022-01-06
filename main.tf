@@ -105,6 +105,7 @@ resource "aws_lambda_layer_version" "this" {
 
   compatible_runtimes      = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : [var.runtime]
   compatible_architectures = var.compatible_architectures
+  skip_destroy             = var.layer_skip_destroy
 
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
