@@ -41,3 +41,10 @@ resource "aws_ecr_repository" "this" {
 
   tags = var.ecr_repo_tags
 }
+
+resource "aws_ecr_lifecycle_policy" "this" {
+  count = var.ecr_repo_lifecycle_policy != null ? 1 : 0
+
+  policy     = var.ecr_repo_lifecycle_policy
+  repository = local.ecr_repo
+}
