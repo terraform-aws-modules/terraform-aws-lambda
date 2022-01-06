@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.30.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.29.0...v2.30.0) (2022-01-06)
+
+
+### Features
+
+* Added support for skip_destroy in Lambda Layer Version ([#244](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/244)) ([b9671e1](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/b9671e13d57823319e5b25900457dafcc81a4dbe))
+
 # [2.29.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.28.0...v2.29.0) (2022-01-05)
 
 
