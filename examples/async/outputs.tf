@@ -97,4 +97,3 @@ output "s3_object" {
   description = "The map with S3 object data of zip archive deployed (if deployment was from S3)"
   value       = module.lambda_function.s3_object
 }
-
