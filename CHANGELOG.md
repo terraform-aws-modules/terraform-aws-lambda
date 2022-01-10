@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.31.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.30.0...v2.31.0) (2022-01-10)
+
+
+### Features
+
+* Allow the use of third party images to build dependencies ([#245](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/245)) ([0a9793e](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/0a9793ec9f04d96a0ffa6abb3d920659fae654b1))
+
 # [2.30.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.29.0...v2.30.0) (2022-01-06)
 
 
