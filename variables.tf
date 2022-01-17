@@ -157,6 +157,12 @@ variable "s3_object_tags" {
   default     = {}
 }
 
+variable "s3_object_tags_only" {
+  description = "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit."
+  type        = bool
+  default     = false
+}
+
 variable "package_type" {
   description = "The Lambda deployment package type. Valid options: Zip or Image"
   type        = string

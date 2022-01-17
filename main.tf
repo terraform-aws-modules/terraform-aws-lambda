@@ -128,7 +128,7 @@ resource "aws_s3_bucket_object" "lambda_package" {
 
   server_side_encryption = var.s3_server_side_encryption
 
-  tags = merge(var.tags, var.s3_object_tags)
+  tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 
   depends_on = [null_resource.archive]
 }
