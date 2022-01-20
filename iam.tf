@@ -15,7 +15,7 @@ locals {
 
   # IAM Role trusted entities is a list of any (allow strings (services) and maps (type+identifiers))
   trusted_entities_services = distinct(compact(concat(
-    slice(["lambda.amazonaws.com", "edgelambda.amazonaws.com"], 0, var.lambda_at_edge ? 2 : 1),
+    slice(["edgelambda.amazonaws.com", "lambda.amazonaws.com"], 0, var.lambda_at_edge ? 2 : 1),
     [for service in var.trusted_entities : try(tostring(service), "")]
   )))
 
