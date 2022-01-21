@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.33.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.32.0...v2.33.0) (2022-01-21)
+
+
+### Features
+
+* Accept new arguments `function_response_types` in `aws_lambda_event_source_mapping` ([#255](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/255)) ([1fda108](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/1fda108d41a8b167007ecc43b78654a4a2fa9aa5))
+
 ## [2.32.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.31.0...v2.32.0) (2022-01-17)
 
 
