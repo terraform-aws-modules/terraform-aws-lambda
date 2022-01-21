@@ -164,7 +164,7 @@ locals {
 }
 
 resource "aws_lambda_function_event_invoke_config" "this" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_async_event_config ? local.qualifiers : {}
+  for_each = { for k, v in local.qualifiers : k => v if var.create && var.create_function && !var.create_layer && var.create_async_event_config }
 
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = each.key == "current_version" ? aws_lambda_function.this[0].version : null
@@ -193,7 +193,7 @@ resource "aws_lambda_function_event_invoke_config" "this" {
 }
 
 resource "aws_lambda_permission" "current_version_triggers" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_current_version_allowed_triggers ? var.allowed_triggers : {}
+  for_each = { for k, v in var.allowed_triggers : k => v if var.create && var.create_function && !var.create_layer && var.create_current_version_allowed_triggers }
 
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
@@ -208,7 +208,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
 
 # Error: Error adding new Lambda Permission for lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.allowed_triggers : {}
+  for_each = { for k, v in var.allowed_triggers : k => v if var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
   function_name = aws_lambda_function.this[0].function_name
 
@@ -221,7 +221,7 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.event_source_mapping : tomap({})
+  for_each = { for k, v in var.event_source_mapping : k => v if var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
   function_name = aws_lambda_function.this[0].arn
 
