@@ -1,73 +1,73 @@
 # Lambda Function
 output "lambda_function_arn" {
   description = "The ARN of the Lambda Function"
-  value       = element(concat(aws_lambda_function.this.*.arn, [""]), 0)
+  value       = try(aws_lambda_function.this[0].arn, "")
 }
 
 output "lambda_function_invoke_arn" {
   description = "The Invoke ARN of the Lambda Function"
-  value       = element(concat(aws_lambda_function.this.*.invoke_arn, [""]), 0)
+  value       = try(aws_lambda_function.this[0].invoke_arn, "")
 }
 
 output "lambda_function_name" {
   description = "The name of the Lambda Function"
-  value       = element(concat(aws_lambda_function.this.*.function_name, [""]), 0)
+  value       = try(aws_lambda_function.this[0].function_name, "")
 }
 
 output "lambda_function_qualified_arn" {
   description = "The ARN identifying your Lambda Function Version"
-  value       = element(concat(aws_lambda_function.this.*.qualified_arn, [""]), 0)
+  value       = try(aws_lambda_function.this[0].qualified_arn, "")
 }
 
 output "lambda_function_version" {
   description = "Latest published version of Lambda Function"
-  value       = element(concat(aws_lambda_function.this.*.version, [""]), 0)
+  value       = try(aws_lambda_function.this[0].version, "")
 }
 
 output "lambda_function_last_modified" {
   description = "The date Lambda Function resource was last modified"
-  value       = element(concat(aws_lambda_function.this.*.last_modified, [""]), 0)
+  value       = try(aws_lambda_function.this[0].last_modified, "")
 }
 
 output "lambda_function_kms_key_arn" {
   description = "The ARN for the KMS encryption key of Lambda Function"
-  value       = element(concat(aws_lambda_function.this.*.kms_key_arn, [""]), 0)
+  value       = try(aws_lambda_function.this[0].kms_key_arn, "")
 }
 
 output "lambda_function_source_code_hash" {
   description = "Base64-encoded representation of raw SHA-256 sum of the zip file"
-  value       = element(concat(aws_lambda_function.this.*.source_code_hash, [""]), 0)
+  value       = try(aws_lambda_function.this[0].source_code_hash, "")
 }
 
 output "lambda_function_source_code_size" {
   description = "The size in bytes of the function .zip file"
-  value       = element(concat(aws_lambda_function.this.*.source_code_size, [""]), 0)
+  value       = try(aws_lambda_function.this[0].source_code_size, "")
 }
 
 # Lambda Layer
 output "lambda_layer_arn" {
   description = "The ARN of the Lambda Layer with version"
-  value       = element(concat(aws_lambda_layer_version.this.*.arn, [""]), 0)
+  value       = try(aws_lambda_layer_version.this[0].arn, "")
 }
 
 output "lambda_layer_layer_arn" {
   description = "The ARN of the Lambda Layer without version"
-  value       = element(concat(aws_lambda_layer_version.this.*.layer_arn, [""]), 0)
+  value       = try(aws_lambda_layer_version.this[0].layer_arn, "")
 }
 
 output "lambda_layer_created_date" {
   description = "The date Lambda Layer resource was created"
-  value       = element(concat(aws_lambda_layer_version.this.*.created_date, [""]), 0)
+  value       = try(aws_lambda_layer_version.this[0].created_date, "")
 }
 
 output "lambda_layer_source_code_size" {
   description = "The size in bytes of the Lambda Layer .zip file"
-  value       = element(concat(aws_lambda_layer_version.this.*.source_code_size, [""]), 0)
+  value       = try(aws_lambda_layer_version.this[0].source_code_size, "")
 }
 
 output "lambda_layer_version" {
   description = "The Lambda Layer version"
-  value       = element(concat(aws_lambda_layer_version.this.*.version, [""]), 0)
+  value       = try(aws_lambda_layer_version.this[0].version, "")
 }
 
 # Lambda Event Source Mapping
@@ -94,17 +94,17 @@ output "lambda_event_source_mapping_uuid" {
 # IAM Role
 output "lambda_role_arn" {
   description = "The ARN of the IAM role created for the Lambda Function"
-  value       = element(concat(aws_iam_role.lambda.*.arn, [""]), 0)
+  value       = try(aws_iam_role.lambda[0].arn, "")
 }
 
 output "lambda_role_name" {
   description = "The name of the IAM role created for the Lambda Function"
-  value       = element(concat(aws_iam_role.lambda.*.name, [""]), 0)
+  value       = try(aws_iam_role.lambda[0].name, "")
 }
 
 output "lambda_role_unique_id" {
   description = "The unique id of the IAM role created for the Lambda Function"
-  value       = element(concat(aws_iam_role.lambda.*.unique_id, [""]), 0)
+  value       = try(aws_iam_role.lambda[0].unique_id, "")
 }
 
 # CloudWatch Log Group
