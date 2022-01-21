@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.33.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.33.1...v2.33.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* Fixed incorrect tomap() ([#257](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/257)) ([2478baa](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2478baa167816af2dee477d7e88703efff8b713b))
+
 ### [2.33.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.33.0...v2.33.1) (2022-01-21)
 
 
