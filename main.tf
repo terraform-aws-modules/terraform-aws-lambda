@@ -237,6 +237,7 @@ resource "aws_lambda_event_source_mapping" "this" {
   bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
   topics                             = lookup(each.value, "topics", null)
   queues                             = lookup(each.value, "queues", null)
+  function_response_types            = lookup(each.value, "function_response_types", null)
 
   dynamic "destination_config" {
     for_each = lookup(each.value, "destination_arn_on_failure", null) != null ? [true] : []
