@@ -1,8 +1,9 @@
 data "aws_partition" "current" {}
 
 locals {
-  archive_filename    = var.create ? element(concat(data.external.archive_prepare.*.result.filename, [null]), 0) : ""
-  archive_was_missing = element(concat(data.external.archive_prepare.*.result.was_missing, [false]), 0)
+  archive_filename        = try(data.external.archive_prepare[0].result.filename, null)
+  archive_filename_string = local.archive_filename != null ? local.archive_filename : ""
+  archive_was_missing     = try(data.external.archive_prepare[0].result.was_missing, false)
 
   # Use a generated filename to determine when the source code has changed.
   # filename - to get package from local
@@ -11,8 +12,8 @@ locals {
 
   # s3_* - to get package from S3
   s3_bucket         = var.s3_existing_package != null ? lookup(var.s3_existing_package, "bucket", null) : (var.store_on_s3 ? var.s3_bucket : null)
-  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename, "/^.*//", "")) : replace(local.archive_filename, "/^\\.//", "") : null)
-  s3_object_version = var.s3_existing_package != null ? lookup(var.s3_existing_package, "version_id", null) : (var.store_on_s3 ? element(concat(aws_s3_bucket_object.lambda_package.*.version_id, [null]), 0) : null)
+  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
+  s3_object_version = var.s3_existing_package != null ? lookup(var.s3_existing_package, "version_id", null) : (var.store_on_s3 ? try(aws_s3_bucket_object.lambda_package[0].version_id, null) : null)
 
 }
 

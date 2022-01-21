@@ -1,5 +1,5 @@
 locals {
-  version    = element(concat(data.aws_lambda_alias.existing.*.function_version, aws_lambda_alias.with_refresh.*.function_version, aws_lambda_alias.no_refresh.*.function_version, [""]), 0)
+  version    = try(data.aws_lambda_alias.existing[0].function_version, aws_lambda_alias.with_refresh[0].function_version, aws_lambda_alias.no_refresh[0].function_version, "")
   qualifiers = zipmap(["version", "qualified_alias"], [var.create_version_async_event_config ? true : null, var.create_qualified_alias_async_event_config ? true : null])
 }
 
