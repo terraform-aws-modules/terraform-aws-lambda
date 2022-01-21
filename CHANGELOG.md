@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.33.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.33.0...v2.33.1) (2022-01-21)
+
+
+### Bug Fixes
+
+* Updated code style to use `try()` ([#256](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/256)) ([e9aed29](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e9aed29a45762ea2bc1675fa9e1ed7458703f86b))
+
 ## [2.33.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.32.0...v2.33.0) (2022-01-21)
 
 
