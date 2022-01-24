@@ -91,6 +91,11 @@ resource "aws_lambda_function" "this" {
 
   lifecycle {
     prevent_destroy = true
+
+    ignore_changes = [
+      image_uri,
+      image_config,
+    ]
   }
 
   # Depending on the log group is necessary to allow Terraform to create the log group before AWS can.
