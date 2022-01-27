@@ -85,6 +85,12 @@ variable "description" {
   default     = ""
 }
 
+variable "code_signing_config_arn" {
+  description = "Amazon Resource Name (ARN) for a Code Signing Configuration"
+  type        = string
+  default     = null
+}
+
 variable "layers" {
   description = "List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function."
   type        = list(string)
