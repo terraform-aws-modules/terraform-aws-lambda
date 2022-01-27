@@ -34,6 +34,7 @@ resource "aws_lambda_function" "this" {
   image_uri                      = var.image_uri
   package_type                   = var.package_type
   architectures                  = var.architectures
+  code_signing_config_arn        = var.code_signing_config_arn
 
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
