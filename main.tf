@@ -262,7 +262,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 
     content {
       filter {
-        pattern = each.value["filter_criteria"].pattern
+        pattern = lookup(filter_criteria, "pattern", null)
       }
     }
   }
