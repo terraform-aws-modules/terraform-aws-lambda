@@ -24,15 +24,8 @@ module "lambda_function" {
 
   event_source_mapping = {
     sqs = {
-      event_source_arn = aws_sqs_queue.this.arn
-      filter_criteria = {
-        pattern = jsonencode({
-          body : {
-            Temperature : [{ numeric : [">", 0, "<=", 100] }]
-            Location : ["Bangkok"]
-          }
-        })
-      }
+      event_source_arn        = aws_sqs_queue.this.arn
+      function_response_types = ["ReportBatchItemFailures"]
     }
     dynamodb = {
       event_source_arn           = aws_dynamodb_table.this.stream_arn

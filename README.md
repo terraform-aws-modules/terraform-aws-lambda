@@ -593,18 +593,18 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.69 |
-| <a name="requirement_external"></a> [external](#requirement\_external) | >= 1 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 2 |
+| <a name="requirement_external"></a> [external](#requirement\_external) | >= 1.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.69 |
-| <a name="provider_external"></a> [external](#provider\_external) | >= 1 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 1 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 2 |
+| <a name="provider_external"></a> [external](#provider\_external) | >= 1.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | >= 1.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
 
 ## Modules
 
@@ -747,6 +747,7 @@ No modules.
 | <a name="input_s3_existing_package"></a> [s3\_existing\_package](#input\_s3\_existing\_package) | The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use | `map(string)` | `null` | no |
 | <a name="input_s3_object_storage_class"></a> [s3\_object\_storage\_class](#input\_s3\_object\_storage\_class) | Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED\_REDUNDANCY, ONEZONE\_IA, INTELLIGENT\_TIERING, or STANDARD\_IA. | `string` | `"ONEZONE_IA"` | no |
 | <a name="input_s3_object_tags"></a> [s3\_object\_tags](#input\_s3\_object\_tags) | A map of tags to assign to S3 bucket object. | `map(string)` | `{}` | no |
+| <a name="input_s3_object_tags_only"></a> [s3\_object\_tags\_only](#input\_s3\_object\_tags\_only) | Set to true to not merge tags with s3\_object\_tags. Useful to avoid breaching S3 Object 10 tag limit. | `bool` | `false` | no |
 | <a name="input_s3_prefix"></a> [s3\_prefix](#input\_s3\_prefix) | Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used | `string` | `null` | no |
 | <a name="input_s3_server_side_encryption"></a> [s3\_server\_side\_encryption](#input\_s3\_server\_side\_encryption) | Specifies server-side encryption of the object in S3. Valid values are "AES256" and "aws:kms". | `string` | `null` | no |
 | <a name="input_source_path"></a> [source\_path](#input\_source\_path) | The absolute path to a local file or directory containing your Lambda source code | `any` | `null` | no |

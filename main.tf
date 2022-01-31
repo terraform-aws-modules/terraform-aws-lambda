@@ -1,8 +1,9 @@
 data "aws_partition" "current" {}
 
 locals {
-  archive_filename    = element(concat(data.external.archive_prepare.*.result.filename, [null]), 0)
-  archive_was_missing = element(concat(data.external.archive_prepare.*.result.was_missing, [false]), 0)
+  archive_filename        = try(data.external.archive_prepare[0].result.filename, null)
+  archive_filename_string = local.archive_filename != null ? local.archive_filename : ""
+  archive_was_missing     = try(data.external.archive_prepare[0].result.was_missing, false)
 
   # Use a generated filename to determine when the source code has changed.
   # filename - to get package from local
@@ -11,8 +12,8 @@ locals {
 
   # s3_* - to get package from S3
   s3_bucket         = var.s3_existing_package != null ? lookup(var.s3_existing_package, "bucket", null) : (var.store_on_s3 ? var.s3_bucket : null)
-  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename, "/^.*//", "")) : replace(local.archive_filename, "/^\\.//", "") : null)
-  s3_object_version = var.s3_existing_package != null ? lookup(var.s3_existing_package, "version_id", null) : (var.store_on_s3 ? element(concat(aws_s3_bucket_object.lambda_package.*.version_id, [null]), 0) : null)
+  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
+  s3_object_version = var.s3_existing_package != null ? lookup(var.s3_existing_package, "version_id", null) : (var.store_on_s3 ? try(aws_s3_bucket_object.lambda_package[0].version_id, null) : null)
 
 }
 
@@ -128,7 +129,7 @@ resource "aws_s3_bucket_object" "lambda_package" {
 
   server_side_encryption = var.s3_server_side_encryption
 
-  tags = merge(var.tags, var.s3_object_tags)
+  tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 
   depends_on = [null_resource.archive]
 }
@@ -163,7 +164,7 @@ locals {
 }
 
 resource "aws_lambda_function_event_invoke_config" "this" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_async_event_config ? local.qualifiers : {}
+  for_each = { for k, v in local.qualifiers : k => v if var.create && var.create_function && !var.create_layer && var.create_async_event_config }
 
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = each.key == "current_version" ? aws_lambda_function.this[0].version : null
@@ -192,7 +193,7 @@ resource "aws_lambda_function_event_invoke_config" "this" {
 }
 
 resource "aws_lambda_permission" "current_version_triggers" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_current_version_allowed_triggers ? var.allowed_triggers : {}
+  for_each = { for k, v in var.allowed_triggers : k => v if var.create && var.create_function && !var.create_layer && var.create_current_version_allowed_triggers }
 
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
@@ -207,7 +208,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
 
 # Error: Error adding new Lambda Permission for lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.allowed_triggers : {}
+  for_each = { for k, v in var.allowed_triggers : k => v if var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
   function_name = aws_lambda_function.this[0].function_name
 
@@ -220,7 +221,7 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
-  for_each = var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers ? var.event_source_mapping : tomap({})
+  for_each = { for k, v in var.event_source_mapping : k => v if var.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
   function_name = aws_lambda_function.this[0].arn
 
@@ -237,6 +238,7 @@ resource "aws_lambda_event_source_mapping" "this" {
   bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
   topics                             = lookup(each.value, "topics", null)
   queues                             = lookup(each.value, "queues", null)
+  function_response_types            = lookup(each.value, "function_response_types", null)
 
   dynamic "destination_config" {
     for_each = lookup(each.value, "destination_arn_on_failure", null) != null ? [true] : []

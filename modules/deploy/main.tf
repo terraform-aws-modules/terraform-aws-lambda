@@ -1,10 +1,10 @@
 locals {
   # AWS CodeDeploy can't deploy when CurrentVersion is "$LATEST"
-  qualifier       = element(concat(data.aws_lambda_function.this.*.qualifier, [""]), 0)
+  qualifier       = try(data.aws_lambda_function.this[0].qualifier, "")
   current_version = local.qualifier == "$LATEST" ? 1 : local.qualifier
 
-  app_name              = element(concat(aws_codedeploy_app.this.*.name, [var.app_name]), 0)
-  deployment_group_name = element(concat(aws_codedeploy_deployment_group.this.*.deployment_group_name, [var.deployment_group_name]), 0)
+  app_name              = try(aws_codedeploy_app.this[0].name, var.app_name)
+  deployment_group_name = try(aws_codedeploy_deployment_group.this[0].deployment_group_name, var.deployment_group_name)
 
   appspec = merge({
     version = "0.0"
@@ -140,7 +140,7 @@ resource "aws_codedeploy_deployment_group" "this" {
 
   app_name               = local.app_name
   deployment_group_name  = var.deployment_group_name
-  service_role_arn       = element(concat(aws_iam_role.codedeploy.*.arn, data.aws_iam_role.codedeploy.*.arn, [""]), 0)
+  service_role_arn       = try(aws_iam_role.codedeploy[0].arn, data.aws_iam_role.codedeploy[0].arn, "")
   deployment_config_name = var.deployment_config_name
 
   deployment_style {
@@ -208,7 +208,7 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role_policy_attachment" "codedeploy" {
   count = var.create && var.create_codedeploy_role ? 1 : 0
 
-  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  role       = try(aws_iam_role.codedeploy[0].id, "")
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
 }
 
@@ -237,7 +237,7 @@ resource "aws_iam_policy" "hooks" {
 resource "aws_iam_role_policy_attachment" "hooks" {
   count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
 
-  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  role       = try(aws_iam_role.codedeploy[0].id, "")
   policy_arn = aws_iam_policy.hooks[0].arn
 }
 
@@ -265,7 +265,7 @@ resource "aws_iam_policy" "triggers" {
 resource "aws_iam_role_policy_attachment" "triggers" {
   count = var.create && var.create_codedeploy_role && var.attach_triggers_policy ? 1 : 0
 
-  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  role       = try(aws_iam_role.codedeploy[0].id, "")
   policy_arn = aws_iam_policy.triggers[0].arn
 }
 

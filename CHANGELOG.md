@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.33.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.33.1...v2.33.2) (2022-01-21)
+
+
+### Bug Fixes
+
+* Fixed incorrect tomap() ([#257](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/257)) ([2478baa](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2478baa167816af2dee477d7e88703efff8b713b))
+
+### [2.33.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.33.0...v2.33.1) (2022-01-21)
+
+
+### Bug Fixes
+
+* Updated code style to use `try()` ([#256](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/256)) ([e9aed29](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e9aed29a45762ea2bc1675fa9e1ed7458703f86b))
+
+## [2.33.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.32.0...v2.33.0) (2022-01-21)
+
+
+### Features
+
+* Accept new arguments `function_response_types` in `aws_lambda_event_source_mapping` ([#255](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/255)) ([1fda108](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/1fda108d41a8b167007ecc43b78654a4a2fa9aa5))
+
+## [2.32.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.31.0...v2.32.0) (2022-01-17)
+
+
+### Features
+
+* Added flag to exclude general tags from S3 Object tagging ([#250](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/250)) ([a8a185c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/a8a185cb85b794cae8c169522c12039077507f52))
+
 ## [2.31.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.30.0...v2.31.0) (2022-01-10)
 
 
