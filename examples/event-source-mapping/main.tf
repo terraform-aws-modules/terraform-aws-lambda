@@ -31,10 +31,23 @@ module "lambda_function" {
       event_source_arn           = aws_dynamodb_table.this.stream_arn
       starting_position          = "LATEST"
       destination_arn_on_failure = aws_sqs_queue.failure.arn
+      filter_criteria = {
+        pattern = jsonencode({
+          eventName : ["INSERT"]
+        })
+      }
     }
     kinesis = {
       event_source_arn  = aws_kinesis_stream.this.arn
       starting_position = "LATEST"
+      filter_criteria = {
+        pattern = jsonencode({
+          data : {
+            Temperature : [{ numeric : [">", 0, "<=", 100] }]
+            Location : ["Oslo"]
+          }
+        })
+      }
     }
     mq = {
       event_source_arn = aws_mq_broker.this.arn

@@ -257,4 +257,14 @@ resource "aws_lambda_event_source_mapping" "this" {
       uri  = source_access_configuration.value["uri"]
     }
   }
+
+  dynamic "filter_criteria" {
+    for_each = lookup(each.value, "filter_criteria", null) != null ? [true] : []
+
+    content {
+      filter {
+        pattern = lookup(filter_criteria, "pattern", null)
+      }
+    }
+  }
 }
