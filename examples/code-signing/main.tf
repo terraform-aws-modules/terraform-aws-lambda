@@ -1,5 +1,5 @@
 locals {
-  lambda_s3_bucket     = "audix-lambda-s3-bucket"
+  lambda_s3_bucket     = "hello-world-lambda-s3-bucket"
   lambda_zip_filename  = "lambda.zip"
   lambda_function_name = "hello-world-lambda"
 }
