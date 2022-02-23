@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.34.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.34.0...v2.34.1) (2022-02-23)
+
+
+### Bug Fixes
+
+* Fixed event source mapping filter criteria ([#272](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/272)) ([a5c03fe](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/a5c03fef2c5c332dc31b84030cbb63302ef8a23d))
+
 ## [2.34.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.33.2...v2.34.0) (2022-01-31)
 
 
