@@ -17,6 +17,10 @@ locals {
 
 }
 
+resource "null_resource" "edge_with_env_check" {
+  count = var.lambda_at_edge && length(var.environment_variables) > 0 ? "ERROR: Lambda@Edge does not support environment variables" : 1
+}
+
 resource "aws_lambda_function" "this" {
   count = var.create && var.create_function && !var.create_layer ? 1 : 0
 
