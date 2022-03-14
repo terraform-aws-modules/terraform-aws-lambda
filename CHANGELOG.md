@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.35.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.34.1...v2.35.0) (2022-03-12)
+
+
+### Features
+
+* Made it clear that we stand with Ukraine ([2d32d84](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2d32d84a3483bb2eb66f37b33cab13fba0d96adc))
+
 ### [2.34.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.34.0...v2.34.1) (2022-02-23)
 
 
