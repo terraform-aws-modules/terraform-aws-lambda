@@ -27,6 +27,8 @@ resource "docker_registry_image" "this" {
     dockerfile = var.docker_file_path
     build_args = var.build_args
   }
+
+  keep_remotely = var.keep_remotely
 }
 
 resource "aws_ecr_repository" "this" {
