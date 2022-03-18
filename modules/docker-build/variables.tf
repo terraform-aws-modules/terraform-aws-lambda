@@ -66,7 +66,7 @@ variable "ecr_repo_lifecycle_policy" {
 }
 
 variable "keep_remotely" {
-  description = "If `true`, then the Docker image won't be deleted on destroy operation. If this is `false`, it will delete the image from the docker registry on destroy operation. Defaults to `false`."
+  description = "Whether to keep Docker image in the remote registry on destroy operation."
   type        = bool
   default     = false
 }
