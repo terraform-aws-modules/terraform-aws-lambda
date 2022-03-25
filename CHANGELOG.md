@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [2.35.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.35.0...v2.35.1) (2022-03-18)
+
+
+### Bug Fixes
+
+* Added support for keep_remotely in docker-build submodule ([#284](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/284)) ([db34260](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/db34260a1685333fa1f491b77f4564033c29729b))
+
 ## [2.35.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.34.1...v2.35.0) (2022-03-12)
 
 
