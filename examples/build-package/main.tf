@@ -233,7 +233,7 @@ module "package_dir_with_npm_install" {
   source_path = "${path.module}/../fixtures/nodejs14.x-app1"
 }
 
-# Create zip-archive of a single directory without running "pip install" (which is default for python runtime)
+# Create zip-archive of a single directory without running "npm install" (which is the default for nodejs runtime)
 module "package_dir_without_npm_install" {
   source = "../../"
 
