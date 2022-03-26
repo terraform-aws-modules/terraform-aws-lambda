@@ -660,6 +660,18 @@ class BuildPlanManager:
                 step('pip', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
+        def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
+            requirements = path
+            if os.path.isdir(path):
+                requirements = os.path.join(path, 'package.json')
+            if not os.path.isfile(requirements):
+                if required:
+                    raise RuntimeError(
+                        'File not found: {}'.format(requirements))
+            else:
+                step('npm', runtime, requirements, prefix, tmp_dir)
+                hash(requirements)
+
         def commands_step(path, commands):
             if not commands:
                 return
@@ -717,6 +729,9 @@ class BuildPlanManager:
                 if runtime.startswith('python'):
                     pip_requirements_step(
                         os.path.join(path, 'requirements.txt'))
+                elif runtime.startswith('nodejs'):
+                    npm_requirements_step(
+                        os.path.join(path, 'package.json'))
                 step('zip', path, None)
                 hash(path)
 
@@ -731,6 +746,7 @@ class BuildPlanManager:
                 else:
                     prefix = claim.get('prefix_in_zip')
                     pip_requirements = claim.get('pip_requirements')
+                    npm_requirements = claim.get('npm_package_json')
                     runtime = claim.get('runtime', query.runtime)
 
                     if pip_requirements and runtime.startswith('python'):
@@ -739,6 +755,13 @@ class BuildPlanManager:
                         else:
                             pip_requirements_step(pip_requirements, prefix,
                                                   required=True, tmp_dir=claim.get('pip_tmp_dir'))
+
+                    if npm_requirements and runtime.startswith('nodejs'):
+                        if isinstance(npm_requirements, bool) and path:
+                            npm_requirements_step(path, prefix, required=True, tmp_dir=claim.get('npm_tmp_dir'))
+                        else:
+                            npm_requirements_step(npm_requirements, prefix,
+                                                  required=True, tmp_dir=claim.get('npm_tmp_dir'))
 
                     if path:
                         step('zip', path, prefix)
@@ -786,6 +809,16 @@ class BuildPlanManager:
             elif cmd == 'pip':
                 runtime, pip_requirements, prefix, tmp_dir = action[1:]
                 with install_pip_requirements(query, pip_requirements, tmp_dir) as rd:
+                    if rd:
+                        if pf:
+                            self._zip_write_with_filter(zs, pf, rd, prefix,
+                                                        timestamp=0)
+                        else:
+                            # XXX: timestamp=0 - what actually do with it?
+                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
+            elif cmd == 'npm':
+                runtime, npm_requirements, prefix, tmp_dir = action[1:]
+                with install_npm_requirements(query, npm_requirements, tmp_dir) as rd:
                     if rd:
                         if pf:
                             self._zip_write_with_filter(zs, pf, rd, prefix,
@@ -934,6 +967,89 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
             yield temp_dir
 
 
+@contextmanager
+def install_npm_requirements(query, requirements_file, tmp_dir):
+    # TODO:
+    #  1. Emit files instead of temp_dir
+
+    if not os.path.exists(requirements_file):
+        yield
+        return
+
+    runtime = query.runtime
+    artifacts_dir = query.artifacts_dir
+    temp_dir = query.temp_dir
+    docker = query.docker
+    docker_image_tag_id = None
+
+    if docker:
+        docker_file = docker.docker_file
+        docker_image = docker.docker_image
+        docker_build_root = docker.docker_build_root
+
+        if docker_image:
+            ok = False
+            while True:
+                output = check_output(docker_image_id_command(docker_image))
+                if output:
+                    docker_image_tag_id = output.decode().strip()
+                    log.debug("DOCKER TAG ID: %s -> %s",
+                              docker_image, docker_image_tag_id)
+                    ok = True
+                if ok:
+                    break
+                docker_cmd = docker_build_command(
+                    build_root=docker_build_root,
+                    docker_file=docker_file,
+                    tag=docker_image,
+                )
+                check_call(docker_cmd)
+                ok = True
+        elif docker_file or docker_build_root:
+            raise ValueError('docker_image must be specified '
+                             'for a custom image future references')
+
+    log.info('Installing npm requirements: %s', requirements_file)
+    with tempdir(tmp_dir) as temp_dir:
+        requirements_filename = os.path.basename(requirements_file)
+        target_file = os.path.join(temp_dir, requirements_filename)
+        shutil.copyfile(requirements_file, target_file)
+
+        subproc_env = None
+        if not docker and OSX:
+            subproc_env = os.environ.copy()
+
+        # Install dependencies into the temporary directory.
+        with cd(temp_dir):
+            npm_command = ['npm', 'install']
+            if docker:
+                with_ssh_agent = docker.with_ssh_agent
+                chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
+                shell_command = [shlex_join(npm_command), '&&',
+                                    shlex_join(['chown', '-R',
+                                                chown_mask, '.'])]
+                shell_command = [' '.join(shell_command)]
+                check_call(docker_run_command(
+                    '.', shell_command, runtime,
+                    image=docker_image_tag_id,
+                    shell=True, ssh_agent=with_ssh_agent
+                ))
+            else:
+                cmd_log.info(shlex_join(npm_command))
+                log_handler and log_handler.flush()
+                try:
+                    check_call(npm_command, env=subproc_env)
+                except FileNotFoundError as e:
+                    raise RuntimeError(
+                        "Nodejs interpreter version equal "
+                        "to defined lambda runtime ({}) should be "
+                        "available in system PATH".format(runtime)
+                    ) from e
+
+            os.remove(target_file)
+            yield temp_dir
+
+
 def docker_image_id_command(tag):
     """"""
     docker_cmd = ['docker', 'images', '--format={{.ID}}', tag]
@@ -1011,7 +1127,7 @@ def docker_run_command(build_root, command, runtime,
             ])
 
     if not image:
-        image = 'lambci/lambda:build-{}'.format(runtime)
+        image = 'public.ecr.aws/sam/build-{}'.format(runtime)
 
     docker_cmd.append(image)
 
@@ -1128,7 +1244,7 @@ def prepare_command(args):
 def build_command(args):
     """
     Builds a zip file from the source_dir or source_file.
-    Installs dependencies with pip automatically.
+    Installs dependencies with pip or npm automatically.
     """
 
     log = logging.getLogger('build')
