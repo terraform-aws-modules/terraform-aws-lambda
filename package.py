@@ -660,7 +660,7 @@ class BuildPlanManager:
                 step('pip', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
-        def npm_requirements_step(path, prefix=None, required=False):
+        def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, 'package.json')
@@ -669,7 +669,7 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                step('npm', runtime, requirements, prefix, None)
+                step('npm', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
         def commands_step(path, commands):
