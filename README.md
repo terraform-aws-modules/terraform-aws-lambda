@@ -431,7 +431,7 @@ source_path = [
 
 *Few notes:*
 
-- If you specify a source path as a string that references a folder and the runtime is either python or nodejs, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
+- If you specify a source path as a string that references a folder and the runtime begins with `python` or `nodejs`, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
 - All arguments except `path` are optional.
 - `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
 
@@ -463,7 +463,7 @@ If your Lambda Function or Layer uses some dependencies you can build them in Do
     build_in_docker   = true
     docker_file       = "src/python3.8-app1/docker/Dockerfile"
     docker_build_root = "src/python3.8-app1/docker"
-    docker_image      = "lambci/lambda:build-python3.8"
+    docker_image      = "public.ecr.aws/sam/build-python3.8"
     runtime           = "python3.8"    # Setting runtime is required when building package in Docker and Lambda Layer resource.
 
 Using this module you can install dependencies from private hosts. To do this, you need for forward SSH agent:

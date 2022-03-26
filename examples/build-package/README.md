@@ -45,7 +45,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_file_with_pip_requirements"></a> [package\_file\_with\_pip\_requirements](#module\_package\_file\_with\_pip\_requirements) | ../../ | n/a |
 | <a name="module_package_with_commands_and_patterns"></a> [package\_with\_commands\_and\_patterns](#module\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
 | <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ | n/a |
-| <a name="module_package_with_npm_requirements_in_docker"></a> [package\_with\_npm\_requirements\_in_docker](#module\_package\_with\_npm\_requirements\_in_docker) | ../../ | n/a |
+| <a name="module_package_with_npm_requirements_in_docker"></a> [package\_with\_npm\_requirements\_in\_docker](#module\_package\_with\_npm\_requirements\_in\_docker) | ../../ | n/a |
 | <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
 | <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ | n/a |
 
