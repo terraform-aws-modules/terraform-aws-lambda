@@ -18,10 +18,10 @@ module "lambda_function" {
 
   publish = true
 
-  function_name     = "${random_pet.this.id}-lambda-ephemeral-stoage"
-  handler           = "index.lambda_handler"
-  runtime           = "python3.8"
-  ephemeral_storage = 10240
+  function_name          = "${random_pet.this.id}-lambda-ephemeral-stoage"
+  handler                = "index.lambda_handler"
+  runtime                = "python3.8"
+  ephemeral_storage_size = 10240
 
 }
 
