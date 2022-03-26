@@ -223,6 +223,44 @@ module "package_with_docker" {
   docker_image      = "lambci/lambda:build-python3.8"
 }
 
+# Create zip-archive of a single directory where "npm install" will also be executed (default for nodejs runtime)
+module "package_dir_with_npm_install" {
+  source = "../../"
+
+  create_function = false
+
+  runtime     = "nodejs14.x"
+  source_path = "${path.module}/../fixtures/nodejs14.x-app1"
+}
+
+# Create zip-archive of a single directory without running "pip install" (which is default for python runtime)
+module "package_dir_without_npm_install" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "nodejs14.x"
+  source_path = [
+    {
+      path             = "${path.module}/../fixtures/nodejs14.x-app1"
+      npm_requirements = false
+      # npm_requirements = true  # Will run "npm install" with default requirements.txt
+    }
+  ]
+}
+
+# Create zip-archive of a single directory where "npm install" will also be executed using docker
+module "package_with_npm_requirements_in_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime         = "nodejs14.x"
+  source_path     = "${path.module}/../fixtures/nodejs14.x-app1"
+  build_in_docker = true
+  hash_extra      = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
+}
+
 ################################
 # Build package in Docker and
 # use it to deploy Lambda Layer

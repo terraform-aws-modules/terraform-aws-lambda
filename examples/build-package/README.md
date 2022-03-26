@@ -45,6 +45,9 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ | n/a |
 | <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
 | <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ | n/a |
+| <a name="module_package_dir_with_npm_install"></a> [package\_dir\_with\_npm\_install](#module\_package\_dir\_with\_npm\_install) | ../../ | n/a |
+| <a name="module_package_dir_without_npm_install"></a> [package\_dir\_without\_npm\_install](#module\_package\_dir\_without\_npm\_install) | ../../ | n/a |
+| <a name="module_package_with_npm_requirements_in_docker"></a> [package\_with\_npm\_requirements\_in_docker](#module\_package\_with\_npm\_requirements\_in_docker) | ../../ | n/a |
 
 ## Resources
 

@@ -429,8 +429,9 @@ source_path = [
 ]
 ```
 
-Few notes:
+*Few notes:*
 
+- If you specify a source path as a string that references a folder and the runtime is either python or nodejs, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
 - All arguments except `path` are optional.
 - `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
 
@@ -447,10 +448,12 @@ Few notes:
     !abc/def/hgk/.*    # Filter out again in abc/def/hgk sub folder
 ```
 
-- `commands` - List of commands to run. If specified, this argument overrides `pip_requirements`.
+- `commands` - List of commands to run. If specified, this argument overrides `pip_requirements` and `npm_requirements`.
   - `:zip [source] [destination]` is a special command which creates content of current working directory (first argument) and places it inside of path (second argument).
 - `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
 - `pip_tmp_dir` - Set the base directory to make the temporary directory for pip installs. Can be useful for Docker in Docker builds.
+- `npm_requirements` - Controls whether to execute `npm install`. Set to `false` to disable this feature, `true` to run `npm install` with `package.json` found in `path`. Or set to another filename which you want to use instead.
+- `npm_tmp_dir` - Set the base directory to make the temporary directory for npm installs. Can be useful for Docker in Docker builds.
 - `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
 
 ### Building in Docker
