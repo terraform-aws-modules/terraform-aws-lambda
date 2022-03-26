@@ -404,6 +404,11 @@ source_path = [
       "!vendor/colorful/__pycache__/?.*",
     ]
   }, {
+    path             = "src/nodejs14.x-app1",
+    npm_requirements = true,
+    nom_tmp_dir      = "/tmp/dir/location"
+    prefix_in_zip    = "foo/bar1",
+  }, {
     path     = "src/python3.8-app3",
     commands = [
       "npm install",
