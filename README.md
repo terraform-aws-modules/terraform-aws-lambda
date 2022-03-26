@@ -148,7 +148,7 @@ resource "aws_s3_bucket" "builds" {
   acl    = "private"
 }
 
-resource "aws_s3_bucket_object" "my_function" {
+resource "aws_s3_object" "my_function" {
   bucket = aws_s3_bucket.builds.id
   key    = "${filemd5(local.my_function_source)}.zip"
   source = local.my_function_source
@@ -165,7 +165,7 @@ module "lambda_function_existing_package_s3" {
   create_package      = false
   s3_existing_package = {
     bucket = aws_s3_bucket.builds.id
-    key    = aws_s3_bucket_object.my_function.id
+    key    = aws_s3_object.my_function.id
   }
 }
 ```
@@ -643,7 +643,7 @@ No modules.
 | [aws_lambda_permission.current_version_triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_lambda_permission.unqualified_alias_triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_lambda_provisioned_concurrency_config.current_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_provisioned_concurrency_config) | resource |
-| [aws_s3_bucket_object.lambda_package](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object) | resource |
+| [aws_s3_object.lambda_package](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
 | [local_file.archive_plan](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [null_resource.archive](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_arn.log_group_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/arn) | data source |
