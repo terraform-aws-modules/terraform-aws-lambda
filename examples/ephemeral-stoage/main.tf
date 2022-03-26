@@ -24,4 +24,3 @@ module "lambda_function" {
   ephemeral_storage_size = 10240
 
 }
-
