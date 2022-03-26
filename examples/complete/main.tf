@@ -17,12 +17,13 @@ provider "aws" {
 module "lambda_function" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda1"
-  description   = "My awesome lambda function"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-  architectures = ["x86_64"]
-  publish       = true
+  function_name          = "${random_pet.this.id}-lambda1"
+  description            = "My awesome lambda function"
+  handler                = "index.lambda_handler"
+  runtime                = "python3.8"
+  ephemeral_storage_size = 10240
+  architectures          = ["x86_64"]
+  publish                = true
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
