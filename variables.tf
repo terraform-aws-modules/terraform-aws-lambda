@@ -28,6 +28,12 @@ variable "create_role" {
   default     = true
 }
 
+variable "putin_khuylo" {
+  description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
+  type        = bool
+  default     = true
+}
+
 ###########
 # Function
 ###########
@@ -95,6 +101,12 @@ variable "memory_size" {
   description = "Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments."
   type        = number
   default     = 128
+}
+
+variable "ephemeral_storage_size" {
+  description = "Amount of ephemeral storage (/tmp) in MB your Lambda Function can use at runtime. Valid value between 512 MB to 10,240 MB (10 GB)."
+  type        = number
+  default     = 512
 }
 
 variable "publish" {

@@ -220,7 +220,45 @@ module "package_with_docker" {
   docker_with_ssh_agent = true
   #  docker_file           = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
   docker_build_root = "${path.module}/../../docker"
-  docker_image      = "lambci/lambda:build-python3.8"
+  docker_image      = "public.ecr.aws/sam/build-python3.8"
+}
+
+# Create zip-archive of a single directory where "npm install" will also be executed (default for nodejs runtime)
+module "package_dir_with_npm_install" {
+  source = "../../"
+
+  create_function = false
+
+  runtime     = "nodejs14.x"
+  source_path = "${path.module}/../fixtures/nodejs14.x-app1"
+}
+
+# Create zip-archive of a single directory without running "npm install" (which is the default for nodejs runtime)
+module "package_dir_without_npm_install" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "nodejs14.x"
+  source_path = [
+    {
+      path             = "${path.module}/../fixtures/nodejs14.x-app1"
+      npm_requirements = false
+      # npm_requirements = true  # Will run "npm install" with package.json
+    }
+  ]
+}
+
+# Create zip-archive of a single directory where "npm install" will also be executed using docker
+module "package_with_npm_requirements_in_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime         = "nodejs14.x"
+  source_path     = "${path.module}/../fixtures/nodejs14.x-app1"
+  build_in_docker = true
+  hash_extra      = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
 }
 
 ################################
@@ -240,6 +278,7 @@ module "lambda_layer" {
 
   build_in_docker = true
   runtime         = "python3.8"
+  docker_image    = "public.ecr.aws/sam/build-python3.8"
   docker_file     = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
 }
 

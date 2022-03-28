@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.36.0...v3.0.0) (2022-03-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* Updated AWS provider to version 4.8 (#296)
+
+### Features
+
+* Added support for ephemeral storage (requires AWS provider version 4.8.0) ([#291](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/291)) ([f191bae](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f191baea053e126fc6b83a2ea4d6988c4f47ebde))
+* Updated AWS provider to version 4.8 ([#296](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/296)) ([d4b55a8](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/d4b55a8bb142a7124f4cd910d68a631d9658260e)), closes [#291](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/291)
+
+## [2.36.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.35.1...v2.36.0) (2022-03-26)
+
+
+### Features
+
+* Add support to build automatically npm dependencies ([#293](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/293)) ([ecb3807](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/ecb38076b0408982183ebb8070aff7c7e01c4b82))
+
+### [2.35.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.35.0...v2.35.1) (2022-03-18)
+
+
+### Bug Fixes
+
+* Added support for keep_remotely in docker-build submodule ([#284](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/284)) ([db34260](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/db34260a1685333fa1f491b77f4564033c29729b))
+
+## [2.35.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.34.1...v2.35.0) (2022-03-12)
+
+
+### Features
+
+* Made it clear that we stand with Ukraine ([2d32d84](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2d32d84a3483bb2eb66f37b33cab13fba0d96adc))
+
 ### [2.34.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.34.0...v2.34.1) (2022-02-23)
 
 
