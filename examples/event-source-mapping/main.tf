@@ -63,35 +63,32 @@ module "lambda_function" {
         }
       ]
     }
-    # self_managed_kafka = {
-    #   batch_size        = 1
-    #   starting_position = "TRIM_HORIZON"
-    #   topics = [
-    #     var.topic_name
-    #   ]
-    #   self_managed_event_source = [
-    #     {
-    #       endpoints = {
-    #         KAFKA_BOOTSTRAP_SERVERS = data.aws_msk_cluster.kafka.bootstrap_brokers_sasl_scram
-    #       }
-    #     }
-    #   ]
-    #   source_access_configuration = concat([
-    #     {
-    #       type = "SASL_SCRAM_512_AUTH",
-    #       uri  = data.aws_secretsmanager_secret.kafka_scram_sasl.arn
-    #     },
-    #     {
-    #       type = "VPC_SECURITY_GROUP",
-    #       uri  = "security_group:${security_group_id}"
-    #     }
-    #     ], [for subnet in data.aws_subnet.vpc_lambda_subnets :
-    #     {
-    #       type = "VPC_SUBNET"
-    #       uri  = "subnet:${subnet.id}"
-    #     }
-    #   ])
-    # }
+    #    self_managed_kafka = {
+    #      batch_size        = 1
+    #      starting_position = "TRIM_HORIZON"
+    #      topics            = ["topic1", "topic2"]
+    #      self_managed_event_source = [
+    #        {
+    #          endpoints = {
+    #            KAFKA_BOOTSTRAP_SERVERS = "kafka1.example.com:9092,kafka2.example.com:9092"
+    #          }
+    #        }
+    #      ]
+    #      source_access_configuration = [
+    #        {
+    #          type = "SASL_SCRAM_512_AUTH",
+    #          uri  = "SECRET_AUTH_INFO"
+    #        },
+    #        {
+    #          type = "VPC_SECURITY_GROUP",
+    #          uri  = "security_group:sg-12345678"
+    #        },
+    #        {
+    #          type = "VPC_SUBNET"
+    #          uri  = "subnet:subnet-12345678"
+    #        }
+    #      ]
+    #    }
   }
 
   allowed_triggers = {
