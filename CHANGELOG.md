@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [3.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.0.0...v3.0.1) (2022-03-28)
+
+
+### Bug Fixes
+
+* Removed hard-coded AWS account id in examples ([#275](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/275)) ([5ab1383](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/5ab1383042c1e73ea1a1f709c9a279815ae0cf1a))
+
 ## [3.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.36.0...v3.0.0) (2022-03-28)
 
 
