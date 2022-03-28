@@ -231,7 +231,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 
   function_name = aws_lambda_function.this[0].arn
 
-  event_source_arn = each.value.event_source_arn
+  event_source_arn = try(each.value.event_source_arn, null)
 
   batch_size                         = try(each.value.batch_size, null)
   maximum_batching_window_in_seconds = try(each.value.maximum_batching_window_in_seconds, null)
@@ -252,6 +252,13 @@ resource "aws_lambda_event_source_mapping" "this" {
       on_failure {
         destination_arn = each.value["destination_arn_on_failure"]
       }
+    }
+  }
+
+  dynamic "self_managed_event_source" {
+    for_each = try(each.value.self_managed_event_source, [])
+    content {
+      endpoints = self_managed_event_source.value.endpoints
     }
   }
 
