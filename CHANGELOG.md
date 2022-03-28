@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.0.1...v3.1.0) (2022-03-28)
+
+
+### Features
+
+* Added support for self managed kafka in event source mapping ([#278](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/278)) ([ee41186](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/ee41186b6e8bd04edfb1805b49820a7237f941a8))
+
 ### [3.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.0.0...v3.0.1) (2022-03-28)
 
 
