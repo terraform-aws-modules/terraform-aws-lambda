@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.37.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.36.0...v2.37.0) (2022-03-28)
+
+
+### Features
+
+* Added support for ephemeral storage (requires AWS provider version 4.8.0) ([#291](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/291)) ([f191bae](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f191baea053e126fc6b83a2ea4d6988c4f47ebde))
+* Updated AWS provider to version 4.8 ([#294](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/294)) ([79d3fdd](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/79d3fddce3e9cdfac64193818ad514941eb1f3d9))
+
 ## [2.37.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v2.36.0...v2.37.0) (2022-03-26)
 
 
