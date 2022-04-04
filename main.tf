@@ -101,6 +101,10 @@ resource "aws_lambda_function" "this" {
   # Without the dependency, this can result in a race condition if the lambda function is invoked before
   # Terraform can create the log group.
   depends_on = [null_resource.archive, aws_s3_object.lambda_package, aws_cloudwatch_log_group.lambda]
+
+  lifecycle {
+    ignore_changes = ["image_uri"]
+  }
 }
 
 resource "aws_lambda_layer_version" "this" {
