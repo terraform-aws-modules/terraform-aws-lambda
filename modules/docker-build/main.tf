@@ -41,7 +41,7 @@ resource "aws_ecr_repository" "this" {
     scan_on_push = var.scan_on_push
   }
 
-  tags = var.ecr_repo_tags
+  tags = var.tags
 }
 
 resource "aws_ecr_lifecycle_policy" "this" {

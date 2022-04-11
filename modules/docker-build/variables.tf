@@ -70,3 +70,9 @@ variable "keep_remotely" {
   type        = bool
   default     = false
 }
+
+variable "tags" {
+  description = "A map of tags to assign to ECR repository"
+  type        = map(string)
+  default     = {}
+}
