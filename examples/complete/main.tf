@@ -9,6 +9,8 @@ provider "aws" {
   skip_requesting_account_id  = true
 }
 
+data "aws_caller_identity" "current" {}
+
 ####################################################
 # Lambda Function (building locally, storing on S3,
 # set allowed triggers, set policies)
@@ -17,12 +19,13 @@ provider "aws" {
 module "lambda_function" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda1"
-  description   = "My awesome lambda function"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-  architectures = ["x86_64"]
-  publish       = true
+  function_name          = "${random_pet.this.id}-lambda1"
+  description            = "My awesome lambda function"
+  handler                = "index.lambda_handler"
+  runtime                = "python3.8"
+  ephemeral_storage_size = 10240
+  architectures          = ["x86_64"]
+  publish                = true
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
@@ -51,15 +54,15 @@ module "lambda_function" {
   allowed_triggers = {
     APIGatewayAny = {
       service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
+      source_arn = "arn:aws:execute-api:eu-west-1:${data.aws_caller_identity.current.account_id}:aqnku8akd0/*/*/*"
     },
     APIGatewayDevPost = {
       service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/dev/POST/*"
+      source_arn = "arn:aws:execute-api:eu-west-1:${data.aws_caller_identity.current.account_id}:aqnku8akd0/dev/POST/*"
     },
     OneRule = {
       principal  = "events.amazonaws.com"
-      source_arn = "arn:aws:events:eu-west-1:135367859851:rule/RunDaily"
+      source_arn = "arn:aws:events:eu-west-1:${data.aws_caller_identity.current.account_id}:rule/RunDaily"
     }
   }
 
@@ -74,7 +77,7 @@ module "lambda_function" {
       principals = {
         account_principal = {
           type        = "AWS",
-          identifiers = ["arn:aws:iam::135367859851:root"]
+          identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
         }
       }
       condition = {
