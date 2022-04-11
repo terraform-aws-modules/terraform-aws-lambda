@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+### Feature
+
+* Updated tags for aws_ecr_repository([#276](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/276) 
+([9a47](https://github.com/terraform-aws-modules/terraform-aws-lambda/pull/302/commits/9a475692752260401c3c597e77f0c1e9d5df0311))
+
+
 ## [3.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.0.1...v3.1.0) (2022-03-28)
 
 
