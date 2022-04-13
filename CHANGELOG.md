@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [3.1.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.1.0...v3.1.1) (2022-04-13)
+
+
+### Bug Fixes
+
+* Fixed ephemeral_storage in AWS govcloud region ([#305](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/305)) ([13c4449](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/13c444905e18fa9eceffd07ee884251eb28a8fd5))
+
 ## [3.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.0.1...v3.1.0) (2022-03-28)
 
 
