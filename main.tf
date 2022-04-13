@@ -37,8 +37,13 @@ resource "aws_lambda_function" "this" {
   package_type                   = var.package_type
   architectures                  = var.architectures
 
-  ephemeral_storage {
-    size = var.ephemeral_storage_size
+  /* ephemeral_storage is not supported in gov-cloud region, so it should be set to `null` */
+  dynamic "ephemeral_storage" {
+    for_each = var.ephemeral_storage_size == null ? [] : [true]
+
+    content {
+      size = var.ephemeral_storage_size
+    }
   }
 
   filename         = local.filename
