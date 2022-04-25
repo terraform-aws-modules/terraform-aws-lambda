@@ -36,9 +36,10 @@ module "lambda_function" {
 
   publish = true
 
-  function_name = "${random_pet.this.id}-lambda-simple"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  function_name              = "${random_pet.this.id}-lambda-simple"
+  handler                    = "index.lambda_handler"
+  runtime                    = "python3.8"
+  create_lambda_function_url = true
 
   #  attach_cloudwatch_logs_policy = false
 
