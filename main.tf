@@ -287,7 +287,22 @@ resource "aws_lambda_event_source_mapping" "this" {
 }
 
 resource "aws_lambda_function_url" "this" {
-  count              = local.create && var.create_lambda_function_url
+  count = local.create && var.create_lambda_function_url
+
   function_name      = aws_lambda_function.this.function_name
-  authorization_type = "NONE"
+  qualifier          = aws_lambda_function.this.version
+  authorization_type = var.authorization_type
+
+  dynamic "cors" {
+    for_each = var.cors == null ? [] : [true]
+
+    content {
+      allow_credentials = lookup(var.cors, allow_credentials, true)
+      allow_origins     = lookup(var.cors, allow_origins, ["*"])
+      allow_methods     = lookup(var.cors, allow_methods, ["*"])
+      allow_headers     = lookup(var.cors, allow_headers, ["date", "keep-alive"])
+      expose_headers    = lookup(var.cors, expose_headers, ["keep-alive", "date"])
+      max_age           = lookup(var.cors, expose_headers, 86400)
+    }
+  }
 }

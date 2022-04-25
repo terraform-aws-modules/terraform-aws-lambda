@@ -211,6 +211,25 @@ variable "image_config_working_directory" {
   default     = null
 }
 
+variable "authorization_type" {
+  description = "The type of authentication that the function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint."
+  type        = string
+  default     = "NONE"
+}
+
+variable "cors" {
+  description = "CORS settings to be used by the Lambda Function URL"
+  type = map(object({
+    allow_credentials = bool
+    allow_origins     = list(string)
+    allow_methods     = list(string)
+    allow_headers     = list(string)
+    expose_headers    = list(string)
+    max_age           = number
+  }))
+  default = {}
+}
+
 ########
 # Layer
 ########
