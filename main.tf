@@ -285,3 +285,9 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 }
+
+resource "aws_lambda_function_url" "this" {
+  count              = local.create && var.create_lambda_function_url
+  function_name      = aws_lambda_function.this.function_name
+  authorization_type = "NONE"
+}
