@@ -294,15 +294,15 @@ resource "aws_lambda_function_url" "this" {
   authorization_type = var.authorization_type
 
   dynamic "cors" {
-    for_each = var.cors == null ? [] : [true]
+    for_each = length(keys(var.cors)) == 0 ? [] : [var.cors]
 
     content {
-      allow_credentials = lookup(var.cors, allow_credentials)
-      allow_origins     = lookup(var.cors, allow_origins)
-      allow_methods     = lookup(var.cors, allow_methods)
-      allow_headers     = lookup(var.cors, allow_headers)
-      expose_headers    = lookup(var.cors, expose_headers)
-      max_age           = lookup(var.cors, expose_headers)
+      allow_credentials = try(cors.value.allow_credentials, null)
+      allow_headers     = try(cors.value.allow_headers, null)
+      allow_methods     = try(cors.value.allow_methods, null)
+      allow_origins     = try(cors.value.allow_origins, null)
+      expose_headers    = try(cors.value.expose_headers, null)
+      max_age           = try(cors.value.max_age, null)
     }
   }
 }
