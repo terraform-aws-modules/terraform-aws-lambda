@@ -211,6 +211,16 @@ variable "image_config_working_directory" {
   default     = null
 }
 
+###############
+# Function URL
+###############
+
+variable "create_unqualified_alias_lambda_function_url" {
+  description = "Whether to use unqualified alias pointing to $LATEST version in Lambda Function URL"
+  type        = bool
+  default     = true
+}
+
 variable "authorization_type" {
   description = "The type of authentication that the Lambda Function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint."
   type        = string

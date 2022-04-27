@@ -66,6 +66,9 @@ module "lambda_function" {
     }
   }
 
+  ######################
+  # Lambda Function URL
+  ######################
   create_lambda_function_url = true
   authorization_type         = "AWS_IAM"
   cors = {
