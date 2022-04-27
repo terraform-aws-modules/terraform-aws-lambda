@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.1.1...v3.2.0) (2022-04-27)
+
+
+### Features
+
+* Add support for Lambda Function URL resource ([#308](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/308)) ([c239f9d](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/c239f9d722c8c68cb5d43f96f108540c1b99f95b))
+
 ### [3.1.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.1.0...v3.1.1) (2022-04-13)
 
 
