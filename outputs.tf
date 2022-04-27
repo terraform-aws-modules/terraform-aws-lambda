@@ -44,6 +44,17 @@ output "lambda_function_source_code_size" {
   value       = try(aws_lambda_function.this[0].source_code_size, "")
 }
 
+# Lambda Function URL
+output "lambda_function_url" {
+  description = "The URL of the Lambda Function URL"
+  value       = try(aws_lambda_function_url.this[0].function_url, "")
+}
+
+output "lambda_function_url_id" {
+  description = "The Lambda Function URL generated id"
+  value       = try(aws_lambda_function_url.this[0].url_id, "")
+}
+
 # Lambda Layer
 output "lambda_layer_arn" {
   description = "The ARN of the Lambda Layer with version"
