@@ -29,7 +29,7 @@ variable "create_role" {
 }
 
 variable "create_lambda_function_url" {
-  description = "Controls where the Lambda Function URL resource should be created"
+  description = "Controls whether the Lambda Function URL resource should be created"
   type        = bool
   default     = false
 }
@@ -212,7 +212,7 @@ variable "image_config_working_directory" {
 }
 
 variable "authorization_type" {
-  description = "The type of authentication that the function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint."
+  description = "The type of authentication that the Lambda Function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint."
   type        = string
   default     = "NONE"
 }

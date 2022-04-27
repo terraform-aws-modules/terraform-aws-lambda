@@ -287,7 +287,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 }
 
 resource "aws_lambda_function_url" "this" {
-  count = local.create && var.create_lambda_function_url ? 1 : 0
+  count = local.create && var.create_function && !var.create_layer && var.create_lambda_function_url ? 1 : 0
 
   function_name      = aws_lambda_function.this[0].function_name
   qualifier          = aws_lambda_function.this[0].version
