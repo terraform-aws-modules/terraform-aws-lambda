@@ -64,3 +64,9 @@ variable "ecr_repo_lifecycle_policy" {
   type        = string
   default     = null
 }
+
+variable "keep_remotely" {
+  description = "Whether to keep Docker image in the remote registry on destroy operation."
+  type        = bool
+  default     = false
+}

@@ -13,9 +13,9 @@ locals {
   was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : local.archive_was_missing
 
   # s3_* - to get package from S3
-  s3_bucket         = var.s3_existing_package != null ? lookup(var.s3_existing_package, "bucket", null) : (var.store_on_s3 ? var.s3_bucket : null)
-  s3_key            = var.s3_existing_package != null ? lookup(var.s3_existing_package, "key", null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
-  s3_object_version = var.s3_existing_package != null ? lookup(var.s3_existing_package, "version_id", null) : (var.store_on_s3 ? try(aws_s3_bucket_object.lambda_package[0].version_id, null) : null)
+  s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
+  s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
+  s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 
 }
 
@@ -36,6 +36,15 @@ resource "aws_lambda_function" "this" {
   image_uri                      = var.image_uri
   package_type                   = var.package_type
   architectures                  = var.architectures
+
+  /* ephemeral_storage is not supported in gov-cloud region, so it should be set to `null` */
+  dynamic "ephemeral_storage" {
+    for_each = var.ephemeral_storage_size == null ? [] : [true]
+
+    content {
+      size = var.ephemeral_storage_size
+    }
+  }
 
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
@@ -96,7 +105,7 @@ resource "aws_lambda_function" "this" {
   # When a lambda function is invoked, AWS creates the log group automatically if it doesn't exist yet.
   # Without the dependency, this can result in a race condition if the lambda function is invoked before
   # Terraform can create the log group.
-  depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package, aws_cloudwatch_log_group.lambda]
+  depends_on = [null_resource.archive, aws_s3_object.lambda_package, aws_cloudwatch_log_group.lambda]
 }
 
 resource "aws_lambda_layer_version" "this" {
@@ -117,10 +126,10 @@ resource "aws_lambda_layer_version" "this" {
   s3_key            = local.s3_key
   s3_object_version = local.s3_object_version
 
-  depends_on = [null_resource.archive, aws_s3_bucket_object.lambda_package]
+  depends_on = [null_resource.archive, aws_s3_object.lambda_package]
 }
 
-resource "aws_s3_bucket_object" "lambda_package" {
+resource "aws_s3_object" "lambda_package" {
   count = local.create && var.store_on_s3 && var.create_package ? 1 : 0
 
   bucket        = var.s3_bucket
@@ -200,12 +209,12 @@ resource "aws_lambda_permission" "current_version_triggers" {
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
 
-  statement_id       = lookup(each.value, "statement_id", each.key)
-  action             = lookup(each.value, "action", "lambda:InvokeFunction")
-  principal          = lookup(each.value, "principal", format("%s.amazonaws.com", lookup(each.value, "service", "")))
-  source_arn         = lookup(each.value, "source_arn", null)
-  source_account     = lookup(each.value, "source_account", null)
-  event_source_token = lookup(each.value, "event_source_token", null)
+  statement_id       = try(each.value.statement_id, each.key)
+  action             = try(each.value.action, "lambda:InvokeFunction")
+  principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  source_arn         = try(each.value.source_arn, null)
+  source_account     = try(each.value.source_account, null)
+  event_source_token = try(each.value.event_source_token, null)
 }
 
 # Error: Error adding new Lambda Permission for lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
@@ -214,12 +223,12 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 
   function_name = aws_lambda_function.this[0].function_name
 
-  statement_id       = lookup(each.value, "statement_id", each.key)
-  action             = lookup(each.value, "action", "lambda:InvokeFunction")
-  principal          = lookup(each.value, "principal", format("%s.amazonaws.com", lookup(each.value, "service", "")))
-  source_arn         = lookup(each.value, "source_arn", null)
-  source_account     = lookup(each.value, "source_account", null)
-  event_source_token = lookup(each.value, "event_source_token", null)
+  statement_id       = try(each.value.statement_id, each.key)
+  action             = try(each.value.action, "lambda:InvokeFunction")
+  principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  source_arn         = try(each.value.source_arn, null)
+  source_account     = try(each.value.source_account, null)
+  event_source_token = try(each.value.event_source_token, null)
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
@@ -227,23 +236,23 @@ resource "aws_lambda_event_source_mapping" "this" {
 
   function_name = aws_lambda_function.this[0].arn
 
-  event_source_arn = each.value.event_source_arn
+  event_source_arn = try(each.value.event_source_arn, null)
 
-  batch_size                         = lookup(each.value, "batch_size", null)
-  maximum_batching_window_in_seconds = lookup(each.value, "maximum_batching_window_in_seconds", null)
-  enabled                            = lookup(each.value, "enabled", null)
-  starting_position                  = lookup(each.value, "starting_position", null)
-  starting_position_timestamp        = lookup(each.value, "starting_position_timestamp", null)
-  parallelization_factor             = lookup(each.value, "parallelization_factor", null)
-  maximum_retry_attempts             = lookup(each.value, "maximum_retry_attempts", null)
-  maximum_record_age_in_seconds      = lookup(each.value, "maximum_record_age_in_seconds", null)
-  bisect_batch_on_function_error     = lookup(each.value, "bisect_batch_on_function_error", null)
-  topics                             = lookup(each.value, "topics", null)
-  queues                             = lookup(each.value, "queues", null)
-  function_response_types            = lookup(each.value, "function_response_types", null)
+  batch_size                         = try(each.value.batch_size, null)
+  maximum_batching_window_in_seconds = try(each.value.maximum_batching_window_in_seconds, null)
+  enabled                            = try(each.value.enabled, null)
+  starting_position                  = try(each.value.starting_position, null)
+  starting_position_timestamp        = try(each.value.starting_position_timestamp, null)
+  parallelization_factor             = try(each.value.parallelization_factor, null)
+  maximum_retry_attempts             = try(each.value.maximum_retry_attempts, null)
+  maximum_record_age_in_seconds      = try(each.value.maximum_record_age_in_seconds, null)
+  bisect_batch_on_function_error     = try(each.value.bisect_batch_on_function_error, null)
+  topics                             = try(each.value.topics, null)
+  queues                             = try(each.value.queues, null)
+  function_response_types            = try(each.value.function_response_types, null)
 
   dynamic "destination_config" {
-    for_each = lookup(each.value, "destination_arn_on_failure", null) != null ? [true] : []
+    for_each = try(each.value.destination_arn_on_failure, null) != null ? [true] : []
     content {
       on_failure {
         destination_arn = each.value["destination_arn_on_failure"]
@@ -251,8 +260,15 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
+  dynamic "self_managed_event_source" {
+    for_each = try(each.value.self_managed_event_source, [])
+    content {
+      endpoints = self_managed_event_source.value.endpoints
+    }
+  }
+
   dynamic "source_access_configuration" {
-    for_each = lookup(each.value, "source_access_configuration", [])
+    for_each = try(each.value.source_access_configuration, [])
     content {
       type = source_access_configuration.value["type"]
       uri  = source_access_configuration.value["uri"]
@@ -260,12 +276,35 @@ resource "aws_lambda_event_source_mapping" "this" {
   }
 
   dynamic "filter_criteria" {
-    for_each = lookup(each.value, "filter_criteria", null) != null ? [true] : []
+    for_each = try(each.value.filter_criteria, null) != null ? [true] : []
 
     content {
       filter {
-        pattern = lookup(each.value["filter_criteria"], "pattern", null)
+        pattern = try(each.value["filter_criteria"].pattern, null)
       }
+    }
+  }
+}
+
+resource "aws_lambda_function_url" "this" {
+  count = local.create && var.create_function && !var.create_layer && var.create_lambda_function_url ? 1 : 0
+
+  function_name = aws_lambda_function.this[0].function_name
+
+  # Error: error creating Lambda Function URL: ValidationException
+  qualifier          = var.create_unqualified_alias_lambda_function_url ? null : aws_lambda_function.this[0].version
+  authorization_type = var.authorization_type
+
+  dynamic "cors" {
+    for_each = length(keys(var.cors)) == 0 ? [] : [var.cors]
+
+    content {
+      allow_credentials = try(cors.value.allow_credentials, null)
+      allow_headers     = try(cors.value.allow_headers, null)
+      allow_methods     = try(cors.value.allow_methods, null)
+      allow_origins     = try(cors.value.allow_origins, null)
+      expose_headers    = try(cors.value.expose_headers, null)
+      max_age           = try(cors.value.max_age, null)
     }
   }
 }
