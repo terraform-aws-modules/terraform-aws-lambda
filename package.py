@@ -1066,7 +1066,7 @@ def install_poetry_dependencies(query, path):
 
     working_dir = os.getcwd()
 
-    log.info("Installing python dependencies with poetry: %s", poetry_lock_file)
+    log.info("Installing python dependencies with poetry & pip: %s", poetry_lock_file)
     with tempdir() as temp_dir:
         def copy_file_to_target(file, temp_dir):
             filename = os.path.basename(file)
@@ -1078,6 +1078,7 @@ def install_poetry_dependencies(query, path):
         pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
 
         poetry_exec = "poetry"
+        python_exec = runtime
         subproc_env = None
 
         if not docker:
@@ -1087,12 +1088,13 @@ def install_poetry_dependencies(query, path):
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
             # NOTE: poetry must be available, which is the case with lambci/lambda:build-python* docker images
-            # FIXME: poetry install does not currently allow to specify the target directory so we extract
-            # installed packages from .venv/lib/python*/site-packages
+            # FIXME: poetry install does not currently allow to specify the target directory so we export the 
+            # requirements then install them with pip --no-deps to avoid using pip dependency resolver
             poetry_commands = [
                 shlex_join([ poetry_exec, "config", "--no-interaction", "virtualenvs.create", "true" ]),
                 shlex_join([ poetry_exec, "config", "--no-interaction", "virtualenvs.in-project", "true" ]),
-                shlex_join([ poetry_exec, "install", "--no-interaction" ]),
+                shlex_join([ poetry_exec, "export", "-f", "requirements.txt", "--output", "requirements.txt" ]),
+                shlex_join([ python_exec, '-m', 'pip', 'install', '--no-compile', '--no-deps', '--prefix=', '--target=.','--requirement=requirements.txt']),
             ]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
@@ -1127,11 +1129,10 @@ def install_poetry_dependencies(query, path):
                 for poetry_command in poetry_commands:
                     check_call(poetry_command, env=subproc_env)
 
-            # FIXME: not really needed as only the content of a subdirectory is exposed
             os.remove(poetry_lock_target_file)
             os.remove(pyproject_target_file)
 
-            yield os.path.join(temp_dir, ".venv/lib/", runtime, "site-packages")
+            yield temp_dir
 
 
 @contextmanager

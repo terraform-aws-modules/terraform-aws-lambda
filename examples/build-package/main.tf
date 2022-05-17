@@ -45,7 +45,7 @@ module "package_dir_pip_dir" {
   artifacts_dir = "${path.root}/builds/package_dir_pip_dir/"
 }
 
-# Create zip-archive of a single directory where "poetry install" will also be executed
+# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed
 module "package_dir_poetry" {
   source = "../../"
 
