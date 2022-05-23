@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [3.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.2.0...v3.2.1) (2022-05-23)
+
+
+### Bug Fixes
+
+* Removed docker provider block from docker-build submodule ([#314](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/314)) ([151a09a](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/151a09a9b64a10cc8898becef245b7cdf96ee943))
+
 ## [3.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.1.1...v3.2.0) (2022-04-27)
 
 
