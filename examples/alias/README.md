@@ -35,11 +35,9 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|--------|---------|
 | <a name="module_alias_existing"></a> [alias\_existing](#module\_alias\_existing) | ../../modules/alias | n/a |
 | <a name="module_alias_no_refresh"></a> [alias\_no\_refresh](#module\_alias\_no\_refresh) | ../../modules/alias | n/a |
-| <a name="module_alias_no_refresh_event_mapping"></a> [alias\_no\_refresh\_event\_mapping](#module\_alias\_no\_refresh\_event\_mapping) | ../../modules/alias | n/a |
 | <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias | n/a |
 | <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
-| <a name="module_lambda_function_event_mapping"></a> [lambda\_function\_event\_mapping](#module\_lambda\_function\_event\_mapping) | ../../ | n/a |
-| <a name="module_sqs_events"></a> [sqs\_events](#module\_sqs\_events) | terraform-aws-modules/sqs/aws | v3.3.0 |
+| <a name="module_sqs_events"></a> [sqs\_events](#module\_sqs\_events) | terraform-aws-modules/sqs/aws | ~> 3.0 |
 
 ## Resources
 

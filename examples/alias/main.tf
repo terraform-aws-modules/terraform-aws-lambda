@@ -13,6 +13,13 @@ resource "random_pet" "this" {
   length = 2
 }
 
+module "sqs_events" {
+  source  = "terraform-aws-modules/sqs/aws"
+  version = "~> 3.0"
+
+  name = "${random_pet.this.id}-events"
+}
+
 module "lambda_function" {
   source = "../../"
 
@@ -28,6 +35,12 @@ module "lambda_function" {
   maximum_event_age_in_seconds = 100
 
   provisioned_concurrent_executions = 1
+
+  attach_policies = true
+  policies = [
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
+  ]
+  number_of_policies = 1
 
   allowed_triggers = {
     APIGatewayAny = {
@@ -59,6 +72,13 @@ module "alias_no_refresh" {
   #  create_version_async_event_config = false
   #  create_async_event_config = true
   #  maximum_event_age_in_seconds = 130
+
+  event_source_mapping = {
+    sqs = {
+      service          = "sqs"
+      event_source_arn = module.sqs_events.sqs_queue_arn
+    }
+  }
 
   allowed_triggers = {
     AnotherAPIGatewayAny = { # keys should be unique
@@ -92,6 +112,13 @@ module "alias_existing" {
   create_async_event_config    = true
   maximum_event_age_in_seconds = 100
 
+  event_source_mapping = {
+    sqs = {
+      service          = "sqs"
+      event_source_arn = module.sqs_events.sqs_queue_arn
+    }
+  }
+
   allowed_triggers = {
     ThirdAPIGatewayAny = {
       service    = "apigateway"
@@ -99,53 +126,4 @@ module "alias_existing" {
     }
   }
 
-}
-
-module "sqs_events" {
-  source  = "terraform-aws-modules/sqs/aws"
-  version = "v3.3.0"
-
-  name = "${random_pet.this.id}-events"
-}
-
-module "lambda_function_event_mapping" {
-  source = "../../"
-
-  function_name = "${random_pet.this.id}-lambda-event-mapping"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-  publish       = true
-
-  source_path = "${path.module}/../fixtures/python3.8-app1"
-  hash_extra  = "yo"
-
-  provisioned_concurrent_executions = 1
-
-  create_async_event_config    = true
-  maximum_event_age_in_seconds = 100
-
-  attach_policies = true
-  policies = [
-    "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
-  ]
-  number_of_policies = 1
-}
-
-module "alias_no_refresh_event_mapping" {
-  source = "../../modules/alias"
-
-  create        = true
-  refresh_alias = false
-
-  name = "current-no-refresh"
-
-  function_name    = module.lambda_function_event_mapping.lambda_function_name
-  function_version = module.lambda_function_event_mapping.lambda_function_version
-
-  event_source_mapping = {
-    sqs = {
-      service          = "sqs"
-      event_source_arn = module.sqs_events.sqs_queue_arn
-    }
-  }
 }
