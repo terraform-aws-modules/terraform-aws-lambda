@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.2.1...v3.3.0) (2022-06-16)
+
+
+### Features
+
+* Added support for event source mapping in alias submodule ([#320](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/320)) ([af22d00](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/af22d006c0b771809a0bf7a7a2bda49dafabb6a5))
+
 ### [3.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.2.0...v3.2.1) (2022-05-23)
 
 
