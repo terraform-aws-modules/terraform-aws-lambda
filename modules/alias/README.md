@@ -134,6 +134,7 @@ No modules.
 |------|------|
 | [aws_lambda_alias.no_refresh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_alias) | resource |
 | [aws_lambda_alias.with_refresh](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_alias) | resource |
+| [aws_lambda_event_source_mapping.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_event_source_mapping) | resource |
 | [aws_lambda_function_event_invoke_config.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_event_invoke_config) | resource |
 | [aws_lambda_permission.qualified_alias_triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_lambda_permission.version_triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
@@ -153,6 +154,7 @@ No modules.
 | <a name="input_description"></a> [description](#input\_description) | Description of the alias. | `string` | `""` | no |
 | <a name="input_destination_on_failure"></a> [destination\_on\_failure](#input\_destination\_on\_failure) | Amazon Resource Name (ARN) of the destination resource for failed asynchronous invocations | `string` | `null` | no |
 | <a name="input_destination_on_success"></a> [destination\_on\_success](#input\_destination\_on\_success) | Amazon Resource Name (ARN) of the destination resource for successful asynchronous invocations | `string` | `null` | no |
+| <a name="input_event_source_mapping"></a> [event\_source\_mapping](#input\_event\_source\_mapping) | Map of event source mapping | `any` | `{}` | no |
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | The function ARN of the Lambda function for which you want to create an alias. | `string` | `""` | no |
 | <a name="input_function_version"></a> [function\_version](#input\_function\_version) | Lambda function version for which you are creating the alias. Pattern: ($LATEST\|[0-9]+). | `string` | `""` | no |
 | <a name="input_maximum_event_age_in_seconds"></a> [maximum\_event\_age\_in\_seconds](#input\_maximum\_event\_age\_in\_seconds) | Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600. | `number` | `null` | no |
@@ -168,6 +170,10 @@ No modules.
 |------|-------------|
 | <a name="output_lambda_alias_arn"></a> [lambda\_alias\_arn](#output\_lambda\_alias\_arn) | The ARN of the Lambda Function Alias |
 | <a name="output_lambda_alias_description"></a> [lambda\_alias\_description](#output\_lambda\_alias\_description) | Description of alias |
+| <a name="output_lambda_alias_event_source_mapping_function_arn"></a> [lambda\_alias\_event\_source\_mapping\_function\_arn](#output\_lambda\_alias\_event\_source\_mapping\_function\_arn) | The the ARN of the Lambda function the event source mapping is sending events to |
+| <a name="output_lambda_alias_event_source_mapping_state"></a> [lambda\_alias\_event\_source\_mapping\_state](#output\_lambda\_alias\_event\_source\_mapping\_state) | The state of the event source mapping |
+| <a name="output_lambda_alias_event_source_mapping_state_transition_reason"></a> [lambda\_alias\_event\_source\_mapping\_state\_transition\_reason](#output\_lambda\_alias\_event\_source\_mapping\_state\_transition\_reason) | The reason the event source mapping is in its current state |
+| <a name="output_lambda_alias_event_source_mapping_uuid"></a> [lambda\_alias\_event\_source\_mapping\_uuid](#output\_lambda\_alias\_event\_source\_mapping\_uuid) | The UUID of the created event source mapping |
 | <a name="output_lambda_alias_function_version"></a> [lambda\_alias\_function\_version](#output\_lambda\_alias\_function\_version) | Lambda function version which the alias uses |
 | <a name="output_lambda_alias_invoke_arn"></a> [lambda\_alias\_invoke\_arn](#output\_lambda\_alias\_invoke\_arn) | The ARN to be used for invoking Lambda Function from API Gateway |
 | <a name="output_lambda_alias_name"></a> [lambda\_alias\_name](#output\_lambda\_alias\_name) | The name of the Lambda Function Alias |

@@ -13,6 +13,13 @@ resource "random_pet" "this" {
   length = 2
 }
 
+module "sqs_events" {
+  source  = "terraform-aws-modules/sqs/aws"
+  version = "~> 3.0"
+
+  name = "${random_pet.this.id}-events"
+}
+
 module "lambda_function" {
   source = "../../"
 
@@ -28,6 +35,12 @@ module "lambda_function" {
   maximum_event_age_in_seconds = 100
 
   provisioned_concurrent_executions = 1
+
+  attach_policies = true
+  policies = [
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
+  ]
+  number_of_policies = 1
 
   allowed_triggers = {
     APIGatewayAny = {
@@ -60,6 +73,13 @@ module "alias_no_refresh" {
   #  create_async_event_config = true
   #  maximum_event_age_in_seconds = 130
 
+  event_source_mapping = {
+    sqs = {
+      service          = "sqs"
+      event_source_arn = module.sqs_events.sqs_queue_arn
+    }
+  }
+
   allowed_triggers = {
     AnotherAPIGatewayAny = { # keys should be unique
       service    = "apigateway"
@@ -91,6 +111,13 @@ module "alias_existing" {
 
   create_async_event_config    = true
   maximum_event_age_in_seconds = 100
+
+  event_source_mapping = {
+    sqs = {
+      service          = "sqs"
+      event_source_arn = module.sqs_events.sqs_queue_arn
+    }
+  }
 
   allowed_triggers = {
     ThirdAPIGatewayAny = {
