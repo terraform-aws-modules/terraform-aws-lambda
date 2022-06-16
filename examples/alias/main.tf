@@ -27,7 +27,7 @@ module "lambda_function" {
   create_async_event_config    = true
   maximum_event_age_in_seconds = 100
 
-  provisioned_concurrent_executions = -1
+  provisioned_concurrent_executions = 1
 
   allowed_triggers = {
     APIGatewayAny = {
