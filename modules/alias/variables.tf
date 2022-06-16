@@ -117,3 +117,13 @@ variable "allowed_triggers" {
   type        = map(any)
   default     = {}
 }
+
+############################################
+# Lambda Event Source Mapping
+############################################
+
+variable "event_source_mapping" {
+  description = "Map of event source mapping"
+  type        = any
+  default     = {}
+}
