@@ -240,7 +240,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 
   batch_size                         = try(each.value.batch_size, null)
   maximum_batching_window_in_seconds = try(each.value.maximum_batching_window_in_seconds, null)
-  enabled                            = try(each.value.enabled, null)
+  enabled                            = try(each.value.enabled, true)
   starting_position                  = try(each.value.starting_position, null)
   starting_position_timestamp        = try(each.value.starting_position_timestamp, null)
   parallelization_factor             = try(each.value.parallelization_factor, null)
