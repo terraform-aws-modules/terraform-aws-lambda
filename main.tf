@@ -108,6 +108,33 @@ resource "aws_lambda_function" "this" {
   depends_on = [null_resource.archive, aws_s3_object.lambda_package, aws_cloudwatch_log_group.lambda]
 }
 
+# This resource contains the extra information required by SAM CLI to provide the testing capabilities
+# to the TF application. The required data is where SAM CLI can find the Lambda function source code
+# and what are the resources that contain the building logic.
+resource "null_resource" "sam_metadata_aws_lambda_function_this" {
+  count = local.create && var.create_package && var.create_function && !var.create_layer ? 1 : 0
+  triggers  = {
+    # This is a way to let SAM CLI correlates between the Lambda function resource, and this metadata
+    # resource
+    resource_name        = "aws_lambda_function.this[0]",
+    resource_type        = "ZIP_LAMBDA_FUNCTION",
+
+    # The Lambda function source code.
+    original_source_code = jsonencode(var.source_path),
+
+    # a property to let SAM CLI knows where to find the Lambda function source code if the provided
+    # value for original_source_code attribute is map.
+    source_code_property = "path",
+
+    # A property to let SAM CLI knows where to find the Lambda function built output
+    built_output_path    = data.external.archive_prepare[0].result.filename
+  }
+
+  # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
+  # resources as well
+  depends_on = [data.external.archive_prepare, null_resource.archive]
+}
+
 resource "aws_lambda_layer_version" "this" {
   count = local.create && var.create_layer ? 1 : 0
 
@@ -127,6 +154,34 @@ resource "aws_lambda_layer_version" "this" {
   s3_object_version = local.s3_object_version
 
   depends_on = [null_resource.archive, aws_s3_object.lambda_package]
+}
+
+# This resource contains the extra information required by SAM CLI to provide the testing capabilities
+# to the TF application. The required data is where SAM CLI can find the Lambda layer source code
+# and what are the resources that contain the building logic.
+resource "null_resource" "sam_metadata_aws_lambda_layer_version_this" {
+  count = local.create && var.create_package && var.create_layer ? 1 : 0
+
+  triggers = {
+    # This is a way to let SAM CLI correlates between the Lambda layer resource, and this metadata
+    # resource
+    resource_name        = "aws_lambda_layer_version.this[0]",
+    resource_type        = "LAMBDA_LAYER",
+
+    # The Lambda layer source code.
+    original_source_code = jsonencode(var.source_path),
+
+    # a property to let SAM CLI knows where to find the Lambda layer source code if the provided
+    # value for original_source_code attribute is map.
+    source_code_property = "path",
+
+    # A property to let SAM CLI knows where to find the Lambda layer built output
+    built_output_path    = data.external.archive_prepare[0].result.filename
+  }
+
+  # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
+  # resources as well
+  depends_on = [data.external.archive_prepare, null_resource.archive]
 }
 
 resource "aws_s3_object" "lambda_package" {

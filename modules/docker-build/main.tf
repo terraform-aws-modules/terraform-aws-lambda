@@ -21,6 +21,20 @@ resource "docker_registry_image" "this" {
   keep_remotely = var.keep_remotely
 }
 
+# This resource contains the extra information required by SAM CLI to provide the testing capabilities
+# to the TF application. This resource will maintain the metadata information about the image type lambda
+# functions. It will contain the information required to build the docker image locally.
+resource "null_resource" "sam_metadata_docker_registry_image_this" {
+  triggers = {
+    resource_type     = "IMAGE_LAMBDA_FUNCTION",
+    docker_context    = var.source_path,
+    docker_file       = var.docker_file_path,
+    docker_build_args = jsonencode(var.build_args),
+    docker_tag        = var.image_tag
+  }
+  depends_on = [docker_registry_image.this]
+}
+
 resource "aws_ecr_repository" "this" {
   count = var.create_ecr_repo ? 1 : 0
 
