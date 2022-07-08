@@ -113,11 +113,11 @@ resource "aws_lambda_function" "this" {
 # and what are the resources that contain the building logic.
 resource "null_resource" "sam_metadata_aws_lambda_function_this" {
   count = local.create && var.create_package && var.create_function && !var.create_layer ? 1 : 0
-  triggers  = {
+  triggers = {
     # This is a way to let SAM CLI correlates between the Lambda function resource, and this metadata
     # resource
-    resource_name        = "aws_lambda_function.this[0]",
-    resource_type        = "ZIP_LAMBDA_FUNCTION",
+    resource_name = "aws_lambda_function.this[0]",
+    resource_type = "ZIP_LAMBDA_FUNCTION",
 
     # The Lambda function source code.
     original_source_code = jsonencode(var.source_path),
@@ -127,7 +127,7 @@ resource "null_resource" "sam_metadata_aws_lambda_function_this" {
     source_code_property = "path",
 
     # A property to let SAM CLI knows where to find the Lambda function built output
-    built_output_path    = data.external.archive_prepare[0].result.filename
+    built_output_path = data.external.archive_prepare[0].result.filename
   }
 
   # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
@@ -165,8 +165,8 @@ resource "null_resource" "sam_metadata_aws_lambda_layer_version_this" {
   triggers = {
     # This is a way to let SAM CLI correlates between the Lambda layer resource, and this metadata
     # resource
-    resource_name        = "aws_lambda_layer_version.this[0]",
-    resource_type        = "LAMBDA_LAYER",
+    resource_name = "aws_lambda_layer_version.this[0]",
+    resource_type = "LAMBDA_LAYER",
 
     # The Lambda layer source code.
     original_source_code = jsonencode(var.source_path),
@@ -176,7 +176,7 @@ resource "null_resource" "sam_metadata_aws_lambda_layer_version_this" {
     source_code_property = "path",
 
     # A property to let SAM CLI knows where to find the Lambda layer built output
-    built_output_path    = data.external.archive_prepare[0].result.filename
+    built_output_path = data.external.archive_prepare[0].result.filename
   }
 
   # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
