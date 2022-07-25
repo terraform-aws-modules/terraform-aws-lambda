@@ -61,7 +61,7 @@ resource "null_resource" "archive" {
 
   triggers = {
     filename  = data.external.archive_prepare[0].result.filename
-    timestamp = data.external.archive_prepare[0].result.timestamp
+    hash      = md5(data.external.archive_prepare[0].result.build_plan)
   }
 
   provisioner "local-exec" {
