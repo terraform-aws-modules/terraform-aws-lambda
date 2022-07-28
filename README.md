@@ -526,6 +526,35 @@ module "lambda_function_existing_package_from_remote_url" {
 }
 ```
 
+## <a name="sam_cli_integration"></a> How to use AWS SAM CLI to test Lambda Function?
+[AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html) is an open source tool that help the developers to initiate, build, test, and deploy serverless 
+applications. Currently, SAM CLI tool only supports CFN applications, but SAM CLI team is working on a feature to extend the testing capabilities to support terraform applications (check this [Github issue](https://github.com/aws/aws-sam-cli/issues/3154) 
+to be updated about the incoming releases, and features included in each release for the Terraform support feature).
+
+SAM CLI provides two ways of testing, local testing, and testing on-cloud (Accelerate).
+
+### Local Testing
+Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)
+command, providing the function terraform address, or function name, and to set the `hook-package-id` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
+
+You can execute the `sam local invoke` command from your terraform application root directory as following:
+```
+sam local invoke --hook-package-id terraform module.hello_world_function.aws_lambda_function.this[0] 
+```
+You can also pass an event to your lambda function, or overwrite its environment variables. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) for more information.
+
+You can also invoke your lambda function in debugging mode, and step-through your lambda function source code locally in your preferred editor. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-debugging.html) for more information.
+
+### Testing on-cloud (Accelerate)
+You can use AWS SAM CLI to quickly test your application on your AWS development account. Using SAM Accelerate, you will be able to develop your lambda functions locally, 
+and once you save your updates, SAM CLI will update your development account with the updated Lambda functions. So, you can test it on cloud, and if there is any bug,
+you can quickly update the code, and SAM CLI will take care of pushing it to the cloud. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/accelerate.html) for more information about SAM Accelerate.
+
+You can execute the `sam sync` command from your terraform application root directory as following:
+```
+sam sync --hook-package-id terraform --watch 
+```
+
 ## <a name="deployment"></a> How to deploy and manage Lambda Functions?
 
 ### Simple deployments
