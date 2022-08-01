@@ -23,13 +23,6 @@ module "lambda_function" {
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
   hash_extra  = "yo1"
-
-  allowed_triggers = {
-    APIGatewayAny = {
-      service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
-    }
-  }
 }
 
 module "alias_refresh" {
@@ -39,20 +32,20 @@ module "alias_refresh" {
 
   name = "current-with-refresh"
 
-  function_name = module.lambda_function.this_lambda_function_name
+  function_name = module.lambda_function.lambda_function_name
 
   # Set function_version when creating alias to be able to deploy using it,
   # because AWS CodeDeploy doesn't understand $LATEST as CurrentVersion.
-  function_version = module.lambda_function.this_lambda_function_version
+  function_version = module.lambda_function.lambda_function_version
 }
 
 module "deploy" {
   source = "../../modules/deploy"
 
-  alias_name    = module.alias_refresh.this_lambda_alias_name
-  function_name = module.lambda_function.this_lambda_function_name
+  alias_name    = module.alias_refresh.lambda_alias_name
+  function_name = module.lambda_function.lambda_function_name
 
-  target_version = module.lambda_function.this_lambda_function_version
+  target_version = module.lambda_function.lambda_function_version
   description    = "This is my awesome deploy!"
 
   create_app = true
@@ -62,6 +55,7 @@ module "deploy" {
   deployment_group_name   = "something"
 
   create_deployment          = true
+  run_deployment             = true
   save_deploy_script         = true
   wait_deployment_completion = true
   force_deploy               = true

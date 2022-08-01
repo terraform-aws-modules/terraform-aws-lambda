@@ -79,6 +79,12 @@ variable "layers" {
   default     = null
 }
 
+variable "architectures" {
+  description = "Instruction set architecture for your Lambda function. Valid values are [\"x86_64\"] and [\"arm64\"]."
+  type        = list(string)
+  default     = null
+}
+
 variable "kms_key_arn" {
   description = "The ARN of KMS key to use by your Lambda Function"
   type        = string
@@ -201,6 +207,12 @@ variable "compatible_runtimes" {
   description = "A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified."
   type        = list(string)
   default     = []
+}
+
+variable "compatible_architectures" {
+  description = "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified."
+  type        = list(string)
+  default     = null
 }
 
 ############################
@@ -417,6 +429,12 @@ variable "attach_policies" {
   default     = false
 }
 
+variable "policy_path" {
+  description = "Path of policies to that should be added to IAM role for Lambda Function"
+  type        = string
+  default     = null
+}
+
 variable "number_of_policy_jsons" {
   description = "Number of policies JSON to attach to IAM role for Lambda Function"
   type        = number
@@ -436,9 +454,15 @@ variable "attach_policy_statements" {
 }
 
 variable "trusted_entities" {
-  description = "Lambda Function additional trusted entities for assuming roles (trust relationship)"
-  type        = list(string)
+  description = "List of additional trusted entities for assuming Lambda Function role (trust relationship)"
+  type        = any
   default     = []
+}
+
+variable "assume_role_policy_statements" {
+  description = "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)"
+  type        = any
+  default     = {}
 }
 
 variable "policy_json" {
@@ -493,6 +517,18 @@ variable "artifacts_dir" {
   default     = "builds"
 }
 
+variable "s3_prefix" {
+  description = "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used"
+  type        = string
+  default     = null
+}
+
+variable "ignore_source_code_hash" {
+  description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
+  type        = bool
+  default     = false
+}
+
 variable "local_existing_package" {
   description = "The absolute path to an existing zip-file to use"
   type        = string
@@ -519,6 +555,18 @@ variable "s3_object_storage_class" {
 
 variable "s3_bucket" {
   description = "S3 bucket to store artifacts"
+  type        = string
+  default     = null
+}
+
+variable "s3_acl" {
+  description = "The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private."
+  type        = string
+  default     = "private"
+}
+
+variable "s3_server_side_encryption" {
+  description = "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\"."
   type        = string
   default     = null
 }
@@ -569,4 +617,10 @@ variable "docker_pip_cache" {
   description = "Whether to mount a shared pip cache folder into docker environment or not"
   type        = any
   default     = null
+}
+
+variable "recreate_missing_package" {
+  description = "Whether to recreate missing Lambda package if it is missing locally or not"
+  type        = bool
+  default     = true
 }

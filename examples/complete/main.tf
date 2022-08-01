@@ -21,22 +21,29 @@ module "lambda_function" {
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
+  architectures = ["x86_64"]
   publish       = true
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   store_on_s3 = true
-  s3_bucket   = module.s3_bucket.this_s3_bucket_id
+  s3_bucket   = module.s3_bucket.s3_bucket_id
+  s3_prefix   = "lambda-builds/"
+
+  artifacts_dir = "${path.root}/.terraform/lambda-builds/"
 
   layers = [
-    module.lambda_layer_local.this_lambda_layer_arn,
-    module.lambda_layer_s3.this_lambda_layer_arn,
+    module.lambda_layer_local.lambda_layer_arn,
+    module.lambda_layer_s3.lambda_layer_arn,
   ]
 
   environment_variables = {
     Hello      = "World"
     Serverless = "Terraform"
   }
+
+  role_path   = "/tf-managed/"
+  policy_path = "/tf-managed/"
 
   attach_dead_letter_policy = true
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
@@ -59,6 +66,26 @@ module "lambda_function" {
   ######################
   # Additional policies
   ######################
+
+  assume_role_policy_statements = {
+    account_root = {
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
+      principals = {
+        account_principal = {
+          type        = "AWS",
+          identifiers = ["arn:aws:iam::135367859851:root"]
+        }
+      }
+      condition = {
+        stringequals_condition = {
+          test     = "StringEquals"
+          variable = "sts:ExternalId"
+          values   = ["12345"]
+        }
+      }
+    }
+  }
 
   attach_policy_json = true
   policy_json        = <<EOF
@@ -146,8 +173,8 @@ module "lambda_function_existing_package_local" {
   #  }
 
   layers = [
-    module.lambda_layer_local.this_lambda_layer_arn,
-    module.lambda_layer_s3.this_lambda_layer_arn,
+    module.lambda_layer_local.lambda_layer_arn,
+    module.lambda_layer_s3.lambda_layer_arn,
   ]
 }
 
@@ -160,11 +187,32 @@ module "lambda_layer_local" {
 
   create_layer = true
 
+  layer_name               = "${random_pet.this.id}-layer-local"
+  description              = "My amazing lambda layer (deployed from local)"
+  compatible_runtimes      = ["python3.8"]
+  compatible_architectures = ["arm64"]
+
+  source_path = "${path.module}/../fixtures/python3.8-app1"
+}
+
+####################################################
+# Lambda Layer with package deploying externally
+# (e.g., using separate CI/CD pipeline)
+####################################################
+
+module "lambda_layer_with_package_deploying_externally" {
+  source = "../../"
+
+  create_layer = true
+
   layer_name          = "${random_pet.this.id}-layer-local"
   description         = "My amazing lambda layer (deployed from local)"
   compatible_runtimes = ["python3.8"]
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  ignore_source_code_hash = true
 }
 
 ###############################
@@ -183,7 +231,7 @@ module "lambda_layer_s3" {
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   store_on_s3 = true
-  s3_bucket   = module.s3_bucket.this_s3_bucket_id
+  s3_bucket   = module.s3_bucket.s3_bucket_id
 }
 
 ##############
@@ -225,6 +273,74 @@ module "lambda_with_provisioned_concurrency" {
   hash_extra = "hash-extra-lambda-provisioned"
 
   provisioned_concurrent_executions = -1 # 2
+}
+
+###############################################
+# Lambda Function with mixed trusted entities
+###############################################
+
+module "lambda_with_mixed_trusted_entities" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-mixed-trusted-entities"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  source_path = "${path.module}/../fixtures/python3.8-app1"
+
+  trusted_entities = [
+    "appsync.amazonaws.com",
+    {
+      type = "AWS",
+      identifiers = [
+        "arn:aws:iam::307990089504:root",
+      ]
+    },
+    {
+      type = "Service",
+      identifiers = [
+        "codedeploy.amazonaws.com",
+        "ecs.amazonaws.com"
+      ]
+    }
+  ]
+}
+
+##############################
+# Lambda Functions + for_each
+##############################
+
+module "lambda_function_for_each" {
+  source = "../../"
+
+  for_each = toset(["dev", "staging", "prod"])
+
+  function_name = "my-${each.value}"
+  description   = "My awesome lambda function"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+  publish       = true
+
+  create_package         = false
+  local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
+}
+
+####################################################
+# Lambda Function with package deploying externally
+# (e.g., using separate CI/CD pipeline)
+####################################################
+
+module "lambda_function_with_package_deploying_externally" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-package-deploying-externally"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  ignore_source_code_hash = true
 }
 
 ###########

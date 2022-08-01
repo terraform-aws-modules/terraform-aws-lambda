@@ -49,7 +49,7 @@ module "lambda_function" {
   #  independent_file_timestamps = true
 
   #  store_on_s3 = true
-  #  s3_bucket   = module.s3_bucket.this_s3_bucket_id
+  #  s3_bucket   = module.s3_bucket.s3_bucket_id
 
   #  create_package         = false
   #  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
@@ -255,7 +255,10 @@ module "lambda_function" {
   #    },
   #    {
   #      path = "${path.module}/../fixtures/python3.8-app1"
-  #      commands = ["npm install"]
+  #      commands = [
+  #        "npm install",
+  #        ":zip"
+  #      ]
   #      prefix_in_zip = "foo/bar",
   #      patterns = [
   #        "!.*/.*\\.txt", # Filter all txt files recursively
@@ -264,7 +267,10 @@ module "lambda_function" {
   #    },
   #    {
   #      path = "${path.module}/../fixtures/python3.8-app1"
-  #      commands = ["npm install"]
+  #      commands = [
+  #        "npm install",
+  #        ":zip"
+  #      ]
   #      prefix_in_zip = "foo/bar", # By default everything installs into the root of a zip package
   #      patterns = <<END
   #        !.*/.*\.txt       # Filter all txt files recursively
@@ -281,7 +287,10 @@ module "lambda_function" {
   #    },
   #    {
   #      path = "${path.module}/../fixtures/python3.8-app1"
-  #      commands = ["npm install"]
+  #      commands = [
+  #        "npm install",
+  #        ":zip"
+  #      ]
   #      prefix_in_zip = "foo/bar",
   #      patterns = [".*"]  # default
   #    }

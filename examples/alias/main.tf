@@ -53,8 +53,8 @@ module "alias_no_refresh" {
 
   name = "current-no-refresh"
 
-  function_name    = module.lambda_function.this_lambda_function_name
-  function_version = module.lambda_function.this_lambda_function_version
+  function_name    = module.lambda_function.lambda_function_name
+  function_version = module.lambda_function.lambda_function_version
 
   #  create_version_async_event_config = false
   #  create_async_event_config = true
@@ -77,7 +77,7 @@ module "alias_refresh" {
 
   name = "current-with-refresh"
 
-  function_name = module.lambda_function.this_lambda_function_name
+  function_name = module.lambda_function.lambda_function_name
 }
 
 module "alias_existing" {
@@ -86,8 +86,8 @@ module "alias_existing" {
   create             = true
   use_existing_alias = true
 
-  name          = module.alias_refresh.this_lambda_alias_name
-  function_name = module.lambda_function.this_lambda_function_name
+  name          = module.alias_refresh.lambda_alias_name
+  function_name = module.lambda_function.lambda_function_name
 
   create_async_event_config    = true
   maximum_event_age_in_seconds = 100

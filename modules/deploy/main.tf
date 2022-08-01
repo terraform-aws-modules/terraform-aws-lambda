@@ -25,7 +25,7 @@ locals {
     Hooks = [for k, v in zipmap(["BeforeAllowTraffic", "AfterAllowTraffic"], [
       var.before_allow_traffic_hook_arn != "" ? var.before_allow_traffic_hook_arn : null,
       var.after_allow_traffic_hook_arn != "" ? var.after_allow_traffic_hook_arn : null
-    ]) : map(k, v) if v != null]
+    ]) : tomap({ (k) = v }) if v != null]
   } : {})
 
   appspec_content = replace(jsonencode(local.appspec), "\"", "\\\"")
@@ -60,21 +60,25 @@ while [[ $STATUS == "Created" || $STATUS == "InProgress" || $STATUS == "Pending"
         --deployment-id $ID \
         --output text \
         --query '[deploymentInfo.status]')
-    sleep 5
+
+    SLEEP_TIME=$(( $RANDOM % 5 ) + ${var.get_deployment_sleep_timer})
+    echo "Sleeping for: $SLEEP_TIME Seconds"
+    sleep $SLEEP_TIME
 done
+
+${var.aws_cli_command} deploy get-deployment --deployment-id $ID
 
 if [[ $STATUS == "Succeeded" ]]; then
     echo "Deployment succeeded."
 else
     echo "Deployment failed!"
+    exit 1
 fi
-
-${var.aws_cli_command} deploy get-deployment --deployment-id $ID
 
 %{else}
 
-echo "Deployment started, but wait deployment completion is disabled!"
 ${var.aws_cli_command} deploy get-deployment --deployment-id $ID
+echo "Deployment started, but wait deployment completion is disabled!"
 
 %{endif}
 EOF
@@ -105,7 +109,7 @@ resource "local_file" "deploy_script" {
 }
 
 resource "null_resource" "deploy" {
-  count = var.create && var.create_deployment ? 1 : 0
+  count = var.create && var.create_deployment && var.run_deployment ? 1 : 0
 
   triggers = {
     appspec_sha256 = local.appspec_sha256
@@ -113,8 +117,13 @@ resource "null_resource" "deploy" {
   }
 
   provisioner "local-exec" {
-    command = local.script
+    command     = local.script
+    interpreter = var.interpreter
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.hooks
+  ]
 }
 
 resource "aws_codedeploy_app" "this" {
@@ -122,6 +131,7 @@ resource "aws_codedeploy_app" "this" {
 
   name             = var.app_name
   compute_platform = "Lambda"
+  tags             = var.tags
 }
 
 resource "aws_codedeploy_deployment_group" "this" {
@@ -161,6 +171,8 @@ resource "aws_codedeploy_deployment_group" "this" {
       trigger_target_arn = trigger_configuration.value.target_arn
     }
   }
+
+  tags = var.tags
 }
 
 data "aws_iam_role" "codedeploy" {
@@ -174,6 +186,7 @@ resource "aws_iam_role" "codedeploy" {
 
   name               = coalesce(var.codedeploy_role_name, "${local.app_name}-codedeploy")
   assume_role_policy = data.aws_iam_policy_document.assume_role[0].json
+  tags               = var.tags
 }
 
 
@@ -198,6 +211,35 @@ resource "aws_iam_role_policy_attachment" "codedeploy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
 }
 
+data "aws_iam_policy_document" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "lambda:InvokeFunction",
+    ]
+
+    resources = compact([var.before_allow_traffic_hook_arn, var.after_allow_traffic_hook_arn])
+  }
+
+}
+
+resource "aws_iam_policy" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  policy = data.aws_iam_policy_document.hooks[0].json
+  tags   = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  policy_arn = aws_iam_policy.hooks[0].arn
+}
+
 data "aws_iam_policy_document" "triggers" {
   count = var.create && var.create_codedeploy_role && var.attach_triggers_policy ? 1 : 0
 
@@ -216,6 +258,7 @@ resource "aws_iam_policy" "triggers" {
   count = var.create && var.create_codedeploy_role && var.attach_triggers_policy ? 1 : 0
 
   policy = data.aws_iam_policy_document.triggers[0].json
+  tags   = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "triggers" {

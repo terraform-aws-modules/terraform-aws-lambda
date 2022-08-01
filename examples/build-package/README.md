@@ -19,42 +19,43 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.6 |
-| aws | >= 3.19 |
-| random | >= 2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.19 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| random | >= 2 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| lambda_function_from_package | ../../ |  |
-| lambda_layer | ../../ |  |
-| package_dir | ../../ |  |
-| package_dir_without_pip_install | ../../ |  |
-| package_file | ../../ |  |
-| package_file_with_pip_requirements | ../../ |  |
-| package_with_commands_and_patterns | ../../ |  |
-| package_with_docker | ../../ |  |
-| package_with_patterns | ../../ |  |
-| package_with_pip_requirements_in_docker | ../../ |  |
+| <a name="module_lambda_function_from_package"></a> [lambda\_function\_from\_package](#module\_lambda\_function\_from\_package) | ../../ | n/a |
+| <a name="module_lambda_layer"></a> [lambda\_layer](#module\_lambda\_layer) | ../../ | n/a |
+| <a name="module_lambda_layer_pip_requirements"></a> [lambda\_layer\_pip\_requirements](#module\_lambda\_layer\_pip\_requirements) | ../.. | n/a |
+| <a name="module_package_dir"></a> [package\_dir](#module\_package\_dir) | ../../ | n/a |
+| <a name="module_package_dir_without_pip_install"></a> [package\_dir\_without\_pip\_install](#module\_package\_dir\_without\_pip\_install) | ../../ | n/a |
+| <a name="module_package_file"></a> [package\_file](#module\_package\_file) | ../../ | n/a |
+| <a name="module_package_file_with_pip_requirements"></a> [package\_file\_with\_pip\_requirements](#module\_package\_file\_with\_pip\_requirements) | ../../ | n/a |
+| <a name="module_package_with_commands_and_patterns"></a> [package\_with\_commands\_and\_patterns](#module\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
+| <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ | n/a |
+| <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
+| <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ | n/a |
 
 ## Resources
 
-| Name |
-|------|
-| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2/docs/resources/pet) |
+| Name | Type |
+|------|------|
+| [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 
 ## Inputs
 
-No input.
+No inputs.
 
 ## Outputs
 
-No output.
+No outputs.
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

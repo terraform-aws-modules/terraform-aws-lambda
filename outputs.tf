@@ -1,92 +1,92 @@
 # Lambda Function
-output "this_lambda_function_arn" {
+output "lambda_function_arn" {
   description = "The ARN of the Lambda Function"
   value       = element(concat(aws_lambda_function.this.*.arn, [""]), 0)
 }
 
-output "this_lambda_function_invoke_arn" {
+output "lambda_function_invoke_arn" {
   description = "The Invoke ARN of the Lambda Function"
   value       = element(concat(aws_lambda_function.this.*.invoke_arn, [""]), 0)
 }
 
-output "this_lambda_function_name" {
+output "lambda_function_name" {
   description = "The name of the Lambda Function"
   value       = element(concat(aws_lambda_function.this.*.function_name, [""]), 0)
 }
 
-output "this_lambda_function_qualified_arn" {
+output "lambda_function_qualified_arn" {
   description = "The ARN identifying your Lambda Function Version"
   value       = element(concat(aws_lambda_function.this.*.qualified_arn, [""]), 0)
 }
 
-output "this_lambda_function_version" {
+output "lambda_function_version" {
   description = "Latest published version of Lambda Function"
   value       = element(concat(aws_lambda_function.this.*.version, [""]), 0)
 }
 
-output "this_lambda_function_last_modified" {
+output "lambda_function_last_modified" {
   description = "The date Lambda Function resource was last modified"
   value       = element(concat(aws_lambda_function.this.*.last_modified, [""]), 0)
 }
 
-output "this_lambda_function_kms_key_arn" {
+output "lambda_function_kms_key_arn" {
   description = "The ARN for the KMS encryption key of Lambda Function"
   value       = element(concat(aws_lambda_function.this.*.kms_key_arn, [""]), 0)
 }
 
-output "this_lambda_function_source_code_hash" {
+output "lambda_function_source_code_hash" {
   description = "Base64-encoded representation of raw SHA-256 sum of the zip file"
   value       = element(concat(aws_lambda_function.this.*.source_code_hash, [""]), 0)
 }
 
-output "this_lambda_function_source_code_size" {
+output "lambda_function_source_code_size" {
   description = "The size in bytes of the function .zip file"
   value       = element(concat(aws_lambda_function.this.*.source_code_size, [""]), 0)
 }
 
 # Lambda Layer
-output "this_lambda_layer_arn" {
+output "lambda_layer_arn" {
   description = "The ARN of the Lambda Layer with version"
   value       = element(concat(aws_lambda_layer_version.this.*.arn, [""]), 0)
 }
 
-output "this_lambda_layer_layer_arn" {
+output "lambda_layer_layer_arn" {
   description = "The ARN of the Lambda Layer without version"
   value       = element(concat(aws_lambda_layer_version.this.*.layer_arn, [""]), 0)
 }
 
-output "this_lambda_layer_created_date" {
+output "lambda_layer_created_date" {
   description = "The date Lambda Layer resource was created"
   value       = element(concat(aws_lambda_layer_version.this.*.created_date, [""]), 0)
 }
 
-output "this_lambda_layer_source_code_size" {
+output "lambda_layer_source_code_size" {
   description = "The size in bytes of the Lambda Layer .zip file"
   value       = element(concat(aws_lambda_layer_version.this.*.source_code_size, [""]), 0)
 }
 
-output "this_lambda_layer_version" {
+output "lambda_layer_version" {
   description = "The Lambda Layer version"
   value       = element(concat(aws_lambda_layer_version.this.*.version, [""]), 0)
 }
 
 # Lambda Event Source Mapping
-output "this_lambda_event_source_mapping_function_arn" {
+output "lambda_event_source_mapping_function_arn" {
   description = "The the ARN of the Lambda function the event source mapping is sending events to"
   value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.function_arn }
 }
 
-output "this_lambda_event_source_mapping_state" {
+output "lambda_event_source_mapping_state" {
   description = "The state of the event source mapping"
   value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.state }
 }
 
-output "this_lambda_event_source_mapping_state_transition_reason" {
+output "lambda_event_source_mapping_state_transition_reason" {
   description = "The reason the event source mapping is in its current state"
   value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.state_transition_reason }
 }
 
-output "this_lambda_event_source_mapping_uuid" {
+output "lambda_event_source_mapping_uuid" {
   description = "The UUID of the created event source mapping"
   value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.uuid }
 }
@@ -100,6 +100,11 @@ output "lambda_role_arn" {
 output "lambda_role_name" {
   description = "The name of the IAM role created for the Lambda Function"
   value       = element(concat(aws_iam_role.lambda.*.name, [""]), 0)
+}
+
+output "lambda_role_unique_id" {
+  description = "The unique id of the IAM role created for the Lambda Function"
+  value       = element(concat(aws_iam_role.lambda.*.unique_id, [""]), 0)
 }
 
 # CloudWatch Log Group
@@ -121,5 +126,9 @@ output "local_filename" {
 
 output "s3_object" {
   description = "The map with S3 object data of zip archive deployed (if deployment was from S3)"
-  value       = map("bucket", local.s3_bucket, "key", local.s3_key, "version_id", local.s3_object_version)
+  value = {
+    bucket     = local.s3_bucket
+    key        = local.s3_key
+    version_id = local.s3_object_version
+  }
 }

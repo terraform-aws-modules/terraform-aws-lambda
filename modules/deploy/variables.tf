@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "tags" {
+  description = "A map of tags to assign to resources."
+  type        = map(string)
+  default     = {}
+}
+
 variable "alias_name" {
   description = "Name for the alias"
   type        = string
@@ -38,6 +44,12 @@ variable "after_allow_traffic_hook_arn" {
   description = "ARN of Lambda function to execute after allow traffic during deployment. This function should be named CodeDeployHook_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role"
   type        = string
   default     = ""
+}
+
+variable "interpreter" {
+  description = "List of interpreter arguments used to execute deploy script, first arg is path"
+  type        = list(string)
+  default     = ["/bin/bash", "-c"]
 }
 
 variable "description" {
@@ -149,7 +161,13 @@ variable "save_deploy_script" {
 }
 
 variable "create_deployment" {
-  description = "Run AWS CLI command to create deployment"
+  description = "Create the AWS resources and script for CodeDeploy"
+  type        = bool
+  default     = false
+}
+
+variable "run_deployment" {
+  description = "Run AWS CLI command to start the deployment"
   type        = bool
   default     = false
 }
@@ -188,8 +206,20 @@ variable "codedeploy_principals" {
   default     = ["codedeploy.amazonaws.com"]
 }
 
+variable "attach_hooks_policy" {
+  description = "Whether to attach Invoke policy to CodeDeploy role when before allow traffic or after allow traffic hooks are defined."
+  type        = bool
+  default     = true
+}
+
 variable "attach_triggers_policy" {
   description = "Whether to attach SNS policy to CodeDeploy role when triggers are defined"
   type        = bool
   default     = false
+}
+
+variable "get_deployment_sleep_timer" {
+  description = "Adds additional sleep time to get-deployment command to avoid the service throttling"
+  type        = number
+  default     = 5
 }
