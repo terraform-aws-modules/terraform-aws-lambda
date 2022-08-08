@@ -41,9 +41,8 @@ module "lambda_function_from_container_image" {
 module "docker_image" {
   source = "../../modules/docker-build"
 
-  create_ecr_repo  = true
-  ecr_force_delete = true
-  ecr_repo         = random_pet.this.id
+  create_ecr_repo = true
+  ecr_repo        = random_pet.this.id
   ecr_repo_lifecycle_policy = jsonencode({
     "rules" : [
       {

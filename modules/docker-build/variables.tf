@@ -10,12 +10,6 @@ variable "ecr_address" {
   default     = null
 }
 
-variable "ecr_force_delete" {
-  description = "If true, will delete the repository even if it contains images. Defaults to false"
-  type        = bool
-  default     = false
-}
-
 variable "ecr_repo" {
   description = "Name of ECR repository to use or to create"
   type        = string

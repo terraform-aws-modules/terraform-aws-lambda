@@ -24,7 +24,7 @@ resource "docker_registry_image" "this" {
 resource "aws_ecr_repository" "this" {
   count = var.create_ecr_repo ? 1 : 0
 
-  force_delete         = var.ecr_force_delete
+  force_delete         = true
   name                 = var.ecr_repo
   image_tag_mutability = var.image_tag_mutability
 
