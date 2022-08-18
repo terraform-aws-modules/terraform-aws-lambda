@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.3.1...v4.0.0) (2022-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* Updated AWS provider to v4, added ECR repo force_delete argument in docker-build module (#337)
+
+### Features
+
+* Updated AWS provider to v4, added ECR repo force_delete argument in docker-build module ([#337](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/337)) ([953ccee](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/953ccee287135da9850818b2d7411bdb72f23ae5))
+
 ### [3.3.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.3.0...v3.3.1) (2022-06-17)
 
 

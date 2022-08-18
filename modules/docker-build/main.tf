@@ -38,6 +38,7 @@ resource "null_resource" "sam_metadata_docker_registry_image_this" {
 resource "aws_ecr_repository" "this" {
   count = var.create_ecr_repo ? 1 : 0
 
+  force_delete         = var.ecr_force_delete
   name                 = var.ecr_repo
   image_tag_mutability = var.image_tag_mutability
 
