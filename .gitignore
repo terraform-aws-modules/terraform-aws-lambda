@@ -1,9 +1,3 @@
-# Environmental secrets
-.env
-
-# Docker
-docker-compose.yml
-
 # Local .terraform directories
 **/.terraform/*
 
