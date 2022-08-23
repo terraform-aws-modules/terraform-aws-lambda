@@ -531,7 +531,7 @@ module "lambda_function_existing_package_from_remote_url" {
 applications. Currently, SAM CLI tool only supports CFN applications, but SAM CLI team is working on a feature to extend the testing capabilities to support terraform applications (check this [Github issue](https://github.com/aws/aws-sam-cli/issues/3154) 
 to be updated about the incoming releases, and features included in each release for the Terraform support feature).
 
-SAM CLI provides two ways of testing, local testing, and testing on-cloud (Accelerate).
+SAM CLI provides two ways of testing: local testing and testing on-cloud (Accelerate).
 
 ### Local Testing
 Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)

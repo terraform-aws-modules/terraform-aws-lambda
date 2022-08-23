@@ -26,10 +26,10 @@ resource "docker_registry_image" "this" {
 # functions. It will contain the information required to build the docker image locally.
 resource "null_resource" "sam_metadata_docker_registry_image_this" {
   triggers = {
-    resource_type     = "IMAGE_LAMBDA_FUNCTION",
-    docker_context    = var.source_path,
-    docker_file       = var.docker_file_path,
-    docker_build_args = jsonencode(var.build_args),
+    resource_type     = "IMAGE_LAMBDA_FUNCTION"
+    docker_context    = var.source_path
+    docker_file       = var.docker_file_path
+    docker_build_args = jsonencode(var.build_args)
     docker_tag        = var.image_tag
   }
   depends_on = [docker_registry_image.this]
