@@ -1,4 +1,4 @@
-FROM scratch
+FROM --platform=linux/x86_64 scratch
 
 ARG FOO
 
