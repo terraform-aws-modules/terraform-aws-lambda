@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.0...v4.0.1) (2022-09-01)
+
+
+### Bug Fixes
+
+* Lambda should depend on policy attachments ([#327](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/327)) ([b4eef74](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/b4eef74b79e73928a11be36e4400cac8b5ad7227))
+
 ## [4.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.3.1...v4.0.0) (2022-08-18)
 
 
