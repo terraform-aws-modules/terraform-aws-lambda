@@ -47,6 +47,12 @@ variable "scan_on_push" {
   default     = false
 }
 
+variable "ecr_force_delete" {
+  description = "If true, will delete the repository even if it contains images."
+  default     = true
+  type        = bool
+}
+
 variable "ecr_repo_tags" {
   description = "A map of tags to assign to ECR repository"
   type        = map(string)

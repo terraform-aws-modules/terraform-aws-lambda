@@ -34,8 +34,9 @@ module "lambda_function_from_container_image" {
   ##################
   # Container Image
   ##################
-  image_uri    = module.docker_image.image_uri
-  package_type = "Image"
+  image_uri     = module.docker_image.image_uri
+  package_type  = "Image"
+  architectures = ["x86_64"]
 }
 
 module "docker_image" {

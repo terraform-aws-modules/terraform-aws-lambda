@@ -53,14 +53,14 @@ module "docker_image" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.22 |
 | <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 2.12 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.22 |
 | <a name="provider_docker"></a> [docker](#provider\_docker) | >= 2.12 |
 
 ## Modules
@@ -85,6 +85,7 @@ No modules.
 | <a name="input_create_ecr_repo"></a> [create\_ecr\_repo](#input\_create\_ecr\_repo) | Controls whether ECR repository for Lambda image should be created | `bool` | `false` | no |
 | <a name="input_docker_file_path"></a> [docker\_file\_path](#input\_docker\_file\_path) | Path to Dockerfile in source package | `string` | `"Dockerfile"` | no |
 | <a name="input_ecr_address"></a> [ecr\_address](#input\_ecr\_address) | Address of ECR repository for cross-account container image pulling (optional). Option `create_ecr_repo` must be `false` | `string` | `null` | no |
+| <a name="input_ecr_force_delete"></a> [ecr\_force\_delete](#input\_ecr\_force\_delete) | If true, will delete the repository even if it contains images. | `bool` | `true` | no |
 | <a name="input_ecr_repo"></a> [ecr\_repo](#input\_ecr\_repo) | Name of ECR repository to use or to create | `string` | `null` | no |
 | <a name="input_ecr_repo_lifecycle_policy"></a> [ecr\_repo\_lifecycle\_policy](#input\_ecr\_repo\_lifecycle\_policy) | A JSON formatted ECR lifecycle policy to automate the cleaning up of unused images. | `string` | `null` | no |
 | <a name="input_ecr_repo_tags"></a> [ecr\_repo\_tags](#input\_ecr\_repo\_tags) | A map of tags to assign to ECR repository | `map(string)` | `{}` | no |
