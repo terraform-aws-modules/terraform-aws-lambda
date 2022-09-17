@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.0...v4.0.1) (2022-09-01)
+
+
+### Bug Fixes
+
+* Lambda should depend on policy attachments ([#327](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/327)) ([b4eef74](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/b4eef74b79e73928a11be36e4400cac8b5ad7227))
+
+## [4.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.3.1...v4.0.0) (2022-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* Updated AWS provider to v4, added ECR repo force_delete argument in docker-build module (#337)
+
+### Features
+
+* Updated AWS provider to v4, added ECR repo force_delete argument in docker-build module ([#337](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/337)) ([953ccee](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/953ccee287135da9850818b2d7411bdb72f23ae5))
+
+### [3.3.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.3.0...v3.3.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* Fixed enabled attribute in Lambda Event Source Mapping by default ([#321](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/321)) ([779b368](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/779b368781f0bf14964c2f6e306c1c9ef4690bbb))
+
+## [3.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.2.1...v3.3.0) (2022-06-16)
+
+
+### Features
+
+* Added support for event source mapping in alias submodule ([#320](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/320)) ([af22d00](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/af22d006c0b771809a0bf7a7a2bda49dafabb6a5))
+
 ### [3.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v3.2.0...v3.2.1) (2022-05-23)
 
 

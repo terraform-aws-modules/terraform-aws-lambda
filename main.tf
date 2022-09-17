@@ -101,11 +101,28 @@ resource "aws_lambda_function" "this" {
 
   tags = var.tags
 
-  # Depending on the log group is necessary to allow Terraform to create the log group before AWS can.
-  # When a lambda function is invoked, AWS creates the log group automatically if it doesn't exist yet.
-  # Without the dependency, this can result in a race condition if the lambda function is invoked before
-  # Terraform can create the log group.
-  depends_on = [null_resource.archive, aws_s3_object.lambda_package, aws_cloudwatch_log_group.lambda]
+  depends_on = [
+    null_resource.archive,
+    aws_s3_object.lambda_package,
+
+    # Depending on the log group is necessary to allow Terraform to create the log group before AWS can.
+    # When a lambda function is invoked, AWS creates the log group automatically if it doesn't exist yet.
+    # Without the dependency, this can result in a race condition if the lambda function is invoked before
+    # Terraform can create the log group.
+    aws_cloudwatch_log_group.lambda,
+
+    # Before the lambda is created the execution role with all its policies should be ready
+    aws_iam_role_policy_attachment.additional_inline,
+    aws_iam_role_policy_attachment.additional_json,
+    aws_iam_role_policy_attachment.additional_jsons,
+    aws_iam_role_policy_attachment.additional_many,
+    aws_iam_role_policy_attachment.additional_one,
+    aws_iam_role_policy_attachment.async,
+    aws_iam_role_policy_attachment.logs,
+    aws_iam_role_policy_attachment.dead_letter,
+    aws_iam_role_policy_attachment.vpc,
+    aws_iam_role_policy_attachment.tracing,
+  ]
 }
 
 resource "aws_lambda_layer_version" "this" {
@@ -240,7 +257,7 @@ resource "aws_lambda_event_source_mapping" "this" {
 
   batch_size                         = try(each.value.batch_size, null)
   maximum_batching_window_in_seconds = try(each.value.maximum_batching_window_in_seconds, null)
-  enabled                            = try(each.value.enabled, null)
+  enabled                            = try(each.value.enabled, true)
   starting_position                  = try(each.value.starting_position, null)
   starting_position_timestamp        = try(each.value.starting_position_timestamp, null)
   parallelization_factor             = try(each.value.parallelization_factor, null)

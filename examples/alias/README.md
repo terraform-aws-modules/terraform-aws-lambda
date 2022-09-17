@@ -37,6 +37,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_alias_no_refresh"></a> [alias\_no\_refresh](#module\_alias\_no\_refresh) | ../../modules/alias | n/a |
 | <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias | n/a |
 | <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
+| <a name="module_sqs_events"></a> [sqs\_events](#module\_sqs\_events) | terraform-aws-modules/sqs/aws | ~> 3.0 |
 
 ## Resources
 
@@ -54,6 +55,10 @@ No inputs.
 |------|-------------|
 | <a name="output_lambda_alias_arn"></a> [lambda\_alias\_arn](#output\_lambda\_alias\_arn) | The ARN of the Lambda Function Alias |
 | <a name="output_lambda_alias_description"></a> [lambda\_alias\_description](#output\_lambda\_alias\_description) | Description of alias |
+| <a name="output_lambda_alias_event_source_mapping_function_arn"></a> [lambda\_alias\_event\_source\_mapping\_function\_arn](#output\_lambda\_alias\_event\_source\_mapping\_function\_arn) | The the ARN of the Lambda function the event source mapping is sending events to |
+| <a name="output_lambda_alias_event_source_mapping_state"></a> [lambda\_alias\_event\_source\_mapping\_state](#output\_lambda\_alias\_event\_source\_mapping\_state) | The state of the event source mapping |
+| <a name="output_lambda_alias_event_source_mapping_state_transition_reason"></a> [lambda\_alias\_event\_source\_mapping\_state\_transition\_reason](#output\_lambda\_alias\_event\_source\_mapping\_state\_transition\_reason) | The reason the event source mapping is in its current state |
+| <a name="output_lambda_alias_event_source_mapping_uuid"></a> [lambda\_alias\_event\_source\_mapping\_uuid](#output\_lambda\_alias\_event\_source\_mapping\_uuid) | The UUID of the created event source mapping |
 | <a name="output_lambda_alias_function_version"></a> [lambda\_alias\_function\_version](#output\_lambda\_alias\_function\_version) | Lambda function version which the alias uses |
 | <a name="output_lambda_alias_invoke_arn"></a> [lambda\_alias\_invoke\_arn](#output\_lambda\_alias\_invoke\_arn) | The ARN to be used for invoking Lambda Function from API Gateway |
 | <a name="output_lambda_alias_name"></a> [lambda\_alias\_name](#output\_lambda\_alias\_name) | The name of the Lambda Function Alias |
