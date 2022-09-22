@@ -1129,6 +1129,8 @@ def docker_run_command(build_root, command, runtime,
     if not image:
         image = 'public.ecr.aws/sam/build-{}'.format(runtime)
 
+    docker_cmd.extend(['--entrypoint', ''])
+
     docker_cmd.append(image)
 
     assert isinstance(command, list)
