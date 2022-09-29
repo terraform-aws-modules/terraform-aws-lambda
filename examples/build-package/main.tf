@@ -53,12 +53,12 @@ module "package_dir_poetry" {
 
   build_in_docker = true
   runtime         = "python3.8"
-  docker_image    = "build-python3.8-poetry"
-  docker_file     = "${path.module}/../fixtures/python3.8-app-poetry/docker/Dockerfile"
+  docker_image    = "build-python3.9-poetry"
+  docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
 
   source_path = [
     {
-      path           = "${path.module}/../fixtures/python3.8-app-poetry"
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
       poetry_install = true
     }
   ]
@@ -316,7 +316,7 @@ module "lambda_layer_poetry" {
 
   source_path = [
     {
-      path           = "${path.module}/../fixtures/python3.8-app-poetry"
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
       poetry_install = true
     }
   ]
@@ -325,7 +325,7 @@ module "lambda_layer_poetry" {
   build_in_docker = true
   runtime         = "python3.8"
   docker_image    = "build-python3.8-poetry"
-  docker_file     = "${path.module}/../fixtures/python3.8-app-poetry/docker/Dockerfile"
+  docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
   artifacts_dir   = "${path.root}/builds/lambda_layer_poetry/"
 }
 
