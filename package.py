@@ -692,6 +692,9 @@ class BuildPlanManager:
                 poetry_lock_file = os.path.join(path, "poetry.lock")
                 if os.path.isfile(poetry_lock_file):
                     hash(poetry_lock_file)
+                poetry_toml_file = os.path.join(path, "poetry.toml")
+                if os.path.isfile(poetry_toml_file):
+                    hash(poetry_toml_file)
 
         def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             requirements = path
@@ -1023,12 +1026,16 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 def install_poetry_dependencies(query, path):
     # TODO:
     #  1. Emit files instead of temp_dir
-    poetry_lock_file = os.path.join(path, "poetry.lock")
+
+    # pyproject.toml is always required by poetry
     pyproject_file = os.path.join(path, "pyproject.toml")
-    # pyproject.toml is always required by poetry, poetry.lock is optional and can be created from pyproject.toml
     if not os.path.exists(pyproject_file):
         yield
         return
+
+    # poetry.lock & poetry.toml are optional
+    poetry_lock_file = os.path.join(path, "poetry.lock")
+    poetry_toml_file = os.path.join(path, "poetry.toml")
 
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
@@ -1061,7 +1068,7 @@ def install_poetry_dependencies(query, path):
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
-                "docker_image must be specified " "for a custom image future references"
+                "docker_image must be specified for a custom image future references"
             )
 
     working_dir = os.getcwd()
@@ -1074,8 +1081,19 @@ def install_poetry_dependencies(query, path):
             shutil.copyfile(file, target_file)
             return target_file
 
-        poetry_lock_target_file = copy_file_to_target(poetry_lock_file, temp_dir)
         pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
+
+        if os.path.isfile(poetry_lock_file):
+            log.info("Using poetry lock file: %s", poetry_lock_file)
+            poetry_lock_target_file = copy_file_to_target(poetry_lock_file, temp_dir)
+        else:
+            poetry_lock_target_file = None
+
+        if os.path.isfile(poetry_toml_file):
+            log.info("Using poetry configuration file: %s", poetry_lock_file)
+            poetry_toml_target_file = copy_file_to_target(poetry_toml_file, temp_dir)
+        else:
+            poetry_toml_target_file = None
 
         poetry_exec = "poetry"
         python_exec = runtime
@@ -1087,14 +1105,52 @@ def install_poetry_dependencies(query, path):
 
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
-            # NOTE: poetry must be available, which is the case with lambci/lambda:build-python* docker images
+            # NOTE: poetry must be available in the build environment, which is the case with lambci/lambda:build-python* docker images but not public.ecr.aws/sam/build-python* docker images
             # FIXME: poetry install does not currently allow to specify the target directory so we export the 
-            # requirements then install them with pip --no-deps to avoid using pip dependency resolver
+            # requirements then install them with "pip --no-deps" to avoid using pip dependency resolver
             poetry_commands = [
-                shlex_join([ poetry_exec, "config", "--no-interaction", "virtualenvs.create", "true" ]),
-                shlex_join([ poetry_exec, "config", "--no-interaction", "virtualenvs.in-project", "true" ]),
-                shlex_join([ poetry_exec, "export", "-f", "requirements.txt", "--output", "requirements.txt" ]),
-                shlex_join([ python_exec, '-m', 'pip', 'install', '--no-compile', '--no-deps', '--prefix=', '--target=.','--requirement=requirements.txt']),
+                shlex_join(
+                    [
+                        poetry_exec,
+                        "config",
+                        "--no-interaction",
+                        "virtualenvs.create",
+                        "true",
+                    ]
+                ),
+                shlex_join(
+                    [
+                        poetry_exec,
+                        "config",
+                        "--no-interaction",
+                        "virtualenvs.in-project",
+                        "true",
+                    ]
+                ),
+                shlex_join(
+                    [
+                        poetry_exec,
+                        "export",
+                        "--format",
+                        "requirements.txt",
+                        "--output",
+                        "requirements.txt",
+                        "--with-credentials",
+                    ]
+                ),
+                shlex_join(
+                    [
+                        python_exec,
+                        "-m",
+                        "pip",
+                        "install",
+                        "--no-compile",
+                        "--no-deps",
+                        "--prefix=",
+                        "--target=.",
+                        "--requirement=requirements.txt",
+                    ]
+                ),
             ]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
@@ -1129,8 +1185,11 @@ def install_poetry_dependencies(query, path):
                 for poetry_command in poetry_commands:
                     check_call(poetry_command, env=subproc_env)
 
-            os.remove(poetry_lock_target_file)
             os.remove(pyproject_target_file)
+            if poetry_lock_target_file:
+                os.remove(poetry_lock_target_file)
+            if poetry_toml_target_file:
+                os.remove(poetry_toml_target_file)
 
             yield temp_dir
 
