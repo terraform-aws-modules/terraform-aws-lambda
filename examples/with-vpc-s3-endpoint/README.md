@@ -1,4 +1,4 @@
-# AWS Lambda with VPC and VPC endpoint example
+# AWS Lambda with VPC and VPC Endpoint for S3 example
 
 The configuration in this directory creates an AWS Lambda Function deployed within a VPC with a VPC Endpoint for S3 and no Internet access. The Function writes a single object to an S3 bucket that is created as part of the supporting resources.
 
