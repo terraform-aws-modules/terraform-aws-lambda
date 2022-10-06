@@ -1117,7 +1117,7 @@ def docker_run_command(build_root, command, runtime,
         raise RuntimeError("Unsupported platform for docker building")
 
     if volumes_from:
-        workdir = build_root
+        workdir = os.path.abspath(build_root)
     else:
         workdir = '/var/task'
 
