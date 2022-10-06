@@ -889,6 +889,10 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
         docker_image = docker.docker_image
         docker_build_root = docker.docker_build_root
 
+        if docker_image and not docker_file:
+            docker_cmd = docker_pull_command(image=docker_image)
+            check_call(docker_cmd)
+
         if docker_image:
             ok = False
             while True:
@@ -1000,6 +1004,10 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
         docker_image = docker.docker_image
         docker_build_root = docker.docker_build_root
 
+        if docker_image and not docker_file:
+            docker_cmd = docker_pull_command(image=docker_image)
+            check_call(docker_cmd)
+
         if docker_image:
             ok = False
             while True:
@@ -1062,6 +1070,13 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
 
             os.remove(target_file)
             yield temp_dir
+
+def docker_pull_command(image):
+    """"""
+    docker_cmd = ['docker', 'pull', image]
+    cmd_log.info(shlex_join(docker_cmd))
+    log_handler and log_handler.flush()
+    return docker_cmd
 
 
 def docker_image_id_command(tag):
