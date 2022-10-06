@@ -1101,15 +1101,19 @@ def docker_run_command(build_root, command, runtime,
     if platform.system() not in ('Linux', 'Darwin'):
         raise RuntimeError("Unsupported platform for docker building")
 
-    workdir = '/var/task'
+    if volumes_from:
+        workdir = build_root
+    else:
+        workdir = '/var/task'
 
     docker_cmd = ['docker', 'run', '--rm', '-w', workdir]
 
     if interactive:
         docker_cmd.append('-it')
 
-    bind_path = os.path.abspath(build_root)
-    docker_cmd.extend(['-v', "{}:{}:z".format(bind_path, workdir)])
+    if not volumes_from:
+        bind_path = os.path.abspath(build_root)
+        docker_cmd.extend(['-v', "{}:{}:z".format(bind_path, workdir)])
 
     home = os.environ['HOME']
     docker_cmd.extend([
