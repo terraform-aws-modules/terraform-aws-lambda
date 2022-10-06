@@ -944,6 +944,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
                 pip_cache_dir = docker.docker_pip_cache
+                volumes_from = docker.docker_volumes_from
                 if pip_cache_dir:
                     if isinstance(pip_cache_dir, str):
                         pip_cache_dir = os.path.abspath(
@@ -961,7 +962,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                     '.', shell_command, runtime,
                     image=docker_image_tag_id,
                     shell=True, ssh_agent=with_ssh_agent,
-                    pip_cache_dir=pip_cache_dir,
+                    pip_cache_dir=pip_cache_dir,volumes_from=volumes_from
                 ))
             else:
                 cmd_log.info(shlex_join(pip_command))
@@ -1036,6 +1037,7 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
             npm_command = ['npm', 'install']
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
+                volumes_from = docker.docker_volumes_from
                 chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
                 shell_command = [shlex_join(npm_command), '&&',
                                     shlex_join(['chown', '-R',
@@ -1044,7 +1046,7 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 check_call(docker_run_command(
                     '.', shell_command, runtime,
                     image=docker_image_tag_id,
-                    shell=True, ssh_agent=with_ssh_agent
+                    shell=True, ssh_agent=with_ssh_agent, volumes_from=volumes_from
                 ))
             else:
                 cmd_log.info(shlex_join(npm_command))
@@ -1094,7 +1096,7 @@ def docker_build_command(tag=None, docker_file=None, build_root=False):
 
 def docker_run_command(build_root, command, runtime,
                        image=None, shell=None, ssh_agent=False,
-                       interactive=False, pip_cache_dir=None):
+                       interactive=False, pip_cache_dir=None, volumes_from=None):
     """"""
     if platform.system() not in ('Linux', 'Darwin'):
         raise RuntimeError("Unsupported platform for docker building")
@@ -1142,6 +1144,9 @@ def docker_run_command(build_root, command, runtime,
         image = 'public.ecr.aws/sam/build-{}'.format(runtime)
 
     docker_cmd.extend(['--entrypoint', ''])
+
+    if volumes_from:
+        docker_cmd.extend(['--volumes-from', volumes_from])
 
     docker_cmd.append(image)
 

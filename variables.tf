@@ -671,6 +671,12 @@ variable "docker_pip_cache" {
   default     = null
 }
 
+variable "docker_volumes_from" {
+  description = "Another container id to mount volumes from (i.e. in DinD scenario)"
+  type        = string
+  default     = ""
+}
+
 variable "recreate_missing_package" {
   description = "Whether to recreate missing Lambda package if it is missing locally or not"
   type        = bool

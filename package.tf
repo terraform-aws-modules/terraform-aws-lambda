@@ -22,6 +22,7 @@ data "external" "archive_prepare" {
       docker_file       = var.docker_file
       docker_image      = var.docker_image
       with_ssh_agent    = var.docker_with_ssh_agent
+      docker_volumes_from = var.docker_volumes_from
     }) : null
 
     artifacts_dir = var.artifacts_dir
