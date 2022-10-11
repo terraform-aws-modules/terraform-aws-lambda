@@ -36,6 +36,7 @@ resource "aws_lambda_function" "this" {
   image_uri                      = var.image_uri
   package_type                   = var.package_type
   architectures                  = var.architectures
+  code_signing_config_arn        = var.code_signing_config_arn
 
   /* ephemeral_storage is not supported in gov-cloud region, so it should be set to `null` */
   dynamic "ephemeral_storage" {
