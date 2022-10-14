@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.2...v4.1.0) (2022-10-14)
+
+
+### Features
+
+* Add example for S3 bucket access through VPC Endpoint ([#349](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/349)) ([2ceb32f](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2ceb32fdbef85758305a59b2320bdd40e246290f))
+
 ### [4.0.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.1...v4.0.2) (2022-09-17)
 
 
