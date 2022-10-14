@@ -16,23 +16,6 @@ $ terraform apply
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
 
-## Known issues
-
-The first deployment attempt might produce an error as per below:
-
-```
-╷
-│ Error: Provider produced inconsistent final plan
-│
-│ When expanding the plan for module.vpc.aws_vpc.this[0] to include new values learned so far during apply, provider "registry.terraform.io/hashicorp/aws" produced an invalid new value for .tags_all:
-│ new element "Name" has appeared.
-│
-│ This is a bug in the provider, which should be reported in the provider's own issue tracker.
-╵
-```
-
-Just run `terraform apply` again.
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -67,13 +50,11 @@ Just run `terraform apply` again.
 | [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [aws_iam_policy_document.bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.endpoint](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_region"></a> [region](#input\_region) | Name of the region to deploy to | `string` | `"us-east-1"` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Default tags to apply to all resources | `map(string)` | <pre>{<br>  "Environment": "sandbox"<br>}</pre> | no |
+No inputs.
 
 ## Outputs
 

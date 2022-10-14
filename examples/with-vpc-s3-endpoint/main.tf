@@ -1,14 +1,5 @@
-locals {
-  tags = merge(
-    var.tags,
-    {
-      Terraform = "true"
-    }
-  )
-}
-
 provider "aws" {
-  region = var.region
+  region = "eu-west-1"
 
   # Make it faster by skipping something
   skip_get_ec2_platforms      = true
@@ -16,14 +7,48 @@ provider "aws" {
   skip_region_validation      = true
   skip_credentials_validation = true
   skip_requesting_account_id  = true
+}
 
-  default_tags {
-    tags = local.tags
+data "aws_region" "current" {}
+
+################################################################################
+# Lambda Module
+################################################################################
+
+module "lambda_s3_write" {
+  source = "../../"
+
+  description = "Lambda demonstrating writes to an S3 bucket from within a VPC without Internet access"
+
+  function_name = random_pet.this.id
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  source_path = "${path.module}/../fixtures/python3.8-app2"
+
+  environment_variables = {
+    BUCKET_NAME = module.s3_bucket.s3_bucket_id
+    REGION_NAME = data.aws_region.current.name
+  }
+
+  # Let the module create a role for us
+  create_role                   = true
+  attach_cloudwatch_logs_policy = true
+  attach_network_policy         = true
+
+  # There's no need to attach any extra permission for S3 writes as that's added by the bucket policy when a session is created
+  # See https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html
+
+  vpc_security_group_ids = [module.security_group_lambda.security_group_id]
+  vpc_subnet_ids         = module.vpc.intra_subnets
+
+  tags = {
+    Module = "lambda_s3_write"
   }
 }
 
 ################################################################################
-# Supporting Resources
+# Extra Resources
 ################################################################################
 
 resource "random_pet" "this" {
@@ -37,8 +62,10 @@ module "vpc" {
   name = random_pet.this.id
   cidr = "10.0.0.0/16"
 
-  azs             = ["${var.region}a", "${var.region}b", "${var.region}c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  azs = ["${data.aws_region.current.name}a", "${data.aws_region.current.name}b", "${data.aws_region.current.name}c"]
+
+  # Intra subnets are designed to have no Internet access via NAT Gateway.
+  intra_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
 module "vpc_endpoints" {
@@ -51,7 +78,7 @@ module "vpc_endpoints" {
     s3 = {
       service         = "s3"
       service_type    = "Gateway"
-      route_table_ids = module.vpc.private_route_table_ids
+      route_table_ids = module.vpc.intra_route_table_ids
       policy          = data.aws_iam_policy_document.endpoint.json
     }
   }
@@ -148,38 +175,6 @@ data "aws_iam_policy_document" "bucket" {
       "${module.s3_bucket.s3_bucket_arn}/*",
     ]
   }
-}
-
-################################################################################
-# Lambda Module
-################################################################################
-
-module "lambda_s3_write" {
-  source = "../../"
-
-  description = "Lambda demonstrating writes to an S3 bucket from within a VPC without Internet access"
-
-  function_name = random_pet.this.id
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-
-  source_path = "${path.module}/../fixtures/python3.8-app2"
-
-  environment_variables = {
-    BUCKET_NAME = module.s3_bucket.s3_bucket_id
-    REGION_NAME = var.region
-  }
-
-  # Let the module create a role for us
-  create_role                   = true
-  attach_cloudwatch_logs_policy = true
-  attach_network_policy         = true
-
-  # There's no need to attach any extra permission for S3 writes as that's added by the bucket policy when a session is created
-  # See https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html
-
-  vpc_security_group_ids = [module.security_group_lambda.security_group_id]
-  vpc_subnet_ids         = module.vpc.private_subnets
 }
 
 module "security_group_lambda" {
