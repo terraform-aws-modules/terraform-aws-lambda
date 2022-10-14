@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.1.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.0...v4.1.1) (2022-10-14)
+
+
+### Bug Fixes
+
+* Forces the local_filename output to wait for the package to be built ([#356](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/356)) ([745dc53](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/745dc5359f45d15fe4201114c0f0ec0069c99fa1))
+
 ## [4.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.2...v4.1.0) (2022-10-14)
 
 
