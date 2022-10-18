@@ -17,7 +17,7 @@ module "lambda" {
   source = "../../"
 
   function_name           = random_pet.this.id
-  handler                 = "lambda.lambda_handler"
+  handler                 = "index.lambda_handler"
   runtime                 = "python3.8"
   code_signing_config_arn = aws_lambda_code_signing_config.this.arn
   create_package          = false
@@ -32,21 +32,16 @@ module "lambda" {
 # Lambda Code Signing
 ################################################################################
 
-data "archive_file" "this" {
-  type        = "zip"
-  source_dir  = "dist"
-  output_path = "lambda.zip"
-}
-
 resource "aws_s3_bucket_object" "this" {
   bucket = module.s3_bucket.s3_bucket_id
-  key    = "unsigned/${data.archive_file.this.output_path}"
-  source = data.archive_file.this.output_path
+  key    = "unsigned/existing_package.zip"
+  source = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
 }
 
 resource "aws_signer_signing_profile" "this" {
   platform_id = "AWSLambda-SHA384-ECDSA"
-  name        = random_pet.this.id
+  # invalid value for name (must be alphanumeric with max length of 64 characters)
+  name = replace(random_pet.this.id, "-", "")
 
   signature_validity_period {
     value = 3
