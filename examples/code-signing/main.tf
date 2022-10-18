@@ -1,35 +1,52 @@
-locals {
-  lambda_s3_bucket     = "hello-world-lambda-s3-bucket"
-  lambda_zip_filename  = "lambda.zip"
-  lambda_function_name = "hello-world-lambda"
+provider "aws" {
+  region = "eu-west-1"
+
+  # Make it faster by skipping something
+  skip_get_ec2_platforms      = true
+  skip_metadata_api_check     = true
+  skip_region_validation      = true
+  skip_credentials_validation = true
+  skip_requesting_account_id  = true
 }
 
-# create a s3 bucket to store signed code
-module "lambda_s3_bucket" {
-  source                  = "terraform-aws-modules/s3-bucket/aws"
-  bucket                  = local.lambda_s3_bucket
-  acl                     = "private"
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-  versioning = {
-    enabled = true
-  }
-  server_side_encryption_configuration = {
-    rule = {
-      apply_server_side_encryption_by_default = {
-        sse_algorithm = "AES256"
-      }
-    }
+################################################################################
+# Lambda Function
+################################################################################
+
+module "lambda" {
+  source = "../../"
+
+  function_name           = random_pet.this.id
+  handler                 = "lambda.lambda_handler"
+  runtime                 = "python3.8"
+  code_signing_config_arn = aws_lambda_code_signing_config.this.arn
+  create_package          = false
+
+  s3_existing_package = {
+    bucket = module.s3_bucket.s3_bucket_id
+    key    = "signed/${aws_signer_signing_job.this.id}.zip"
   }
 }
 
-# create a signing profile
-resource "aws_signer_signing_profile" "lambda_signing_profile" {
-  # aws signer list-signing-platforms | jq '.platforms[].platformId'
+################################################################################
+# Lambda Code Signing
+################################################################################
+
+data "archive_file" "this" {
+  type        = "zip"
+  source_dir  = "dist"
+  output_path = "lambda.zip"
+}
+
+resource "aws_s3_bucket_object" "this" {
+  bucket = module.s3_bucket.s3_bucket_id
+  key    = "unsigned/${data.archive_file.this.output_path}"
+  source = data.archive_file.this.output_path
+}
+
+resource "aws_signer_signing_profile" "this" {
   platform_id = "AWSLambda-SHA384-ECDSA"
-  name        = "lambda_signing_profile"
+  name        = random_pet.this.id
 
   signature_validity_period {
     value = 3
@@ -37,64 +54,67 @@ resource "aws_signer_signing_profile" "lambda_signing_profile" {
   }
 }
 
-# upload zipped lambda code to s3
-data "archive_file" "lambda" {
-  type        = "zip"
-  source_dir  = "dist"
-  output_path = local.lambda_zip_filename
-}
-
-resource "aws_s3_bucket_object" "lambda" {
-  bucket = module.lambda_s3_bucket.s3_bucket_id
-  key    = "unsigned/${data.archive_file.lambda.output_path}"
-  source = data.archive_file.lambda.output_path
-}
-
-# code signing job
-resource "aws_signer_signing_job" "build_signing_job" {
-  profile_name = aws_signer_signing_profile.lambda_signing_profile.name
+resource "aws_signer_signing_job" "this" {
+  profile_name = aws_signer_signing_profile.this.name
 
   source {
     s3 {
-      bucket  = module.lambda_s3_bucket.s3_bucket_id
-      key     = "unsigned/${local.lambda_zip_filename}"
-      version = aws_s3_bucket_object.lambda.version_id
+      bucket  = module.s3_bucket.s3_bucket_id
+      key     = aws_s3_bucket_object.this.id
+      version = aws_s3_bucket_object.this.version_id
     }
   }
 
   destination {
     s3 {
-      bucket = module.lambda_s3_bucket.s3_bucket_id
+      bucket = module.s3_bucket.s3_bucket_id
       prefix = "signed/"
     }
   }
 
   ignore_signing_job_failure = true
-
-  depends_on = [
-    aws_s3_bucket_object.lambda
-  ]
 }
 
-resource "aws_lambda_code_signing_config" "lambda" {
+resource "aws_lambda_code_signing_config" "this" {
   allowed_publishers {
-    signing_profile_version_arns = [aws_signer_signing_profile.lambda_signing_profile.version_arn]
+    signing_profile_version_arns = [aws_signer_signing_profile.this.version_arn]
   }
+
   policies {
     untrusted_artifact_on_deployment = "Enforce"
   }
 }
 
-module "lambda" {
-  source = "../../"
+################################################################################
+# Supporting Resources
+################################################################################
 
-  function_name           = local.lambda_function_name
-  handler                 = "lambda.lambda_handler"
-  runtime                 = "python3.8"
-  code_signing_config_arn = aws_lambda_code_signing_config.lambda.arn
-  create_package          = false
-  s3_existing_package = {
-    bucket = module.lambda_s3_bucket.s3_bucket_id
-    key    = "signed/${aws_signer_signing_job.build_signing_job.id}.zip"
+resource "random_pet" "this" {
+  length = 2
+}
+
+module "s3_bucket" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "~> 3.0"
+
+  bucket_prefix = "${random_pet.this.id}-"
+  force_destroy = true
+
+  # S3 bucket-level Public Access Block configuration
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = true
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
   }
 }
