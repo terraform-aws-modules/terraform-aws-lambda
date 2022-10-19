@@ -79,8 +79,8 @@ module "package_file_with_pip_requirements" {
   source_path = [
     "${path.module}/../fixtures/python3.8-app1/index.py",
     {
-      pip_requirements     = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
-      prefix_in_zip        = "vendor"
+      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      prefix_in_zip    = "vendor"
       pre_package_commands = [
         "echo I will run before the pip install command",
         "echo so will I",
@@ -104,7 +104,7 @@ module "package_with_pip_requirements_in_docker" {
     "${path.module}/../fixtures/python3.8-app1/index.py",
     "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
     {
-      pip_requirements     = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
       pre_package_commands = [
         "echo I will run before the pip install command in the docker container",
         "echo I can read $MY_ENV_VAR and my volume:",
@@ -113,11 +113,11 @@ module "package_with_pip_requirements_in_docker" {
     }
   ]
 
-  build_in_docker           = true
+  build_in_docker = true
   docker_additional_options = [
-        "-e", "MY_ENV_VAR='My environment variable value'",
-        "-v", "${abspath(path.module)}:/my-vol:ro",
-  ] 
+    "-e", "MY_ENV_VAR='My environment variable value'",
+    "-v", "${abspath(path.module)}:/my-vol:ro",
+  ]
 }
 
 # Create zip-archive which contains content of directory with commands and patterns applied.
@@ -256,8 +256,8 @@ module "package_dir_with_npm_install_and_additional_commands" {
   runtime = "nodejs14.x"
   source_path = [
     {
-      path                 = "${path.module}/../fixtures/nodejs14.x-app1"
-      npm_requirements     = true
+      path             = "${path.module}/../fixtures/nodejs14.x-app1"
+      npm_requirements = true
       pre_package_commands = [
         "echo I will run before the npm install command",
         "echo so will I",
@@ -301,11 +301,11 @@ module "package_with_npm_requirements_in_docker_and_additional_commands" {
 
   create_function = false
 
-  runtime         = "nodejs14.x"
+  runtime = "nodejs14.x"
   source_path = [
     {
-      path                 = "${path.module}/../fixtures/nodejs14.x-app1"
-      npm_requirements     = true
+      path             = "${path.module}/../fixtures/nodejs14.x-app1"
+      npm_requirements = true
       pre_package_commands = [
         "echo I will run before the npm install command in the docker container",
         "echo I can read $MY_ENV_VAR and my volume:",
@@ -314,13 +314,13 @@ module "package_with_npm_requirements_in_docker_and_additional_commands" {
     }
   ]
 
-  build_in_docker           = true
+  build_in_docker = true
   docker_additional_options = [
-        "-e", "MY_ENV_VAR='My environment variable value'",
-        "-v", "${abspath(path.module)}:/my-vol:ro",
-  ] 
+    "-e", "MY_ENV_VAR='My environment variable value'",
+    "-v", "${abspath(path.module)}:/my-vol:ro",
+  ]
 
-  hash_extra      = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
+  hash_extra = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
 }
 
 ################################
