@@ -648,7 +648,7 @@ class BuildPlanManager:
         step = lambda *x: build_plan.append(x)
         hash = source_paths.append
 
-        def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
+        def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None, pre_package_commands=None):
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, 'requirements.txt')
@@ -657,10 +657,13 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                step('pip', runtime, requirements, prefix, tmp_dir)
+                if pre_package_commands and not query.docker:
+                    additional_commands_step(path, pre_package_commands)
+                    pre_package_commands = None
+                step('pip', runtime, requirements, prefix, tmp_dir, pre_package_commands)
                 hash(requirements)
 
-        def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
+        def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None, pre_package_commands=None):
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, 'package.json')
@@ -669,8 +672,28 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                step('npm', runtime, requirements, prefix, tmp_dir)
+                if pre_package_commands and not query.docker:
+                    additional_commands_step(path, pre_package_commands)
+                    pre_package_commands = None
+                step('npm', runtime, requirements, prefix, tmp_dir, pre_package_commands)
                 hash(requirements)
+
+        def additional_commands_step(path, commands):
+            if not commands:
+                return
+
+            if isinstance(commands, str):
+                commands = map(str.strip, commands.splitlines())
+
+            if path:
+                path = os.path.normpath(path)
+                if os.path.isfile(path):
+                    path = os.path.dirname(path)
+            else:
+                path = query.paths.cwd
+
+            hash(path)
+            step('sh', path, '\n'.join(commands))
 
         def commands_step(path, commands):
             if not commands:
@@ -747,21 +770,30 @@ class BuildPlanManager:
                     prefix = claim.get('prefix_in_zip')
                     pip_requirements = claim.get('pip_requirements')
                     npm_requirements = claim.get('npm_package_json')
+                    if not npm_requirements:
+                        # npm_package_json is an undocumented setting!!!!
+                        # Set correct value here rather than create breaking change
+                        npm_requirements = claim.get('npm_requirements')
+                    pre_package_commands = claim.get('pre_package_commands')
                     runtime = claim.get('runtime', query.runtime)
 
                     if pip_requirements and runtime.startswith('python'):
                         if isinstance(pip_requirements, bool) and path:
-                            pip_requirements_step(path, prefix, required=True, tmp_dir=claim.get('pip_tmp_dir'))
+                            pip_requirements_step(path, prefix, required=True, tmp_dir=claim.get('pip_tmp_dir'),
+                                                  pre_package_commands=pre_package_commands)
                         else:
                             pip_requirements_step(pip_requirements, prefix,
-                                                  required=True, tmp_dir=claim.get('pip_tmp_dir'))
+                                                  required=True, tmp_dir=claim.get('pip_tmp_dir'),
+                                                  pre_package_commands=pre_package_commands)
 
                     if npm_requirements and runtime.startswith('nodejs'):
                         if isinstance(npm_requirements, bool) and path:
-                            npm_requirements_step(path, prefix, required=True, tmp_dir=claim.get('npm_tmp_dir'))
+                            npm_requirements_step(path, prefix, required=True, tmp_dir=claim.get('npm_tmp_dir'),
+                                                  pre_package_commands=pre_package_commands)
                         else:
                             npm_requirements_step(npm_requirements, prefix,
-                                                  required=True, tmp_dir=claim.get('npm_tmp_dir'))
+                                                  required=True, tmp_dir=claim.get('npm_tmp_dir'),
+                                                  pre_package_commands=pre_package_commands)
 
                     if path:
                         step('zip', path, prefix)
@@ -807,8 +839,8 @@ class BuildPlanManager:
                 else:
                     zs.write_file(source_path, prefix=prefix, timestamp=ts)
             elif cmd == 'pip':
-                runtime, pip_requirements, prefix, tmp_dir = action[1:]
-                with install_pip_requirements(query, pip_requirements, tmp_dir) as rd:
+                runtime, pip_requirements, prefix, tmp_dir, pre_package_commands = action[1:]
+                with install_pip_requirements(query, pip_requirements, tmp_dir, pre_package_commands) as rd:
                     if rd:
                         if pf:
                             self._zip_write_with_filter(zs, pf, rd, prefix,
@@ -817,8 +849,8 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == 'npm':
-                runtime, npm_requirements, prefix, tmp_dir = action[1:]
-                with install_npm_requirements(query, npm_requirements, tmp_dir) as rd:
+                runtime, npm_requirements, prefix, tmp_dir, pre_package_commands = action[1:]
+                with install_npm_requirements(query, npm_requirements, tmp_dir, pre_package_commands) as rd:
                     if rd:
                         if pf:
                             self._zip_write_with_filter(zs, pf, rd, prefix,
@@ -858,7 +890,7 @@ class BuildPlanManager:
 
 
 @contextmanager
-def install_pip_requirements(query, requirements_file, tmp_dir):
+def install_pip_requirements(query, requirements_file, tmp_dir, pre_package_commands):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -941,7 +973,13 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                             working_dir, artifacts_dir, 'cache/pip'))
 
                 chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                shell_command = [shlex_join(pip_command), '&&',
+                if pre_package_commands:
+                    additional_commands = '{} &&'.format(' && '.join(pre_package_commands))
+                else:
+                    additional_commands = ""
+
+                shell_command = [additional_commands,
+                                 shlex_join(pip_command), '&&',
                                  shlex_join(['chown', '-R',
                                              chown_mask, '.'])]
                 shell_command = [' '.join(shell_command)]
@@ -950,6 +988,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                     image=docker_image_tag_id,
                     shell=True, ssh_agent=with_ssh_agent,
                     pip_cache_dir=pip_cache_dir,
+                    docker_additional_options=docker.docker_additional_options,
                 ))
             else:
                 cmd_log.info(shlex_join(pip_command))
@@ -968,7 +1007,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
-def install_npm_requirements(query, requirements_file, tmp_dir):
+def install_npm_requirements(query, requirements_file, tmp_dir, pre_package_commands):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -1025,14 +1064,21 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
                 chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                shell_command = [shlex_join(npm_command), '&&',
+                if pre_package_commands:
+                    additional_commands = '{} &&'.format(' && '.join(pre_package_commands))
+                else:
+                    additional_commands = ""
+
+                shell_command = [additional_commands,
+                                    shlex_join(npm_command), '&&',
                                     shlex_join(['chown', '-R',
                                                 chown_mask, '.'])]
                 shell_command = [' '.join(shell_command)]
                 check_call(docker_run_command(
                     '.', shell_command, runtime,
                     image=docker_image_tag_id,
-                    shell=True, ssh_agent=with_ssh_agent
+                    shell=True, ssh_agent=with_ssh_agent,
+                    docker_additional_options=docker.docker_additional_options,
                 ))
             else:
                 cmd_log.info(shlex_join(npm_command))
@@ -1082,7 +1128,8 @@ def docker_build_command(tag=None, docker_file=None, build_root=False):
 
 def docker_run_command(build_root, command, runtime,
                        image=None, shell=None, ssh_agent=False,
-                       interactive=False, pip_cache_dir=None):
+                       interactive=False, pip_cache_dir=None,
+                       docker_additional_options=None):
     """"""
     if platform.system() not in ('Linux', 'Darwin'):
         raise RuntimeError("Unsupported platform for docker building")
@@ -1102,6 +1149,9 @@ def docker_run_command(build_root, command, runtime,
         # '-v', '{}/.ssh/id_rsa:/root/.ssh/id_rsa:z'.format(home),
         '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
     ])
+
+    if docker_additional_options:
+        docker_cmd.extend(docker_additional_options)
 
     if ssh_agent:
         if platform.system() == 'Darwin':

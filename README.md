@@ -455,6 +455,7 @@ source_path = [
 - `npm_requirements` - Controls whether to execute `npm install`. Set to `false` to disable this feature, `true` to run `npm install` with `package.json` found in `path`. Or set to another filename which you want to use instead.
 - `npm_tmp_dir` - Set the base directory to make the temporary directory for npm installs. Can be useful for Docker in Docker builds.
 - `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
+- `pre_package_commands` - List of commands to run before doing a `pip install` or `npm install`. Works in conjunction with `pip_requirements` and `npm_requirements`.
 
 ### Building in Docker
 
@@ -469,6 +470,17 @@ If your Lambda Function or Layer uses some dependencies you can build them in Do
 Using this module you can install dependencies from private hosts. To do this, you need for forward SSH agent:
 
     docker_with_ssh_agent = true
+
+#### Passing additional Docker options
+
+To add flexibility when building in docker, you can pass any number of additional options that you require (see [Docker run reference](https://docs.docker.com/engine/reference/run/) for available options):
+
+```hcl
+  docker_additional_options = [
+        "-e", "MY_ENV_VAR='My environment variable value'",
+        "-v", "/local:/docker-vol",
+  ] 
+```
 
 ## <a name="package"></a> Deployment package - Create or use existing
 
