@@ -657,7 +657,7 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                if not shutil.which(runtime):
+                if not query.docker and not shutil.which(runtime):
                     raise RuntimeError(
                         "Python interpreter version equal "
                         "to defined lambda runtime ({}) should be "
@@ -679,7 +679,7 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                if not shutil.which(runtime):
+                if not query.docker and not shutil.which(runtime):
                     raise RuntimeError(
                         "Nodejs interpreter version equal "
                         "to defined lambda runtime ({}) should be "
