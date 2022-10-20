@@ -656,14 +656,9 @@ class BuildPlanManager:
                 if required:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
-            if not shutil.which(runtime):
-                raise RuntimeError(
-                    "Python interpreter version equal "
-                    "to defined lambda runtime ({}) should be "
-                    "available in system PATH".format(runtime))
-
-            step('pip', runtime, requirements, prefix, tmp_dir)
-            hash(requirements)
+            else:
+                step('pip', runtime, requirements, prefix, tmp_dir)
+                hash(requirements)
 
         def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             requirements = path
@@ -673,14 +668,9 @@ class BuildPlanManager:
                 if required:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
-            if not shutil.which(runtime):
-                raise RuntimeError(
-                    "Nodejs interpreter version equal "
-                    "to defined lambda runtime ({}) should be "
-                    "available in system PATH".format(runtime))
-
-            step('npm', runtime, requirements, prefix, tmp_dir)
-            hash(requirements)
+            else:
+                step('npm', runtime, requirements, prefix, tmp_dir)
+                hash(requirements)
 
         def commands_step(path, commands):
             if not commands:
