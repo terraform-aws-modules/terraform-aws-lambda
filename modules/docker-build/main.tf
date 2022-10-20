@@ -31,6 +31,7 @@ resource "null_resource" "sam_metadata_docker_registry_image_this" {
     docker_file       = var.docker_file_path
     docker_build_args = jsonencode(var.build_args)
     docker_tag        = var.image_tag
+    built_image_uri   = docker_registry_image.this.name
   }
   depends_on = [docker_registry_image.this]
 }
