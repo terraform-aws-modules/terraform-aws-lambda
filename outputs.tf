@@ -133,6 +133,10 @@ output "lambda_cloudwatch_log_group_name" {
 output "local_filename" {
   description = "The filename of zip archive deployed (if deployment was from local)"
   value       = local.filename
+
+  depends_on = [
+    null_resource.archive,
+  ]
 }
 
 output "s3_object" {
