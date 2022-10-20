@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.1.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.1...v4.1.2) (2022-10-20)
+
+
+### Bug Fixes
+
+* Generates error in plan phase if runtime is not available ([#358](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/358)) ([f9bf21d](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f9bf21df9bef0730ed3efc174fc12a79e3a5268c))
+
 ### [4.1.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.0...v4.1.1) (2022-10-14)
 
 
