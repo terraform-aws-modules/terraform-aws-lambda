@@ -32,7 +32,7 @@ module "lambda" {
 # Lambda Code Signing
 ################################################################################
 
-resource "aws_s3_bucket_object" "this" {
+resource "aws_s3_object" "this" {
   bucket = module.s3_bucket.s3_bucket_id
   key    = "unsigned/existing_package.zip"
   source = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
@@ -55,8 +55,8 @@ resource "aws_signer_signing_job" "this" {
   source {
     s3 {
       bucket  = module.s3_bucket.s3_bucket_id
-      key     = aws_s3_bucket_object.this.id
-      version = aws_s3_bucket_object.this.version_id
+      key     = aws_s3_object.this.id
+      version = aws_s3_object.this.version_id
     }
   }
 
