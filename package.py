@@ -656,18 +656,19 @@ class BuildPlanManager:
                 if required:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
-            if not shutil.which(runtime):
-                raise RuntimeError(
-                    "Python interpreter version equal "
-                    "to defined lambda runtime ({}) should be "
-                    "available in system PATH".format(runtime))
+            else:
+                if not shutil.which(runtime):
+                    raise RuntimeError(
+                        "Python interpreter version equal "
+                        "to defined lambda runtime ({}) should be "
+                        "available in system PATH".format(runtime))
 
-            if pre_package_commands and not query.docker:
-                additional_commands_step(path, pre_package_commands)
-                pre_package_commands = None
+                if pre_package_commands and not query.docker:
+                    additional_commands_step(path, pre_package_commands)
+                    pre_package_commands = None
 
-            step('pip', runtime, requirements, prefix, tmp_dir, pre_package_commands)
-            hash(requirements)
+                step('pip', runtime, requirements, prefix, tmp_dir, pre_package_commands)
+                hash(requirements)
 
         def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None, pre_package_commands=None):
             requirements = path
@@ -677,18 +678,19 @@ class BuildPlanManager:
                 if required:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
-            if not shutil.which(runtime):
-                raise RuntimeError(
-                    "Nodejs interpreter version equal "
-                    "to defined lambda runtime ({}) should be "
-                    "available in system PATH".format(runtime))
+            else:
+                if not shutil.which(runtime):
+                    raise RuntimeError(
+                        "Nodejs interpreter version equal "
+                        "to defined lambda runtime ({}) should be "
+                        "available in system PATH".format(runtime))
 
-            if pre_package_commands and not query.docker:
-                additional_commands_step(path, pre_package_commands)
-                pre_package_commands = None
+                if pre_package_commands and not query.docker:
+                    additional_commands_step(path, pre_package_commands)
+                    pre_package_commands = None
 
-            step('npm', runtime, requirements, prefix, tmp_dir, pre_package_commands)
-            hash(requirements)
+                step('npm', runtime, requirements, prefix, tmp_dir, pre_package_commands)
+                hash(requirements)
 
         def additional_commands_step(path, commands):
             if not commands:
