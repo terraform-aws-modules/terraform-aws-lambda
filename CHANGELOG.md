@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.1.4](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.3...v4.1.4) (2022-10-21)
+
+
+### Bug Fixes
+
+* Skips the runtime test when building in docker ([#362](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/362)) ([2055256](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/20552562aa80843fe5cb5e569b5e58daaf569741))
+
 ### [4.1.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.2...v4.1.3) (2022-10-20)
 
 
