@@ -470,6 +470,10 @@ Using this module you can install dependencies from private hosts. To do this, y
 
     docker_with_ssh_agent = true
 
+Note that by default, the `docker_image` used comes from the registry `public.ecr.aws/sam/`, and will be based on the `runtime` that you specify. In other words, if you specify a runtime of `python3.8` and do not specify `docker_image`, then the `docker_image` will resolve to `public.ecr.aws/sam/build-python3.8`. This ensures that by default the `runtime` is available in the docker container.
+
+If you override `docker_image`, be sure to keep the image in sync with your `runtime`. During the plan phase, when using docker, there is no check that the `runtime` is available to build the package. That means that if you use an image that does not have the runtime, the plan will still succeed, but then the apply will fail.
+
 ## <a name="package"></a> Deployment package - Create or use existing
 
 By default, this module creates deployment package and uses it to create or update Lambda Function or Lambda Layer.
