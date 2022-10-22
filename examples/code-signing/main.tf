@@ -32,10 +32,19 @@ module "lambda" {
 # Lambda Code Signing
 ################################################################################
 
+# 5mins wait for s3 versioning configuration to be propagated properly
+# https://docs.aws.amazon.com/AmazonS3/latest/userguide/manage-versioning-examples.html
+resource "time_sleep" "this" {
+  create_duration = "5m"
+}
+
 resource "aws_s3_object" "this" {
   bucket = module.s3_bucket.s3_bucket_id
   key    = "unsigned/existing_package.zip"
   source = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
+  depends_on = [
+    time_sleep.this
+  ]
 }
 
 resource "aws_signer_signing_profile" "this" {
