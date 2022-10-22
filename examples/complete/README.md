@@ -46,7 +46,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_layer_with_package_deploying_externally"></a> [lambda\_layer\_with\_package\_deploying\_externally](#module\_lambda\_layer\_with\_package\_deploying\_externally) | ../../ | n/a |
 | <a name="module_lambda_with_mixed_trusted_entities"></a> [lambda\_with\_mixed\_trusted\_entities](#module\_lambda\_with\_mixed\_trusted\_entities) | ../../ | n/a |
 | <a name="module_lambda_with_provisioned_concurrency"></a> [lambda\_with\_provisioned\_concurrency](#module\_lambda\_with\_provisioned\_concurrency) | ../../ | n/a |
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | n/a |
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | ~> 3.0 |
 
 ## Resources
 
