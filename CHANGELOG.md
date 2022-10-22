@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.4...v4.2.0) (2022-10-22)
+
+
+### Features
+
+* Added support for Code Signing Configuration ([#351](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/351)) ([dd40178](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/dd40178f7534fa4fd341a8e9dbf645bbe4c279d0))
+
 ### [4.1.4](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.3...v4.1.4) (2022-10-21)
 
 
