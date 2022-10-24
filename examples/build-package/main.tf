@@ -107,6 +107,34 @@ module "package_with_pip_requirements_in_docker" {
   build_in_docker = true
 }
 
+# Create zip-archive which contains:
+# 1. A single file - index.py
+# 2. Content of directory "dir2"
+# 3. Install pip requirements
+# "pip install" is running in a Docker container for the specified runtime
+# The docker entrypoint is overridden, allowing you to run additional commands within the container
+module "package_with_pip_requirements_in_docker_overriding_entrypoint" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.8"
+  source_path = [
+    "${path.module}/../fixtures/python3.8-app1/index.py",
+    "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
+    {
+      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+    }
+  ]
+
+  build_in_docker = true
+  docker_additional_options = [
+    "-e", "MY_ENV_VAR='My environment variable value'",
+    "-v", "${abspath(path.module)}/../fixtures/python3.8-app1/docker/entrypoint.sh:/entrypoint/entrypoint.sh:ro",
+  ]
+  docker_entrypoint = "/entrypoint/entrypoint.sh"
+}
+
 # Create zip-archive which contains content of directory with commands and patterns applied.
 #
 # Notes:

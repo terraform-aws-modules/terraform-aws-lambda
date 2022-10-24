@@ -961,7 +961,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                     '.', shell_command, runtime,
                     image=docker_image_tag_id,
                     shell=True, ssh_agent=with_ssh_agent,
-                    pip_cache_dir=pip_cache_dir,
+                    pip_cache_dir=pip_cache_dir, docker=docker,
                 ))
             else:
                 cmd_log.info(shlex_join(pip_command))
@@ -1044,7 +1044,8 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 check_call(docker_run_command(
                     '.', shell_command, runtime,
                     image=docker_image_tag_id,
-                    shell=True, ssh_agent=with_ssh_agent
+                    shell=True, ssh_agent=with_ssh_agent,
+                    docker=docker,
                 ))
             else:
                 cmd_log.info(shlex_join(npm_command))
@@ -1094,7 +1095,8 @@ def docker_build_command(tag=None, docker_file=None, build_root=False):
 
 def docker_run_command(build_root, command, runtime,
                        image=None, shell=None, ssh_agent=False,
-                       interactive=False, pip_cache_dir=None):
+                       interactive=False, pip_cache_dir=None,
+                       docker=None):
     """"""
     if platform.system() not in ('Linux', 'Darwin'):
         raise RuntimeError("Unsupported platform for docker building")
@@ -1114,6 +1116,9 @@ def docker_run_command(build_root, command, runtime,
         # '-v', '{}/.ssh/id_rsa:/root/.ssh/id_rsa:z'.format(home),
         '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
     ])
+
+    if docker and docker.docker_additional_options:
+        docker_cmd.extend(docker.docker_additional_options)
 
     if ssh_agent:
         if platform.system() == 'Darwin':
@@ -1141,7 +1146,10 @@ def docker_run_command(build_root, command, runtime,
     if not image:
         image = 'public.ecr.aws/sam/build-{}'.format(runtime)
 
-    docker_cmd.extend(['--entrypoint', ''])
+    if docker and docker.docker_entrypoint:
+        docker_cmd.extend(['--entrypoint', docker.docker_entrypoint])
+    else:
+        docker_cmd.extend(['--entrypoint', ''])
 
     docker_cmd.append(image)
 
