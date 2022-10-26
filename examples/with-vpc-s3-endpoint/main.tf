@@ -1,3 +1,18 @@
+locals {
+  network_acls = {
+    default_inbound = [
+      {
+        rule_number = 100
+        rule_action = "allow"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_block  = "10.0.0.0/16"
+      },
+    ]
+  }
+}
+
 provider "aws" {
   region = "eu-west-1"
 
@@ -55,6 +70,14 @@ resource "random_pet" "this" {
   length = 2
 }
 
+module "nacl_s3_pl" {
+  source  = "luigidifraiawork/nacl-rules-managed-prefix-list/aws"
+  version = "~> 1.0"
+
+  service_name = "s3"
+  start_offset = 200
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
@@ -66,6 +89,14 @@ module "vpc" {
 
   # Intra subnets are designed to have no Internet access via NAT Gateway.
   intra_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+
+  intra_dedicated_network_acl = true
+  intra_inbound_acl_rules = concat(
+    # NACL rule for local traffic
+    local.network_acls["default_inbound"],
+    # NACL rules for the response traffic from addresses in the AWS S3 prefix list
+    module.nacl_s3_pl.rules
+  )
 }
 
 module "vpc_endpoints" {
