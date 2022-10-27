@@ -72,10 +72,11 @@ resource "random_pet" "this" {
 
 module "nacl_s3_pl" {
   source  = "luigidifraiawork/nacl-rules-managed-prefix-list/aws"
-  version = "~> 1.0"
+  version = "~> 1.1"
 
   service_name = "s3"
   start_offset = 200
+  direction    = "inbound"
 }
 
 module "vpc" {
