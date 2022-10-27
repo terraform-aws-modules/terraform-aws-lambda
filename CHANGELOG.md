@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.0...v4.2.1) (2022-10-27)
+
+
+### Bug Fixes
+
+* Qualifiers in event invoke config ([#368](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/368)) ([93e1dc3](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/93e1dc3207105bd0620d3c3a952a0cce4d247972))
+
 ## [4.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.4...v4.2.0) (2022-10-22)
 
 
