@@ -70,7 +70,7 @@ resource "random_pet" "this" {
   length = 2
 }
 
-module "nacl_s3_pl" {
+module "s3_endpoint_inbound" {
   source  = "luigidifraiawork/nacl-rules-managed-prefix-list/aws"
   version = "~> 1.1"
 
@@ -96,7 +96,7 @@ module "vpc" {
     # NACL rule for local traffic
     local.network_acls["default_inbound"],
     # NACL rules for the response traffic from addresses in the AWS S3 prefix list
-    module.nacl_s3_pl.rules
+    module.s3_endpoint_inbound.rules
   )
 }
 
