@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.3.0...v4.4.0) (2022-10-31)
+
+
+### Features
+
+* Add a way to define IAM policy name prefix ([#354](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/354)) ([7df6bbf](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/7df6bbffa3d7d87570d6858db770bf8059f20591))
+
 ## [4.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.2...v4.3.0) (2022-10-31)
 
 
