@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.4.1...v4.5.0) (2022-10-31)
+
+
+### Features
+
+* Support additional arguments for docker and entrypoint override ([#366](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/366)) ([dc4d000](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/dc4d00068dc1bb1cbcac8943541b6406abcecbf2))
+
 ### [4.4.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.4.0...v4.4.1) (2022-10-31)
 
 
