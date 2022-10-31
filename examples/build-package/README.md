@@ -50,6 +50,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_with_npm_requirements_in_docker"></a> [package\_with\_npm\_requirements\_in\_docker](#module\_package\_with\_npm\_requirements\_in\_docker) | ../../ | n/a |
 | <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
 | <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ | n/a |
+| <a name="module_package_with_pip_requirements_in_docker_overriding_entrypoint"></a> [package\_with\_pip\_requirements\_in\_docker\_overriding\_entrypoint](#module\_package\_with\_pip\_requirements\_in\_docker\_overriding\_entrypoint) | ../../ | n/a |
 
 ## Resources
 

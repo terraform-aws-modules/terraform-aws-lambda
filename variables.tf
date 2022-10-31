@@ -683,6 +683,18 @@ variable "docker_pip_cache" {
   default     = null
 }
 
+variable "docker_additional_options" {
+  description = "Additional options to pass to the docker run command (e.g. to set environment variables, volumes, etc.)"
+  type        = list(string)
+  default     = []
+}
+
+variable "docker_entrypoint" {
+  description = "Path to the Docker entrypoint to use"
+  type        = string
+  default     = null
+}
+
 variable "recreate_missing_package" {
   description = "Whether to recreate missing Lambda package if it is missing locally or not"
   type        = bool
