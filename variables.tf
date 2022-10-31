@@ -433,6 +433,12 @@ variable "role_tags" {
 # Policies
 ###########
 
+variable "policy_name" {
+  description = "IAM policy name. It override the default value, which is the same as role_name"
+  type        = string
+  default     = null
+}
+
 variable "attach_cloudwatch_logs_policy" {
   description = "Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function"
   type        = bool
