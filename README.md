@@ -819,6 +819,29 @@ No modules.
 | <a name="output_s3_object"></a> [s3\_object](#output\_s3\_object) | The map with S3 object data of zip archive deployed (if deployment was from S3) |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
+## Development
+
+### Python
+
+During development involving modifying python files, use tox to run unit tests:
+
+```
+tox
+```
+
+This will try to run unit tests which each supported python version, reporting errors for python versions which are not installed locally.
+
+If you only want to test against your main python version:
+
+```
+tox -e py
+```
+
+You can also pass additional positional arguments to pytest which is used to run test, e.g. to make it verbose:
+```
+tox -e py -- -vvv
+```
+
 ## Authors
 
 Module managed by [Anton Babenko](https://github.com/antonbabenko). Check out [serverless.tf](https://serverless.tf) to learn more about doing serverless with Terraform.
