@@ -11,7 +11,7 @@ locals {
   #   attempting to plan if the role_name and function_name are not set.  This is a workaround
   #   for #83 that will allow one to import resources without receiving an error from coalesce.
   # @see https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/83
-  role_name = local.create_role ? coalesce(var.role_name, var.function_name, "*") : null
+  role_name   = local.create_role ? coalesce(var.role_name, var.function_name, "*") : null
   policy_name = coalesce(var.policy_name, local.role_name)
 
   # IAM Role trusted entities is a list of any (allow strings (services) and maps (type+identifiers))
