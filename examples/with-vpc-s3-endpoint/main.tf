@@ -59,20 +59,6 @@ data "aws_ec2_managed_prefix_list" "this" {
   name = "com.amazonaws.${data.aws_region.current.name}.s3"
 }
 
-locals {
-  entries_cidr = data.aws_ec2_managed_prefix_list.this.entries[*].cidr
-  s3_endpoint_inbound_rules = [
-    for k, v in zipmap(range(length(local.entries_cidr)), local.entries_cidr) : {
-      rule_number = 200 + k
-      rule_action = "allow"
-      from_port   = 1024
-      to_port     = 65535
-      protocol    = "tcp"
-      cidr_block  = v
-    }
-  ]
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
@@ -99,7 +85,19 @@ module "vpc" {
       },
     ],
     # NACL rules for the response traffic from addresses in the AWS S3 prefix list
-    local.s3_endpoint_inbound_rules
+    [for k, v in zipmap(
+      range(length(data.aws_ec2_managed_prefix_list.this.entries[*].cidr)),
+      data.aws_ec2_managed_prefix_list.this.entries[*].cidr
+      ) :
+      {
+        rule_number = 200 + k
+        rule_action = "allow"
+        from_port   = 1024
+        to_port     = 65535
+        protocol    = "tcp"
+        cidr_block  = v
+      }
+    ]
   )
 }
 
