@@ -44,6 +44,16 @@ output "lambda_function_source_code_size" {
   value       = try(aws_lambda_function.this[0].source_code_size, "")
 }
 
+output "lambda_function_signing_job_arn" {
+  description = "ARN of the signing job"
+  value       = try(aws_lambda_function.this[0].signing_job_arn, "")
+}
+
+output "lambda_function_signing_profile_version_arn" {
+  description = "ARN of the signing profile version"
+  value       = try(aws_lambda_function.this[0].signing_profile_version_arn, "")
+}
+
 # Lambda Function URL
 output "lambda_function_url" {
   description = "The URL of the Lambda Function URL"
@@ -133,6 +143,10 @@ output "lambda_cloudwatch_log_group_name" {
 output "local_filename" {
   description = "The filename of zip archive deployed (if deployment was from local)"
   value       = local.filename
+
+  depends_on = [
+    null_resource.archive,
+  ]
 }
 
 output "s3_object" {

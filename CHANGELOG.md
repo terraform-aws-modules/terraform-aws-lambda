@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.2...v4.3.0) (2022-10-31)
+
+
+### Features
+
+* Support installing poetry dependencies with pip ([#311](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/311)) ([398ae5a](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/398ae5a9ace660bb3e7021824c0bffe1ee19f44c))
+
+### [4.2.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.1...v4.2.2) (2022-10-31)
+
+
+### Bug Fixes
+
+* Checks for `npm` instead of `runtime` when building nodejs packages ([#364](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/364)) ([682052c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/682052c516b70425cd89ebd4086f2ffcf5c96bae))
+
+### [4.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.0...v4.2.1) (2022-10-27)
+
+
+### Bug Fixes
+
+* Qualifiers in event invoke config ([#368](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/368)) ([93e1dc3](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/93e1dc3207105bd0620d3c3a952a0cce4d247972))
+
+## [4.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.4...v4.2.0) (2022-10-22)
+
+
+### Features
+
+* Added support for Code Signing Configuration ([#351](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/351)) ([dd40178](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/dd40178f7534fa4fd341a8e9dbf645bbe4c279d0))
+
+### [4.1.4](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.3...v4.1.4) (2022-10-21)
+
+
+### Bug Fixes
+
+* Skips the runtime test when building in docker ([#362](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/362)) ([2055256](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/20552562aa80843fe5cb5e569b5e58daaf569741))
+
+### [4.1.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.2...v4.1.3) (2022-10-20)
+
+
+### Bug Fixes
+
+* Performs plan-phase runtime check only if building package ([#359](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/359)) ([dfc8934](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/dfc8934e907e5eb7f1820b838ec6e98f4011128a))
+
+### [4.1.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.1...v4.1.2) (2022-10-20)
+
+
+### Bug Fixes
+
+* Generates error in plan phase if runtime is not available ([#358](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/358)) ([f9bf21d](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f9bf21df9bef0730ed3efc174fc12a79e3a5268c))
+
+### [4.1.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.1.0...v4.1.1) (2022-10-14)
+
+
+### Bug Fixes
+
+* Forces the local_filename output to wait for the package to be built ([#356](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/356)) ([745dc53](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/745dc5359f45d15fe4201114c0f0ec0069c99fa1))
+
+## [4.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.2...v4.1.0) (2022-10-14)
+
+
+### Features
+
+* Add example for S3 bucket access through VPC Endpoint ([#349](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/349)) ([2ceb32f](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2ceb32fdbef85758305a59b2320bdd40e246290f))
+
 ### [4.0.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.0.1...v4.0.2) (2022-09-17)
 
 
