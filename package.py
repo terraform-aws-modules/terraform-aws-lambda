@@ -615,6 +615,19 @@ class ZipContentFilter:
                     yield from emit_file(f, o)
 
 
+def get_build_system_from_pyproject_toml(pyproject_file):
+    # Implement a basic TOML parser because python stdlib does not provide toml support and we probably do not want to add external dependencies
+    if os.path.isfile(pyproject_file):
+        with open(pyproject_file) as f:
+            bs = False
+            for line in f.readlines():
+                if line.startswith("[build-system]"):
+                    bs = True
+                    continue
+                if bs and line.startswith("build-backend") and "poetry" in line:
+                    return "poetry"
+
+
 class BuildPlanManager:
     """"""
 
@@ -666,6 +679,23 @@ class BuildPlanManager:
 
                 step('pip', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
+
+        def poetry_install_step(path, prefix=None, required=False):
+            pyproject_file = path
+            if os.path.isdir(path):
+                pyproject_file = os.path.join(path, "pyproject.toml")
+            if get_build_system_from_pyproject_toml(pyproject_file) != "poetry":
+                if required:
+                    raise RuntimeError("poetry configuration not found: {}".format(pyproject_file))
+            else:
+                step("poetry", runtime, path, prefix)
+                hash(pyproject_file)
+                poetry_lock_file = os.path.join(path, "poetry.lock")
+                if os.path.isfile(poetry_lock_file):
+                    hash(poetry_lock_file)
+                poetry_toml_file = os.path.join(path, "poetry.toml")
+                if os.path.isfile(poetry_toml_file):
+                    hash(poetry_toml_file)
 
         def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             command = "npm"
@@ -742,6 +772,7 @@ class BuildPlanManager:
                 if runtime.startswith('python'):
                     pip_requirements_step(
                         os.path.join(path, 'requirements.txt'))
+                    poetry_install_step(path)
                 elif runtime.startswith('nodejs'):
                     npm_requirements_step(
                         os.path.join(path, 'package.json'))
@@ -759,6 +790,7 @@ class BuildPlanManager:
                 else:
                     prefix = claim.get('prefix_in_zip')
                     pip_requirements = claim.get('pip_requirements')
+                    poetry_install = claim.get("poetry_install")
                     npm_requirements = claim.get('npm_package_json')
                     runtime = claim.get('runtime', query.runtime)
 
@@ -769,13 +801,16 @@ class BuildPlanManager:
                             pip_requirements_step(pip_requirements, prefix,
                                                   required=True, tmp_dir=claim.get('pip_tmp_dir'))
 
+                    if poetry_install and runtime.startswith("python"):
+                        if path:
+                            poetry_install_step(path, prefix, required=True)
+
                     if npm_requirements and runtime.startswith('nodejs'):
                         if isinstance(npm_requirements, bool) and path:
                             npm_requirements_step(path, prefix, required=True, tmp_dir=claim.get('npm_tmp_dir'))
                         else:
                             npm_requirements_step(npm_requirements, prefix,
                                                   required=True, tmp_dir=claim.get('npm_tmp_dir'))
-
                     if path:
                         step('zip', path, prefix)
                         if patterns:
@@ -824,8 +859,16 @@ class BuildPlanManager:
                 with install_pip_requirements(query, pip_requirements, tmp_dir) as rd:
                     if rd:
                         if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix,
-                                                        timestamp=0)
+                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
+                        else:
+                            # XXX: timestamp=0 - what actually do with it?
+                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
+            elif cmd == "poetry":
+                runtime, path, prefix = action[1:]
+                with install_poetry_dependencies(query, path) as rd:
+                    if rd:
+                        if pf:
+                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
                         else:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
@@ -981,6 +1024,178 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
+def install_poetry_dependencies(query, path):
+    # TODO:
+    #  1. Emit files instead of temp_dir
+
+    # pyproject.toml is always required by poetry
+    pyproject_file = os.path.join(path, "pyproject.toml")
+    if not os.path.exists(pyproject_file):
+        yield
+        return
+
+    # poetry.lock & poetry.toml are optional
+    poetry_lock_file = os.path.join(path, "poetry.lock")
+    poetry_toml_file = os.path.join(path, "poetry.toml")
+
+    runtime = query.runtime
+    artifacts_dir = query.artifacts_dir
+    docker = query.docker
+    docker_image_tag_id = None
+
+    if docker:
+        docker_file = docker.docker_file
+        docker_image = docker.docker_image
+        docker_build_root = docker.docker_build_root
+
+        if docker_image:
+            ok = False
+            while True:
+                output = check_output(docker_image_id_command(docker_image))
+                if output:
+                    docker_image_tag_id = output.decode().strip()
+                    log.debug(
+                        "DOCKER TAG ID: %s -> %s", docker_image, docker_image_tag_id
+                    )
+                    ok = True
+                if ok:
+                    break
+                docker_cmd = docker_build_command(
+                    build_root=docker_build_root,
+                    docker_file=docker_file,
+                    tag=docker_image,
+                )
+                check_call(docker_cmd)
+                ok = True
+        elif docker_file or docker_build_root:
+            raise ValueError(
+                "docker_image must be specified for a custom image future references"
+            )
+
+    working_dir = os.getcwd()
+
+    log.info("Installing python dependencies with poetry & pip: %s", poetry_lock_file)
+    with tempdir() as temp_dir:
+        def copy_file_to_target(file, temp_dir):
+            filename = os.path.basename(file)
+            target_file = os.path.join(temp_dir, filename)
+            shutil.copyfile(file, target_file)
+            return target_file
+
+        pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
+
+        if os.path.isfile(poetry_lock_file):
+            log.info("Using poetry lock file: %s", poetry_lock_file)
+            poetry_lock_target_file = copy_file_to_target(poetry_lock_file, temp_dir)
+        else:
+            poetry_lock_target_file = None
+
+        if os.path.isfile(poetry_toml_file):
+            log.info("Using poetry configuration file: %s", poetry_lock_file)
+            poetry_toml_target_file = copy_file_to_target(poetry_toml_file, temp_dir)
+        else:
+            poetry_toml_target_file = None
+
+        poetry_exec = "poetry"
+        python_exec = runtime
+        subproc_env = None
+
+        if not docker:
+            if WINDOWS:
+                poetry_exec = "poetry.bat"
+
+        # Install dependencies into the temporary directory.
+        with cd(temp_dir):
+            # NOTE: poetry must be available in the build environment, which is the case with lambci/lambda:build-python* docker images but not public.ecr.aws/sam/build-python* docker images
+            # FIXME: poetry install does not currently allow to specify the target directory so we export the 
+            # requirements then install them with "pip --no-deps" to avoid using pip dependency resolver
+            poetry_commands = [
+                shlex_join(
+                    [
+                        poetry_exec,
+                        "config",
+                        "--no-interaction",
+                        "virtualenvs.create",
+                        "true",
+                    ]
+                ),
+                shlex_join(
+                    [
+                        poetry_exec,
+                        "config",
+                        "--no-interaction",
+                        "virtualenvs.in-project",
+                        "true",
+                    ]
+                ),
+                shlex_join(
+                    [
+                        poetry_exec,
+                        "export",
+                        "--format",
+                        "requirements.txt",
+                        "--output",
+                        "requirements.txt",
+                        "--with-credentials",
+                    ]
+                ),
+                shlex_join(
+                    [
+                        python_exec,
+                        "-m",
+                        "pip",
+                        "install",
+                        "--no-compile",
+                        "--no-deps",
+                        "--prefix=",
+                        "--target=.",
+                        "--requirement=requirements.txt",
+                    ]
+                ),
+            ]
+            if docker:
+                with_ssh_agent = docker.with_ssh_agent
+                poetry_cache_dir = docker.docker_poetry_cache
+                if poetry_cache_dir:
+                    if isinstance(poetry_cache_dir, str):
+                        poetry_cache_dir = os.path.abspath(
+                            os.path.join(working_dir, poetry_cache_dir)
+                        )
+                    else:
+                        poetry_cache_dir = os.path.abspath(
+                            os.path.join(working_dir, artifacts_dir, "cache/poetry")
+                        )
+
+                chown_mask = "{}:{}".format(os.getuid(), os.getgid())
+                shell_commands = poetry_commands + [shlex_join(["chown", "-R", chown_mask, "."])]
+                shell_command = [" && ".join(shell_commands)]
+                check_call(
+                    docker_run_command(
+                        ".",
+                        shell_command,
+                        runtime,
+                        image=docker_image_tag_id,
+                        shell=True,
+                        ssh_agent=with_ssh_agent,
+                        poetry_cache_dir=poetry_cache_dir,
+                    )
+                )
+            else:
+                cmd_log.info(poetry_commands)
+                log_handler and log_handler.flush()
+                for poetry_command in poetry_commands:
+                    check_call(poetry_command, env=subproc_env)
+
+            os.remove(pyproject_target_file)
+            if poetry_lock_target_file:
+                os.remove(poetry_lock_target_file)
+            if poetry_toml_target_file:
+                os.remove(poetry_toml_target_file)
+
+            yield temp_dir
+
+
+@contextmanager
 def install_npm_requirements(query, requirements_file, tmp_dir):
     # TODO:
     #  1. Emit files instead of temp_dir
@@ -1095,7 +1310,7 @@ def docker_build_command(tag=None, docker_file=None, build_root=False):
 
 def docker_run_command(build_root, command, runtime,
                        image=None, shell=None, ssh_agent=False,
-                       interactive=False, pip_cache_dir=None):
+                       interactive=False, pip_cache_dir=None, poetry_cache_dir=None):
     """"""
     if platform.system() not in ('Linux', 'Darwin'):
         raise RuntimeError("Unsupported platform for docker building")
@@ -1137,6 +1352,11 @@ def docker_run_command(build_root, command, runtime,
             pip_cache_dir = os.path.abspath(pip_cache_dir)
             docker_cmd.extend([
                 '-v', '{}:/root/.cache/pip:z'.format(pip_cache_dir),
+            ])
+        if poetry_cache_dir:
+            poetry_cache_dir = os.path.abspath(poetry_cache_dir)
+            docker_cmd.extend([
+                '-v', '{}:/root/.cache/pypoetry:z'.format(poetry_cache_dir),
             ])
 
     if not image:
