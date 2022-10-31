@@ -150,6 +150,7 @@ module "package_with_pip_requirements_in_docker_overriding_entrypoint" {
       pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
     }
   ]
+  hash_extra = "package_with_pip_requirements_in_docker_overriding_entrypoint"
 
   build_in_docker = true
   docker_additional_options = [
