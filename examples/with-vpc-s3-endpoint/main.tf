@@ -1,18 +1,3 @@
-locals {
-  network_acls = {
-    default_inbound = [
-      {
-        rule_number = 100
-        rule_action = "allow"
-        from_port   = 0
-        to_port     = 0
-        protocol    = "-1"
-        cidr_block  = "10.0.0.0/16"
-      },
-    ]
-  }
-}
-
 provider "aws" {
   region = "eu-west-1"
 
@@ -70,13 +55,22 @@ resource "random_pet" "this" {
   length = 2
 }
 
-module "s3_endpoint_inbound" {
-  source  = "luigidifraiawork/nacl-rules-managed-prefix-list/aws"
-  version = "~> 1.1"
+data "aws_ec2_managed_prefix_list" "this" {
+  name = "com.amazonaws.${data.aws_region.current.name}.s3"
+}
 
-  service_name = "s3"
-  start_offset = 200
-  direction    = "inbound"
+locals {
+  entries_cidr = data.aws_ec2_managed_prefix_list.this.entries[*].cidr
+  s3_endpoint_inbound_rules = [
+    for k, v in zipmap(range(length(local.entries_cidr)), local.entries_cidr) : {
+      rule_number = 200 + k
+      rule_action = "allow"
+      from_port   = 1024
+      to_port     = 65535
+      protocol    = "tcp"
+      cidr_block  = v
+    }
+  ]
 }
 
 module "vpc" {
@@ -94,9 +88,18 @@ module "vpc" {
   intra_dedicated_network_acl = true
   intra_inbound_acl_rules = concat(
     # NACL rule for local traffic
-    local.network_acls["default_inbound"],
+    [
+      {
+        rule_number = 100
+        rule_action = "allow"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_block  = "10.0.0.0/16"
+      },
+    ],
     # NACL rules for the response traffic from addresses in the AWS S3 prefix list
-    module.s3_endpoint_inbound.rules
+    local.s3_endpoint_inbound_rules
   )
 }
 
