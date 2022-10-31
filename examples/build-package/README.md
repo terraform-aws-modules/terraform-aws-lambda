@@ -36,8 +36,10 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_function_from_package"></a> [lambda\_function\_from\_package](#module\_lambda\_function\_from\_package) | ../../ | n/a |
 | <a name="module_lambda_layer"></a> [lambda\_layer](#module\_lambda\_layer) | ../../ | n/a |
 | <a name="module_lambda_layer_pip_requirements"></a> [lambda\_layer\_pip\_requirements](#module\_lambda\_layer\_pip\_requirements) | ../.. | n/a |
+| <a name="module_lambda_layer_poetry"></a> [lambda\_layer\_poetry](#module\_lambda\_layer\_poetry) | ../../ | n/a |
 | <a name="module_package_dir"></a> [package\_dir](#module\_package\_dir) | ../../ | n/a |
 | <a name="module_package_dir_pip_dir"></a> [package\_dir\_pip\_dir](#module\_package\_dir\_pip\_dir) | ../../ | n/a |
+| <a name="module_package_dir_poetry"></a> [package\_dir\_poetry](#module\_package\_dir\_poetry) | ../../ | n/a |
 | <a name="module_package_dir_with_npm_install"></a> [package\_dir\_with\_npm\_install](#module\_package\_dir\_with\_npm\_install) | ../../ | n/a |
 | <a name="module_package_dir_without_npm_install"></a> [package\_dir\_without\_npm\_install](#module\_package\_dir\_without\_npm\_install) | ../../ | n/a |
 | <a name="module_package_dir_without_pip_install"></a> [package\_dir\_without\_pip\_install](#module\_package\_dir\_without\_pip\_install) | ../../ | n/a |

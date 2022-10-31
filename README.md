@@ -775,6 +775,7 @@ No modules.
 | <a name="input_policy"></a> [policy](#input\_policy) | An additional policy document ARN to attach to the Lambda Function role | `string` | `null` | no |
 | <a name="input_policy_json"></a> [policy\_json](#input\_policy\_json) | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |
 | <a name="input_policy_jsons"></a> [policy\_jsons](#input\_policy\_jsons) | List of additional policy documents as JSON to attach to Lambda Function role | `list(string)` | `[]` | no |
+| <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | IAM policy name. It override the default value, which is the same as role\_name | `string` | `null` | no |
 | <a name="input_policy_path"></a> [policy\_path](#input\_policy\_path) | Path of policies to that should be added to IAM role for Lambda Function | `string` | `null` | no |
 | <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | Map of dynamic policy statements to attach to Lambda Function role | `any` | `{}` | no |
 | <a name="input_provisioned_concurrent_executions"></a> [provisioned\_concurrent\_executions](#input\_provisioned\_concurrent\_executions) | Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency. | `number` | `-1` | no |
@@ -841,6 +842,29 @@ No modules.
 | <a name="output_local_filename"></a> [local\_filename](#output\_local\_filename) | The filename of zip archive deployed (if deployment was from local) |
 | <a name="output_s3_object"></a> [s3\_object](#output\_s3\_object) | The map with S3 object data of zip archive deployed (if deployment was from S3) |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Development
+
+### Python
+
+During development involving modifying python files, use tox to run unit tests:
+
+```
+tox
+```
+
+This will try to run unit tests which each supported python version, reporting errors for python versions which are not installed locally.
+
+If you only want to test against your main python version:
+
+```
+tox -e py
+```
+
+You can also pass additional positional arguments to pytest which is used to run test, e.g. to make it verbose:
+```
+tox -e py -- -vvv
+```
 
 ## Authors
 
