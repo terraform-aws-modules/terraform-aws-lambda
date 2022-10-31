@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.2.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.1...v4.2.2) (2022-10-31)
+
+
+### Bug Fixes
+
+* Checks for `npm` instead of `runtime` when building nodejs packages ([#364](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/364)) ([682052c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/682052c516b70425cd89ebd4086f2ffcf5c96bae))
+
 ### [4.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.0...v4.2.1) (2022-10-27)
 
 
