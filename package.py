@@ -649,6 +649,7 @@ class BuildPlanManager:
         hash = source_paths.append
 
         def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
+            command = runtime
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, 'requirements.txt')
@@ -657,16 +658,17 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                if not query.docker and not shutil.which(runtime):
+                if not query.docker and not shutil.which(command):
                     raise RuntimeError(
                         "Python interpreter version equal "
                         "to defined lambda runtime ({}) should be "
-                        "available in system PATH".format(runtime))
+                        "available in system PATH".format(command))
 
                 step('pip', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
         def npm_requirements_step(path, prefix=None, required=False, tmp_dir=None):
+            command = "npm"
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, 'package.json')
@@ -675,11 +677,10 @@ class BuildPlanManager:
                     raise RuntimeError(
                         'File not found: {}'.format(requirements))
             else:
-                if not query.docker and not shutil.which(runtime):
+                if not query.docker and not shutil.which(command):
                     raise RuntimeError(
-                        "Nodejs interpreter version equal "
-                        "to defined lambda runtime ({}) should be "
-                        "available in system PATH".format(runtime))
+                        "Nodejs package manager ({}) should be "
+                        "available in system PATH".format(command))
 
                 step('npm', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
