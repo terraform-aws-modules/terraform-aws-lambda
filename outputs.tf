@@ -44,6 +44,16 @@ output "lambda_function_source_code_size" {
   value       = try(aws_lambda_function.this[0].source_code_size, "")
 }
 
+output "lambda_function_signing_job_arn" {
+  description = "ARN of the signing job"
+  value       = try(aws_lambda_function.this[0].signing_job_arn, "")
+}
+
+output "lambda_function_signing_profile_version_arn" {
+  description = "ARN of the signing profile version"
+  value       = try(aws_lambda_function.this[0].signing_profile_version_arn, "")
+}
+
 # Lambda Function URL
 output "lambda_function_url" {
   description = "The URL of the Lambda Function URL"

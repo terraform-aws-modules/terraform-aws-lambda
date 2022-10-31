@@ -105,36 +105,37 @@ module "lambda_function" {
   }
 
   attach_policy_json = true
-  policy_json        = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "xray:GetSamplingStatisticSummaries"
-            ],
-            "Resource": ["*"]
-        }
-    ]
-}
-EOF
+  policy_json        = <<-EOT
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "xray:GetSamplingStatisticSummaries"
+                ],
+                "Resource": ["*"]
+            }
+        ]
+    }
+  EOT
 
   attach_policy_jsons = true
-  policy_jsons = [<<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "xray:*"
-            ],
-            "Resource": ["*"]
-        }
-    ]
-}
-EOF
+  policy_jsons = [
+    <<-EOT
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "xray:*"
+                  ],
+                  "Resource": ["*"]
+              }
+          ]
+      }
+    EOT
   ]
   number_of_policy_jsons = 1
 
@@ -158,10 +159,6 @@ EOF
       resources = ["arn:aws:s3:::my-bucket/*"]
     }
   }
-
-  ###########################
-  # END: Additional policies
-  ###########################
 
   tags = {
     Module = "lambda1"
@@ -379,10 +376,21 @@ resource "random_pet" "this" {
 }
 
 module "s3_bucket" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "~> 3.0"
 
-  bucket        = "${random_pet.this.id}-bucket"
+  bucket_prefix = "${random_pet.this.id}-"
   force_destroy = true
+
+  # S3 bucket-level Public Access Block configuration
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = true
+  }
 }
 
 resource "aws_sqs_queue" "dlq" {
