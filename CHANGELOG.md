@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.4.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.4.0...v4.4.1) (2022-10-31)
+
+
+### Bug Fixes
+
+* Fixed policy name when create_role is false ([#371](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/371)) ([da56fc5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/da56fc56b9b98535f24db013a1d6e34c3fa3a066))
+
 ## [4.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.3.0...v4.4.0) (2022-10-31)
 
 
