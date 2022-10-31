@@ -11,6 +11,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 3. Create, update, and publish AWS Lambda Function and Lambda Layer - [see usage](#usage).
 4. Create static and dynamic aliases for AWS Lambda Function - [see usage](#usage), see [modules/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias).
 5. Do complex deployments (eg, rolling, canary, rollbacks, triggers) - [read more](#deployment), see [modules/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy).
+6. Use AWS SAM CLI to test Lambda Function - [read more](#sam_cli_integration).
 
 ## Features
 
