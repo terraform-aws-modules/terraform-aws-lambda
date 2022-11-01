@@ -475,6 +475,27 @@ Note that by default, the `docker_image` used comes from the registry `public.ec
 
 If you override `docker_image`, be sure to keep the image in sync with your `runtime`. During the plan phase, when using docker, there is no check that the `runtime` is available to build the package. That means that if you use an image that does not have the runtime, the plan will still succeed, but then the apply will fail.
 
+#### Passing additional Docker options
+
+To add flexibility when building in docker, you can pass any number of additional options that you require (see [Docker run reference](https://docs.docker.com/engine/reference/run/) for available options):
+
+```hcl
+  docker_additional_options = [
+        "-e", "MY_ENV_VAR='My environment variable value'",
+        "-v", "/local:/docker-vol",
+  ]
+```
+
+#### Overriding Docker Entrypoint
+
+To override the docker entrypoint when building in docker, set `docker_entrypoint`:
+
+```hcl
+  docker_entrypoint = "/entrypoint/entrypoint.sh"
+```
+
+The entrypoint must map to a path within your container, so you need to either build your own image that contains the entrypoint or map it to a file on the host by mounting a volume (see [Passing additional Docker options](#passing-additional-docker-options)).
+
 ## <a name="package"></a> Deployment package - Create or use existing
 
 By default, this module creates deployment package and uses it to create or update Lambda Function or Lambda Layer.
@@ -748,7 +769,9 @@ No modules.
 | <a name="input_description"></a> [description](#input\_description) | Description of your Lambda Function (or Layer) | `string` | `""` | no |
 | <a name="input_destination_on_failure"></a> [destination\_on\_failure](#input\_destination\_on\_failure) | Amazon Resource Name (ARN) of the destination resource for failed asynchronous invocations | `string` | `null` | no |
 | <a name="input_destination_on_success"></a> [destination\_on\_success](#input\_destination\_on\_success) | Amazon Resource Name (ARN) of the destination resource for successful asynchronous invocations | `string` | `null` | no |
+| <a name="input_docker_additional_options"></a> [docker\_additional\_options](#input\_docker\_additional\_options) | Additional options to pass to the docker run command (e.g. to set environment variables, volumes, etc.) | `list(string)` | `[]` | no |
 | <a name="input_docker_build_root"></a> [docker\_build\_root](#input\_docker\_build\_root) | Root dir where to build in Docker | `string` | `""` | no |
+| <a name="input_docker_entrypoint"></a> [docker\_entrypoint](#input\_docker\_entrypoint) | Path to the Docker entrypoint to use | `string` | `null` | no |
 | <a name="input_docker_file"></a> [docker\_file](#input\_docker\_file) | Path to a Dockerfile when building in Docker | `string` | `""` | no |
 | <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image to use for the build | `string` | `""` | no |
 | <a name="input_docker_pip_cache"></a> [docker\_pip\_cache](#input\_docker\_pip\_cache) | Whether to mount a shared pip cache folder into docker environment or not | `any` | `null` | no |
@@ -784,6 +807,7 @@ No modules.
 | <a name="input_policy"></a> [policy](#input\_policy) | An additional policy document ARN to attach to the Lambda Function role | `string` | `null` | no |
 | <a name="input_policy_json"></a> [policy\_json](#input\_policy\_json) | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |
 | <a name="input_policy_jsons"></a> [policy\_jsons](#input\_policy\_jsons) | List of additional policy documents as JSON to attach to Lambda Function role | `list(string)` | `[]` | no |
+| <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | IAM policy name. It override the default value, which is the same as role\_name | `string` | `null` | no |
 | <a name="input_policy_path"></a> [policy\_path](#input\_policy\_path) | Path of policies to that should be added to IAM role for Lambda Function | `string` | `null` | no |
 | <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | Map of dynamic policy statements to attach to Lambda Function role | `any` | `{}` | no |
 | <a name="input_provisioned_concurrent_executions"></a> [provisioned\_concurrent\_executions](#input\_provisioned\_concurrent\_executions) | Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency. | `number` | `-1` | no |
