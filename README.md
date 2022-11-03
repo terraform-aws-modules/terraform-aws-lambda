@@ -11,6 +11,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 3. Create, update, and publish AWS Lambda Function and Lambda Layer - [see usage](#usage).
 4. Create static and dynamic aliases for AWS Lambda Function - [see usage](#usage), see [modules/alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/alias).
 5. Do complex deployments (eg, rolling, canary, rollbacks, triggers) - [read more](#deployment), see [modules/deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/modules/deploy).
+6. Use AWS SAM CLI to test Lambda Function - [read more](#sam_cli_integration).
 
 ## Features
 
@@ -551,6 +552,35 @@ module "lambda_function_existing_package_from_remote_url" {
 }
 ```
 
+## <a name="sam_cli_integration"></a> How to use AWS SAM CLI to test Lambda Function?
+[AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html) is an open source tool that help the developers to initiate, build, test, and deploy serverless 
+applications. Currently, SAM CLI tool only supports CFN applications, but SAM CLI team is working on a feature to extend the testing capabilities to support terraform applications (check this [Github issue](https://github.com/aws/aws-sam-cli/issues/3154) 
+to be updated about the incoming releases, and features included in each release for the Terraform support feature).
+
+SAM CLI provides two ways of testing: local testing and testing on-cloud (Accelerate).
+
+### Local Testing
+Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)
+command, providing the function terraform address, or function name, and to set the `hook-package-id` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
+
+You can execute the `sam local invoke` command from your terraform application root directory as following:
+```
+sam local invoke --hook-package-id terraform module.hello_world_function.aws_lambda_function.this[0] 
+```
+You can also pass an event to your lambda function, or overwrite its environment variables. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) for more information.
+
+You can also invoke your lambda function in debugging mode, and step-through your lambda function source code locally in your preferred editor. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-debugging.html) for more information.
+
+### Testing on-cloud (Accelerate)
+You can use AWS SAM CLI to quickly test your application on your AWS development account. Using SAM Accelerate, you will be able to develop your lambda functions locally, 
+and once you save your updates, SAM CLI will update your development account with the updated Lambda functions. So, you can test it on cloud, and if there is any bug,
+you can quickly update the code, and SAM CLI will take care of pushing it to the cloud. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/accelerate.html) for more information about SAM Accelerate.
+
+You can execute the `sam sync` command from your terraform application root directory as following:
+```
+sam sync --hook-package-id terraform --watch 
+```
+
 ## <a name="deployment"></a> How to deploy and manage Lambda Functions?
 
 ### Simple deployments
@@ -682,6 +712,8 @@ No modules.
 | [aws_s3_object.lambda_package](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
 | [local_file.archive_plan](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [null_resource.archive](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.sam_metadata_aws_lambda_function](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.sam_metadata_aws_lambda_layer_version](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_arn.log_group_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/arn) | data source |
 | [aws_cloudwatch_log_group.lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/cloudwatch_log_group) | data source |
 | [aws_iam_policy.tracing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) | data source |

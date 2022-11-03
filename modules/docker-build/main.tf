@@ -41,3 +41,19 @@ resource "aws_ecr_lifecycle_policy" "this" {
   policy     = var.ecr_repo_lifecycle_policy
   repository = local.ecr_repo
 }
+
+# This resource contains the extra information required by SAM CLI to provide the testing capabilities
+# to the TF application. This resource will maintain the metadata information about the image type lambda
+# functions. It will contain the information required to build the docker image locally.
+resource "null_resource" "sam_metadata_docker_registry_image" {
+  triggers = {
+    resource_type     = "IMAGE_LAMBDA_FUNCTION"
+    docker_context    = var.source_path
+    docker_file       = var.docker_file_path
+    docker_build_args = jsonencode(var.build_args)
+    docker_tag        = var.image_tag
+    built_image_uri   = docker_registry_image.this.name
+  }
+
+  depends_on = [docker_registry_image.this]
+}
