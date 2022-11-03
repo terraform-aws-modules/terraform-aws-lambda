@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.5.0...v4.6.0) (2022-11-03)
+
+
+### Features
+
+* Add SAM Metadata resources to enable the integration with SAM CLI tool ([#325](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/325)) ([bfcd34c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/bfcd34cfb21e4975990c807b85747f52b8601567))
+
 ## [4.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.4.1...v4.5.0) (2022-10-31)
 
 
