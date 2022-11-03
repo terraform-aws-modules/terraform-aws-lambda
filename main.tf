@@ -330,7 +330,7 @@ resource "aws_lambda_function_url" "this" {
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities
 # to the TF application. The required data is where SAM CLI can find the Lambda function source code
 # and what are the resources that contain the building logic.
-resource "null_resource" "sam_metadata_aws_lambda_function_this" {
+resource "null_resource" "sam_metadata_aws_lambda_function" {
   count = local.create && var.create_package && var.create_function && !var.create_layer ? 1 : 0
 
   triggers = {
@@ -358,7 +358,7 @@ resource "null_resource" "sam_metadata_aws_lambda_function_this" {
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities
 # to the TF application. The required data is where SAM CLI can find the Lambda layer source code
 # and what are the resources that contain the building logic.
-resource "null_resource" "sam_metadata_aws_lambda_layer_version_this" {
+resource "null_resource" "sam_metadata_aws_lambda_layer_version" {
   count = local.create && var.create_package && var.create_layer ? 1 : 0
 
   triggers = {
