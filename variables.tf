@@ -433,6 +433,12 @@ variable "role_tags" {
 # Policies
 ###########
 
+variable "policy_name" {
+  description = "IAM policy name. It override the default value, which is the same as role_name"
+  type        = string
+  default     = null
+}
+
 variable "attach_cloudwatch_logs_policy" {
   description = "Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function"
   type        = bool
@@ -674,6 +680,18 @@ variable "docker_with_ssh_agent" {
 variable "docker_pip_cache" {
   description = "Whether to mount a shared pip cache folder into docker environment or not"
   type        = any
+  default     = null
+}
+
+variable "docker_additional_options" {
+  description = "Additional options to pass to the docker run command (e.g. to set environment variables, volumes, etc.)"
+  type        = list(string)
+  default     = []
+}
+
+variable "docker_entrypoint" {
+  description = "Path to the Docker entrypoint to use"
+  type        = string
   default     = null
 }
 

@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.5.0...v4.6.0) (2022-11-03)
+
+
+### Features
+
+* Add SAM Metadata resources to enable the integration with SAM CLI tool ([#325](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/325)) ([bfcd34c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/bfcd34cfb21e4975990c807b85747f52b8601567))
+
+## [4.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.4.1...v4.5.0) (2022-10-31)
+
+
+### Features
+
+* Support additional arguments for docker and entrypoint override ([#366](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/366)) ([dc4d000](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/dc4d00068dc1bb1cbcac8943541b6406abcecbf2))
+
+### [4.4.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.4.0...v4.4.1) (2022-10-31)
+
+
+### Bug Fixes
+
+* Fixed policy name when create_role is false ([#371](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/371)) ([da56fc5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/da56fc56b9b98535f24db013a1d6e34c3fa3a066))
+
+## [4.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.3.0...v4.4.0) (2022-10-31)
+
+
+### Features
+
+* Add a way to define IAM policy name prefix ([#354](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/354)) ([7df6bbf](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/7df6bbffa3d7d87570d6858db770bf8059f20591))
+
+## [4.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.2...v4.3.0) (2022-10-31)
+
+
+### Features
+
+* Support installing poetry dependencies with pip ([#311](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/311)) ([398ae5a](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/398ae5a9ace660bb3e7021824c0bffe1ee19f44c))
+
+### [4.2.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.1...v4.2.2) (2022-10-31)
+
+
+### Bug Fixes
+
+* Checks for `npm` instead of `runtime` when building nodejs packages ([#364](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/364)) ([682052c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/682052c516b70425cd89ebd4086f2ffcf5c96bae))
+
 ### [4.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.2.0...v4.2.1) (2022-10-27)
 
 
