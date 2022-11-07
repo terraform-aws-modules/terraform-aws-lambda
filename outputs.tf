@@ -9,6 +9,11 @@ output "lambda_function_invoke_arn" {
   value       = try(aws_lambda_function.this[0].invoke_arn, "")
 }
 
+output "lambda_function_tags" {
+  description = "Tags of the Lambda Function"
+  value       = try(aws_lambda_function.this[0].tags_all, "")
+}
+
 output "lambda_function_name" {
   description = "The name of the Lambda Function"
   value       = try(aws_lambda_function.this[0].function_name, "")
