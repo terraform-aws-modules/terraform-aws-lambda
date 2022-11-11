@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.6.1...v4.7.0) (2022-11-11)
+
+
+### Features
+
+* Added static/defined/computed ARN for the Lambda Function outputs ([#376](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/376)) ([eed4f42](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/eed4f42cb53ec0186fcf26016e29442f635a5159))
+
 ### [4.6.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.6.0...v4.6.1) (2022-11-07)
 
 
