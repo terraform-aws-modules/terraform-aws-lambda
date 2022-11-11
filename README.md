@@ -561,11 +561,11 @@ SAM CLI provides two ways of testing: local testing and testing on-cloud (Accele
 
 ### Local Testing
 Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)
-command, providing the function terraform address, or function name, and to set the `hook-package-id` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
+command, providing the function terraform address, or function name, and to set the `hook-name` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
 
 You can execute the `sam local invoke` command from your terraform application root directory as following:
 ```
-sam local invoke --hook-package-id terraform module.hello_world_function.aws_lambda_function.this[0] 
+sam local invoke --hook-name terraform module.hello_world_function.aws_lambda_function.this[0] 
 ```
 You can also pass an event to your lambda function, or overwrite its environment variables. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) for more information.
 
@@ -578,7 +578,7 @@ you can quickly update the code, and SAM CLI will take care of pushing it to the
 
 You can execute the `sam sync` command from your terraform application root directory as following:
 ```
-sam sync --hook-package-id terraform --watch 
+sam sync --hook-name terraform --watch 
 ```
 
 ## <a name="deployment"></a> How to deploy and manage Lambda Functions?

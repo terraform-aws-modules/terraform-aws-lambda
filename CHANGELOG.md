@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.6.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.6.0...v4.6.1) (2022-11-07)
+
+
+### Bug Fixes
+
+* Update CI configuration files to use latest version ([#374](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/374)) ([4a75d95](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/4a75d95bc92e21227e901192143b29c11695124e))
+
 ## [4.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.5.0...v4.6.0) (2022-11-03)
 
 
