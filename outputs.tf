@@ -4,6 +4,11 @@ output "lambda_function_arn" {
   value       = try(aws_lambda_function.this[0].arn, "")
 }
 
+output "lambda_function_arn_static" {
+  description = "The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions)"
+  value       = local.create && var.create_function && !var.create_layer ? "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.function_name}" : ""
+}
+
 output "lambda_function_invoke_arn" {
   description = "The Invoke ARN of the Lambda Function"
   value       = try(aws_lambda_function.this[0].invoke_arn, "")
