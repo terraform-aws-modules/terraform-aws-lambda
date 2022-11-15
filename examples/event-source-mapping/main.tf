@@ -50,21 +50,14 @@ module "lambda_function" {
     kinesis = {
       event_source_arn  = aws_kinesis_stream.this.arn
       starting_position = "LATEST"
-      filter_criteria = [
-        {
-          pattern = jsonencode({
-            eventName : ["INSERT"]
-          })
-        },
-        {
-          pattern = jsonencode({
-            data : {
-              Temperature : [{ numeric : [">", 0, "<=", 100] }]
-              Location : ["Oslo"]
-            }
-          })
-        }
-      ]
+      filter_criteria = {
+        pattern = jsonencode({
+          data : {
+            Temperature : [{ numeric : [">", 0, "<=", 100] }]
+            Location : ["Oslo"]
+          }
+        })
+      }
     }
     mq = {
       event_source_arn = aws_mq_broker.this.arn

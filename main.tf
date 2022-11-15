@@ -300,9 +300,10 @@ resource "aws_lambda_event_source_mapping" "this" {
 
     content {
       dynamic "filter" {
-        for_each = try(each.value.filter_criteria, [])
+        for_each = try(flatten([each.value.filter_criteria]), [])
+
         content {
-          pattern = try(filter.value.pattern, "")
+          pattern = try(filter.value.pattern, null)
         }
       }
     }
