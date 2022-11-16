@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.7.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.0...v4.7.1) (2022-11-11)
+
+
+### Bug Fixes
+
+* Fixed opposite refresh_alias behavior in modules/alias ([#372](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/372)) ([f7b2a3a](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f7b2a3a5e4f9764dac26034b5909e755e1c05880))
+
+## [4.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.6.1...v4.7.0) (2022-11-11)
+
+
+### Features
+
+* Added static/defined/computed ARN for the Lambda Function outputs ([#376](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/376)) ([eed4f42](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/eed4f42cb53ec0186fcf26016e29442f635a5159))
+
+### [4.6.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.6.0...v4.6.1) (2022-11-07)
+
+
+### Bug Fixes
+
+* Update CI configuration files to use latest version ([#374](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/374)) ([4a75d95](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/4a75d95bc92e21227e901192143b29c11695124e))
+
 ## [4.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.5.0...v4.6.0) (2022-11-03)
 
 

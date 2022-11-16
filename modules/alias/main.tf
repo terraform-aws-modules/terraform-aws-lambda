@@ -27,6 +27,10 @@ resource "aws_lambda_alias" "no_refresh" {
       additional_version_weights = var.routing_additional_version_weights
     }
   }
+
+  lifecycle {
+    ignore_changes = [function_version]
+  }
 }
 
 resource "aws_lambda_alias" "with_refresh" {
@@ -44,10 +48,6 @@ resource "aws_lambda_alias" "with_refresh" {
     content {
       additional_version_weights = var.routing_additional_version_weights
     }
-  }
-
-  lifecycle {
-    ignore_changes = [function_version]
   }
 }
 

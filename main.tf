@@ -1,4 +1,6 @@
 data "aws_partition" "current" {}
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
 
 locals {
   create = var.create && var.putin_khuylo

@@ -561,11 +561,11 @@ SAM CLI provides two ways of testing: local testing and testing on-cloud (Accele
 
 ### Local Testing
 Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)
-command, providing the function terraform address, or function name, and to set the `hook-package-id` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
+command, providing the function terraform address, or function name, and to set the `hook-name` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
 
 You can execute the `sam local invoke` command from your terraform application root directory as following:
 ```
-sam local invoke --hook-package-id terraform module.hello_world_function.aws_lambda_function.this[0] 
+sam local invoke --hook-name terraform module.hello_world_function.aws_lambda_function.this[0] 
 ```
 You can also pass an event to your lambda function, or overwrite its environment variables. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) for more information.
 
@@ -578,7 +578,7 @@ you can quickly update the code, and SAM CLI will take care of pushing it to the
 
 You can execute the `sam sync` command from your terraform application root directory as following:
 ```
-sam sync --hook-package-id terraform --watch 
+sam sync --hook-name terraform --watch 
 ```
 
 ## <a name="deployment"></a> How to deploy and manage Lambda Functions?
@@ -715,6 +715,7 @@ No modules.
 | [null_resource.sam_metadata_aws_lambda_function](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.sam_metadata_aws_lambda_layer_version](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_arn.log_group_arn](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/arn) | data source |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_cloudwatch_log_group.lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/cloudwatch_log_group) | data source |
 | [aws_iam_policy.tracing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) | data source |
 | [aws_iam_policy.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy) | data source |
@@ -724,6 +725,7 @@ No modules.
 | [aws_iam_policy_document.dead_letter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [external_external.archive_prepare](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
 
 ## Inputs
@@ -851,6 +853,7 @@ No modules.
 | <a name="output_lambda_event_source_mapping_state_transition_reason"></a> [lambda\_event\_source\_mapping\_state\_transition\_reason](#output\_lambda\_event\_source\_mapping\_state\_transition\_reason) | The reason the event source mapping is in its current state |
 | <a name="output_lambda_event_source_mapping_uuid"></a> [lambda\_event\_source\_mapping\_uuid](#output\_lambda\_event\_source\_mapping\_uuid) | The UUID of the created event source mapping |
 | <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | The ARN of the Lambda Function |
+| <a name="output_lambda_function_arn_static"></a> [lambda\_function\_arn\_static](#output\_lambda\_function\_arn\_static) | The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions) |
 | <a name="output_lambda_function_invoke_arn"></a> [lambda\_function\_invoke\_arn](#output\_lambda\_function\_invoke\_arn) | The Invoke ARN of the Lambda Function |
 | <a name="output_lambda_function_kms_key_arn"></a> [lambda\_function\_kms\_key\_arn](#output\_lambda\_function\_kms\_key\_arn) | The ARN for the KMS encryption key of Lambda Function |
 | <a name="output_lambda_function_last_modified"></a> [lambda\_function\_last\_modified](#output\_lambda\_function\_last\_modified) | The date Lambda Function resource was last modified |
