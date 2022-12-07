@@ -102,6 +102,14 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "snap_start" {
+    for_each = var.snap_start_apply_on == null ? [] : [true]
+
+    content {
+      apply_on = var.snap_start_apply_on
+    }
+  }
+
   tags = var.tags
 
   depends_on = [
