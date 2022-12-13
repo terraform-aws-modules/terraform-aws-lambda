@@ -447,6 +447,12 @@ variable "role_tags" {
   default     = {}
 }
 
+variable "role_maximum_session_duration" {
+  description = "Maximum session duration, in seconds, for the IAM role"
+  type        = number
+  default     = 3600
+}
+
 ###########
 # Policies
 ###########
