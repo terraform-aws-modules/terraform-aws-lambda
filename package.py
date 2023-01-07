@@ -688,6 +688,10 @@ class BuildPlanManager:
                 if required:
                     raise RuntimeError("poetry configuration not found: {}".format(pyproject_file))
             else:
+                if not query.docker and not shutil.which("poetry"):
+                    raise RuntimeError(
+                        "Poetry should be available in system PATH")
+
                 step("poetry", runtime, path, prefix)
                 hash(pyproject_file)
                 poetry_lock_file = os.path.join(path, "poetry.lock")
@@ -1184,7 +1188,7 @@ def install_poetry_dependencies(query, path):
                 cmd_log.info(poetry_commands)
                 log_handler and log_handler.flush()
                 for poetry_command in poetry_commands:
-                    check_call(poetry_command, env=subproc_env)
+                    check_call(poetry_command.split(), env=subproc_env)
 
             os.remove(pyproject_target_file)
             if poetry_lock_target_file:

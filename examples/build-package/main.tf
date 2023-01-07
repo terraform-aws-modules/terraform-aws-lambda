@@ -65,6 +65,24 @@ module "package_dir_poetry" {
   artifacts_dir = "${path.root}/builds/package_dir_poetry/"
 }
 
+# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed
+# Note that this requires poetry to be available in system PATH
+module "package_dir_poetry_local" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.9"
+
+  source_path = [
+    {
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      poetry_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_dir_poetry/"
+}
+
 # Create zip-archive of a single directory without running "pip install" (which is default for python runtime)
 module "package_dir_without_pip_install" {
   source = "../../"
