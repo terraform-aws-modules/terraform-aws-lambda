@@ -95,6 +95,7 @@ No modules.
 | <a name="input_image_tag"></a> [image\_tag](#input\_image\_tag) | Image tag to use. If not specified current timestamp in format 'YYYYMMDDhhmmss' will be used. This can lead to unnecessary rebuilds. | `string` | `null` | no |
 | <a name="input_image_tag_mutability"></a> [image\_tag\_mutability](#input\_image\_tag\_mutability) | The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE` | `string` | `"MUTABLE"` | no |
 | <a name="input_keep_remotely"></a> [keep\_remotely](#input\_keep\_remotely) | Whether to keep Docker image in the remote registry on destroy operation. | `bool` | `false` | no |
+| <a name="input_platform"></a> [platform](#input\_platform) | The target architecture platform to build the image for. | `string` | `null` | no |
 | <a name="input_scan_on_push"></a> [scan\_on\_push](#input\_scan\_on\_push) | Indicates whether images are scanned after being pushed to the repository | `bool` | `false` | no |
 | <a name="input_source_path"></a> [source\_path](#input\_source\_path) | Path to folder containing application code | `string` | `null` | no |
 

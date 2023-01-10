@@ -16,6 +16,7 @@ resource "docker_registry_image" "this" {
     context    = var.source_path
     dockerfile = var.docker_file_path
     build_args = var.build_args
+    platform   = var.platform
   }
 
   keep_remotely = var.keep_remotely
