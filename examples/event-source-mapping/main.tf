@@ -74,6 +74,11 @@ module "lambda_function" {
     #          }
     #        }
     #      ]
+    #    self_managed_kafka_event_source_config = [
+    #      {
+    #        consumer_group_id = "example-consumer-group"
+    #      }
+    #    ]
     #      source_access_configuration = [
     #        {
     #          type = "SASL_SCRAM_512_AUTH",
