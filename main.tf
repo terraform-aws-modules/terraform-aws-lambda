@@ -280,6 +280,16 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
+  dynamic "scaling_config" {
+    for_each = try(each.value.maximum_concurrency_sqs_scaling, null) != null ? [true] : []
+    content {
+      on_failure {
+        maximum_concurrency = each.value["maximum_concurrency_sqs_scaling"]
+      }
+    }
+  }
+
+
   dynamic "self_managed_event_source" {
     for_each = try(each.value.self_managed_event_source, [])
     content {
