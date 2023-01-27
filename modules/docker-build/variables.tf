@@ -76,3 +76,9 @@ variable "keep_remotely" {
   type        = bool
   default     = false
 }
+
+variable "platform" {
+  description = "The target architecture platform to build the image for."
+  type        = string
+  default     = null
+}

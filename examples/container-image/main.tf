@@ -66,6 +66,7 @@ module "docker_image" {
   build_args = {
     FOO = "bar"
   }
+  platform = "linux/amd64"
 }
 
 resource "random_pet" "this" {

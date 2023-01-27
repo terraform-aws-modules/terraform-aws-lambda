@@ -8,7 +8,7 @@ terraform {
     }
     docker = {
       source  = "kreuzwerker/docker"
-      version = ">= 2.12"
+      version = ">= 2.12, < 3.0"
     }
     null = {
       source  = "hashicorp/null"
