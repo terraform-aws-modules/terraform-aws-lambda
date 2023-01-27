@@ -33,7 +33,7 @@ resource "aws_lambda_function" "this" {
   runtime                        = var.package_type != "Zip" ? null : var.runtime
   layers                         = var.layers
   timeout                        = var.lambda_at_edge ? min(var.timeout, 30) : var.timeout
-  publish                        = var.lambda_at_edge ? true : var.publish
+  publish                        = (var.lambda_at_edge || var.snap_start) ? true : var.publish
   kms_key_arn                    = var.kms_key_arn
   image_uri                      = var.image_uri
   package_type                   = var.package_type
@@ -103,10 +103,10 @@ resource "aws_lambda_function" "this" {
   }
 
   dynamic "snap_start" {
-    for_each = var.snap_start_apply_on == null ? [] : [true]
+    for_each = var.snap_start ? [true] : []
 
     content {
-      apply_on = var.snap_start_apply_on
+      apply_on = "PublishedVersions"
     }
   }
 

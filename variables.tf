@@ -217,10 +217,10 @@ variable "image_config_working_directory" {
   default     = null
 }
 
-variable "snap_start_apply_on" {
-  description = "Conditions where snap start is enabled"
-  type        = string
-  default     = null
+variable "snap_start" {
+  description = "(Optional) Snap start settings for low-latency startups"
+  type        = bool
+  default     = false
 }
 
 ###############
