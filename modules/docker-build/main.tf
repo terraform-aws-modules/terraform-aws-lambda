@@ -19,7 +19,7 @@ resource "docker_image" "this" {
     platform   = var.platform
   }
 
-  keep_locally = var.keep_remotely
+  keep_locally = var.keep_locally
 }
 
 resource "aws_ecr_repository" "this" {
