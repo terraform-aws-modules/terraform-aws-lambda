@@ -52,10 +52,10 @@ resource "aws_lambda_alias" "with_refresh" {
 }
 
 resource "aws_lambda_function_event_invoke_config" "this" {
-  for_each = var.create && var.create_async_event_config ? local.qualifiers : {}
+  for_each = { for k, v in local.qualifiers : k => v if k == "version" && v != null && var.create && var.create_async_event_config }
 
   function_name = var.function_name
-  qualifier     = each.key == "version" ? local.version : var.name
+  qualifier     = local.version
 
   maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
   maximum_retry_attempts       = var.maximum_retry_attempts
@@ -78,6 +78,39 @@ resource "aws_lambda_function_event_invoke_config" "this" {
       }
     }
   }
+}
+
+resource "aws_lambda_function_event_invoke_config" "qualified_alias" {
+  for_each = { for k, v in local.qualifiers : k => v if k == "qualified_alias" && v != null && var.create && var.create_async_event_config }
+
+  function_name = var.function_name
+  qualifier     = var.name
+
+  maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
+  maximum_retry_attempts       = var.maximum_retry_attempts
+
+  dynamic "destination_config" {
+    for_each = var.destination_on_failure != null || var.destination_on_success != null ? [true] : []
+    content {
+      dynamic "on_failure" {
+        for_each = var.destination_on_failure != null ? [true] : []
+        content {
+          destination = var.destination_on_failure
+        }
+      }
+
+      dynamic "on_success" {
+        for_each = var.destination_on_success != null ? [true] : []
+        content {
+          destination = var.destination_on_success
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    aws_lambda_function_event_invoke_config.this
+  ]
 }
 
 resource "aws_lambda_permission" "version_triggers" {

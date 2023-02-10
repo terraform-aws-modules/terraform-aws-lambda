@@ -203,10 +203,10 @@ locals {
 }
 
 resource "aws_lambda_function_event_invoke_config" "this" {
-  for_each = { for k, v in local.qualifiers : k => v if v != null && local.create && var.create_function && !var.create_layer && var.create_async_event_config }
+  for_each = { for k, v in local.qualifiers : k => v if k == "current_version" && v != null && local.create && var.create_function && !var.create_layer && var.create_async_event_config }
 
   function_name = aws_lambda_function.this[0].function_name
-  qualifier     = each.key == "current_version" ? aws_lambda_function.this[0].version : null
+  qualifier     = aws_lambda_function.this[0].version
 
   maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
   maximum_retry_attempts       = var.maximum_retry_attempts
@@ -229,6 +229,40 @@ resource "aws_lambda_function_event_invoke_config" "this" {
       }
     }
   }
+}
+
+resource "aws_lambda_function_event_invoke_config" "unqualified_alias" {
+  for_each = { for k, v in local.qualifiers : k => v if k == "unqualified_alias" && v != null && local.create && var.create_function && !var.create_layer && var.create_async_event_config }
+
+  function_name = aws_lambda_function.this[0].function_name
+  qualifier     = null
+
+  maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
+  maximum_retry_attempts       = var.maximum_retry_attempts
+
+  dynamic "destination_config" {
+    for_each = var.destination_on_failure != null || var.destination_on_success != null ? [true] : []
+    content {
+      dynamic "on_failure" {
+        for_each = var.destination_on_failure != null ? [true] : []
+        content {
+          destination = var.destination_on_failure
+        }
+      }
+
+      dynamic "on_success" {
+        for_each = var.destination_on_success != null ? [true] : []
+        content {
+          destination = var.destination_on_success
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    aws_lambda_function_event_invoke_config.this
+  ]
+
 }
 
 resource "aws_lambda_permission" "current_version_triggers" {
