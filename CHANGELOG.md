@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.9.0...v4.10.0) (2023-02-10)
+
+
+### Features
+
+* Allow multiple filters in event source mappings ([#379](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/379)) ([66eb330](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/66eb330d4352a2bd95feded7f17f4c5046175aa5))
+
 ## [4.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.8.0...v4.9.0) (2023-01-30)
 
 
