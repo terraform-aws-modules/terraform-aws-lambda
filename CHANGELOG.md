@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.8.0...v4.9.0) (2023-01-30)
+
+
+### Features
+
+* Add snap_start functionality ([#406](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/406)) ([91c811b](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/91c811bfdf190f3eb1f4f2beaad3e401916d67b3))
+
+## [4.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.2...v4.8.0) (2023-01-18)
+
+
+### Features
+
+* Update docker provider pin to 2.x in docker-build submodule ([#401](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/401)) ([fc2a39b](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/fc2a39b3e81d3a86992deab198566500a7066fab))
+
+### [4.7.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.1...v4.7.2) (2023-01-10)
+
+
+### Bug Fixes
+
+* Use a version for  to avoid GitHub API rate limiting on CI workflows ([#393](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/393)) ([5481694](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/54816948d469cc753adca5b9bbd28c690c25ee3a))
+
 ### [4.7.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.0...v4.7.1) (2022-11-11)
 
 
