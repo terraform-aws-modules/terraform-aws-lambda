@@ -45,7 +45,7 @@ module "package_dir_pip_dir" {
   artifacts_dir = "${path.root}/builds/package_dir_pip_dir/"
 }
 
-# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed
+# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (using docker)
 module "package_dir_poetry" {
   source = "../../"
 
@@ -55,6 +55,23 @@ module "package_dir_poetry" {
   runtime         = "python3.9"
   docker_image    = "build-python3.9-poetry"
   docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
+
+  source_path = [
+    {
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      poetry_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_dir_poetry/"
+}
+
+# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (not using docker)
+module "package_dir_poetry_no_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.9"
 
   source_path = [
     {
