@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.10.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.0...v4.10.1) (2023-02-13)
+
+
+### Bug Fixes
+
+* Properly construct poetry commands when not using docker for building package ([#420](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/420)) ([97b00d3](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/97b00d309a5b8e8c16f9790658db1fc411c124f4))
+
 ## [4.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.9.0...v4.10.0) (2023-02-10)
 
 
