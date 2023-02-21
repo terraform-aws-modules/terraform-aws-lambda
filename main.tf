@@ -238,10 +238,11 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
   
-  dynamic "scaling_config" {
-    for_each = lookup(each.value, "maximum_concurrency", [] )
+ dynamic "scaling_config" {
+    for_each = lookup(each.value, "maximum_concurrency", null )  != null ?  [each.value.maximum_concurrency] : []
     content {
         maximum_concurrency = each.value["maximum_concurrency"]
     }
   }
+
 }
