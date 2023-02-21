@@ -1,4 +1,4 @@
-FROM lambci/lambda:build-python3.8 as build
+FROM public.ecr.aws/sam/build-python3.8 as build
 
 LABEL maintainer="Betajob AS" \
       description="Patched AWS Lambda build container"
@@ -20,7 +20,7 @@ RUN \
  && rpmbuild -ba SPECS/automake.spec --nocheck \
  && yum install -y RPMS/noarch/*
 
-FROM lambci/lambda:build-python3.8
+FROM public.ecr.aws/sam/build-python3.8
 COPY --from=build /root/rpmbuild/RPMS/noarch/*.rpm .
 RUN yum install -y *.rpm \
  && rm *.rpm

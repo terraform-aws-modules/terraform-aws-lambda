@@ -26,16 +26,80 @@ module "lambda_function" {
     sqs = {
       event_source_arn = aws_sqs_queue.this.arn
       maximum_concurrency = 2
+      function_response_types = ["ReportBatchItemFailures"]
     }
     dynamodb = {
       event_source_arn           = aws_dynamodb_table.this.stream_arn
       starting_position          = "LATEST"
       destination_arn_on_failure = aws_sqs_queue.failure.arn
+      filter_criteria = [
+        {
+          pattern = jsonencode({
+            eventName : ["INSERT"]
+          })
+        },
+        {
+          pattern = jsonencode({
+            data : {
+              Temperature : [{ numeric : [">", 0, "<=", 100] }]
+              Location : ["Oslo"]
+            }
+          })
+        }
+      ]
     }
     kinesis = {
       event_source_arn  = aws_kinesis_stream.this.arn
       starting_position = "LATEST"
+      filter_criteria = {
+        pattern = jsonencode({
+          data : {
+            Temperature : [{ numeric : [">", 0, "<=", 100] }]
+            Location : ["Oslo"]
+          }
+        })
+      }
     }
+    mq = {
+      event_source_arn = aws_mq_broker.this.arn
+      queues           = ["my-queue"]
+      source_access_configuration = [
+        {
+          type = "BASIC_AUTH"
+          uri  = aws_secretsmanager_secret.this.arn
+        },
+        {
+          type = "VIRTUAL_HOST"
+          uri  = "/"
+        }
+      ]
+    }
+    #    self_managed_kafka = {
+    #      batch_size        = 1
+    #      starting_position = "TRIM_HORIZON"
+    #      topics            = ["topic1", "topic2"]
+    #      self_managed_event_source = [
+    #        {
+    #          endpoints = {
+    #            KAFKA_BOOTSTRAP_SERVERS = "kafka1.example.com:9092,kafka2.example.com:9092"
+    #          }
+    #        }
+    #      ]
+    #      source_access_configuration = [
+    #        {
+    #          type = "SASL_SCRAM_512_AUTH",
+    #          uri  = "SECRET_AUTH_INFO"
+    #        },
+    #        {
+    #          type = "VPC_SECURITY_GROUP",
+    #          uri  = "security_group:sg-12345678"
+    #        },
+    #        {
+    #          type = "VPC_SUBNET"
+    #          uri  = "subnet:subnet-12345678"
+    #        }
+    #      ]
+    #    }
   }
 
   allowed_triggers = {
@@ -51,17 +115,40 @@ module "lambda_function" {
       principal  = "kinesis.amazonaws.com"
       source_arn = aws_kinesis_stream.this.arn
     }
+    mq = {
+      principal  = "mq.amazonaws.com"
+      source_arn = aws_mq_broker.this.arn
+    }
   }
 
   create_current_version_allowed_triggers = false
 
-  # Allow failures to be sent to SQS queue
+  attach_network_policy = true
+
   attach_policy_statements = true
   policy_statements = {
+    # Allow failures to be sent to SQS queue
     sqs_failure = {
       effect    = "Allow",
       actions   = ["sqs:SendMessage"],
       resources = [aws_sqs_queue.failure.arn]
+    },
+    # Execution role permissions to read records from an Amazon MQ broker
+    # https://docs.aws.amazon.com/lambda/latest/dg/with-mq.html#events-mq-permissions
+    mq_event_source = {
+      effect    = "Allow",
+      actions   = ["ec2:DescribeSubnets", "ec2:DescribeSecurityGroups", "ec2:DescribeVpcs"],
+      resources = ["*"]
+    },
+    mq_describe_broker = {
+      effect    = "Allow",
+      actions   = ["mq:DescribeBroker"],
+      resources = [aws_mq_broker.this.arn]
+    },
+    secrets_manager_get_value = {
+      effect    = "Allow",
+      actions   = ["secretsmanager:GetSecretValue"],
+      resources = [aws_secretsmanager_secret.this.arn]
     }
   }
 
@@ -79,14 +166,26 @@ module "lambda_function" {
 # Extra resources
 ##################
 
+# Shared resources
 resource "random_pet" "this" {
   length = 2
 }
 
+resource "random_password" "this" {
+  length  = 40
+  special = false
+}
+
+# SQS
 resource "aws_sqs_queue" "this" {
   name = random_pet.this.id
 }
 
+resource "aws_sqs_queue" "failure" {
+  name = "${random_pet.this.id}-failure"
+}
+
+# DynamoDB
 resource "aws_dynamodb_table" "this" {
   name             = random_pet.this.id
   billing_mode     = "PAY_PER_REQUEST"
@@ -106,11 +205,43 @@ resource "aws_dynamodb_table" "this" {
   }
 }
 
+# Kinesis
 resource "aws_kinesis_stream" "this" {
   name        = random_pet.this.id
   shard_count = 1
 }
 
-resource "aws_sqs_queue" "failure" {
-  name = "${random_pet.this.id}-failure"
+# Amazon MQ
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_security_group" "default" {
+  vpc_id = data.aws_vpc.default.id
+  name   = "default"
+}
+
+resource "aws_mq_broker" "this" {
+  broker_name        = random_pet.this.id
+  engine_type        = "RabbitMQ"
+  engine_version     = "3.8.11"
+  host_instance_type = "mq.t3.micro"
+  security_groups    = [data.aws_security_group.default.id]
+
+  user {
+    username = random_pet.this.id
+    password = random_password.this.result
+  }
+}
+
+resource "aws_secretsmanager_secret" "this" {
+  name = "${random_pet.this.id}-mq-credentials"
+}
+
+resource "aws_secretsmanager_secret_version" "this" {
+  secret_id = aws_secretsmanager_secret.this.id
+  secret_string = jsonencode({
+    username = random_pet.this.id
+    password = random_password.this.result
+  })
 }

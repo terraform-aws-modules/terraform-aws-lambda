@@ -28,6 +28,18 @@ variable "create_role" {
   default     = true
 }
 
+variable "create_lambda_function_url" {
+  description = "Controls whether the Lambda Function URL resource should be created"
+  type        = bool
+  default     = false
+}
+
+variable "putin_khuylo" {
+  description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
+  type        = bool
+  default     = true
+}
+
 ###########
 # Function
 ###########
@@ -73,8 +85,20 @@ variable "description" {
   default     = ""
 }
 
+variable "code_signing_config_arn" {
+  description = "Amazon Resource Name (ARN) for a Code Signing Configuration"
+  type        = string
+  default     = null
+}
+
 variable "layers" {
   description = "List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function."
+  type        = list(string)
+  default     = null
+}
+
+variable "architectures" {
+  description = "Instruction set architecture for your Lambda function. Valid values are [\"x86_64\"] and [\"arm64\"]."
   type        = list(string)
   default     = null
 }
@@ -89,6 +113,12 @@ variable "memory_size" {
   description = "Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments."
   type        = number
   default     = 128
+}
+
+variable "ephemeral_storage_size" {
+  description = "Amount of ephemeral storage (/tmp) in MB your Lambda Function can use at runtime. Valid value between 512 MB to 10,240 MB (10 GB)."
+  type        = number
+  default     = 512
 }
 
 variable "publish" {
@@ -151,6 +181,12 @@ variable "s3_object_tags" {
   default     = {}
 }
 
+variable "s3_object_tags_only" {
+  description = "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit."
+  type        = bool
+  default     = false
+}
+
 variable "package_type" {
   description = "The Lambda deployment package type. Valid options: Zip or Image"
   type        = string
@@ -181,6 +217,34 @@ variable "image_config_working_directory" {
   default     = null
 }
 
+variable "snap_start" {
+  description = "(Optional) Snap start settings for low-latency startups"
+  type        = bool
+  default     = false
+}
+
+###############
+# Function URL
+###############
+
+variable "create_unqualified_alias_lambda_function_url" {
+  description = "Whether to use unqualified alias pointing to $LATEST version in Lambda Function URL"
+  type        = bool
+  default     = true
+}
+
+variable "authorization_type" {
+  description = "The type of authentication that the Lambda Function URL uses. Set to 'AWS_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint."
+  type        = string
+  default     = "NONE"
+}
+
+variable "cors" {
+  description = "CORS settings to be used by the Lambda Function URL"
+  type        = any
+  default     = {}
+}
+
 ########
 # Layer
 ########
@@ -189,6 +253,12 @@ variable "layer_name" {
   description = "Name of Lambda Layer to create"
   type        = string
   default     = ""
+}
+
+variable "layer_skip_destroy" {
+  description = "Whether to retain the old version of a previously deployed Lambda Layer."
+  type        = bool
+  default     = false
 }
 
 variable "license_info" {
@@ -201,6 +271,12 @@ variable "compatible_runtimes" {
   description = "A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified."
   type        = list(string)
   default     = []
+}
+
+variable "compatible_architectures" {
+  description = "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified."
+  type        = list(string)
+  default     = null
 }
 
 ############################
@@ -363,6 +439,12 @@ variable "role_tags" {
 # Policies
 ###########
 
+variable "policy_name" {
+  description = "IAM policy name. It override the default value, which is the same as role_name"
+  type        = string
+  default     = null
+}
+
 variable "attach_cloudwatch_logs_policy" {
   description = "Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function"
   type        = bool
@@ -417,6 +499,12 @@ variable "attach_policies" {
   default     = false
 }
 
+variable "policy_path" {
+  description = "Path of policies to that should be added to IAM role for Lambda Function"
+  type        = string
+  default     = null
+}
+
 variable "number_of_policy_jsons" {
   description = "Number of policies JSON to attach to IAM role for Lambda Function"
   type        = number
@@ -439,6 +527,12 @@ variable "trusted_entities" {
   description = "List of additional trusted entities for assuming Lambda Function role (trust relationship)"
   type        = any
   default     = []
+}
+
+variable "assume_role_policy_statements" {
+  description = "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)"
+  type        = any
+  default     = {}
 }
 
 variable "policy_json" {
@@ -491,6 +585,18 @@ variable "artifacts_dir" {
   description = "Directory name where artifacts should be stored"
   type        = string
   default     = "builds"
+}
+
+variable "s3_prefix" {
+  description = "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used"
+  type        = string
+  default     = null
+}
+
+variable "ignore_source_code_hash" {
+  description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
+  type        = bool
+  default     = false
 }
 
 variable "local_existing_package" {
@@ -581,4 +687,22 @@ variable "docker_pip_cache" {
   description = "Whether to mount a shared pip cache folder into docker environment or not"
   type        = any
   default     = null
+}
+
+variable "docker_additional_options" {
+  description = "Additional options to pass to the docker run command (e.g. to set environment variables, volumes, etc.)"
+  type        = list(string)
+  default     = []
+}
+
+variable "docker_entrypoint" {
+  description = "Path to the Docker entrypoint to use"
+  type        = string
+  default     = null
+}
+
+variable "recreate_missing_package" {
+  description = "Whether to recreate missing Lambda package if it is missing locally or not"
+  type        = bool
+  default     = true
 }

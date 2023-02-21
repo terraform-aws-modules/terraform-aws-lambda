@@ -8,7 +8,7 @@ This module can create AWS CodeDeploy application and deployment group, if neces
 
 During deployment this module does the following:
 1. Create JSON object with required AppSpec configuration. Optionally, you can store deploy script for debug purposes by setting `save_deploy_script = true`.
-1. Run [`aws deploy create-deployment` command](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html) if `create_deployment = true` was set
+1. Run [`aws deploy create-deployment` command](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html) if `create_deployment = true` and `run_deployment = true` was set.
 1. After deployment is created, it can wait for the completion if `wait_deployment_completion = true`. Be aware, that Terraform will lock the execution and it can fail if it runs for a long period of time. Set this flag for fast deployments (eg, `deployment_config_name = "CodeDeployDefault.LambdaAllAtOnce"`).
 
 
@@ -53,6 +53,7 @@ module "deploy" {
   deployment_group_name   = "something"
 
   create_deployment          = true
+  run_deployment             = true
   wait_deployment_completion = true
 
   triggers = {
@@ -99,18 +100,18 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12.26 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 2 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 1 |
-| <a name="provider_null"></a> [null](#provider\_null) | >= 2 |
+| <a name="provider_local"></a> [local](#provider\_local) | >= 1.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
 
 ## Modules
 
@@ -122,13 +123,16 @@ No modules.
 |------|------|
 | [aws_codedeploy_app.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codedeploy_app) | resource |
 | [aws_codedeploy_deployment_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codedeploy_deployment_group) | resource |
+| [aws_iam_policy.hooks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.codedeploy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.codedeploy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.hooks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [local_file.deploy_script](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [null_resource.deploy](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_iam_policy_document.assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.hooks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_role.codedeploy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_role) | data source |
 | [aws_lambda_alias.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_alias) | data source |
@@ -144,6 +148,7 @@ No modules.
 | <a name="input_alarms"></a> [alarms](#input\_alarms) | A list of alarms configured for the deployment group. A maximum of 10 alarms can be added to a deployment group. | `list(string)` | `[]` | no |
 | <a name="input_alias_name"></a> [alias\_name](#input\_alias\_name) | Name for the alias | `string` | `""` | no |
 | <a name="input_app_name"></a> [app\_name](#input\_app\_name) | Name of AWS CodeDeploy application | `string` | `""` | no |
+| <a name="input_attach_hooks_policy"></a> [attach\_hooks\_policy](#input\_attach\_hooks\_policy) | Whether to attach Invoke policy to CodeDeploy role when before allow traffic or after allow traffic hooks are defined. | `bool` | `true` | no |
 | <a name="input_attach_triggers_policy"></a> [attach\_triggers\_policy](#input\_attach\_triggers\_policy) | Whether to attach SNS policy to CodeDeploy role when triggers are defined | `bool` | `false` | no |
 | <a name="input_auto_rollback_enabled"></a> [auto\_rollback\_enabled](#input\_auto\_rollback\_enabled) | Indicates whether a defined automatic rollback configuration is currently enabled for this Deployment Group. | `bool` | `true` | no |
 | <a name="input_auto_rollback_events"></a> [auto\_rollback\_events](#input\_auto\_rollback\_events) | List of event types that trigger a rollback. Supported types are DEPLOYMENT\_FAILURE and DEPLOYMENT\_STOP\_ON\_ALARM. | `list(string)` | <pre>[<br>  "DEPLOYMENT_STOP_ON_ALARM"<br>]</pre> | no |
@@ -154,7 +159,7 @@ No modules.
 | <a name="input_create"></a> [create](#input\_create) | Controls whether resources should be created | `bool` | `true` | no |
 | <a name="input_create_app"></a> [create\_app](#input\_create\_app) | Whether to create new AWS CodeDeploy app | `bool` | `false` | no |
 | <a name="input_create_codedeploy_role"></a> [create\_codedeploy\_role](#input\_create\_codedeploy\_role) | Whether to create new AWS CodeDeploy IAM role | `bool` | `true` | no |
-| <a name="input_create_deployment"></a> [create\_deployment](#input\_create\_deployment) | Run AWS CLI command to create deployment | `bool` | `false` | no |
+| <a name="input_create_deployment"></a> [create\_deployment](#input\_create\_deployment) | Create the AWS resources and script for CodeDeploy | `bool` | `false` | no |
 | <a name="input_create_deployment_group"></a> [create\_deployment\_group](#input\_create\_deployment\_group) | Whether to create new AWS CodeDeploy Deployment Group | `bool` | `false` | no |
 | <a name="input_current_version"></a> [current\_version](#input\_current\_version) | Current version of Lambda function version to deploy (can't be $LATEST) | `string` | `""` | no |
 | <a name="input_deployment_config_name"></a> [deployment\_config\_name](#input\_deployment\_config\_name) | Name of deployment config to use | `string` | `"CodeDeployDefault.LambdaAllAtOnce"` | no |
@@ -162,7 +167,9 @@ No modules.
 | <a name="input_description"></a> [description](#input\_description) | Description to use for the deployment | `string` | `""` | no |
 | <a name="input_force_deploy"></a> [force\_deploy](#input\_force\_deploy) | Force deployment every time (even when nothing changes) | `bool` | `false` | no |
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | The name of the Lambda function to deploy | `string` | `""` | no |
+| <a name="input_get_deployment_sleep_timer"></a> [get\_deployment\_sleep\_timer](#input\_get\_deployment\_sleep\_timer) | Adds additional sleep time to get-deployment command to avoid the service throttling | `number` | `5` | no |
 | <a name="input_interpreter"></a> [interpreter](#input\_interpreter) | List of interpreter arguments used to execute deploy script, first arg is path | `list(string)` | <pre>[<br>  "/bin/bash",<br>  "-c"<br>]</pre> | no |
+| <a name="input_run_deployment"></a> [run\_deployment](#input\_run\_deployment) | Run AWS CLI command to start the deployment | `bool` | `false` | no |
 | <a name="input_save_deploy_script"></a> [save\_deploy\_script](#input\_save\_deploy\_script) | Save deploy script locally | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to resources. | `map(string)` | `{}` | no |
 | <a name="input_target_version"></a> [target\_version](#input\_target\_version) | Target version of Lambda function version to deploy | `string` | `""` | no |

@@ -4,6 +4,11 @@ output "lambda_function_arn" {
   value       = module.lambda_function.lambda_function_arn
 }
 
+output "lambda_function_arn_static" {
+  description = "The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions)"
+  value       = module.lambda_function.lambda_function_arn_static
+}
+
 output "lambda_function_invoke_arn" {
   description = "The Invoke ARN of the Lambda Function"
   value       = module.lambda_function.lambda_function_invoke_arn
@@ -97,4 +102,3 @@ output "s3_object" {
   description = "The map with S3 object data of zip archive deployed (if deployment was from S3)"
   value       = module.lambda_function.s3_object
 }
-
