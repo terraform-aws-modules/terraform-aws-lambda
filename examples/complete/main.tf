@@ -9,6 +9,8 @@ provider "aws" {
   skip_requesting_account_id  = true
 }
 
+data "aws_caller_identity" "current" {}
+
 ####################################################
 # Lambda Function (building locally, storing on S3,
 # set allowed triggers, set policies)
@@ -17,16 +19,21 @@ provider "aws" {
 module "lambda_function" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda1"
-  description   = "My awesome lambda function"
-  handler       = "index.lambda_handler"
-  runtime       = "python3.8"
-  publish       = true
+  function_name          = "${random_pet.this.id}-lambda1"
+  description            = "My awesome lambda function"
+  handler                = "index.lambda_handler"
+  runtime                = "python3.8"
+  ephemeral_storage_size = 10240
+  architectures          = ["x86_64"]
+  publish                = true
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   store_on_s3 = true
   s3_bucket   = module.s3_bucket.s3_bucket_id
+  s3_prefix   = "lambda-builds/"
+
+  artifacts_dir = "${path.root}/.terraform/lambda-builds/"
 
   layers = [
     module.lambda_layer_local.lambda_layer_arn,
@@ -38,59 +45,97 @@ module "lambda_function" {
     Serverless = "Terraform"
   }
 
+  role_path   = "/tf-managed/"
+  policy_path = "/tf-managed/"
+
   attach_dead_letter_policy = true
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
 
   allowed_triggers = {
     APIGatewayAny = {
       service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
+      source_arn = "arn:aws:execute-api:eu-west-1:${data.aws_caller_identity.current.account_id}:aqnku8akd0/*/*/*"
     },
     APIGatewayDevPost = {
       service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/dev/POST/*"
+      source_arn = "arn:aws:execute-api:eu-west-1:${data.aws_caller_identity.current.account_id}:aqnku8akd0/dev/POST/*"
     },
     OneRule = {
       principal  = "events.amazonaws.com"
-      source_arn = "arn:aws:events:eu-west-1:135367859851:rule/RunDaily"
+      source_arn = "arn:aws:events:eu-west-1:${data.aws_caller_identity.current.account_id}:rule/RunDaily"
     }
+  }
+
+  ######################
+  # Lambda Function URL
+  ######################
+  create_lambda_function_url = true
+  authorization_type         = "AWS_IAM"
+  cors = {
+    allow_credentials = true
+    allow_origins     = ["*"]
+    allow_methods     = ["*"]
+    allow_headers     = ["date", "keep-alive"]
+    expose_headers    = ["keep-alive", "date"]
+    max_age           = 86400
   }
 
   ######################
   # Additional policies
   ######################
 
-  attach_policy_json = true
-  policy_json        = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "xray:GetSamplingStatisticSummaries"
-            ],
-            "Resource": ["*"]
+  assume_role_policy_statements = {
+    account_root = {
+      effect  = "Allow",
+      actions = ["sts:AssumeRole"],
+      principals = {
+        account_principal = {
+          type        = "AWS",
+          identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
         }
-    ]
-}
-EOF
+      }
+      condition = {
+        stringequals_condition = {
+          test     = "StringEquals"
+          variable = "sts:ExternalId"
+          values   = ["12345"]
+        }
+      }
+    }
+  }
+
+  attach_policy_json = true
+  policy_json        = <<-EOT
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "xray:GetSamplingStatisticSummaries"
+                ],
+                "Resource": ["*"]
+            }
+        ]
+    }
+  EOT
 
   attach_policy_jsons = true
-  policy_jsons = [<<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "xray:*"
-            ],
-            "Resource": ["*"]
-        }
-    ]
-}
-EOF
+  policy_jsons = [
+    <<-EOT
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "xray:*"
+                  ],
+                  "Resource": ["*"]
+              }
+          ]
+      }
+    EOT
   ]
   number_of_policy_jsons = 1
 
@@ -114,10 +159,6 @@ EOF
       resources = ["arn:aws:s3:::my-bucket/*"]
     }
   }
-
-  ###########################
-  # END: Additional policies
-  ###########################
 
   tags = {
     Module = "lambda1"
@@ -160,11 +201,32 @@ module "lambda_layer_local" {
 
   create_layer = true
 
+  layer_name               = "${random_pet.this.id}-layer-local"
+  description              = "My amazing lambda layer (deployed from local)"
+  compatible_runtimes      = ["python3.8"]
+  compatible_architectures = ["arm64"]
+
+  source_path = "${path.module}/../fixtures/python3.8-app1"
+}
+
+####################################################
+# Lambda Layer with package deploying externally
+# (e.g., using separate CI/CD pipeline)
+####################################################
+
+module "lambda_layer_with_package_deploying_externally" {
+  source = "../../"
+
+  create_layer = true
+
   layer_name          = "${random_pet.this.id}-layer-local"
   description         = "My amazing lambda layer (deployed from local)"
   compatible_runtimes = ["python3.8"]
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  ignore_source_code_hash = true
 }
 
 ###############################
@@ -277,6 +339,24 @@ module "lambda_function_for_each" {
   local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
 }
 
+####################################################
+# Lambda Function with package deploying externally
+# (e.g., using separate CI/CD pipeline)
+####################################################
+
+module "lambda_function_with_package_deploying_externally" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-package-deploying-externally"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  ignore_source_code_hash = true
+}
+
 ###########
 # Disabled
 ###########
@@ -296,10 +376,21 @@ resource "random_pet" "this" {
 }
 
 module "s3_bucket" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "~> 3.0"
 
-  bucket        = "${random_pet.this.id}-bucket"
+  bucket_prefix = "${random_pet.this.id}-"
   force_destroy = true
+
+  # S3 bucket-level Public Access Block configuration
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = true
+  }
 }
 
 resource "aws_sqs_queue" "dlq" {

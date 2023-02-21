@@ -23,13 +23,6 @@ module "lambda_function" {
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
   hash_extra  = "yo1"
-
-  allowed_triggers = {
-    APIGatewayAny = {
-      service    = "apigateway"
-      source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
-    }
-  }
 }
 
 module "alias_refresh" {
@@ -62,6 +55,7 @@ module "deploy" {
   deployment_group_name   = "something"
 
   create_deployment          = true
+  run_deployment             = true
   save_deploy_script         = true
   wait_deployment_completion = true
   force_deploy               = true

@@ -17,14 +17,69 @@ resource "random_pet" "this" {
 # Build packages
 #################
 
-# Create zip-archive of a single directory where "pip install" will also be executed (default for python runtime)
+# Create zip-archive of a single directory where "pip install" will also be executed (default for python runtime with requirements.txt present)
 module "package_dir" {
   source = "../../"
 
   create_function = false
 
-  runtime     = "python3.8"
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  build_in_docker = true
+  runtime         = "python3.8"
+  source_path     = "${path.module}/../fixtures/python3.8-app1"
+  artifacts_dir   = "${path.root}/builds/package_dir/"
+}
+
+# Create zip-archive of a single directory where "pip install" will also be executed (default for python runtime with requirements.txt present) and set temporary directory for pip install
+module "package_dir_pip_dir" {
+  source = "../../"
+
+  create_function = false
+
+  build_in_docker = true
+  runtime         = "python3.8"
+  source_path = [{
+    path             = "${path.module}/../fixtures/python3.8-app1"
+    pip_tmp_dir      = "${path.cwd}/../fixtures"
+    pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+  }]
+  artifacts_dir = "${path.root}/builds/package_dir_pip_dir/"
+}
+
+# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (using docker)
+module "package_dir_poetry" {
+  source = "../../"
+
+  create_function = false
+
+  build_in_docker = true
+  runtime         = "python3.9"
+  docker_image    = "build-python3.9-poetry"
+  docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
+
+  source_path = [
+    {
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      poetry_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_dir_poetry/"
+}
+
+# Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (not using docker)
+module "package_dir_poetry_no_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.9"
+
+  source_path = [
+    {
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      poetry_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_dir_poetry/"
 }
 
 # Create zip-archive of a single directory without running "pip install" (which is default for python runtime)
@@ -91,6 +146,35 @@ module "package_with_pip_requirements_in_docker" {
   ]
 
   build_in_docker = true
+}
+
+# Create zip-archive which contains:
+# 1. A single file - index.py
+# 2. Content of directory "dir2"
+# 3. Install pip requirements
+# "pip install" is running in a Docker container for the specified runtime
+# The docker entrypoint is overridden, allowing you to run additional commands within the container
+module "package_with_pip_requirements_in_docker_overriding_entrypoint" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.8"
+  source_path = [
+    "${path.module}/../fixtures/python3.8-app1/index.py",
+    "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
+    {
+      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+    }
+  ]
+  hash_extra = "package_with_pip_requirements_in_docker_overriding_entrypoint"
+
+  build_in_docker = true
+  docker_additional_options = [
+    "-e", "MY_ENV_VAR='My environment variable value'",
+    "-v", "${abspath(path.module)}/../fixtures/python3.8-app1/docker/entrypoint.sh:/entrypoint/entrypoint.sh:ro",
+  ]
+  docker_entrypoint = "/entrypoint/entrypoint.sh"
 }
 
 # Create zip-archive which contains content of directory with commands and patterns applied.
@@ -205,8 +289,46 @@ module "package_with_docker" {
   docker_pip_cache      = true
   docker_with_ssh_agent = true
   #  docker_file           = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
-  docker_build_root = "${path.module}/../../docker"
-  docker_image      = "lambci/lambda:build-python3.8"
+  docker_build_root = "${path.module}/../fixtures/python3.8-app1/docker"
+  docker_image      = "public.ecr.aws/sam/build-python3.8:latest"
+}
+
+# Create zip-archive of a single directory where "npm install" will also be executed (default for nodejs runtime)
+module "package_dir_with_npm_install" {
+  source = "../../"
+
+  create_function = false
+
+  runtime     = "nodejs14.x"
+  source_path = "${path.module}/../fixtures/nodejs14.x-app1"
+}
+
+# Create zip-archive of a single directory without running "npm install" (which is the default for nodejs runtime)
+module "package_dir_without_npm_install" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "nodejs14.x"
+  source_path = [
+    {
+      path             = "${path.module}/../fixtures/nodejs14.x-app1"
+      npm_requirements = false
+      # npm_requirements = true  # Will run "npm install" with package.json
+    }
+  ]
+}
+
+# Create zip-archive of a single directory where "npm install" will also be executed using docker
+module "package_with_npm_requirements_in_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime         = "nodejs14.x"
+  source_path     = "${path.module}/../fixtures/nodejs14.x-app1"
+  build_in_docker = true
+  hash_extra      = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
 }
 
 ################################
@@ -226,7 +348,31 @@ module "lambda_layer" {
 
   build_in_docker = true
   runtime         = "python3.8"
+  docker_image    = "public.ecr.aws/sam/build-python3.8:latest"
   docker_file     = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
+  artifacts_dir   = "${path.root}/builds/lambda_layer/"
+}
+
+module "lambda_layer_poetry" {
+  source = "../../"
+
+  create_layer        = true
+  layer_name          = "${random_pet.this.id}-layer-poetry-dockerfile"
+  compatible_runtimes = ["python3.9"]
+
+  source_path = [
+    {
+      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      poetry_install = true
+    }
+  ]
+  hash_extra = "extra-hash-to-prevent-conflicts-with-module.package_dir"
+
+  build_in_docker = true
+  runtime         = "python3.9"
+  docker_image    = "build-python3.9-poetry"
+  docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
+  artifacts_dir   = "${path.root}/builds/lambda_layer_poetry/"
 }
 
 #######################
@@ -245,5 +391,27 @@ module "lambda_function_from_package" {
 
   layers = [
     module.lambda_layer.lambda_layer_arn
+  ]
+}
+
+################################################
+# Layer that supports requirements.txt install #
+###############################################
+module "lambda_layer_pip_requirements" {
+  source = "../.."
+
+  create_function = false
+  create_layer    = true
+
+  layer_name          = "${random_pet.this.id}-layer-pip-requirements"
+  compatible_runtimes = ["python3.8"]
+  runtime             = "python3.8" # required to force layers to do pip install
+
+  source_path = [
+    {
+      path             = "${path.module}/../fixtures/python3.8-app1"
+      pip_requirements = true
+      prefix_in_zip    = "python" # required to get the path correct
+    }
   ]
 }

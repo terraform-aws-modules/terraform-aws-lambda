@@ -4,6 +4,11 @@ output "lambda_function_arn" {
   value       = module.lambda_function.lambda_function_arn
 }
 
+output "lambda_function_arn_static" {
+  description = "The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions)"
+  value       = module.lambda_function.lambda_function_arn_static
+}
+
 output "lambda_function_invoke_arn" {
   description = "The Invoke ARN of the Lambda Function"
   value       = module.lambda_function.lambda_function_invoke_arn
@@ -42,6 +47,17 @@ output "lambda_function_source_code_hash" {
 output "lambda_function_source_code_size" {
   description = "The size in bytes of the function .zip file"
   value       = module.lambda_function.lambda_function_source_code_size
+}
+
+# Lambda Function URL
+output "lambda_function_url" {
+  description = "The URL of the Lambda Function URL"
+  value       = module.lambda_function.lambda_function_url
+}
+
+output "lambda_function_url_id" {
+  description = "The Lambda Function URL generated id"
+  value       = module.lambda_function.lambda_function_url_id
 }
 
 # Lambda Layer

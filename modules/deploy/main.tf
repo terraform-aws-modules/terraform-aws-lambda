@@ -1,10 +1,10 @@
 locals {
   # AWS CodeDeploy can't deploy when CurrentVersion is "$LATEST"
-  qualifier       = element(concat(data.aws_lambda_function.this.*.qualifier, [""]), 0)
+  qualifier       = try(data.aws_lambda_function.this[0].qualifier, "")
   current_version = local.qualifier == "$LATEST" ? 1 : local.qualifier
 
-  app_name              = element(concat(aws_codedeploy_app.this.*.name, [var.app_name]), 0)
-  deployment_group_name = element(concat(aws_codedeploy_deployment_group.this.*.deployment_group_name, [var.deployment_group_name]), 0)
+  app_name              = try(aws_codedeploy_app.this[0].name, var.app_name)
+  deployment_group_name = try(aws_codedeploy_deployment_group.this[0].deployment_group_name, var.deployment_group_name)
 
   appspec = merge({
     version = "0.0"
@@ -60,21 +60,26 @@ while [[ $STATUS == "Created" || $STATUS == "InProgress" || $STATUS == "Pending"
         --deployment-id $ID \
         --output text \
         --query '[deploymentInfo.status]')
-    sleep 5
+
+    SLEEP_TIME=$((( $RANDOM % 5 ) + ${var.get_deployment_sleep_timer}))
+
+    echo "Sleeping for: $SLEEP_TIME Seconds"
+    sleep $SLEEP_TIME
 done
+
+${var.aws_cli_command} deploy get-deployment --deployment-id $ID
 
 if [[ $STATUS == "Succeeded" ]]; then
     echo "Deployment succeeded."
 else
     echo "Deployment failed!"
+    exit 1
 fi
-
-${var.aws_cli_command} deploy get-deployment --deployment-id $ID
 
 %{else}
 
-echo "Deployment started, but wait deployment completion is disabled!"
 ${var.aws_cli_command} deploy get-deployment --deployment-id $ID
+echo "Deployment started, but wait deployment completion is disabled!"
 
 %{endif}
 EOF
@@ -105,7 +110,7 @@ resource "local_file" "deploy_script" {
 }
 
 resource "null_resource" "deploy" {
-  count = var.create && var.create_deployment ? 1 : 0
+  count = var.create && var.create_deployment && var.run_deployment ? 1 : 0
 
   triggers = {
     appspec_sha256 = local.appspec_sha256
@@ -116,6 +121,10 @@ resource "null_resource" "deploy" {
     command     = local.script
     interpreter = var.interpreter
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.hooks
+  ]
 }
 
 resource "aws_codedeploy_app" "this" {
@@ -131,7 +140,7 @@ resource "aws_codedeploy_deployment_group" "this" {
 
   app_name               = local.app_name
   deployment_group_name  = var.deployment_group_name
-  service_role_arn       = element(concat(aws_iam_role.codedeploy.*.arn, data.aws_iam_role.codedeploy.*.arn, [""]), 0)
+  service_role_arn       = try(aws_iam_role.codedeploy[0].arn, data.aws_iam_role.codedeploy[0].arn, "")
   deployment_config_name = var.deployment_config_name
 
   deployment_style {
@@ -199,8 +208,37 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role_policy_attachment" "codedeploy" {
   count = var.create && var.create_codedeploy_role ? 1 : 0
 
-  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  role       = try(aws_iam_role.codedeploy[0].id, "")
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+}
+
+data "aws_iam_policy_document" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "lambda:InvokeFunction",
+    ]
+
+    resources = compact([var.before_allow_traffic_hook_arn, var.after_allow_traffic_hook_arn])
+  }
+
+}
+
+resource "aws_iam_policy" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  policy = data.aws_iam_policy_document.hooks[0].json
+  tags   = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "hooks" {
+  count = var.create && var.create_codedeploy_role && var.attach_hooks_policy && (var.before_allow_traffic_hook_arn != "" || var.after_allow_traffic_hook_arn != "") ? 1 : 0
+
+  role       = try(aws_iam_role.codedeploy[0].id, "")
+  policy_arn = aws_iam_policy.hooks[0].arn
 }
 
 data "aws_iam_policy_document" "triggers" {
@@ -227,7 +265,7 @@ resource "aws_iam_policy" "triggers" {
 resource "aws_iam_role_policy_attachment" "triggers" {
   count = var.create && var.create_codedeploy_role && var.attach_triggers_policy ? 1 : 0
 
-  role       = element(concat(aws_iam_role.codedeploy.*.id, [""]), 0)
+  role       = try(aws_iam_role.codedeploy[0].id, "")
   policy_arn = aws_iam_policy.triggers[0].arn
 }
 
