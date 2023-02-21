@@ -25,6 +25,7 @@ module "lambda_function" {
   event_source_mapping = {
     sqs = {
       event_source_arn = aws_sqs_queue.this.arn
+      maximum_concurrency = 2
     }
     dynamodb = {
       event_source_arn           = aws_dynamodb_table.this.stream_arn
