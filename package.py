@@ -1430,7 +1430,8 @@ def prepare_command(args):
     content_hash = bpm.hash(hash_extra_paths)
     content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
-    content_hash.update(hash_extra.encode())
+    if hash_extra:
+        content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
 
     # Generate a unique filename based on the hash.
