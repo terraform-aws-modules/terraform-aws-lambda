@@ -52,6 +52,10 @@ module "lambda_function" {
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
 
   allowed_triggers = {
+    Config = {
+      principal        = "config"
+      principal_org_id = "o-abcdefghij"
+    }
     APIGatewayAny = {
       service    = "apigateway"
       source_arn = "arn:aws:execute-api:eu-west-1:${data.aws_caller_identity.current.account_id}:aqnku8akd0/*/*/*"
