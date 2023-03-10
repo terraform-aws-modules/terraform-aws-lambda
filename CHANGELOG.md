@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.10.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.0...v4.10.1) (2023-02-13)
+
+
+### Bug Fixes
+
+* Properly construct poetry commands when not using docker for building package ([#420](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/420)) ([97b00d3](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/97b00d309a5b8e8c16f9790658db1fc411c124f4))
+
+## [4.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.9.0...v4.10.0) (2023-02-10)
+
+
+### Features
+
+* Allow multiple filters in event source mappings ([#379](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/379)) ([66eb330](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/66eb330d4352a2bd95feded7f17f4c5046175aa5))
+
+## [4.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.8.0...v4.9.0) (2023-01-30)
+
+
+### Features
+
+* Add snap_start functionality ([#406](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/406)) ([91c811b](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/91c811bfdf190f3eb1f4f2beaad3e401916d67b3))
+
+## [4.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.2...v4.8.0) (2023-01-18)
+
+
+### Features
+
+* Update docker provider pin to 2.x in docker-build submodule ([#401](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/401)) ([fc2a39b](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/fc2a39b3e81d3a86992deab198566500a7066fab))
+
 ### [4.7.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.1...v4.7.2) (2023-01-10)
 
 

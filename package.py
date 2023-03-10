@@ -1107,51 +1107,43 @@ def install_poetry_dependencies(query, path):
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
             # NOTE: poetry must be available in the build environment, which is the case with lambci/lambda:build-python* docker images but not public.ecr.aws/sam/build-python* docker images
-            # FIXME: poetry install does not currently allow to specify the target directory so we export the 
+            # FIXME: poetry install does not currently allow to specify the target directory so we export the
             # requirements then install them with "pip --no-deps" to avoid using pip dependency resolver
             poetry_commands = [
-                shlex_join(
-                    [
-                        poetry_exec,
-                        "config",
-                        "--no-interaction",
-                        "virtualenvs.create",
-                        "true",
-                    ]
-                ),
-                shlex_join(
-                    [
-                        poetry_exec,
-                        "config",
-                        "--no-interaction",
-                        "virtualenvs.in-project",
-                        "true",
-                    ]
-                ),
-                shlex_join(
-                    [
-                        poetry_exec,
-                        "export",
-                        "--format",
-                        "requirements.txt",
-                        "--output",
-                        "requirements.txt",
-                        "--with-credentials",
-                    ]
-                ),
-                shlex_join(
-                    [
-                        python_exec,
-                        "-m",
-                        "pip",
-                        "install",
-                        "--no-compile",
-                        "--no-deps",
-                        "--prefix=",
-                        "--target=.",
-                        "--requirement=requirements.txt",
-                    ]
-                ),
+                [
+                    poetry_exec,
+                    "config",
+                    "--no-interaction",
+                    "virtualenvs.create",
+                    "true",
+                ],
+                [
+                    poetry_exec,
+                    "config",
+                    "--no-interaction",
+                    "virtualenvs.in-project",
+                    "true",
+                ],
+                [
+                    poetry_exec,
+                    "export",
+                    "--format",
+                    "requirements.txt",
+                    "--output",
+                    "requirements.txt",
+                    "--with-credentials",
+                ],
+                [
+                    python_exec,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--no-compile",
+                    "--no-deps",
+                    "--prefix=",
+                    "--target=.",
+                    "--requirement=requirements.txt",
+                ],
             ]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
@@ -1167,7 +1159,10 @@ def install_poetry_dependencies(query, path):
                         )
 
                 chown_mask = "{}:{}".format(os.getuid(), os.getgid())
-                shell_commands = poetry_commands + [shlex_join(["chown", "-R", chown_mask, "."])]
+                poetry_commands += [["chown", "-R", chown_mask, "."]]
+                shell_commands = [
+                    shlex_join(poetry_command) for poetry_command in poetry_commands
+                ]
                 shell_command = [" && ".join(shell_commands)]
                 check_call(
                     docker_run_command(
