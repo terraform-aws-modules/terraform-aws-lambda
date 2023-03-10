@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.12.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.12.0...v4.12.1) (2023-03-10)
+
+
+### Bug Fixes
+
+* Set the default value of replacement_security_group_ids to null ([#434](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/434)) ([a2d9ff9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/a2d9ff97d437670feb2f361cf4874e193eea8a12))
+
 ## [4.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.11.0...v4.12.0) (2023-03-10)
 
 
