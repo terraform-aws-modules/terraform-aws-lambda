@@ -226,7 +226,7 @@ variable "snap_start" {
 variable "replace_security_groups_on_destroy" {
   description = "(Optional) When true, all security groups defined in vpc_security_group_ids will be replaced with the default security group after the function is destroyed. Set the replacement_security_group_ids variable to use a custom list of security groups for replacement instead."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "replacement_security_group_ids" {
