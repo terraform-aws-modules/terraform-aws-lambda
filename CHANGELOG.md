@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.11.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.1...v4.11.0) (2023-03-10)
+
+
+### Features
+
+* Add dynamic blocks for consumer group id config ([#399](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/399)) ([7d7bb79](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/7d7bb792ceb0ba97192a8f8fe5b4a232e3239af8))
+
 ### [4.10.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.0...v4.10.1) (2023-02-13)
 
 
