@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.11.0...v4.12.0) (2023-03-10)
+
+
+### Features
+
+* Added configuration options to replace security groups on destroy of Lambda function ([#422](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/422)) ([2d92236](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2d92236245edf0f614fb949e6b5e84f2c0216dcd))
+
 ## [4.11.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.1...v4.11.0) (2023-03-10)
 
 
