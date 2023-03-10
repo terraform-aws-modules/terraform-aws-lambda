@@ -232,7 +232,7 @@ variable "replace_security_groups_on_destroy" {
 variable "replacement_security_group_ids" {
   description = "(Optional) List of security group IDs to assign to orphaned Lambda function network interfaces upon destruction. replace_security_groups_on_destroy must be set to true to use this attribute."
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 ###############
