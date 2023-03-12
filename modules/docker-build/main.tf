@@ -9,7 +9,7 @@ locals {
   ecr_image_name = format("%v/%v:%v", local.ecr_address, local.ecr_repo, local.image_tag)
 }
 
-resource "docker_registry_image" "this" {
+resource "docker_image" "this" {
   name = local.ecr_image_name
 
   build {
@@ -19,7 +19,7 @@ resource "docker_registry_image" "this" {
     platform   = var.platform
   }
 
-  keep_remotely = var.keep_remotely
+  keep_locally = var.keep_locally
 }
 
 resource "aws_ecr_repository" "this" {
@@ -53,8 +53,8 @@ resource "null_resource" "sam_metadata_docker_registry_image" {
     docker_file       = var.docker_file_path
     docker_build_args = jsonencode(var.build_args)
     docker_tag        = var.image_tag
-    built_image_uri   = docker_registry_image.this.name
+    built_image_uri   = docker_image.this.name
   }
 
-  depends_on = [docker_registry_image.this]
+  depends_on = [docker_image.this]
 }
