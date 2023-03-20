@@ -23,9 +23,11 @@ module "lambda_function_in_vpc" {
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
-  vpc_subnet_ids         = module.vpc.intra_subnets
-  vpc_security_group_ids = [module.vpc.default_security_group_id]
-  attach_network_policy  = true
+  vpc_subnet_ids                     = module.vpc.intra_subnets
+  vpc_security_group_ids             = [module.vpc.default_security_group_id]
+  attach_network_policy              = true
+  replace_security_groups_on_destroy = true
+  replacement_security_group_ids     = [module.vpc.default_security_group_id]
 }
 
 module "vpc" {
