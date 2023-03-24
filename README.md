@@ -627,6 +627,10 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 >
 > The solution is to either disable the creation of Lambda permissions for the current version by setting `create_current_version_allowed_triggers = false`, or to enable publish of Lambda function (`publish = true`).
 
+Q5: Can I use this module on Windows?
+
+> Answer: Yes you can. We recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+
 ## Notes
 
 1. Creation of Lambda Functions and Lambda Layers is very similar and both support the same features (building from source path, using existing package, storing package locally or on S3)
