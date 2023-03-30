@@ -1173,6 +1173,7 @@ def install_poetry_dependencies(query, path):
                         shell=True,
                         ssh_agent=with_ssh_agent,
                         poetry_cache_dir=poetry_cache_dir,
+                        docker=docker,
                     )
                 )
             else:
