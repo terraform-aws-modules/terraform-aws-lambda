@@ -54,6 +54,8 @@ module "lambda_function" {
   #  create_package         = false
   #  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
 
+  # snap_start = true
+
   #  policy_json = <<EOF
   #{
   #    "Version": "2012-10-17",

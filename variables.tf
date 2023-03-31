@@ -217,6 +217,24 @@ variable "image_config_working_directory" {
   default     = null
 }
 
+variable "snap_start" {
+  description = "(Optional) Snap start settings for low-latency startups"
+  type        = bool
+  default     = false
+}
+
+variable "replace_security_groups_on_destroy" {
+  description = "(Optional) When true, all security groups defined in vpc_security_group_ids will be replaced with the default security group after the function is destroyed. Set the replacement_security_group_ids variable to use a custom list of security groups for replacement instead."
+  type        = bool
+  default     = null
+}
+
+variable "replacement_security_group_ids" {
+  description = "(Optional) List of security group IDs to assign to orphaned Lambda function network interfaces upon destruction. replace_security_groups_on_destroy must be set to true to use this attribute."
+  type        = list(string)
+  default     = null
+}
+
 ###############
 # Function URL
 ###############

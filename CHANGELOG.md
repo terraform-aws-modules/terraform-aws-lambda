@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 
+### [4.12.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.12.0...v4.12.1) (2023-03-10)
+
+
+### Bug Fixes
+
+* Set the default value of replacement_security_group_ids to null ([#434](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/434)) ([a2d9ff9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/a2d9ff97d437670feb2f361cf4874e193eea8a12))
+
+## [4.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.11.0...v4.12.0) (2023-03-10)
+
+
+### Features
+
+* Added configuration options to replace security groups on destroy of Lambda function ([#422](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/422)) ([2d92236](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2d92236245edf0f614fb949e6b5e84f2c0216dcd))
+
+## [4.11.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.1...v4.11.0) (2023-03-10)
+
+
+### Features
+
+* Add dynamic blocks for consumer group id config ([#399](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/399)) ([7d7bb79](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/7d7bb792ceb0ba97192a8f8fe5b4a232e3239af8))
+
+### [4.10.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.10.0...v4.10.1) (2023-02-13)
+
+
+### Bug Fixes
+
+* Properly construct poetry commands when not using docker for building package ([#420](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/420)) ([97b00d3](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/97b00d309a5b8e8c16f9790658db1fc411c124f4))
+
+## [4.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.9.0...v4.10.0) (2023-02-10)
+
+
+### Features
+
+* Allow multiple filters in event source mappings ([#379](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/379)) ([66eb330](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/66eb330d4352a2bd95feded7f17f4c5046175aa5))
+
+## [4.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.8.0...v4.9.0) (2023-01-30)
+
+
+### Features
+
+* Add snap_start functionality ([#406](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/406)) ([91c811b](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/91c811bfdf190f3eb1f4f2beaad3e401916d67b3))
+
 ## [4.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.7.2...v4.8.0) (2023-01-18)
 
 

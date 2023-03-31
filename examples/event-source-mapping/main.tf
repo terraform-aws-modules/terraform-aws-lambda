@@ -32,11 +32,21 @@ module "lambda_function" {
       event_source_arn           = aws_dynamodb_table.this.stream_arn
       starting_position          = "LATEST"
       destination_arn_on_failure = aws_sqs_queue.failure.arn
-      filter_criteria = {
-        pattern = jsonencode({
-          eventName : ["INSERT"]
-        })
-      }
+      filter_criteria = [
+        {
+          pattern = jsonencode({
+            eventName : ["INSERT"]
+          })
+        },
+        {
+          pattern = jsonencode({
+            data : {
+              Temperature : [{ numeric : [">", 0, "<=", 100] }]
+              Location : ["Oslo"]
+            }
+          })
+        }
+      ]
     }
     kinesis = {
       event_source_arn  = aws_kinesis_stream.this.arn
@@ -73,6 +83,11 @@ module "lambda_function" {
     #          endpoints = {
     #            KAFKA_BOOTSTRAP_SERVERS = "kafka1.example.com:9092,kafka2.example.com:9092"
     #          }
+    #        }
+    #      ]
+    #      self_managed_kafka_event_source_config = [
+    #        {
+    #          consumer_group_id = "example-consumer-group"
     #        }
     #      ]
     #      source_access_configuration = [
