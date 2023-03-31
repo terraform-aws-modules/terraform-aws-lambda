@@ -980,10 +980,16 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
             pip_command = [
-                python_exec, '-m', 'pip',
-                'install', '--no-compile',
-                '--prefix=', '--target=.',
-                '--requirement={}'.format(requirements_filename),
+                python_exec,
+                "-m",
+                "pip",
+                "install",
+                "--no-compile",
+                "--only-binary=:all:",
+                "--platform=manylinux2014_x86_64",
+                "--prefix=",
+                "--target=.",
+                "--requirement={}".format(requirements_filename),
             ]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
@@ -1140,6 +1146,7 @@ def install_poetry_dependencies(query, path):
                     "install",
                     "--no-compile",
                     "--no-deps",
+                    "--platform=manylinux2014_x86_64",
                     "--prefix=",
                     "--target=.",
                     "--requirement=requirements.txt",
