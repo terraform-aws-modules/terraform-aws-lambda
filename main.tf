@@ -291,9 +291,9 @@ resource "aws_lambda_event_source_mapping" "this" {
   }
 
   dynamic "scaling_config" {
-    for_each = try(each.value.maximum_concurrency_sqs_scaling, null) != null ? [true] : []
+    for_each = try([each.value.scaling_config], [])
     content {
-      maximum_concurrency = maximum_concurrency_sqs_scaling.value
+      maximum_concurrency = try(scaling_config.value.maximum_concurrency, null)
     }
   }
 
