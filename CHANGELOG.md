@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.12.1...v4.13.0) (2023-04-03)
+
+
+### Features
+
+* Support maximum concurrency of Lambda with SQS as an event source ([#402](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/402)) ([268975c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/268975c9e2224cb05bdad8d7c39f879610dedc53))
+
 ### [4.12.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.12.0...v4.12.1) (2023-03-10)
 
 
