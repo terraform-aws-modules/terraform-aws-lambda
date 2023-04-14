@@ -349,6 +349,7 @@ resource "aws_lambda_function_url" "this" {
   # Error: error creating Lambda Function URL: ValidationException
   qualifier          = var.create_unqualified_alias_lambda_function_url ? null : aws_lambda_function.this[0].version
   authorization_type = var.authorization_type
+  invoke_mode        = var.invoke_mode
 
   dynamic "cors" {
     for_each = length(keys(var.cors)) == 0 ? [] : [var.cors]

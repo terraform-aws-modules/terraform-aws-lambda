@@ -78,6 +78,7 @@ module "lambda_function" {
     expose_headers    = ["keep-alive", "date"]
     max_age           = 86400
   }
+  invoke_mode = "RESPONSE_STREAM"
 
   ######################
   # Additional policies

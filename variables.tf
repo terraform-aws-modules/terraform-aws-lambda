@@ -257,6 +257,12 @@ variable "cors" {
   default     = {}
 }
 
+variable "invoke_mode" {
+  description = "Invoke mode of the Lambda Function URL. Valid values are BUFFERED (default) and RESPONSE_STREAM."
+  type        = string
+  default     = "BUFFERED"
+}
+
 ########
 # Layer
 ########
