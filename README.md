@@ -451,8 +451,9 @@ source_path = [
 
 - `commands` - List of commands to run. If specified, this argument overrides `pip_requirements` and `npm_requirements`.
   - `:zip [source] [destination]` is a special command which creates content of current working directory (first argument) and places it inside of path (second argument).
-- `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead.
+- `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead. When `source_path` is passed as a string containing a path (and not a list of maps), and `requirements.txt` is present, `pip install` is automatically executed.
 - `pip_tmp_dir` - Set the base directory to make the temporary directory for pip installs. Can be useful for Docker in Docker builds.
+- `poetry_install` - Controls whether to execute `poetry export` and `pip install`. Set to `false` to disable this feature, `true` to run `poetry export` with `pyproject.toml` and `poetry.lock` found in `path`. When `source_path` is passed as a string containing a path (and not a list of maps), and `pyproject.toml` with a build system `poetry` is present, `poetry export` and `pip install` are automatically executed.
 - `npm_requirements` - Controls whether to execute `npm install`. Set to `false` to disable this feature, `true` to run `npm install` with `package.json` found in `path`. Or set to another filename which you want to use instead.
 - `npm_tmp_dir` - Set the base directory to make the temporary directory for npm installs. Can be useful for Docker in Docker builds.
 - `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
