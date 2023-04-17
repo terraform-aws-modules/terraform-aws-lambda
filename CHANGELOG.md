@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.15.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.14.0...v4.15.0) (2023-04-17)
+
+
+### Features
+
+* Add invoke_mode input ([#446](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/446)) ([d7b3ac9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/d7b3ac970b7f18be19c95ec43ce4d1fac9ae2572))
+
 ## [4.14.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.13.0...v4.14.0) (2023-04-14)
 
 
