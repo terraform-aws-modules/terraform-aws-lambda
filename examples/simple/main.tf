@@ -39,6 +39,8 @@ module "lambda_function" {
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
 
+  # role_maximum_session_duration = 7200
+
   #  attach_cloudwatch_logs_policy = false
 
   #  use_existing_cloudwatch_log_group = true

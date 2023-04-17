@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.14.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.13.0...v4.14.0) (2023-04-14)
+
+
+### Features
+
+* Add max session duration for IAM role ([#391](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/391)) ([3a21ac5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/3a21ac58bc5c4e1cb369a935a977246c10f31cf5))
+
 ## [4.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.12.1...v4.13.0) (2023-04-03)
 
 
