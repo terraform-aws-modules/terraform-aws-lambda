@@ -294,7 +294,7 @@ module "lambda_function" {
 
   allowed_triggers = {
     Config = {
-      principal        = "config"
+      principal        = "config.amazonaws.com"
       principal_org_id = "o-abcdefghij"
     }
     APIGatewayAny = {

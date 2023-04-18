@@ -10,6 +10,8 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
+data "aws_organizations_organization" "this" {}
+
 ####################################################
 # Lambda Function (building locally, storing on S3,
 # set allowed triggers, set policies)
@@ -52,8 +54,8 @@ module "lambda_function" {
 
   allowed_triggers = {
     Config = {
-      principal        = "config"
-      principal_org_id = "o-abcdefghij"
+      principal        = "config.amazonaws.com"
+      principal_org_id = data.aws_organizations_organization.this.id
     }
     APIGatewayAny = {
       service    = "apigateway"
