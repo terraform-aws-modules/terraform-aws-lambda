@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.16.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.15.0...v4.16.0) (2023-04-18)
+
+
+### Features
+
+* Adding variable principal_org_id to resource aws_lambda_permission ([#448](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/448)) ([31d75e7](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/31d75e7206d2816471fe828e86ef3f2a1ad1218d))
+
 ## [4.15.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.14.0...v4.15.0) (2023-04-17)
 
 
