@@ -11,6 +11,8 @@ provider "aws" {
 
 data "aws_availability_zones" "available" {}
 
+data "aws_organizations_organization" "this" {}
+
 locals {
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -117,6 +119,10 @@ module "lambda_function" {
   }
 
   allowed_triggers = {
+    config = {
+      principal        = "config.amazonaws.com"
+      principal_org_id = data.aws_organizations_organization.this.id
+    }
     sqs = {
       principal  = "sqs.amazonaws.com"
       source_arn = aws_sqs_queue.this.arn

@@ -293,6 +293,10 @@ module "lambda_function" {
   # ...omitted for brevity
 
   allowed_triggers = {
+    Config = {
+      principal        = "config.amazonaws.com"
+      principal_org_id = "o-abcdefghij"
+    }
     APIGatewayAny = {
       service    = "apigateway"
       source_arn = "arn:aws:execute-api:eu-west-1:135367859851:aqnku8akd0/*/*/*"
