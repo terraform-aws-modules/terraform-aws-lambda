@@ -257,6 +257,12 @@ variable "cors" {
   default     = {}
 }
 
+variable "invoke_mode" {
+  description = "Invoke mode of the Lambda Function URL. Valid values are BUFFERED (default) and RESPONSE_STREAM."
+  type        = string
+  default     = null
+}
+
 ########
 # Layer
 ########
@@ -445,6 +451,12 @@ variable "role_tags" {
   description = "A map of tags to assign to IAM role"
   type        = map(string)
   default     = {}
+}
+
+variable "role_maximum_session_duration" {
+  description = "Maximum session duration, in seconds, for the IAM role"
+  type        = number
+  default     = 3600
 }
 
 ###########

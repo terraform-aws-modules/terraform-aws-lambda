@@ -3,7 +3,6 @@ provider "aws" {
   #  region = "us-east-1"
 
   # Make it faster by skipping something
-  skip_get_ec2_platforms      = true
   skip_metadata_api_check     = true
   skip_region_validation      = true
   skip_credentials_validation = true
@@ -39,6 +38,8 @@ module "lambda_function" {
   function_name = "${random_pet.this.id}-lambda-simple"
   handler       = "index.lambda_handler"
   runtime       = "python3.8"
+
+  # role_maximum_session_duration = 7200
 
   #  attach_cloudwatch_logs_policy = false
 

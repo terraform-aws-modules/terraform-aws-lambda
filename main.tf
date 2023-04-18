@@ -292,6 +292,14 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
+  dynamic "scaling_config" {
+    for_each = try([each.value.scaling_config], [])
+    content {
+      maximum_concurrency = try(scaling_config.value.maximum_concurrency, null)
+    }
+  }
+
+
   dynamic "self_managed_event_source" {
     for_each = try(each.value.self_managed_event_source, [])
     content {
@@ -343,6 +351,7 @@ resource "aws_lambda_function_url" "this" {
   # Error: error creating Lambda Function URL: ValidationException
   qualifier          = var.create_unqualified_alias_lambda_function_url ? null : aws_lambda_function.this[0].version
   authorization_type = var.authorization_type
+  invoke_mode        = var.invoke_mode
 
   dynamic "cors" {
     for_each = length(keys(var.cors)) == 0 ? [] : [var.cors]
