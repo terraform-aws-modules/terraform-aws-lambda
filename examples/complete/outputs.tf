@@ -24,6 +24,11 @@ output "lambda_function_qualified_arn" {
   value       = module.lambda_function.lambda_function_qualified_arn
 }
 
+output "lambda_function_qualified_invoke_arn" {
+  description = "The Invoke ARN identifying your Lambda Function Version"
+  value       = module.lambda_function.lambda_function_qualified_invoke_arn
+}
+
 output "lambda_function_version" {
   description = "Latest published version of Lambda Function"
   value       = module.lambda_function.lambda_function_version
