@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.17.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.16.0...v4.17.0) (2023-05-04)
+
+
+### Features
+
+* add qualified invoke ARN output ([#437](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/437)) ([dcd899b](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/dcd899b40bdeb4c7f607a5568e6f24dac81f26a0))
+
 ## [4.16.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.15.0...v4.16.0) (2023-04-18)
 
 
