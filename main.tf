@@ -242,6 +242,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
   statement_id       = try(each.value.statement_id, each.key)
   action             = try(each.value.action, "lambda:InvokeFunction")
   principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id   = try(each.value.principal_org_id, null)
   source_arn         = try(each.value.source_arn, null)
   source_account     = try(each.value.source_account, null)
   event_source_token = try(each.value.event_source_token, null)
@@ -256,6 +257,7 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
   statement_id       = try(each.value.statement_id, each.key)
   action             = try(each.value.action, "lambda:InvokeFunction")
   principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id   = try(each.value.principal_org_id, null)
   source_arn         = try(each.value.source_arn, null)
   source_account     = try(each.value.source_account, null)
   event_source_token = try(each.value.event_source_token, null)
@@ -349,6 +351,7 @@ resource "aws_lambda_function_url" "this" {
   # Error: error creating Lambda Function URL: ValidationException
   qualifier          = var.create_unqualified_alias_lambda_function_url ? null : aws_lambda_function.this[0].version
   authorization_type = var.authorization_type
+  invoke_mode        = var.invoke_mode
 
   dynamic "cors" {
     for_each = length(keys(var.cors)) == 0 ? [] : [var.cors]

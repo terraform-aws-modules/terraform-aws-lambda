@@ -10,6 +10,8 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
+data "aws_organizations_organization" "this" {}
+
 ####################################################
 # Lambda Function (building locally, storing on S3,
 # set allowed triggers, set policies)
@@ -51,6 +53,10 @@ module "lambda_function" {
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
 
   allowed_triggers = {
+    Config = {
+      principal        = "config.amazonaws.com"
+      principal_org_id = data.aws_organizations_organization.this.id
+    }
     APIGatewayAny = {
       service    = "apigateway"
       source_arn = "arn:aws:execute-api:eu-west-1:${data.aws_caller_identity.current.account_id}:aqnku8akd0/*/*/*"
@@ -78,6 +84,7 @@ module "lambda_function" {
     expose_headers    = ["keep-alive", "date"]
     max_age           = 86400
   }
+  invoke_mode = "RESPONSE_STREAM"
 
   ######################
   # Additional policies

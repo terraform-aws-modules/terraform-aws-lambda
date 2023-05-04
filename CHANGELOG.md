@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.16.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.15.0...v4.16.0) (2023-04-18)
+
+
+### Features
+
+* Adding variable principal_org_id to resource aws_lambda_permission ([#448](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/448)) ([31d75e7](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/31d75e7206d2816471fe828e86ef3f2a1ad1218d))
+
+## [4.15.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.14.0...v4.15.0) (2023-04-17)
+
+
+### Features
+
+* Add invoke_mode input ([#446](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/446)) ([d7b3ac9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/d7b3ac970b7f18be19c95ec43ce4d1fac9ae2572))
+
+## [4.14.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.13.0...v4.14.0) (2023-04-14)
+
+
+### Features
+
+* Add max session duration for IAM role ([#391](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/391)) ([3a21ac5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/3a21ac58bc5c4e1cb369a935a977246c10f31cf5))
+
 ## [4.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.12.1...v4.13.0) (2023-04-03)
 
 
