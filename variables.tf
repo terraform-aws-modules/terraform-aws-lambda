@@ -50,6 +50,12 @@ variable "lambda_at_edge" {
   default     = false
 }
 
+variable "lambda_at_edge_logs_all_regions" {
+  description = "Whether to specify a wildcard in IAM policy used by Lambda@Edge to allow logging in all regions"
+  type        = bool
+  default     = true
+}
+
 variable "function_name" {
   description = "A unique name for your Lambda Function"
   type        = string
