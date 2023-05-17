@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.18.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.17.0...v4.18.0) (2023-05-17)
+
+
+### Features
+
+* Added control to create logs by Lambda@Edge in all regions ([#462](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/462)) ([712d8ec](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/712d8ecb9a224be8ed36cb34eebf4b7e815d0565))
+
 ## [4.17.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v4.16.0...v4.17.0) (2023-05-04)
 
 
