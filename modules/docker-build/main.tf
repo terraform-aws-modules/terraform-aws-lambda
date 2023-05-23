@@ -9,7 +9,7 @@ locals {
   ecr_image_name = format("%v/%v:%v", local.ecr_address, local.ecr_repo, local.image_tag)
 }
 
-resource "docker_registry_image" "this" {
+resource "docker_image" "this" {
   name = local.ecr_image_name
 
   build {
@@ -18,6 +18,9 @@ resource "docker_registry_image" "this" {
     build_args = var.build_args
     platform   = var.platform
   }
+}
+resource "docker_registry_image" "this" {
+  name = docker_image.this.name
 
   keep_remotely = var.keep_remotely
 }
