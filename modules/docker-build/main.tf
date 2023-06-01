@@ -19,6 +19,7 @@ resource "docker_image" "this" {
     platform   = var.platform
   }
 }
+
 resource "docker_registry_image" "this" {
   name = docker_image.this.name
 
