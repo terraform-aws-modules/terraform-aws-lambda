@@ -31,7 +31,7 @@ module "lambda_function_in_vpc" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 5.0"
 
   name = random_pet.this.id
   cidr = "10.10.0.0/16"

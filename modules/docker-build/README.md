@@ -52,9 +52,9 @@ module "docker_image" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.22 |
-| <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 2.12, < 3.0 |
+| <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 3.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
 
 ## Providers
@@ -62,7 +62,7 @@ module "docker_image" {
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.22 |
-| <a name="provider_docker"></a> [docker](#provider\_docker) | >= 2.12, < 3.0 |
+| <a name="provider_docker"></a> [docker](#provider\_docker) | >= 3.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
 
 ## Modules
@@ -75,6 +75,7 @@ No modules.
 |------|------|
 | [aws_ecr_lifecycle_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_lifecycle_policy) | resource |
 | [aws_ecr_repository.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) | resource |
+| [docker_image.this](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/image) | resource |
 | [docker_registry_image.this](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/registry_image) | resource |
 | [null_resource.sam_metadata_docker_registry_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_caller_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
