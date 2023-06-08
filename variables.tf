@@ -391,6 +391,12 @@ variable "event_source_mapping" {
   default     = {}
 }
 
+variable "cloudwatch_logs_triggers" {
+  description = "Map of CloudWatch Logs subscription filters as Lambda triggers"
+  type        = any
+  default     = {}
+}
+
 #################
 # CloudWatch Logs
 #################

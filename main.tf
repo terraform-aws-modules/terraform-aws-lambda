@@ -343,6 +343,15 @@ resource "aws_lambda_event_source_mapping" "this" {
   }
 }
 
+resource "aws_cloudwatch_log_subscription_filter" "this" {
+  for_each = { for k, v in var.cloudwatch_logs_triggers : k => v if local.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
+
+  name            = try(each.key, null)
+  log_group_name  = try(each.value.log_group_name, null)
+  filter_pattern  = try(each.value.filter_pattern, null)
+  destination_arn = aws_lambda_function.this[0].arn
+}
+
 resource "aws_lambda_function_url" "this" {
   count = local.create && var.create_function && !var.create_layer && var.create_lambda_function_url ? 1 : 0
 
