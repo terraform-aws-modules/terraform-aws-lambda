@@ -26,11 +26,13 @@ data "external" "archive_prepare" {
       docker_entrypoint         = var.docker_entrypoint
     }) : null
 
-    artifacts_dir = var.artifacts_dir
-    runtime       = var.runtime
-    architectures = jsonencode(var.architectures)
-    source_path   = jsonencode(var.source_path)
-    hash_extra    = var.hash_extra
+    artifacts_dir            = var.artifacts_dir
+    runtime                  = var.runtime
+    compatible_runtimes      = var.compatible_runtimes
+    architectures            = jsonencode(var.architectures)
+    compatible_architectures = jsonencode(var.compatible_architectures)
+    source_path              = jsonencode(var.source_path)
+    hash_extra               = var.hash_extra
     hash_extra_paths = jsonencode(
       [
         # Temporary fix when building from multiple locations

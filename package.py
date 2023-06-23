@@ -1411,7 +1411,9 @@ def prepare_command(args):
 
     tf_paths = query.paths
     runtime = query.runtime
+    compatible_runtimes = query.compatible_runtimes
     architectures = query.architectures
+    compatible_architectures = query.compatible_architectures
     artifacts_dir = query.artifacts_dir
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
@@ -1431,7 +1433,9 @@ def prepare_command(args):
     content_hash = bpm.hash(hash_extra_paths)
     content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
+    content_hash.update(json.dumps(compatible_runtimes, sort_keys=True).encode())
     content_hash.update(json.dumps(architectures, sort_keys=True).encode())
+    content_hash.update(json.dumps(compatible_architectures, sort_keys=True).encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
 
@@ -1456,7 +1460,9 @@ def prepare_command(args):
     build_data = {
         'filename': filename,
         'runtime': runtime,
+        'compatible_runtimes': compatible_runtimes,
         'architectures': architectures,
+        'compatible_architectures': compatible_architectures,
         'artifacts_dir': artifacts_dir,
         'build_plan': build_plan,
     }
