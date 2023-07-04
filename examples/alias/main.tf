@@ -74,8 +74,9 @@ module "alias_no_refresh" {
 
   event_source_mapping = {
     sqs = {
-      service          = "sqs"
-      event_source_arn = module.sqs_events.sqs_queue_arn
+      service             = "sqs"
+      event_source_arn    = module.sqs_events.sqs_queue_arn
+      maximum_concurrency = 10
     }
   }
 
