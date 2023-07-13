@@ -618,7 +618,7 @@ class ZipContentFilter:
 def get_build_system_from_pyproject_toml(pyproject_file):
     # Implement a basic TOML parser because python stdlib does not provide toml support and we probably do not want to add external dependencies
     if os.path.isfile(pyproject_file):
-        with open(pyproject_file) as f:
+        with open(pyproject_file, encoding="utf-8") as f:
             bs = False
             for line in f.readlines():
                 if line.startswith("[build-system]"):
