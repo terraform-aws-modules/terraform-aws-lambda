@@ -28,7 +28,7 @@ data "external" "archive_prepare" {
 
     artifacts_dir            = var.artifacts_dir
     runtime                  = var.runtime
-    compatible_runtimes      = var.compatible_runtimes
+    compatible_runtimes      = jsonencode(var.compatible_runtimes)
     architectures            = jsonencode(var.architectures)
     compatible_architectures = jsonencode(var.compatible_architectures)
     source_path              = jsonencode(var.source_path)
