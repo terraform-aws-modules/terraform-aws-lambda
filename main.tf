@@ -112,6 +112,12 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  timeouts {
+    create = try(var.timeouts.create, null)
+    update = try(var.timeouts.update, null)
+    delete = try(var.timeouts.delete, null)
+  }
+
   tags = var.tags
 
   depends_on = [

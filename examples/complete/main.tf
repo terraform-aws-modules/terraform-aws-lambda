@@ -166,6 +166,12 @@ module "lambda_function" {
     }
   }
 
+  timeouts = {
+    create = "20m"
+    update = "20m"
+    delete = "20m"
+  }
+
   tags = {
     Module = "lambda1"
   }
