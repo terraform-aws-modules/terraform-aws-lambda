@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v5.2.0...v5.3.0) (2023-07-17)
+
+
+### Features
+
+* Added timeouts for Lambda Functions ([#485](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/485)) ([2a59ba2](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2a59ba2948fa22dd7cb7a1c8a721fa826c3832e8))
+
 ## [5.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v5.1.0...v5.2.0) (2023-07-05)
 
 
