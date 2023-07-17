@@ -72,11 +72,6 @@ variable "runtime" {
   description = "Lambda Function runtime"
   type        = string
   default     = ""
-
-  #  validation {
-  #    condition     = can(var.create && contains(["nodejs10.x", "nodejs12.x", "java8", "java11", "python2.7", " python3.6", "python3.7", "python3.8", "dotnetcore2.1", "dotnetcore3.1", "go1.x", "ruby2.5", "ruby2.7", "provided"], var.runtime))
-  #    error_message = "The runtime value must be one of supported by AWS Lambda."
-  #  }
 }
 
 variable "lambda_role" {
@@ -239,6 +234,12 @@ variable "replacement_security_group_ids" {
   description = "(Optional) List of security group IDs to assign to orphaned Lambda function network interfaces upon destruction. replace_security_groups_on_destroy must be set to true to use this attribute."
   type        = list(string)
   default     = null
+}
+
+variable "timeouts" {
+  description = "Define maximum timeout for creating, updating, and deleting Lambda Function resources"
+  type        = map(string)
+  default     = {}
 }
 
 ###############
