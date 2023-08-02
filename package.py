@@ -714,6 +714,19 @@ class BuildPlanManager:
 
                 step('npm', runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
+        
+        def go_build_step(path, prefix=None, tmp_dir=None):
+            command = "go"
+            if not os.path.isfile(path):
+                raise RuntimeError('File not found: {}'.format(path))
+            else:
+                if not query.docker and not shutil.which(command):
+                    raise RuntimeError(
+                        "Go command not found should be "
+                        "available in system PATH".format(command))
+
+                step('go', path, tmp_dir)
+                hash(path)
 
         def commands_step(path, commands):
             if not commands:
@@ -776,6 +789,8 @@ class BuildPlanManager:
                 elif runtime.startswith('nodejs'):
                     npm_requirements_step(
                         os.path.join(path, 'package.json'))
+                elif path.endswith(".go") and runtime == "provided.al2":
+                    go_build_step(path)
                 step('zip', path, None)
                 hash(path)
 
@@ -882,6 +897,16 @@ class BuildPlanManager:
                         else:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
+            elif cmd == "go":
+                path, tmp_dir = action[1:]
+                with build_go_binary(query, path, tmp_dir) as rd:
+                    if rd:
+                        if pf:
+                            self._zip_write_with_filter(zs, pf, rd, prefix,
+                                                        timestamp=0)
+                        else:
+                            # XXX: timestamp=0 - what actually do with it?
+                            zs.write_dirs(rd, prefix=None, timestamp=0)
             elif cmd == 'sh':
                 r, w = os.pipe()
                 side_ch = os.fdopen(r)
@@ -1274,6 +1299,65 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
             os.remove(target_file)
             yield temp_dir
 
+@contextmanager
+def build_go_binary(query, path, tmp_dir):
+    if not os.path.exists(path):
+        yield
+        return
+    
+    runtime = query.runtime
+    artifacts_dir = query.artifacts_dir
+    temp_dir = query.temp_dir
+    docker = query.docker
+    docker_image_tag_id = None
+    architectures = query.architectures
+    
+    if docker:
+        raise RuntimeError("Docker not available with Go")
+    
+    with tempdir(tmp_dir) as temp_dir:
+        if "arm64" == architectures:
+            arch="arm64"
+        else:
+            arch="amd64"
+
+        go_command = [
+            'go', 'build', 
+            "-tags", "lambda.norpc", 
+            "-o", "bootstrap", 
+            "-C", os.path.dirname(path)
+            ]
+        
+        subproc_env = None
+        if not docker and OSX:
+            subproc_env = os.environ.copy()
+        subproc_env.update({
+            "GOOS": "linux",
+            "GOARCH": "arm64",
+            "CGO_ENABLED": "0",
+        })
+
+        try:
+            check_call(go_command, env=subproc_env)
+        except FileNotFoundError as e:
+            raise RuntimeError(
+                "Go command should be "
+                "available in system PATH"
+            ) from e
+        
+        bootstrap_file = os.path.join(os.path.dirname(path), "bootstrap")
+        target_file = os.path.join(temp_dir, "bootstrap")
+        shutil.move(bootstrap_file, target_file)
+        
+        # Install binary into the temporary directory.
+        with cd(temp_dir):
+            if docker:
+                raise RuntimeError("Docker not available with Go")
+            else:
+                cmd_log.info(shlex_join(go_command))
+                log_handler and log_handler.flush()
+            
+            yield temp_dir
 
 def docker_image_id_command(tag):
     """"""
