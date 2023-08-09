@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v5.3.0...v6.0.0) (2023-08-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* Disable creation of SAM metadata null-resources by default (#494)
+
+### Features
+
+* Disable creation of SAM metadata null-resources by default ([#494](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/494)) ([9c9603c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/9c9603cbb889a2cda1555deaed908d320e013515))
+
 ## [5.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v5.2.0...v5.3.0) (2023-07-17)
 
 
