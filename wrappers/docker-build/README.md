@@ -19,7 +19,11 @@ terraform {
 
 inputs = {
   defaults = { # Default values
-    create_ecr_repo = true
+    create = true
+    tags = {
+      Terraform   = "true"
+      Environment = "dev"
+    }
   }
 
   items = {
@@ -41,7 +45,11 @@ module "wrapper" {
   source = "terraform-aws-modules/lambda/aws//wrappers/docker-build"
 
   defaults = { # Default values
-    create_ecr_repo = true
+    create = true
+    tags = {
+      Terraform   = "true"
+      Environment = "dev"
+    }
   }
 
   items = {
@@ -56,52 +64,35 @@ module "wrapper" {
 }
 ```
 
-## Example: Manage multiple Docker Container Image in one Terragrunt layer
+## Example: Manage multiple S3 buckets in one Terragrunt layer
 
-`eu-west-1/docker-builds/terragrunt.hcl`:
+`eu-west-1/s3-buckets/terragrunt.hcl`:
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/lambda/aws//wrappers"
+  source = "tfr:///terraform-aws-modules/s3-bucket/aws//wrappers"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda.git//wrappers?ref=master"
-}
-
-# Generate an Docker provider block
-generate "provider" {
-  path      = "provider.tf"
-  if_exists = "overwrite"
-  contents  = <<EOF
-provider "docker" {
-  registry_auth {
-    address  = "835367859852.dkr.ecr.eu-west-1.amazonaws.com"
-    username = "awesome-user"
-    password = "awesome-pwd"
-  }
-}
-EOF
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git//wrappers?ref=master"
 }
 
 inputs = {
   defaults = {
-    create_ecr_repo = true
-    build_args      = {
-      ENV = "dev"
-    }
+    force_destroy = true
+
+    attach_elb_log_delivery_policy        = true
+    attach_lb_log_delivery_policy         = true
+    attach_deny_insecure_transport_policy = true
+    attach_require_latest_tls_policy      = true
   }
 
   items = {
-    docker-image1 = {
-      ecr_repo     = "my-random-ecr-repo-1"
-      image_tag    = "1.0"
-      source_path  = "context1"
+    bucket1 = {
+      bucket = "my-random-bucket-1"
     }
-    docker-image2 = {
-      ecr_repo     = "my-random-ecr-repo-2"
-      image_tag    = "1.0"
-      source_path  = "context2"
-      build_args      = {
-        ENV = "qa"
+    bucket2 = {
+      bucket = "my-random-bucket-2"
+      tags = {
+        Secure = "probably"
       }
     }
   }

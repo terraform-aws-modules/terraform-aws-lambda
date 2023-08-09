@@ -3,6 +3,7 @@ repos:
     rev: v1.81.0
     hooks:
       - id: terraform_fmt
+      - id: terraform_wrapper_module_for_each
       - id: terraform_validate
       - id: terraform_docs
         args:

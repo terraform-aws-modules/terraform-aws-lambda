@@ -19,7 +19,7 @@ terraform {
 
 inputs = {
   defaults = { # Default values
-    create_app = true
+    create = true
     tags = {
       Terraform   = "true"
       Environment = "dev"
@@ -45,7 +45,7 @@ module "wrapper" {
   source = "terraform-aws-modules/lambda/aws//wrappers/deploy"
 
   defaults = { # Default values
-    create_app = true
+    create = true
     tags = {
       Terraform   = "true"
       Environment = "dev"
@@ -64,70 +64,36 @@ module "wrapper" {
 }
 ```
 
-## Example: Manage multiple deployment via AWS CodeDeploy in one Terragrunt layer
+## Example: Manage multiple S3 buckets in one Terragrunt layer
 
-`eu-west-1/lambda-deploys/terragrunt.hcl`:
+`eu-west-1/s3-buckets/terragrunt.hcl`:
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/lambda/aws//wrappers/deploy"
+  source = "tfr:///terraform-aws-modules/s3-bucket/aws//wrappers"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda.git//wrappers/deploy?ref=master"
-}
-
-dependency "aliases" {
-  config_path = "../lambdas-aliases/"
-}
-dependency "lambda1" {
-  config_path = "../lambdas/lambda1"
-}
-dependency "lambda2" {
-  config_path = "../lambdas/lambda2"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git//wrappers?ref=master"
 }
 
 inputs = {
   defaults = {
-    create_app                 = true
-    reate_deployment_group     = true
-    create_deployment          = true
-    run_deployment             = true
-    wait_deployment_completion = true
+    force_destroy = true
 
-    triggers = {
-      start = {
-        events     = ["DeploymentStart"]
-        name       = "DeploymentStart"
-        target_arn = "arn:aws:sns:eu-west-1:135367859851:sns1"
-      }
-      success = {
-        events     = ["DeploymentSuccess"]
-        name       = "DeploymentSuccess"
-        target_arn = "arn:aws:sns:eu-west-1:135367859851:sns2"
-      }
-    }
-
-    tags = {
-      Terraform   = "true"
-      Environment = "dev"
-    }
+    attach_elb_log_delivery_policy        = true
+    attach_lb_log_delivery_policy         = true
+    attach_deny_insecure_transport_policy = true
+    attach_require_latest_tls_policy      = true
   }
 
   items = {
-    deploy1 = {
-      app_name                = "my-random-app-1"
-      deployment_group_name   = "something1"
-
-      alias_name     = dependency.aliases.outputs.wrapper.alias1.lambda_alias_name
-      function_name  = dependency.lambda1.outputs.lambda_function_name
-      target_version = dependency.lambda1.outputs.lambda_function_version
+    bucket1 = {
+      bucket = "my-random-bucket-1"
     }
-    deploy2 = {
-      app_name                = "my-random-app-2"
-      deployment_group_name   = "something2"
-
-      alias_name     = dependency.aliases.outputs.wrapper.alias2.lambda_alias_name
-      function_name  = dependency.lambda2.outputs.lambda_function_name
-      target_version = dependency.lambda2.outputs.lambda_function_version
+    bucket2 = {
+      bucket = "my-random-bucket-2"
+      tags = {
+        Secure = "probably"
+      }
     }
   }
 }
