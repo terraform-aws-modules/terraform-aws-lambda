@@ -377,7 +377,7 @@ resource "aws_lambda_function_url" "this" {
 # to the TF application. The required data is where SAM CLI can find the Lambda function source code
 # and what are the resources that contain the building logic.
 resource "null_resource" "sam_metadata_aws_lambda_function" {
-  count = local.create && var.create_package && var.create_function && !var.create_layer ? 1 : 0
+  count = local.create && var.create_sam_metadata && var.create_package && var.create_function && !var.create_layer ? 1 : 0
 
   triggers = {
     # This is a way to let SAM CLI correlates between the Lambda function resource, and this metadata
@@ -405,7 +405,7 @@ resource "null_resource" "sam_metadata_aws_lambda_function" {
 # to the TF application. The required data is where SAM CLI can find the Lambda layer source code
 # and what are the resources that contain the building logic.
 resource "null_resource" "sam_metadata_aws_lambda_layer_version" {
-  count = local.create && var.create_package && var.create_layer ? 1 : 0
+  count = local.create && var.create_sam_metadata && var.create_package && var.create_layer ? 1 : 0
 
   triggers = {
     # This is a way to let SAM CLI correlates between the Lambda layer resource, and this metadata

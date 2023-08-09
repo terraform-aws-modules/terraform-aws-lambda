@@ -12,15 +12,18 @@ This wrapper does not implement any extra functionality.
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/lambda/aws"
+  source = "tfr:///terraform-aws-modules/lambda/aws//wrappers/alias"
   # Alternative source:
   # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda.git//wrappers/alias?ref=master"
 }
 
 inputs = {
   defaults = { # Default values
-    create        = true
-    refresh_alias = true
+    create = true
+    tags = {
+      Terraform   = "true"
+      Environment = "dev"
+    }
   }
 
   items = {
@@ -42,8 +45,11 @@ module "wrapper" {
   source = "terraform-aws-modules/lambda/aws//wrappers/alias"
 
   defaults = { # Default values
-    create        = true
-    refresh_alias = true
+    create = true
+    tags = {
+      Terraform   = "true"
+      Environment = "dev"
+    }
   }
 
   items = {
@@ -58,45 +64,36 @@ module "wrapper" {
 }
 ```
 
-## Example: Manage multiple aliases in one Terragrunt layer
+## Example: Manage multiple S3 buckets in one Terragrunt layer
 
-`eu-west-1/lambda-aliases/terragrunt.hcl`:
+`eu-west-1/s3-buckets/terragrunt.hcl`:
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/lambda/aws//wrappers/alias"
+  source = "tfr:///terraform-aws-modules/s3-bucket/aws//wrappers"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda.git//wrappers/alias?ref=master"
-}
-
-dependency "lambda1" {
-  config_path = "../lambdas/lambda1"
-}
-dependency "lambda2" {
-  config_path = "../lambdas/lambda2"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git//wrappers?ref=master"
 }
 
 inputs = {
   defaults = {
-    refresh_alias = true
-    allowed_triggers = {
-      AnotherAPIGatewayAny = {
-        service    = "apigateway"
-        source_arn = "arn:aws:execute-api:eu-west-1:135367859851:abcdedfgse/*/*/*"
-      }
-    }
+    force_destroy = true
+
+    attach_elb_log_delivery_policy        = true
+    attach_lb_log_delivery_policy         = true
+    attach_deny_insecure_transport_policy = true
+    attach_require_latest_tls_policy      = true
   }
 
   items = {
-    alias1 = {
-      name             = "my-random-alias-1"
-      function_name    = dependency.lambda1.outputs.lambda_function_name
-      function_version = dependency.lambda1.outputs.lambda_function_version
+    bucket1 = {
+      bucket = "my-random-bucket-1"
     }
-    alias2 = {
-      name             = "my-random-alias-2"
-      function_name    = dependency.lambda2.outputs.lambda_function_name
-      function_version = dependency.lambda2.outputs.lambda_function_version
+    bucket2 = {
+      bucket = "my-random-bucket-2"
+      tags = {
+        Secure = "probably"
+      }
     }
   }
 }
