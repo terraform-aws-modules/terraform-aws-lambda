@@ -559,8 +559,7 @@ module "lambda_function_existing_package_from_remote_url" {
 
 ## <a name="sam_cli_integration"></a> How to use AWS SAM CLI to test Lambda Function?
 [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html) is an open source tool that help the developers to initiate, build, test, and deploy serverless 
-applications. Currently, SAM CLI tool only supports CFN applications, but SAM CLI team is working on a feature to extend the testing capabilities to support terraform applications (check this [Github issue](https://github.com/aws/aws-sam-cli/issues/3154) 
-to be updated about the incoming releases, and features included in each release for the Terraform support feature).
+applications. SAM CLI tool [supports Terraform applications](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-terraform-support.html).
 
 SAM CLI provides two ways of testing: local testing and testing on-cloud (Accelerate).
 
