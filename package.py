@@ -791,7 +791,7 @@ class BuildPlanManager:
                     prefix = claim.get('prefix_in_zip')
                     pip_requirements = claim.get('pip_requirements')
                     poetry_install = claim.get("poetry_install")
-                    npm_requirements = claim.get('npm_package_json')
+                    npm_requirements = claim.get('npm_requirements')
                     runtime = claim.get('runtime', query.runtime)
 
                     if pip_requirements and runtime.startswith('python'):
