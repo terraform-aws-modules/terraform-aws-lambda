@@ -109,6 +109,7 @@ module "wrapper" {
   s3_bucket                                    = try(each.value.s3_bucket, var.defaults.s3_bucket, null)
   s3_acl                                       = try(each.value.s3_acl, var.defaults.s3_acl, "private")
   s3_server_side_encryption                    = try(each.value.s3_server_side_encryption, var.defaults.s3_server_side_encryption, null)
+  s3_kms_key_id                                = try(each.value.s3_kms_key_id, var.defaults.s3_kms_key_id, null)
   source_path                                  = try(each.value.source_path, var.defaults.source_path, null)
   hash_extra                                   = try(each.value.hash_extra, var.defaults.hash_extra, "")
   build_in_docker                              = try(each.value.build_in_docker, var.defaults.build_in_docker, false)
