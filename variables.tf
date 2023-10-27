@@ -182,6 +182,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "function_tags" {
+  description = "A map of tags to assign only to the lambda function"
+  type        = map(string)
+  default     = {}
+}
+
 variable "s3_object_tags" {
   description = "A map of tags to assign to S3 bucket object."
   type        = map(string)

@@ -33,6 +33,7 @@ module "wrapper" {
   vpc_subnet_ids                               = try(each.value.vpc_subnet_ids, var.defaults.vpc_subnet_ids, null)
   vpc_security_group_ids                       = try(each.value.vpc_security_group_ids, var.defaults.vpc_security_group_ids, null)
   tags                                         = try(each.value.tags, var.defaults.tags, {})
+  function_tags                                = try(each.value.function_tags, var.defaults.function_tags, {})
   s3_object_tags                               = try(each.value.s3_object_tags, var.defaults.s3_object_tags, {})
   s3_object_tags_only                          = try(each.value.s3_object_tags_only, var.defaults.s3_object_tags_only, false)
   package_type                                 = try(each.value.package_type, var.defaults.package_type, "Zip")

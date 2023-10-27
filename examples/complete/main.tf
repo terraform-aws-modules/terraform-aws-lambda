@@ -172,6 +172,10 @@ module "lambda_function" {
     delete = "20m"
   }
 
+  function_tags = {
+    Language = "python"
+  }
+
   tags = {
     Module = "lambda1"
   }
