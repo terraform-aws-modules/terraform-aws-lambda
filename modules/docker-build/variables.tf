@@ -4,6 +4,12 @@ variable "create_ecr_repo" {
   default     = false
 }
 
+variable "create_sam_metadata" {
+  description = "Controls whether the SAM metadata null resource should be created"
+  type        = bool
+  default     = false
+}
+
 variable "ecr_address" {
   description = "Address of ECR repository for cross-account container image pulling (optional). Option `create_ecr_repo` must be `false`"
   type        = string
