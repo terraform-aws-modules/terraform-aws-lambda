@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.0.1...v6.1.0) (2023-10-27)
+
+
+### Features
+
+* Allows tags to be provided only to the function ([#508](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/508)) ([610d602](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/610d602bb2038d3c2719c14d938b303cefcccac9))
+
 ### [6.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.0.0...v6.0.1) (2023-10-05)
 
 
