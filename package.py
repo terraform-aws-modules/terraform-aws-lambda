@@ -1240,12 +1240,16 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
         shutil.copyfile(requirements_file, target_file)
 
         subproc_env = None
-        if not docker and OSX:
-            subproc_env = os.environ.copy()
+        npm_exec = 'npm'
+        if not docker:
+            if WINDOWS:
+                npm_exec = 'npm.cmd'
+            elif OSX:
+                subproc_env = os.environ.copy()
 
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
-            npm_command = ['npm', 'install']
+            npm_command = [npm_exec, 'install']
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
                 chown_mask = '{}:{}'.format(os.getuid(), os.getgid())

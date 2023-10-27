@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [6.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.0.0...v6.0.1) (2023-10-05)
+
+
+### Bug Fixes
+
+* Fixed npm install on Windows without having to use wsl ([#502](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/502)) ([ffa56e8](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/ffa56e896d7c5e5c8cbc851f0c453b70e4ec100f))
+
 ## [6.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v5.3.0...v6.0.0) (2023-08-09)
 
 
