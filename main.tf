@@ -118,7 +118,7 @@ resource "aws_lambda_function" "this" {
     delete = try(var.timeouts.delete, null)
   }
 
-  tags = var.tags
+  tags = merge(var.tags, var.function_tags)
 
   depends_on = [
     null_resource.archive,
