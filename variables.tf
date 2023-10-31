@@ -648,6 +648,12 @@ variable "local_existing_package" {
   default     = null
 }
 
+variable "source_code_hash" {
+  description = "The function's source code hash value, which overrides this module's computed hash. Set if it's not possible to determine the final source code hash until apply time."
+  type        = string
+  default     = null
+}
+
 variable "s3_existing_package" {
   description = "The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use"
   type        = map(string)
