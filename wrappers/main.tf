@@ -104,6 +104,7 @@ module "wrapper" {
   s3_prefix                                    = try(each.value.s3_prefix, var.defaults.s3_prefix, null)
   ignore_source_code_hash                      = try(each.value.ignore_source_code_hash, var.defaults.ignore_source_code_hash, false)
   local_existing_package                       = try(each.value.local_existing_package, var.defaults.local_existing_package, null)
+  source_code_hash                             = try(each.value.source_code_hash, var.defaults.source_code_hash, null)
   s3_existing_package                          = try(each.value.s3_existing_package, var.defaults.s3_existing_package, null)
   store_on_s3                                  = try(each.value.store_on_s3, var.defaults.store_on_s3, false)
   s3_object_storage_class                      = try(each.value.s3_object_storage_class, var.defaults.s3_object_storage_class, "ONEZONE_IA")
