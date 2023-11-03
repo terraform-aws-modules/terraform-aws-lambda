@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.2.0...v6.3.0) (2023-11-03)
+
+
+### Features
+
+* Allow to specify custom KMS key for S3 object ([#505](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/505)) ([eb339d6](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/eb339d658c232d0afa0a7f4f7902becab2a2a2e9))
+
 ## [6.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.1.0...v6.2.0) (2023-10-27)
 
 
