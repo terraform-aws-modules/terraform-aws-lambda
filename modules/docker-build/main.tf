@@ -51,6 +51,8 @@ resource "aws_ecr_lifecycle_policy" "this" {
 # to the TF application. This resource will maintain the metadata information about the image type lambda
 # functions. It will contain the information required to build the docker image locally.
 resource "null_resource" "sam_metadata_docker_registry_image" {
+  count = var.create_sam_metadata ? 1 : 0
+
   triggers = {
     resource_type     = "IMAGE_LAMBDA_FUNCTION"
     docker_context    = var.source_path

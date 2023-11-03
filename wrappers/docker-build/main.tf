@@ -4,6 +4,7 @@ module "wrapper" {
   for_each = var.items
 
   create_ecr_repo           = try(each.value.create_ecr_repo, var.defaults.create_ecr_repo, false)
+  create_sam_metadata       = try(each.value.create_sam_metadata, var.defaults.create_sam_metadata, false)
   ecr_address               = try(each.value.ecr_address, var.defaults.ecr_address, null)
   ecr_repo                  = try(each.value.ecr_repo, var.defaults.ecr_repo, null)
   image_tag                 = try(each.value.image_tag, var.defaults.image_tag, null)
