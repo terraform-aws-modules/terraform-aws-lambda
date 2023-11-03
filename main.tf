@@ -175,6 +175,7 @@ resource "aws_s3_object" "lambda_package" {
   storage_class = var.s3_object_storage_class
 
   server_side_encryption = var.s3_server_side_encryption
+  kms_key_id             = var.s3_kms_key_id
 
   tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 

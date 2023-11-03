@@ -558,31 +558,31 @@ module "lambda_function_existing_package_from_remote_url" {
 ```
 
 ## <a name="sam_cli_integration"></a> How to use AWS SAM CLI to test Lambda Function?
-[AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html) is an open source tool that help the developers to initiate, build, test, and deploy serverless 
+[AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html) is an open source tool that help the developers to initiate, build, test, and deploy serverless
 applications. SAM CLI tool [supports Terraform applications](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-terraform-support.html).
 
 SAM CLI provides two ways of testing: local testing and testing on-cloud (Accelerate).
 
 ### Local Testing
 Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)
-command, providing the function terraform address, or function name, and to set the `hook-name` to `terraform` to tell SAM CLI that the underlying project is a terraform application. 
+command, providing the function terraform address, or function name, and to set the `hook-name` to `terraform` to tell SAM CLI that the underlying project is a terraform application.
 
 You can execute the `sam local invoke` command from your terraform application root directory as following:
 ```
-sam local invoke --hook-name terraform module.hello_world_function.aws_lambda_function.this[0] 
+sam local invoke --hook-name terraform module.hello_world_function.aws_lambda_function.this[0]
 ```
 You can also pass an event to your lambda function, or overwrite its environment variables. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) for more information.
 
 You can also invoke your lambda function in debugging mode, and step-through your lambda function source code locally in your preferred editor. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-debugging.html) for more information.
 
 ### Testing on-cloud (Accelerate)
-You can use AWS SAM CLI to quickly test your application on your AWS development account. Using SAM Accelerate, you will be able to develop your lambda functions locally, 
+You can use AWS SAM CLI to quickly test your application on your AWS development account. Using SAM Accelerate, you will be able to develop your lambda functions locally,
 and once you save your updates, SAM CLI will update your development account with the updated Lambda functions. So, you can test it on cloud, and if there is any bug,
 you can quickly update the code, and SAM CLI will take care of pushing it to the cloud. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/accelerate.html) for more information about SAM Accelerate.
 
 You can execute the `sam sync` command from your terraform application root directory as following:
 ```
-sam sync --hook-name terraform --watch 
+sam sync --hook-name terraform --watch
 ```
 
 ## <a name="deployment"></a> How to deploy and manage Lambda Functions?
@@ -838,6 +838,7 @@ No modules.
 | <a name="input_s3_acl"></a> [s3\_acl](#input\_s3\_acl) | The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private. | `string` | `"private"` | no |
 | <a name="input_s3_bucket"></a> [s3\_bucket](#input\_s3\_bucket) | S3 bucket to store artifacts | `string` | `null` | no |
 | <a name="input_s3_existing_package"></a> [s3\_existing\_package](#input\_s3\_existing\_package) | The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use | `map(string)` | `null` | no |
+| <a name="input_s3_kms_key_id"></a> [s3\_kms\_key\_id](#input\_s3\_kms\_key\_id) | Specifies a custom KMS key to use for S3 object encryption. | `string` | `null` | no |
 | <a name="input_s3_object_storage_class"></a> [s3\_object\_storage\_class](#input\_s3\_object\_storage\_class) | Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED\_REDUNDANCY, ONEZONE\_IA, INTELLIGENT\_TIERING, or STANDARD\_IA. | `string` | `"ONEZONE_IA"` | no |
 | <a name="input_s3_object_tags"></a> [s3\_object\_tags](#input\_s3\_object\_tags) | A map of tags to assign to S3 bucket object. | `map(string)` | `{}` | no |
 | <a name="input_s3_object_tags_only"></a> [s3\_object\_tags\_only](#input\_s3\_object\_tags\_only) | Set to true to not merge tags with s3\_object\_tags. Useful to avoid breaching S3 Object 10 tag limit. | `bool` | `false` | no |
