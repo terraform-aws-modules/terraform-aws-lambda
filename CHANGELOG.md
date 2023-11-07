@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.3.0...v6.4.0) (2023-11-07)
+
+
+### Features
+
+* Added support for triggers in docker-build module when hash changes ([#510](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/510)) ([41d8db7](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/41d8db71ad4fc9f56bb55c314133ce007f587e33))
+
 ## [6.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.2.0...v6.3.0) (2023-11-03)
 
 
