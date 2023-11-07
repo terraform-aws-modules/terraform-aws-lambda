@@ -55,6 +55,8 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_docker_image_files_to_hash"></a> [docker\_image\_files\_to\_hash](#output\_docker\_image\_files\_to\_hash) | List of files used to hash the docker image tag |
+| <a name="output_docker_image_id"></a> [docker\_image\_id](#output\_docker\_image\_id) | The ID of the Docker image |
 | <a name="output_docker_image_uri"></a> [docker\_image\_uri](#output\_docker\_image\_uri) | The ECR Docker image URI used to deploy Lambda Function |
 | <a name="output_lambda_cloudwatch_log_group_arn"></a> [lambda\_cloudwatch\_log\_group\_arn](#output\_lambda\_cloudwatch\_log\_group\_arn) | The ARN of the Cloudwatch Log Group |
 | <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | The ARN of the Lambda Function |
