@@ -97,3 +97,13 @@ output "docker_image_uri" {
   description = "The ECR Docker image URI used to deploy Lambda Function"
   value       = module.docker_image.image_uri
 }
+
+output "docker_image_id" {
+  description = "The ID of the Docker image"
+  value       = module.docker_image.image_id
+}
+
+output "docker_image_files_to_hash" {
+  description = "List of files used to hash the docker image tag"
+  value       = local.files
+}
