@@ -9,6 +9,7 @@ module "wrapper" {
   assume_role_policy_statements                = try(each.value.assume_role_policy_statements, var.defaults.assume_role_policy_statements, {})
   attach_async_event_policy                    = try(each.value.attach_async_event_policy, var.defaults.attach_async_event_policy, false)
   attach_cloudwatch_logs_policy                = try(each.value.attach_cloudwatch_logs_policy, var.defaults.attach_cloudwatch_logs_policy, true)
+  attach_create_log_group_permission           = try(each.value.attach_create_log_group_permission, var.defaults.attach_create_log_group_permission, true)
   attach_dead_letter_policy                    = try(each.value.attach_dead_letter_policy, var.defaults.attach_dead_letter_policy, false)
   attach_network_policy                        = try(each.value.attach_network_policy, var.defaults.attach_network_policy, false)
   attach_policies                              = try(each.value.attach_policies, var.defaults.attach_policies, false)

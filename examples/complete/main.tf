@@ -372,6 +372,23 @@ module "lambda_function_with_package_deploying_externally" {
   ignore_source_code_hash = true
 }
 
+####################################################
+# Lambda Function no create log group permission
+####################################################
+
+module "lambda_function_no_create_log_group_permission" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-no-create-log-group-permission"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  attach_create_log_group_permission = false
+}
+
 ###########
 # Disabled
 ###########
