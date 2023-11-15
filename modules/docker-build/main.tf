@@ -5,8 +5,8 @@ data "aws_caller_identity" "this" {}
 locals {
   ecr_address    = coalesce(var.ecr_address, format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.this.account_id, data.aws_region.current.name))
   ecr_repo       = var.create_ecr_repo ? aws_ecr_repository.this[0].id : var.ecr_repo
-  image_tag      = coalesce(var.image_tag, formatdate("YYYYMMDDhhmmss", timestamp()))
-  ecr_image_name = format("%v/%v:%v", local.ecr_address, local.ecr_repo, local.image_tag)
+  image_tag      = var.use_image_tag ? coalesce(var.image_tag, formatdate("YYYYMMDDhhmmss", timestamp())) : null
+  ecr_image_name = var.use_image_tag ? format("%v/%v:%v", local.ecr_address, local.ecr_repo, local.image_tag) : format("%v/%v", local.ecr_address, local.ecr_repo)
 }
 
 resource "docker_image" "this" {
@@ -18,12 +18,20 @@ resource "docker_image" "this" {
     build_args = var.build_args
     platform   = var.platform
   }
+
+  force_remove = var.force_remove
+  keep_locally = var.keep_locally
+  triggers     = var.triggers
 }
 
 resource "docker_registry_image" "this" {
   name = docker_image.this.name
 
   keep_remotely = var.keep_remotely
+
+  triggers = {
+    image_id = docker_image.this.image_id
+  }
 }
 
 resource "aws_ecr_repository" "this" {
@@ -51,6 +59,8 @@ resource "aws_ecr_lifecycle_policy" "this" {
 # to the TF application. This resource will maintain the metadata information about the image type lambda
 # functions. It will contain the information required to build the docker image locally.
 resource "null_resource" "sam_metadata_docker_registry_image" {
+  count = var.create_sam_metadata ? 1 : 0
+
   triggers = {
     resource_type     = "IMAGE_LAMBDA_FUNCTION"
     docker_context    = var.source_path

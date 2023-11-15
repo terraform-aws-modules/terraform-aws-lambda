@@ -5,7 +5,6 @@ provider "aws" {
   skip_metadata_api_check     = true
   skip_region_validation      = true
   skip_credentials_validation = true
-  skip_requesting_account_id  = true
 }
 
 data "aws_caller_identity" "current" {}
@@ -170,6 +169,10 @@ module "lambda_function" {
     create = "20m"
     update = "20m"
     delete = "20m"
+  }
+
+  function_tags = {
+    Language = "python"
   }
 
   tags = {

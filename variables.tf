@@ -182,6 +182,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "function_tags" {
+  description = "A map of tags to assign only to the lambda function"
+  type        = map(string)
+  default     = {}
+}
+
 variable "s3_object_tags" {
   description = "A map of tags to assign to S3 bucket object."
   type        = map(string)
@@ -674,6 +680,12 @@ variable "s3_acl" {
 
 variable "s3_server_side_encryption" {
   description = "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\"."
+  type        = string
+  default     = null
+}
+
+variable "s3_kms_key_id" {
+  description = "Specifies a custom KMS key to use for S3 object encryption."
   type        = string
   default     = null
 }

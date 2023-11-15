@@ -118,7 +118,7 @@ resource "aws_lambda_function" "this" {
     delete = try(var.timeouts.delete, null)
   }
 
-  tags = var.tags
+  tags = merge(var.tags, var.function_tags)
 
   depends_on = [
     null_resource.archive,
@@ -151,7 +151,7 @@ resource "aws_lambda_layer_version" "this" {
   description  = var.description
   license_info = var.license_info
 
-  compatible_runtimes      = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : [var.runtime]
+  compatible_runtimes      = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : (var.runtime == "" ? null : [var.runtime])
   compatible_architectures = var.compatible_architectures
   skip_destroy             = var.layer_skip_destroy
 
@@ -175,6 +175,7 @@ resource "aws_s3_object" "lambda_package" {
   storage_class = var.s3_object_storage_class
 
   server_side_encryption = var.s3_server_side_encryption
+  kms_key_id             = var.s3_kms_key_id
 
   tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 

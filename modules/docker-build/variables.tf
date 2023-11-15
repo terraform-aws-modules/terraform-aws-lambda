@@ -4,6 +4,18 @@ variable "create_ecr_repo" {
   default     = false
 }
 
+variable "create_sam_metadata" {
+  description = "Controls whether the SAM metadata null resource should be created"
+  type        = bool
+  default     = false
+}
+
+variable "use_image_tag" {
+  description = "Controls whether to use image tag in ECR repository URI or not. Disable this to deploy latest image using ID (sha256:...)"
+  type        = bool
+  default     = true
+}
+
 variable "ecr_address" {
   description = "Address of ECR repository for cross-account container image pulling (optional). Option `create_ecr_repo` must be `false`"
   type        = string
@@ -81,4 +93,22 @@ variable "platform" {
   description = "The target architecture platform to build the image for."
   type        = string
   default     = null
+}
+
+variable "force_remove" {
+  description = "Whether to remove image forcibly when the resource is destroyed."
+  type        = bool
+  default     = false
+}
+
+variable "keep_locally" {
+  description = "Whether to delete the Docker image locally on destroy operation."
+  type        = bool
+  default     = false
+}
+
+variable "triggers" {
+  description = "A map of arbitrary strings that, when changed, will force the docker_image resource to be replaced. This can be used to rebuild an image when contents of source code folders change"
+  type        = map(string)
+  default     = {}
 }

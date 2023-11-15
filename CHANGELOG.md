@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.3.0...v6.4.0) (2023-11-07)
+
+
+### Features
+
+* Added support for triggers in docker-build module when hash changes ([#510](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/510)) ([41d8db7](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/41d8db71ad4fc9f56bb55c314133ce007f587e33))
+
+## [6.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.2.0...v6.3.0) (2023-11-03)
+
+
+### Features
+
+* Allow to specify custom KMS key for S3 object ([#505](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/505)) ([eb339d6](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/eb339d658c232d0afa0a7f4f7902becab2a2a2e9))
+
+## [6.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.1.0...v6.2.0) (2023-10-27)
+
+
+### Features
+
+* Make `compatible_runtimes` optional, added sam metadata control ([#493](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/493)) ([180da4c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/180da4cb0a720f7138e6504700ddfe8d9c63abfd))
+
+## [6.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.0.1...v6.1.0) (2023-10-27)
+
+
+### Features
+
+* Allows tags to be provided only to the function ([#508](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/508)) ([610d602](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/610d602bb2038d3c2719c14d938b303cefcccac9))
+
 ### [6.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.0.0...v6.0.1) (2023-10-05)
 
 

@@ -4,6 +4,17 @@ data "aws_caller_identity" "this" {}
 
 data "aws_ecr_authorization_token" "token" {}
 
+locals {
+  source_path   = "context"
+  path_include  = ["**"]
+  path_exclude  = ["**/__pycache__/**"]
+  files_include = setunion([for f in local.path_include : fileset(local.source_path, f)]...)
+  files_exclude = setunion([for f in local.path_exclude : fileset(local.source_path, f)]...)
+  files         = sort(setsubtract(local.files_include, local.files_exclude))
+
+  dir_sha = sha1(join("", [for f in local.files : filesha1("${local.source_path}/${f}")]))
+}
+
 provider "aws" {
   region = "eu-west-1"
 
@@ -11,7 +22,6 @@ provider "aws" {
   skip_metadata_api_check     = true
   skip_region_validation      = true
   skip_credentials_validation = true
-  skip_requesting_account_id  = true
 }
 
 provider "docker" {
@@ -33,9 +43,10 @@ module "lambda_function_from_container_image" {
   ##################
   # Container Image
   ##################
-  image_uri     = module.docker_image.image_uri
   package_type  = "Image"
-  architectures = ["x86_64"]
+  architectures = ["arm64"] # ["x86_64"]
+
+  image_uri = module.docker_image.image_uri
 }
 
 module "docker_image" {
@@ -60,12 +71,20 @@ module "docker_image" {
     ]
   })
 
-  image_tag   = "2.0"
-  source_path = "context"
+  use_image_tag = false # If false, sha of the image will be used
+
+  # use_image_tag = true
+  # image_tag   = "2.0"
+
+  source_path = local.source_path
+  platform    = "linux/amd64"
   build_args = {
     FOO = "bar"
   }
-  platform = "linux/amd64"
+
+  triggers = {
+    dir_sha = local.dir_sha
+  }
 }
 
 resource "random_pet" "this" {
