@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "logs" {
     effect = "Allow"
 
     actions = compact([
-      !var.use_existing_cloudwatch_log_group ? "logs:CreateLogGroup" : "",
+      !var.use_existing_cloudwatch_log_group && var.attach_create_log_group_permission ? "logs:CreateLogGroup" : "",
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ])

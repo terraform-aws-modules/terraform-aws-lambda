@@ -494,6 +494,12 @@ variable "attach_cloudwatch_logs_policy" {
   default     = true
 }
 
+variable "attach_create_log_group_permission" {
+  description = "Controls whether to add the create log group permission to the CloudWatch logs policy"
+  type        = bool
+  default     = true
+}
+
 variable "attach_dead_letter_policy" {
   description = "Controls whether SNS/SQS dead letter notification policy should be added to IAM role for Lambda Function"
   type        = bool
