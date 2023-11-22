@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.4.0...v6.5.0) (2023-11-22)
+
+
+### Features
+
+* Added variable to control the create log group permission ([#514](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/514)) ([c173c27](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/c173c27fb57969da85967f2896b858c4654b0bba))
+
 ## [6.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.3.0...v6.4.0) (2023-11-07)
 
 
