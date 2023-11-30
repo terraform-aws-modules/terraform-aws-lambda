@@ -16,7 +16,7 @@ locals {
             Name           = var.function_name
             Alias          = var.alias_name
             CurrentVersion = var.current_version != "" ? var.current_version : local.current_version
-            TargetVersion : var.target_version
+            TargetVersion  = var.target_version
           }
         }
       }
