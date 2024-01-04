@@ -1089,13 +1089,13 @@ def install_poetry_dependencies(query, path):
         pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
 
         if os.path.isfile(poetry_lock_file):
-            log.info("Using poetry lock file: %s", poetry_lock_file)
+            log.info("Using poetry.lock file: %s", poetry_lock_file)
             poetry_lock_target_file = copy_file_to_target(poetry_lock_file, temp_dir)
         else:
             poetry_lock_target_file = None
 
         if os.path.isfile(poetry_toml_file):
-            log.info("Using poetry configuration file: %s", poetry_lock_file)
+            log.info("Using poetry.toml configuration file: %s", poetry_toml_file)
             poetry_toml_target_file = copy_file_to_target(poetry_toml_file, temp_dir)
         else:
             poetry_toml_target_file = None
