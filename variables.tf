@@ -23,7 +23,7 @@ variable "create_layer" {
 }
 
 variable "create_role" {
-  description = "Controls whether IAM role for Lambda Function should be created"
+  description = "Controls whether IAM role for Lambda Function should be created. Must be set to false for lambda_role input to have affect."
   type        = bool
   default     = true
 }
@@ -81,7 +81,7 @@ variable "runtime" {
 }
 
 variable "lambda_role" {
-  description = " IAM role ARN attached to the Lambda Function. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details."
+  description = " IAM role ARN attached to the Lambda Function. create_role must be set to false for this to be used. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details."
   type        = string
   default     = ""
 }
