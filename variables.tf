@@ -40,6 +40,12 @@ variable "create_sam_metadata" {
   default     = false
 }
 
+variable "ignore_image_uri" {
+  description = "Create lambda resource with lifecycle.ignore_changes=[image_uri]. Useful when using other means to update Lambda image after terraform apply."
+  type        = bool
+  default     = false
+}
+
 variable "putin_khuylo" {
   description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
   type        = bool
