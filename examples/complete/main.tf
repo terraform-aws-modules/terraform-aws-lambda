@@ -27,7 +27,7 @@ module "lambda_function" {
   architectures          = ["x86_64"]
   publish                = true
 
-  logging_config_log_format = "JSON"
+  logging_log_format = "JSON"
 
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
