@@ -112,6 +112,16 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "logging_config" {
+    for_each = var.logging_config_log_format != null ? [true] : []
+    content {
+      log_format            = var.logging_config_log_format
+      application_log_level = var.logging_config_application_log_level
+      system_log_level      = var.logging_config_system_log_level
+      log_group             = var.logging_config_log_group
+    }
+  }
+
   timeouts {
     create = try(var.timeouts.create, null)
     update = try(var.timeouts.update, null)
