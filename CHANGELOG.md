@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.5.0...v6.6.0) (2024-01-12)
+
+
+### Features
+
+* Added support for triggers on docker_registry_image resource ([#518](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/518)) ([4ed7d19](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/4ed7d196dc26ca80daf6d04416e2a9fa91af6c1b))
+
 ## [6.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.4.0...v6.5.0) (2023-11-22)
 
 
