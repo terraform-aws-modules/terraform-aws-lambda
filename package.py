@@ -690,11 +690,11 @@ class BuildPlanManager:
             else:
                 step("poetry", runtime, path, prefix)
                 hash(pyproject_file)
-                poetry_path = os.path.dirname(pyproject_file)
-                poetry_lock_file = os.path.join(poetry_path, "poetry.lock")
+                pyproject_path = os.path.dirname(pyproject_file)
+                poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
                 if os.path.isfile(poetry_lock_file):
                     hash(poetry_lock_file)
-                poetry_toml_file = os.path.join(poetry_path, "poetry.toml")
+                poetry_toml_file = os.path.join(pyproject_path, "poetry.toml")
                 if os.path.isfile(poetry_toml_file):
                     hash(poetry_toml_file)
 
@@ -1038,9 +1038,9 @@ def install_poetry_dependencies(query, path):
         return
 
     # poetry.lock & poetry.toml are optional
-    poetry_path = os.path.dirname(pyproject_file)
-    poetry_lock_file = os.path.join(poetry_path, "poetry.lock")
-    poetry_toml_file = os.path.join(poetry_path, "poetry.toml")
+    pyproject_path = os.path.dirname(pyproject_file)
+    poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
+    poetry_toml_file = os.path.join(pyproject_path, "poetry.toml")
 
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
