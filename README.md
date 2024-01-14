@@ -651,6 +651,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 - [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (SQS, DynamoDB, Amazon MQ, and Kinesis).
 - [Triggers](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/triggers) - Create Lambda Function with some triggers (eg, Cloudwatch Events, EventBridge).
 - [Code Signing](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/code-signing) - Create Lambda Function with code signing configuration.
+- [Simple CI/CD](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/simple-cicd) - Create Lambda Function as if it runs on CI/CD platform where `builds` directory is often absent.
 
 # Examples by the users of this module
 
