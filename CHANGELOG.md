@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.6.0...v6.7.0) (2024-01-14)
+
+
+### Features
+
+* Add control to use timestamp to trigger the package creation or not (useful for CI/CD) ([#521](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/521)) ([57dbfc1](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/57dbfc1909206bd6034b0d36883029a953c199db))
+
 ## [6.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.5.0...v6.6.0) (2024-01-12)
 
 
