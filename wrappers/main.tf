@@ -119,6 +119,7 @@ module "wrapper" {
   timeout                                      = try(each.value.timeout, var.defaults.timeout, 3)
   timeouts                                     = try(each.value.timeouts, var.defaults.timeouts, {})
   tracing_mode                                 = try(each.value.tracing_mode, var.defaults.tracing_mode, null)
+  trigger_on_package_timestamp                 = try(each.value.trigger_on_package_timestamp, var.defaults.trigger_on_package_timestamp, true)
   trusted_entities                             = try(each.value.trusted_entities, var.defaults.trusted_entities, [])
   use_existing_cloudwatch_log_group            = try(each.value.use_existing_cloudwatch_log_group, var.defaults.use_existing_cloudwatch_log_group, false)
   vpc_security_group_ids                       = try(each.value.vpc_security_group_ids, var.defaults.vpc_security_group_ids, null)
