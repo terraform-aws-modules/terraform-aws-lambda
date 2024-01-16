@@ -61,7 +61,7 @@ resource "null_resource" "archive" {
 
   triggers = {
     filename  = data.external.archive_prepare[0].result.filename
-    timestamp = data.external.archive_prepare[0].result.timestamp
+    timestamp = var.trigger_on_package_timestamp ? data.external.archive_prepare[0].result.timestamp : null
   }
 
   provisioner "local-exec" {
