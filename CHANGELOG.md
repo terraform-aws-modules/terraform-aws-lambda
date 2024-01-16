@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [6.7.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.7.0...v6.7.1) (2024-01-15)
+
+
+### Bug Fixes
+
+* Set timeouts only when values are given ([#522](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/522)) ([b4bfe39](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/b4bfe39fab2a53607dc770bed18599a0fca5a694))
+
 ## [6.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.6.0...v6.7.0) (2024-01-14)
 
 
