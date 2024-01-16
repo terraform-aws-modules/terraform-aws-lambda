@@ -99,7 +99,7 @@ module "package_src_poetry2" {
     "${path.module}/../fixtures/python3.9-app-src-poetry/src",
     "${path.module}/../fixtures/python3.9-app-src-poetry/pyproject.toml"
   ]
-  artifacts_dir = "${path.root}/builds/package_src_poetry/"
+  artifacts_dir = "${path.root}/builds/package_src_poetry2/"
 }
 
 # Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (not using docker)
