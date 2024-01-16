@@ -767,3 +767,9 @@ variable "recreate_missing_package" {
   type        = bool
   default     = true
 }
+
+variable "trigger_on_package_timestamp" {
+  description = "Whether to recreate the Lambda package if the timestamp changes"
+  type        = bool
+  default     = true
+}
