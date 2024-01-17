@@ -690,10 +690,11 @@ class BuildPlanManager:
             else:
                 step("poetry", runtime, path, prefix)
                 hash(pyproject_file)
-                poetry_lock_file = os.path.join(path, "poetry.lock")
+                pyproject_path = os.path.dirname(pyproject_file)
+                poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
                 if os.path.isfile(poetry_lock_file):
                     hash(poetry_lock_file)
-                poetry_toml_file = os.path.join(path, "poetry.toml")
+                poetry_toml_file = os.path.join(pyproject_path, "poetry.toml")
                 if os.path.isfile(poetry_toml_file):
                     hash(poetry_toml_file)
 
@@ -1029,14 +1030,17 @@ def install_poetry_dependencies(query, path):
     #  1. Emit files instead of temp_dir
 
     # pyproject.toml is always required by poetry
-    pyproject_file = os.path.join(path, "pyproject.toml")
+    pyproject_file = path
+    if os.path.isdir(path):
+        pyproject_file = os.path.join(path, "pyproject.toml")
     if not os.path.exists(pyproject_file):
         yield
         return
 
     # poetry.lock & poetry.toml are optional
-    poetry_lock_file = os.path.join(path, "poetry.lock")
-    poetry_toml_file = os.path.join(path, "poetry.toml")
+    pyproject_path = os.path.dirname(pyproject_file)
+    poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
+    poetry_toml_file = os.path.join(pyproject_path, "poetry.toml")
 
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
@@ -1085,13 +1089,13 @@ def install_poetry_dependencies(query, path):
         pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
 
         if os.path.isfile(poetry_lock_file):
-            log.info("Using poetry lock file: %s", poetry_lock_file)
+            log.info("Using poetry.lock file: %s", poetry_lock_file)
             poetry_lock_target_file = copy_file_to_target(poetry_lock_file, temp_dir)
         else:
             poetry_lock_target_file = None
 
         if os.path.isfile(poetry_toml_file):
-            log.info("Using poetry configuration file: %s", poetry_lock_file)
+            log.info("Using poetry.toml configuration file: %s", poetry_toml_file)
             poetry_toml_target_file = copy_file_to_target(poetry_toml_file, temp_dir)
         else:
             poetry_toml_target_file = None
