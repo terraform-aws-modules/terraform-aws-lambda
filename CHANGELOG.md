@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.7.1...v6.8.0) (2024-01-17)
+
+
+### Features
+
+* Allow defining direct path to pyproject.toml ([#525](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/525)) ([d33b722](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/d33b722d30e346b3966fe8f6e5d92ee554c2011d))
+
 ### [6.7.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.7.0...v6.7.1) (2024-01-15)
 
 
