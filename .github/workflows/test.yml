@@ -21,10 +21,10 @@ jobs:
         python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v4.1.1
 
       - name: Set up Python ${{ matrix.python_version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python_version }}
 
@@ -42,10 +42,10 @@ jobs:
     name: Ruff Format check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v4.1.1
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ env.RUFF_PY_VERSION }}
 
