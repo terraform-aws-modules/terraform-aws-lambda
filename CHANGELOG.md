@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.8.0...v7.0.0) (2024-01-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* Added advanced logging configuration. Bump version of AWS provider to 5.32 (#531)
+
+### Features
+
+* Added advanced logging configuration. Bump version of AWS provider to 5.32 ([#531](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/531)) ([259b403](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/259b40300f0719179a0e5c5a0143795597329ae8))
+
 ## [6.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.7.1...v6.8.0) (2024-01-17)
 
 
