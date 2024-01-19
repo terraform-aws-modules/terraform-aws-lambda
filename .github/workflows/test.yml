@@ -2,6 +2,8 @@ name: Tests
 
 env:
   PYTEST_VERSION: 7.4.4
+  RUFF_VERSION: 0.1.13
+  RUFF_PY_VERSION: 3.12
 
 on:
   push:
@@ -19,19 +21,40 @@ jobs:
         python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.1
 
       - name: Set up Python ${{ matrix.python_version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python_version }}
 
-      - name: Install poetry and tox
+      - name: Install poetry
         shell: bash
         run: |
-          pip install pytest==${PYTEST_VERSION}
+          pip install pytest==${{ env.PYTEST_VERSION }}
 
-      - name: Run tox
+      - name: Run pytest
         shell: bash
         run: |
           python -m pytest -vvv tests/
+
+  format:
+    name: Ruff Format check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: ${{ env.RUFF_PY_VERSION }}
+
+      - name: Install ruff
+        shell: bash
+        run: |
+          pip install ruff==${{ env.RUFF_VERSION }}
+
+      - name: Run ruff format check
+        shell: bash
+        run: |
+          ruff format --check .
