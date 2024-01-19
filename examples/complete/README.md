@@ -21,14 +21,14 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.63 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.32 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.63 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.32 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 
 ## Modules
@@ -41,6 +41,8 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_function_existing_package_local"></a> [lambda\_function\_existing\_package\_local](#module\_lambda\_function\_existing\_package\_local) | ../../ | n/a |
 | <a name="module_lambda_function_for_each"></a> [lambda\_function\_for\_each](#module\_lambda\_function\_for\_each) | ../../ | n/a |
 | <a name="module_lambda_function_no_create_log_group_permission"></a> [lambda\_function\_no\_create\_log\_group\_permission](#module\_lambda\_function\_no\_create\_log\_group\_permission) | ../../ | n/a |
+| <a name="module_lambda_function_with_custom_auto_log_group"></a> [lambda\_function\_with\_custom\_auto\_log\_group](#module\_lambda\_function\_with\_custom\_auto\_log\_group) | ../../ | n/a |
+| <a name="module_lambda_function_with_custom_log_group"></a> [lambda\_function\_with\_custom\_log\_group](#module\_lambda\_function\_with\_custom\_log\_group) | ../../ | n/a |
 | <a name="module_lambda_function_with_package_deploying_externally"></a> [lambda\_function\_with\_package\_deploying\_externally](#module\_lambda\_function\_with\_package\_deploying\_externally) | ../../ | n/a |
 | <a name="module_lambda_layer_local"></a> [lambda\_layer\_local](#module\_lambda\_layer\_local) | ../../ | n/a |
 | <a name="module_lambda_layer_s3"></a> [lambda\_layer\_s3](#module\_lambda\_layer\_s3) | ../../ | n/a |
@@ -53,6 +55,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_log_group.custom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_sqs_queue.dlq](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
 | [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |

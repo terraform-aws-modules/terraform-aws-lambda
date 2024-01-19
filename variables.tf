@@ -767,3 +767,31 @@ variable "trigger_on_package_timestamp" {
   type        = bool
   default     = true
 }
+
+############################################
+# Lambda Advanced Logging Settings
+############################################
+
+variable "logging_log_format" {
+  description = "The log format of the Lambda Function. Valid values are \"JSON\" or \"Text\"."
+  type        = string
+  default     = "Text"
+}
+
+variable "logging_application_log_level" {
+  description = "The application log level of the Lambda Function. Valid values are \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", or \"FATAL\"."
+  type        = string
+  default     = null
+}
+
+variable "logging_system_log_level" {
+  description = "The system log level of the Lambda Function. Valid values are \"DEBUG\", \"INFO\", or \"WARN\"."
+  type        = string
+  default     = null
+}
+
+variable "logging_log_group" {
+  description = "The CloudWatch log group to send logs to."
+  type        = string
+  default     = null
+}
