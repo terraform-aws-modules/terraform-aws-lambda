@@ -27,8 +27,6 @@ module "lambda_function" {
   architectures          = ["x86_64"]
   publish                = true
 
-  logging_log_format = "JSON"
-
   source_path = "${path.module}/../fixtures/python3.8-app1"
 
   store_on_s3 = true
@@ -391,6 +389,48 @@ module "lambda_function_no_create_log_group_permission" {
   attach_create_log_group_permission = false
 }
 
+####################################################
+# Lambda Function with custom log group (existing)
+####################################################
+
+module "lambda_function_with_custom_log_group" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-custom-log-group"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  use_existing_cloudwatch_log_group = true
+
+  logging_log_group             = aws_cloudwatch_log_group.custom.name
+  logging_log_format            = "JSON"
+  logging_application_log_level = "INFO"
+  logging_system_log_level      = "DEBUG"
+}
+
+####################################################################
+# Lambda Function with custom log group (automatically provisioned)
+####################################################################
+
+module "lambda_function_with_custom_auto_log_group" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-custom-auto-log-group"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.8"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+
+  logging_log_group             = "/example-auto/${random_pet.this.id}"
+  logging_log_format            = "JSON"
+  logging_application_log_level = "INFO"
+  logging_system_log_level      = "DEBUG"
+}
+
 ###########
 # Disabled
 ###########
@@ -429,4 +469,9 @@ module "s3_bucket" {
 
 resource "aws_sqs_queue" "dlq" {
   name = random_pet.this.id
+}
+
+resource "aws_cloudwatch_log_group" "custom" {
+  name              = "/example/${random_pet.this.id}"
+  retention_in_days = 1
 }

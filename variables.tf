@@ -775,7 +775,7 @@ variable "trigger_on_package_timestamp" {
 variable "logging_log_format" {
   description = "The log format of the Lambda Function. Valid values are \"JSON\" or \"Text\"."
   type        = string
-  default     = null
+  default     = "Text"
 }
 
 variable "logging_application_log_level" {
