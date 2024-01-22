@@ -914,17 +914,27 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == "sh":
-                r, w = os.pipe()
-                side_ch = os.fdopen(r)
                 path, script = action[1:]
-                script = "{}\npwd >&{}".format(script, w)
+                p = subprocess.Popen(
+                    script,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    cwd=path,
+                )
 
-                p = subprocess.Popen(script, shell=True, cwd=path, pass_fds=(w,))
-                os.close(w)
-                sh_work_dir = side_ch.read().strip()
                 p.wait()
-                log.info("WD: %s", sh_work_dir)
-                side_ch.close()
+                call_stdout, call_stderr = p.communicate()
+                exit_code = p.returncode
+                log.info("exit_code: %s", exit_code)
+                if exit_code != 0:
+                    raise RuntimeError(
+                        "Script did not run successfully, exit code {}: {} - {}".format(
+                            exit_code,
+                            call_stdout.decode("utf-8").strip(),
+                            call_stderr.decode("utf-8").strip(),
+                        )
+                    )
             elif cmd == "set:filter":
                 patterns = action[1]
                 pf = ZipContentFilter(args=self._args)
