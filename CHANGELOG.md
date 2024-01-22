@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.0.0...v7.1.0) (2024-01-22)
+
+
+### Features
+
+* Commands should fail the build if their exit code is not zero ([#534](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/534)) ([eebfc36](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/eebfc3618ae290683456dc4e2fc7136857a95c57))
+
 ## [7.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v6.8.0...v7.0.0) (2024-01-19)
 
 
