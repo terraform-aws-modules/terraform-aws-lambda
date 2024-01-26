@@ -111,6 +111,7 @@ module "wrapper" {
   s3_bucket                                    = try(each.value.s3_bucket, var.defaults.s3_bucket, null)
   s3_existing_package                          = try(each.value.s3_existing_package, var.defaults.s3_existing_package, null)
   s3_kms_key_id                                = try(each.value.s3_kms_key_id, var.defaults.s3_kms_key_id, null)
+  s3_object_override_default_tags              = try(each.value.s3_object_override_default_tags, var.defaults.s3_object_override_default_tags, false)
   s3_object_storage_class                      = try(each.value.s3_object_storage_class, var.defaults.s3_object_storage_class, "ONEZONE_IA")
   s3_object_tags                               = try(each.value.s3_object_tags, var.defaults.s3_object_tags, {})
   s3_object_tags_only                          = try(each.value.s3_object_tags_only, var.defaults.s3_object_tags_only, false)
