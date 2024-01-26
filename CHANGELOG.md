@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.1.0...v7.2.0) (2024-01-26)
+
+
+### Features
+
+* Added support to override default tags of provider in S3 object ([#538](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/538)) ([e33a1a1](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e33a1a1ad214d1c1e5aa0adb0d40c50cfd21d135))
+
 ## [7.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.0.0...v7.1.0) (2024-01-22)
 
 
