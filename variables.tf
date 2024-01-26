@@ -282,6 +282,12 @@ variable "invoke_mode" {
   default     = null
 }
 
+variable "s3_object_override_default_tags" {
+  description = "Whether to override the default_tags from provider? NB: S3 objects support a maximum of 10 tags."
+  type        = bool
+  default     = false
+}
+
 ########
 # Layer
 ########

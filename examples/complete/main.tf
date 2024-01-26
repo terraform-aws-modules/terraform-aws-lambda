@@ -33,6 +33,12 @@ module "lambda_function" {
   s3_bucket   = module.s3_bucket.s3_bucket_id
   s3_prefix   = "lambda-builds/"
 
+  s3_object_override_default_tags = true
+  s3_object_tags = {
+    S3ObjectName = "lambda1"
+    Override     = "true"
+  }
+
   artifacts_dir = "${path.root}/.terraform/lambda-builds/"
 
   layers = [

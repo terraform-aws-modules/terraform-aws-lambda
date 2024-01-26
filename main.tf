@@ -190,6 +190,16 @@ resource "aws_s3_object" "lambda_package" {
 
   tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 
+  dynamic "override_provider" {
+    for_each = var.s3_object_override_default_tags ? [true] : []
+
+    content {
+      default_tags {
+        tags = {}
+      }
+    }
+  }
+
   depends_on = [null_resource.archive]
 }
 
