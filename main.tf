@@ -115,13 +115,13 @@ resource "aws_lambda_function" "this" {
   dynamic "logging_config" {
     # Dont create logging config on gov cloud as it is not avaible.
     # See https://github.com/hashicorp/terraform-provider-aws/issues/34810
-    for_each  = data.aws_partition.current.partition == "aws" ? [true] : []
+    for_each = data.aws_partition.current.partition == "aws" ? [true] : []
 
     content {
-        log_group             = var.logging_log_group
-        log_format            = var.logging_log_format
-        application_log_level = var.logging_application_log_level
-        system_log_level      = var.logging_system_log_level
+      log_group             = var.logging_log_group
+      log_format            = var.logging_log_format
+      application_log_level = var.logging_application_log_level
+      system_log_level      = var.logging_system_log_level
     }
   }
 
