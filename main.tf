@@ -286,7 +286,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
   for_each = { for k, v in var.allowed_triggers : k => v if local.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
-  function_name = aws_lambda_function.this[0].function_name
+  function_name = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${aws_lambda_function.this[0].function_name}"
 
   statement_id       = try(each.value.statement_id, each.key)
   action             = try(each.value.action, "lambda:InvokeFunction")
