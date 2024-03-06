@@ -37,7 +37,7 @@ module "docker_image" {
 
   use_image_tag = true
   image_tag     = "1.0"
-  
+
   source_path     = "context"
   build_args      = {
     FOO = "bar"
