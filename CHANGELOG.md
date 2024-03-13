@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.1...v7.2.2) (2024-03-13)
+
+
+### Bug Fixes
+
+* Update CI workflow versions to remove deprecated runtime warnings ([#549](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/549)) ([cfe47e6](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/cfe47e63e906658dd4e8a5162ebac290b6a2cdf8))
+
 ### [7.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.0...v7.2.1) (2024-01-31)
 
 
