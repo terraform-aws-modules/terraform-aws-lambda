@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.2...v7.2.3) (2024-03-22)
+
+
+### Bug Fixes
+
+* Fixed constant drift with Lambda logging configuration ([#551](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/551)) ([8f97707](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/8f97707f6ea9aa3d382106a4917a0ddd1c3ec3e2))
+
 ## [7.2.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.1...v7.2.2) (2024-03-13)
 
 
