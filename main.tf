@@ -120,8 +120,8 @@ resource "aws_lambda_function" "this" {
     content {
       log_group             = var.logging_log_group
       log_format            = var.logging_log_format
-      application_log_level = var.logging_application_log_level
-      system_log_level      = var.logging_system_log_level
+      application_log_level = var.logging_log_format == "Text" ? null : var.logging_application_log_level
+      system_log_level      = var.logging_log_format == "Text" ? null : var.logging_system_log_level
     }
   }
 

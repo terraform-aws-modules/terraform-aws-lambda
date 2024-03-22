@@ -787,13 +787,13 @@ variable "logging_log_format" {
 variable "logging_application_log_level" {
   description = "The application log level of the Lambda Function. Valid values are \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", or \"FATAL\"."
   type        = string
-  default     = null
+  default     = "INFO"
 }
 
 variable "logging_system_log_level" {
   description = "The system log level of the Lambda Function. Valid values are \"DEBUG\", \"INFO\", or \"WARN\"."
   type        = string
-  default     = null
+  default     = "INFO"
 }
 
 variable "logging_log_group" {
