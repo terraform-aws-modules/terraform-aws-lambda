@@ -49,6 +49,24 @@ module "lambda_function_from_container_image" {
   image_uri = module.docker_image.image_uri
 }
 
+module "lambda_function_from_container_image_ignore_changes_image_tag" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-from-container-image"
+  description   = "My awesome lambda function from container image (ignore changes image tag)"
+
+  create_package = false
+
+  ##################
+  # Container Image
+  ##################
+  package_type  = "Image"
+  architectures = ["arm64"] # ["x86_64"]
+
+  image_uri        = module.docker_image.image_uri
+  ignore_image_uri = true
+}
+
 module "docker_image" {
   source = "../../modules/docker-build"
 
