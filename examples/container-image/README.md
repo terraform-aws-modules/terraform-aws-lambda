@@ -37,6 +37,7 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|--------|---------|
 | <a name="module_docker_image"></a> [docker\_image](#module\_docker\_image) | ../../modules/docker-build | n/a |
 | <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ | n/a |
+| <a name="module_lambda_function_from_container_image_ignore_changes_image_tag"></a> [lambda\_function\_from\_container\_image\_ignore\_changes\_image\_tag](#module\_lambda\_function\_from\_container\_image\_ignore\_changes\_image\_tag) | ../../ | n/a |
 
 ## Resources
 
