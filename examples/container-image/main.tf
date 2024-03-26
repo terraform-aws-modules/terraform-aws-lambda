@@ -52,7 +52,7 @@ module "lambda_function_from_container_image" {
 module "lambda_function_from_container_image_ignore_changes_image_tag" {
   source = "../../"
 
-  function_name = "${random_pet.this.id}-lambda-from-container-image"
+  function_name = "${random_pet.this.id}-lambda-from-container-image-ignore-image-tag-changes"
   description   = "My awesome lambda function from container image (ignore changes image tag)"
 
   create_package = false
