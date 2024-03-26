@@ -63,8 +63,8 @@ module "lambda_function_from_container_image_ignore_changes_image_tag" {
   package_type  = "Image"
   architectures = ["arm64"] # ["x86_64"]
 
-  image_uri        = module.docker_image.image_uri
-  ignore_image_uri = true
+  image_uri                = module.docker_image.image_uri
+  ignore_image_uri_changes = true
 }
 
 module "docker_image" {

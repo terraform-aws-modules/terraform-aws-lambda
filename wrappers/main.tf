@@ -60,7 +60,7 @@ module "wrapper" {
   function_tags                                = try(each.value.function_tags, var.defaults.function_tags, {})
   handler                                      = try(each.value.handler, var.defaults.handler, "")
   hash_extra                                   = try(each.value.hash_extra, var.defaults.hash_extra, "")
-  ignore_image_uri                             = try(each.value.ignore_image_uri, var.defaults.ignore_image_uri, false)
+  ignore_image_uri_changes                     = try(each.value.ignore_image_uri_changes, var.defaults.ignore_image_uri_changes, false)
   ignore_source_code_hash                      = try(each.value.ignore_source_code_hash, var.defaults.ignore_source_code_hash, false)
   image_config_command                         = try(each.value.image_config_command, var.defaults.image_config_command, [])
   image_config_entry_point                     = try(each.value.image_config_entry_point, var.defaults.image_config_entry_point, [])

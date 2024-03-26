@@ -212,7 +212,7 @@ variable "image_uri" {
   default     = null
 }
 
-variable "ignore_image_uri" {
+variable "ignore_image_uri_changes" {
   description = "Whether to ignore changes to the image_uri attribute. Set to true if you manage infrastructure and code deployments separately."
   type        = bool
   default     = false
