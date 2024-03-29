@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.5](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.4...v7.2.5) (2024-03-29)
+
+
+### Bug Fixes
+
+* Run pre-commit autoupdate (trigger patch release) ([#555](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/555)) ([8bb79de](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/8bb79de2733503aeb5824423b1a5f573ac25004d))
+
 ## [7.2.4](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.3...v7.2.4) (2024-03-29)
 
 
