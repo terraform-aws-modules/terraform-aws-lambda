@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.4](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.3...v7.2.4) (2024-03-29)
+
+
+### Bug Fixes
+
+* Dont raise FileNotFoundError from close() on tmpfile rename ([#550](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/550)) ([58ba987](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/58ba987a07710957abce30b4bba6587873f9b0e1))
+
 ## [7.2.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.2...v7.2.3) (2024-03-22)
 
 
