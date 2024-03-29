@@ -314,7 +314,7 @@ class ZipWriteStream:
     def close(self, failed=False):
         self._zip.close()
         self._zip = None
-        if not os.exists(self._tmp_filename):
+        if not os.path.exists(self._tmp_filename):
             return
         if failed:
             os.unlink(self._tmp_filename)
