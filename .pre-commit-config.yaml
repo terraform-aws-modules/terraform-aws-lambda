@@ -1,13 +1,18 @@
+default_install_hook_types: [commit-msg, pre-commit]
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.88.4
     hooks:
       - id: terraform_fmt
+        stages: [pre-commit]
       - id: terraform_wrapper_module_for_each
+        stages: [pre-commit]
       - id: terraform_docs
+        stages: [pre-commit]
         args:
           - "--args=--lockfile=false"
       - id: terraform_tflint
+        stages: [pre-commit]
         args:
           - "--args=--only=terraform_deprecated_interpolation"
           - "--args=--only=terraform_deprecated_index"
@@ -23,9 +28,19 @@ repos:
           - "--args=--only=terraform_standard_module_structure"
           - "--args=--only=terraform_workspace_remote"
       - id: terraform_validate
+        stages: [pre-commit]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: check-merge-conflict
+        stages: [pre-commit]
       - id: end-of-file-fixer
+        stages: [pre-commit]
       - id: trailing-whitespace
+        stages: [pre-commit]
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.1.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [] # optional: list of Conventional Commits types to allow e.g. [feat, fix, ci, chore, test]
