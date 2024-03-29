@@ -319,10 +319,7 @@ class ZipWriteStream:
         if failed:
             os.unlink(self._tmp_filename)
         else:
-            try:
-                os.replace(self._tmp_filename, self.filename)
-            except FileNotFoundError:
-                pass
+            os.replace(self._tmp_filename, self.filename)
 
     def __enter__(self):
         return self.open()
