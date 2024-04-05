@@ -1,6 +1,6 @@
 # AWS Lambda Function deployed from Docker Container Image example
 
-Configuration in this directory creates AWS Lambda Function deployed with a Container Image.
+Configuration in this directory creates several AWS Lambda Functions deployed from Container Images (using `modules/docker-build` and `terraform-aws-modules/terraform-aws-ecr`).
 
 ## Usage
 
@@ -35,8 +35,11 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_docker_image"></a> [docker\_image](#module\_docker\_image) | ../../modules/docker-build | n/a |
-| <a name="module_lambda_function_from_container_image"></a> [lambda\_function\_from\_container\_image](#module\_lambda\_function\_from\_container\_image) | ../../ | n/a |
+| <a name="module_docker_build"></a> [docker\_build](#module\_docker\_build) | ../../modules/docker-build | n/a |
+| <a name="module_docker_build_from_ecr"></a> [docker\_build\_from\_ecr](#module\_docker\_build\_from\_ecr) | ../../modules/docker-build | n/a |
+| <a name="module_ecr"></a> [ecr](#module\_ecr) | terraform-aws-modules/ecr/aws | n/a |
+| <a name="module_lambda_function_with_docker_build"></a> [lambda\_function\_with\_docker\_build](#module\_lambda\_function\_with\_docker\_build) | ../../ | n/a |
+| <a name="module_lambda_function_with_docker_build_from_ecr"></a> [lambda\_function\_with\_docker\_build\_from\_ecr](#module\_lambda\_function\_with\_docker\_build\_from\_ecr) | ../../ | n/a |
 
 ## Resources
 
