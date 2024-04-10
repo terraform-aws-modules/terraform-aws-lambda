@@ -916,16 +916,24 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == "sh":
+                r, w = os.pipe()
+                side_ch = os.fdopen(r)
                 path, script = action[1:]
+                script = "{} && pwd >&{}".format(script, w)
                 p = subprocess.Popen(
                     script,
                     shell=True,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     cwd=path,
+                    pass_fds=(w,),
                 )
 
+                os.close(w)
+                sh_work_dir = side_ch.read().strip()
                 p.wait()
+                log.info("WD: %s", sh_work_dir)
+                side_ch.close()
                 call_stdout, call_stderr = p.communicate()
                 exit_code = p.returncode
                 log.info("exit_code: %s", exit_code)
