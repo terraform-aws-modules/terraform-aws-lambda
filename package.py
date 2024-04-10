@@ -918,6 +918,7 @@ class BuildPlanManager:
             elif cmd == "sh":
                 with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as temp_file:
                     path, script = action[1:]
+                    # NOTE: Execute `pwd` to determine the subprocess shell's working directory after having executed all other commands.
                     script = f"{script} && pwd >{temp_file.name}"
                     p = subprocess.Popen(
                         script,
