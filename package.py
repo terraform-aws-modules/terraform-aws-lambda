@@ -916,27 +916,37 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == "sh":
-                path, script = action[1:]
-                p = subprocess.Popen(
-                    script,
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    cwd=path,
-                )
-
-                p.wait()
-                call_stdout, call_stderr = p.communicate()
-                exit_code = p.returncode
-                log.info("exit_code: %s", exit_code)
-                if exit_code != 0:
-                    raise RuntimeError(
-                        "Script did not run successfully, exit code {}: {} - {}".format(
-                            exit_code,
-                            call_stdout.decode("utf-8").strip(),
-                            call_stderr.decode("utf-8").strip(),
-                        )
+                with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as temp_file:
+                    path, script = action[1:]
+                    # NOTE: Execute `pwd` to determine the subprocess shell's working directory after having executed all other commands.
+                    script = f"{script} && pwd >{temp_file.name}"
+                    p = subprocess.Popen(
+                        script,
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        cwd=path,
                     )
+
+                    p.wait()
+                    temp_file.seek(0)
+
+                    # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
+                    sh_work_dir = temp_file.read().strip()
+
+                    log.info("WD: %s", sh_work_dir)
+
+                    call_stdout, call_stderr = p.communicate()
+                    exit_code = p.returncode
+                    log.info("exit_code: %s", exit_code)
+                    if exit_code != 0:
+                        raise RuntimeError(
+                            "Script did not run successfully, exit code {}: {} - {}".format(
+                                exit_code,
+                                call_stdout.decode("utf-8").strip(),
+                                call_stderr.decode("utf-8").strip(),
+                            )
+                        )
             elif cmd == "set:filter":
                 patterns = action[1]
                 pf = ZipContentFilter(args=self._args)
