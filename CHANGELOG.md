@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.2.6](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.5...v7.2.6) (2024-04-12)
+
+
+### Bug Fixes
+
+* Zip source directory should read from sh_work_dir ([#560](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/560)) ([f786681](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/f7866811bc1429ce224bf6a35448cb44aa5155e7))
+
 ## [7.2.5](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.4...v7.2.5) (2024-03-29)
 
 
