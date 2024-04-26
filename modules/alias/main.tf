@@ -29,7 +29,7 @@ resource "aws_lambda_alias" "no_refresh" {
   }
 
   lifecycle {
-    ignore_changes = [function_version]
+    ignore_changes = [function_version, description]
   }
 }
 
