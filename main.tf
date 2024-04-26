@@ -167,6 +167,7 @@ resource "aws_lambda_function" "this" {
       memory_size,
       timeout,
       environment,
+      snap_start,
     ]
   }
 }
