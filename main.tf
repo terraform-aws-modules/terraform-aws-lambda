@@ -161,7 +161,13 @@ resource "aws_lambda_function" "this" {
   ]
 
   lifecycle {
-    ignore_changes = var.ignore_changes
+    ignore_changes = var.ignore_changes ? [
+      layers,
+      description,
+      memory_size,
+      timeout,
+      environment,
+    ] : []
   }
 }
 

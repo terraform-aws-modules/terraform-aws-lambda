@@ -803,7 +803,7 @@ variable "logging_log_group" {
 }
 
 variable "ignore_changes" {
-    description = "List of attributes to ignore changes"
-    type        = list(string)
-    default     = []
+  description = "Whether to ignore changes to lambdas"
+  type        = bool
+  default     = false
 }
