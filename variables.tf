@@ -801,9 +801,3 @@ variable "logging_log_group" {
   type        = string
   default     = null
 }
-
-variable "ignore_changes" {
-  description = "Whether to ignore changes to lambdas"
-  type        = bool
-  default     = false
-}
