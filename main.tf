@@ -159,6 +159,10 @@ resource "aws_lambda_function" "this" {
     aws_iam_role_policy_attachment.vpc,
     aws_iam_role_policy_attachment.tracing,
   ]
+
+  lifecycle {
+    ignore_changes = var.ignore_changes
+  }
 }
 
 resource "aws_lambda_layer_version" "this" {

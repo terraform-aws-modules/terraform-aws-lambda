@@ -801,3 +801,9 @@ variable "logging_log_group" {
   type        = string
   default     = null
 }
+
+variable "ignore_changes" {
+    description = "List of attributes to ignore changes"
+    type        = list(string)
+    default     = []
+}
