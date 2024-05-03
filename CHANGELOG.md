@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.6...v7.3.0) (2024-05-03)
+
+
+### Features
+
+* Added create before destroy on aws_lambda_permission ([#561](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/561)) ([e9c4676](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e9c467688de057a454646d5f947f3d4527f78a19))
+
 ## [7.2.6](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.5...v7.2.6) (2024-04-12)
 
 
