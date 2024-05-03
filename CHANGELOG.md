@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.3.0...v7.4.0) (2024-05-03)
+
+
+### Features
+
+* Added support for CW log_group_class and skip_destroy ([#565](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/565)) ([7256f7c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/7256f7c226adf294bb6280f1fc4326d015e78d83))
+
 ## [7.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.2.6...v7.3.0) (2024-05-03)
 
 
