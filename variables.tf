@@ -432,6 +432,18 @@ variable "cloudwatch_logs_kms_key_id" {
   default     = null
 }
 
+variable "cloudwatch_logs_skip_destroy" {
+  description = "Whether to keep the log group (and any logs it may contain) at destroy time."
+  type        = bool
+  default     = false
+}
+
+variable "cloudwatch_logs_log_group_class" {
+  description = "Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`"
+  type        = string
+  default     = null
+}
+
 variable "cloudwatch_logs_tags" {
   description = "A map of tags to assign to the resource."
   type        = map(string)
