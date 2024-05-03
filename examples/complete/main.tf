@@ -51,6 +51,8 @@ module "lambda_function" {
     Serverless = "Terraform"
   }
 
+  cloudwatch_logs_log_group_class = "INFREQUENT_ACCESS"
+
   role_path   = "/tf-managed/"
   policy_path = "/tf-managed/"
 

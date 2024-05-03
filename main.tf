@@ -221,6 +221,8 @@ resource "aws_cloudwatch_log_group" "lambda" {
   name              = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
   retention_in_days = var.cloudwatch_logs_retention_in_days
   kms_key_id        = var.cloudwatch_logs_kms_key_id
+  skip_destroy      = var.cloudwatch_logs_skip_destroy
+  log_group_class   = var.cloudwatch_logs_log_group_class
 
   tags = merge(var.tags, var.cloudwatch_logs_tags)
 }
