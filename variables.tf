@@ -282,6 +282,12 @@ variable "invoke_mode" {
   default     = null
 }
 
+variable "s3_object_override_default_tags" {
+  description = "Whether to override the default_tags from provider? NB: S3 objects support a maximum of 10 tags."
+  type        = bool
+  default     = false
+}
+
 ########
 # Layer
 ########
@@ -490,6 +496,12 @@ variable "policy_name" {
 
 variable "attach_cloudwatch_logs_policy" {
   description = "Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function"
+  type        = bool
+  default     = true
+}
+
+variable "attach_create_log_group_permission" {
+  description = "Controls whether to add the create log group permission to the CloudWatch logs policy"
   type        = bool
   default     = true
 }
@@ -754,4 +766,38 @@ variable "recreate_missing_package" {
   description = "Whether to recreate missing Lambda package if it is missing locally or not"
   type        = bool
   default     = true
+}
+
+variable "trigger_on_package_timestamp" {
+  description = "Whether to recreate the Lambda package if the timestamp changes"
+  type        = bool
+  default     = true
+}
+
+############################################
+# Lambda Advanced Logging Settings
+############################################
+
+variable "logging_log_format" {
+  description = "The log format of the Lambda Function. Valid values are \"JSON\" or \"Text\"."
+  type        = string
+  default     = "Text"
+}
+
+variable "logging_application_log_level" {
+  description = "The application log level of the Lambda Function. Valid values are \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", or \"FATAL\"."
+  type        = string
+  default     = "INFO"
+}
+
+variable "logging_system_log_level" {
+  description = "The system log level of the Lambda Function. Valid values are \"DEBUG\", \"INFO\", or \"WARN\"."
+  type        = string
+  default     = "INFO"
+}
+
+variable "logging_log_group" {
+  description = "The CloudWatch log group to send logs to."
+  type        = string
+  default     = null
 }
