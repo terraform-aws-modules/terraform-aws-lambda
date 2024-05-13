@@ -30,7 +30,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 
 ```hcl
 module "lambda_function" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda1"
   description   = "My awesome lambda function"
@@ -49,7 +49,7 @@ module "lambda_function" {
 
 ```hcl
 module "lambda_function" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "lambda-with-layer"
   description   = "My awesome lambda function"
@@ -76,7 +76,7 @@ module "lambda_function" {
 }
 
 module "lambda_layer_s3" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   create_layer = true
 
@@ -95,7 +95,7 @@ module "lambda_layer_s3" {
 
 ```hcl
 module "lambda_function_existing_package_local" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
@@ -119,7 +119,7 @@ Be aware that changes in `local_existing_package` value may trigger deployment v
 
 ```hcl
 module "lambda_function_externally_managed_package" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda-externally-managed-package"
   description   = "My lambda function code is deployed separately"
@@ -154,7 +154,7 @@ resource "aws_s3_object" "my_function" {
 }
 
 module "lambda_function_existing_package_s3" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
@@ -173,7 +173,7 @@ module "lambda_function_existing_package_s3" {
 
 ```hcl
 module "lambda_function_container_image" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
@@ -189,7 +189,7 @@ module "lambda_function_container_image" {
 
 ```hcl
 module "lambda_layer_local" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   create_layer = true
 
@@ -201,7 +201,7 @@ module "lambda_layer_local" {
 }
 
 module "lambda_layer_s3" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   create_layer = true
 
@@ -222,7 +222,7 @@ Make sure, you deploy Lambda@Edge functions into US East (N. Virginia) region (`
 
 ```hcl
 module "lambda_at_edge" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   lambda_at_edge = true
 
@@ -243,7 +243,7 @@ module "lambda_at_edge" {
 
 ```hcl
 module "lambda_function_in_vpc" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda-in-vpc"
   description   = "My awesome lambda function"
@@ -286,7 +286,7 @@ Lambda Permissions should be specified to allow certain resources to invoke Lamb
 
 ```hcl
 module "lambda_function" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   # ...omitted for brevity
 
@@ -317,7 +317,7 @@ Sometimes you need to have a way to create resources conditionally but Terraform
 
 ```hcl
 module "lambda" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   create = false # to disable all resources
 
@@ -544,7 +544,7 @@ data "null_data_source" "downloaded_package" {
 }
 
 module "lambda_function_existing_package_from_remote_url" {
-  source = "terraform-aws-modules/lambda/aws"
+  source = "<URL-of-the-repository>"
 
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
