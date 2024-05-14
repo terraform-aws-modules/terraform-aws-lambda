@@ -1,5 +1,5 @@
 module "aws_lambda_function" {
-  source                     = "git::https://github.com/Eaton-Vance-Corp/terraform-aws-lambda?ref=synchpublicrepo"
+  source                     = "git::https://github.com/Eaton-Vance-Corp/terraform-aws-lambda-internal-only?ref=synchpublicrepo"
   create                     = var.create
   create_package             = var.create_package
   create_function            = var.create_function
