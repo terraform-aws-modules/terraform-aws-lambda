@@ -232,6 +232,8 @@ resource "aws_cloudwatch_log_group" "lambda" {
   name              = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
   retention_in_days = var.cloudwatch_logs_retention_in_days
   kms_key_id        = var.cloudwatch_logs_kms_key_id
+  skip_destroy      = var.cloudwatch_logs_skip_destroy
+  log_group_class   = var.cloudwatch_logs_log_group_class
 
   tags = merge(var.tags, var.cloudwatch_logs_tags)
 }
@@ -284,13 +286,17 @@ resource "aws_lambda_permission" "current_version_triggers" {
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
 
-  statement_id       = try(each.value.statement_id, each.key)
-  action             = try(each.value.action, "lambda:InvokeFunction")
-  principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id   = try(each.value.principal_org_id, null)
-  source_arn         = try(each.value.source_arn, null)
-  source_account     = try(each.value.source_account, null)
-  event_source_token = try(each.value.event_source_token, null)
+  statement_id_prefix = try(each.value.statement_id, each.key)
+  action              = try(each.value.action, "lambda:InvokeFunction")
+  principal           = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id    = try(each.value.principal_org_id, null)
+  source_arn          = try(each.value.source_arn, null)
+  source_account      = try(each.value.source_account, null)
+  event_source_token  = try(each.value.event_source_token, null)
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Error: Error adding new Lambda Permission for lambda: InvalidParameterValueException: We currently do not support adding policies for $LATEST.
@@ -299,13 +305,17 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 
   function_name = aws_lambda_function.this[0].function_name
 
-  statement_id       = try(each.value.statement_id, each.key)
-  action             = try(each.value.action, "lambda:InvokeFunction")
-  principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id   = try(each.value.principal_org_id, null)
-  source_arn         = try(each.value.source_arn, null)
-  source_account     = try(each.value.source_account, null)
-  event_source_token = try(each.value.event_source_token, null)
+  statement_id_prefix = try(each.value.statement_id, each.key)
+  action              = try(each.value.action, "lambda:InvokeFunction")
+  principal           = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id    = try(each.value.principal_org_id, null)
+  source_arn          = try(each.value.source_arn, null)
+  source_account      = try(each.value.source_account, null)
+  event_source_token  = try(each.value.event_source_token, null)
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lambda_event_source_mapping" "this" {
