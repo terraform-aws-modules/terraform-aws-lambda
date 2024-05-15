@@ -168,6 +168,15 @@ resource "aws_lambda_function" "this" {
       timeout,
       environment,
       snap_start,
+      reserved_concurrent_executions,
+      runtime,
+      architectures,
+      last_modified,
+      qualified_arn,
+      qualified_invoke_arn,
+      source_code_hash,
+      source_code_size,
+      version,
     ]
   }
 }
