@@ -44,6 +44,11 @@ output "lambda_function_source_code_hash" {
   value       = module.lambda_function.lambda_function_source_code_hash
 }
 
+output "lambda_function_code_sha256" {
+  description = "Base64-encoded representation of raw SHA-256 sum of the zip file."
+  value       = module.lambda_function.lambda_function_code_sha256
+}
+
 output "lambda_function_source_code_size" {
   description = "The size in bytes of the function .zip file"
   value       = module.lambda_function.lambda_function_source_code_size
