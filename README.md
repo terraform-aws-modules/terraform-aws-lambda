@@ -864,6 +864,7 @@ No modules.
 | <a name="input_trigger_on_package_timestamp"></a> [trigger\_on\_package\_timestamp](#input\_trigger\_on\_package\_timestamp) | Whether to recreate the Lambda package if the timestamp changes | `bool` | `true` | no |
 | <a name="input_trusted_entities"></a> [trusted\_entities](#input\_trusted\_entities) | List of additional trusted entities for assuming Lambda Function role (trust relationship) | `any` | `[]` | no |
 | <a name="input_use_existing_cloudwatch_log_group"></a> [use\_existing\_cloudwatch\_log\_group](#input\_use\_existing\_cloudwatch\_log\_group) | Whether to use an existing CloudWatch log group or create new | `bool` | `false` | no |
+| <a name="input_vpc_ipv6_allowed_for_dual_stack"></a> [vpc\_ipv6\_allowed\_for\_dual\_stack](#input\_vpc\_ipv6\_allowed\_for\_dual\_stack) | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. | `bool` | `false` | no |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | List of security group ids when Lambda Function should run in the VPC. | `list(string)` | `null` | no |
 | <a name="input_vpc_subnet_ids"></a> [vpc\_subnet\_ids](#input\_vpc\_subnet\_ids) | List of subnet ids when Lambda Function should run in the VPC. Usually private or intra subnets. | `list(string)` | `null` | no |
 
