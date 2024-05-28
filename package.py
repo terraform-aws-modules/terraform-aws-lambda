@@ -235,9 +235,20 @@ def emit_dir_content(base_dir):
             yield os.path.normpath(os.path.join(root, name))
 
 
-def generate_content_hash(source_paths, hash_func=hashlib.sha256, log=None):
+def generate_content_hash(
+    source_paths,
+    content_filter,
+    hash_func=hashlib.sha256,
+    log=None,
+):
     """
     Generate a content hash of the source paths.
+
+    :param content_filter: Callable[[str], Iterable[str]
+        A function that filters the content of the source paths. Given a path
+        to a file or directory, it should return an iterable of paths to files
+        that should be included in the hash. At present we pass in the
+        ZipContentFilter.filter method for this purpose.
     """
 
     if log:
@@ -248,8 +259,7 @@ def generate_content_hash(source_paths, hash_func=hashlib.sha256, log=None):
     for source_path in source_paths:
         if os.path.isdir(source_path):
             source_dir = source_path
-            _log = log if log.isEnabledFor(DEBUG3) else None
-            for source_file in list_files(source_dir, log=_log):
+            for source_file in content_filter(source_dir):
                 update_hash(hash_obj, source_dir, source_file)
                 if log:
                     log.debug(os.path.join(source_dir, source_file))
@@ -589,10 +599,8 @@ class ZipContentFilter:
                 op, regex = r
                 neg = op is operator.not_
                 m = regex.fullmatch(path)
-                if neg and m:
-                    d = False
-                elif m:
-                    d = True
+                m = bool(m)
+                d = not m if neg else m
             if d:
                 return path
 
@@ -648,6 +656,7 @@ class BuildPlanManager:
     def __init__(self, args, log=None):
         self._args = args
         self._source_paths = None
+        self._patterns = []
         self._log = log or logging.root
 
     def hash(self, extra_paths):
@@ -660,7 +669,11 @@ class BuildPlanManager:
         # runtime value, build command, and content of the build paths
         # because they can have an effect on the resulting archive.
         self._log.debug("Computing content hash on files...")
-        content_hash = generate_content_hash(content_hash_paths, log=self._log)
+        content_filter = ZipContentFilter(args=self._args)
+        content_filter.compile(self._patterns)
+        content_hash = generate_content_hash(
+            content_hash_paths, content_filter.filter, log=self._log
+        )
         return content_hash
 
     def plan(self, source_path, query):
@@ -800,7 +813,9 @@ class BuildPlanManager:
                 patterns = claim.get("patterns")
                 commands = claim.get("commands")
                 if patterns:
-                    step("set:filter", patterns_list(self._args, patterns))
+                    patterns_as_list = patterns_list(self._args, patterns)
+                    self._patterns.extend(patterns_as_list)
+                    step("set:filter", patterns_as_list)
                 if commands:
                     commands_step(path, commands)
                 else:
