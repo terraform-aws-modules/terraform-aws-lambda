@@ -1,6 +1,5 @@
 provider "aws" {
   region = "eu-west-1"
-  #  region = "us-east-1"
 
   # Make it faster by skipping something
   skip_metadata_api_check     = true
@@ -17,10 +16,10 @@ module "lambda_function" {
 
   function_name = "${random_pet.this.id}-lambda-simple"
   handler       = "index.lambda_handler"
-  runtime       = "python3.10"
+  runtime       = "python3.12"
 
   source_path = [
-    "${path.module}/src/python3.10-app1",
+    "${path.module}/src/python-app1",
   ]
   trigger_on_package_timestamp = false
 }

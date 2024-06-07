@@ -17,11 +17,11 @@ module "lambda_function" {
   function_name = "${random_pet.this.id}-lambda-triggers"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   publish       = true
 
   create_package         = false
-  local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
+  local_existing_package = "${path.module}/../fixtures/python-zip/existing_package.zip"
 
   allowed_triggers = {
     ScanAmiRule = {
