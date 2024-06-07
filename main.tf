@@ -198,7 +198,7 @@ resource "aws_s3_object" "lambda_package" {
   server_side_encryption = var.s3_server_side_encryption
   kms_key_id             = var.s3_kms_key_id
 
-  tags = var.s3_object_tags_only ? var.s3_object_tags : merge({ terraform-aws-modules = "lambda" }, var.tags, var.s3_object_tags)
+  tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 
   dynamic "override_provider" {
     for_each = var.s3_object_override_default_tags ? [true] : []
@@ -228,7 +228,7 @@ resource "aws_cloudwatch_log_group" "lambda" {
   skip_destroy      = var.cloudwatch_logs_skip_destroy
   log_group_class   = var.cloudwatch_logs_log_group_class
 
-  tags = merge({ terraform-aws-modules = "lambda" }, var.tags, var.cloudwatch_logs_tags)
+  tags = merge(var.tags, var.cloudwatch_logs_tags)
 }
 
 resource "aws_lambda_provisioned_concurrency_config" "current_version" {
