@@ -1,4 +1,4 @@
-FROM public.ecr.aws/sam/build-python3.9
+FROM public.ecr.aws/sam/build-python3.12
 
 LABEL maintainer="Betajob AS" \
       description="Patched AWS Lambda build container"
