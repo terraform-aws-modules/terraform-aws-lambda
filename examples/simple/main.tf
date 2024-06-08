@@ -17,12 +17,12 @@ resource "random_pet" "this" {
 #
 #  function_name = "${random_pet.this.id}-lambda-edge"
 #  handler       = "index.lambda_handler"
-#  runtime       = "python3.8"
+#  runtime       = "python3.12"
 #  lambda_at_edge = true
 #
 #  attach_cloudwatch_logs_policy = true
 #
-#  source_path = "${path.module}/../fixtures/python3.8-app1/"
+#  source_path = "${path.module}/../fixtures/python-app1/"
 #}
 
 #resource "aws_cloudwatch_log_group" "this" {
@@ -36,7 +36,7 @@ module "lambda_function" {
 
   function_name = "${random_pet.this.id}-lambda-simple"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   # role_maximum_session_duration = 7200
 
@@ -87,51 +87,51 @@ module "lambda_function" {
   #    }
   #  }
 
-  #  source_path = "${path.module}/../fixtures/python3.8-app1/"
+  #  source_path = "${path.module}/../fixtures/python-app1/"
 
   #  source_path = [
-  #    "${path.module}/../fixtures/python3.8-app1/index.py",
+  #    "${path.module}/../fixtures/python-app1/index.py",
   #    {
-  #      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+  #      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
   #      prefix_in_zip = "vendor"
   #    }
   #  ]
 
   #  source_path = [
-  #    "${path.module}/../fixtures/python3.8-app1/index.py",
-  #    "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
+  #    "${path.module}/../fixtures/python-app1/index.py",
+  #    "${path.module}/../fixtures/python-app1/dir1/dir2",
   #    {
-  #      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+  #      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
   #    }
   #  ]
 
   #  source_path = [
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #    }
   #  ]
 
   #  source_path = [
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      pip_requirements = false
   #    }
   #  ]
 
   #  source_path = [
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      pip_requirements = true
   #    }
   #  ]
 
   #  source_path = [
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      commands = [
   #        ":zip",
   #        "cd `mktemp -d`",
-  #        "pip install --target=. -r ${path.module}/../fixtures/python3.8-app1/requirements.txt",
+  #        "pip install --target=. -r ${path.module}/../fixtures/python-app1/requirements.txt",
   #        ":zip . vendor/",
   #      ]
   #      patterns = [
@@ -144,12 +144,12 @@ module "lambda_function" {
 
   source_path = [
     #    {
-    #      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+    #      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
     #      pip_requirements = "${path.module}/../deploy/requirements.txt"
     #    },
-    "${path.module}/../fixtures/python3.8-app1/index.py",
+    "${path.module}/../fixtures/python-app1/index.py",
     #    {
-    #      path = "${path.module}/../fixtures/python3.8-app1/index.py"
+    #      path = "${path.module}/../fixtures/python-app1/index.py"
     #      patterns = <<END
     #        # To use comments in heredoc patterns set the env var:
     #        # export TF_LAMBDA_PACKAGE_PATTERN_COMMENTS=true
@@ -196,10 +196,10 @@ module "lambda_function" {
 
   #  source_path = [
   #    {
-  #      #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      #      path = "${path.module}/../fixtures/python-app1"
   #
   #      #      pip_requirements = true
-  #      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+  #      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
   #      prefix_in_zip = "vendor"
   #      #      commands = ["pip install -r requirements.txt"]
   #
@@ -226,9 +226,9 @@ module "lambda_function" {
   #  ]
 
   #  source_path = [
-  #    "${path.module}/../fixtures/python3.8-app1-extra",
+  #    "${path.module}/../fixtures/python-app1-extra",
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-appsadasdasd"
+  #      path = "${path.module}/../fixtures/python-appsadasdasd"
   #      prefix_in_zip = "foo/bar-bla",
   #      match = [
   #        "**/*.txt",
@@ -237,7 +237,7 @@ module "lambda_function" {
   #      ]
   #    },
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      pip_requirements = true
   #      prefix_in_zip = "foo/bar",
   #      match = [
@@ -247,7 +247,7 @@ module "lambda_function" {
   #      ]
   #    },
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      pip_requirements = "requirements.txt"
   #      prefix_in_zip = "foo/bar",
   #      match = [
@@ -256,7 +256,7 @@ module "lambda_function" {
   #      ]
   #    },
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      commands = [
   #        "npm install",
   #        ":zip"
@@ -268,7 +268,7 @@ module "lambda_function" {
   #      ]
   #    },
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      commands = [
   #        "npm install",
   #        ":zip"
@@ -288,7 +288,7 @@ module "lambda_function" {
   #      END
   #    },
   #    {
-  #      path = "${path.module}/../fixtures/python3.8-app1"
+  #      path = "${path.module}/../fixtures/python-app1"
   #      commands = [
   #        "npm install",
   #        ":zip"
@@ -301,9 +301,9 @@ module "lambda_function" {
   #  build_in_docker = true
   #  docker_pip_cache = true
   #  docker_with_ssh_agent = true
-  #  docker_file = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
+  #  docker_file = "${path.module}/../fixtures/python-app1/docker/Dockerfile"
   #  docker_build_root = "${path.module}/../../docker"
-  #  docker_image = "public.ecr.aws/sam/build-python3.8"
+  #  docker_image = "public.ecr.aws/sam/build-python3.12"
 }
 
 ####

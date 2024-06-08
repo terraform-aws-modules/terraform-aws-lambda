@@ -1667,7 +1667,7 @@ def add_hidden_commands(sub_parsers):
         nargs=argparse.REMAINDER,
     )
     p.add_argument(
-        "-r", "--runtime", help="A docker image runtime", default="python3.8"
+        "-r", "--runtime", help="A docker image runtime", default="python3.12"
     )
 
     p = hidden_parser("docker-image", help="Run docker build")

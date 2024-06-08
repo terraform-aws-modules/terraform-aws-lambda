@@ -16,10 +16,10 @@ module "lambda_function" {
 
   function_name = "${random_pet.this.id}-lambda"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   publish       = true
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
   hash_extra  = "yo1"
 }
 
