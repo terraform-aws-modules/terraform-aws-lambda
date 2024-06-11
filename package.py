@@ -829,7 +829,12 @@ class BuildPlanManager:
 
                     if poetry_install and runtime.startswith("python"):
                         if path:
-                            poetry_install_step(path, prefix=prefix, poetry_groups=poetry_groups, required=True)
+                            poetry_install_step(
+                                path,
+                                prefix=prefix,
+                                poetry_groups=poetry_groups,
+                                required=True,
+                            )
 
                     if npm_requirements and runtime.startswith("nodejs"):
                         if isinstance(npm_requirements, bool) and path:
@@ -899,7 +904,12 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == "poetry":
-                runtime, path, poetry_groups, prefix, = action[1:]
+                (
+                    runtime,
+                    path,
+                    poetry_groups,
+                    prefix,
+                ) = action[1:]
                 log.info("Poetry Groups: %s", poetry_groups)
                 with install_poetry_dependencies(query, path, poetry_groups) as rd:
                     if rd:
@@ -958,7 +968,7 @@ class BuildPlanManager:
 
     @staticmethod
     def _zip_write_with_filter(
-            zip_stream, path_filter, source_path, prefix, timestamp=None
+        zip_stream, path_filter, source_path, prefix, timestamp=None
     ):
         for path in path_filter.filter(source_path, prefix):
             if os.path.isdir(source_path):
