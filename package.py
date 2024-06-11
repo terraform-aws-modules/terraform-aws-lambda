@@ -693,7 +693,9 @@ class BuildPlanManager:
                 step("pip", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
-        def poetry_install_step(path, poetry_extra_args=[], prefix=None, required=False):
+        def poetry_install_step(
+            path, poetry_extra_args=[], prefix=None, required=False
+        ):
             pyproject_file = path
             if os.path.isdir(path):
                 pyproject_file = os.path.join(path, "pyproject.toml")
