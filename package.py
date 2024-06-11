@@ -693,7 +693,7 @@ class BuildPlanManager:
                 step("pip", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
-        def poetry_install_step(path, poetry_args=[], prefix=None, required=False):
+        def poetry_install_step(path, poetry_extra_args=[], prefix=None, required=False):
             pyproject_file = path
             if os.path.isdir(path):
                 pyproject_file = os.path.join(path, "pyproject.toml")
@@ -703,7 +703,7 @@ class BuildPlanManager:
                         "poetry configuration not found: {}".format(pyproject_file)
                     )
             else:
-                step("poetry", runtime, path, poetry_args, prefix)
+                step("poetry", runtime, path, poetry_extra_args, prefix)
                 hash(pyproject_file)
                 pyproject_path = os.path.dirname(pyproject_file)
                 poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
@@ -807,7 +807,7 @@ class BuildPlanManager:
                     prefix = claim.get("prefix_in_zip")
                     pip_requirements = claim.get("pip_requirements")
                     poetry_install = claim.get("poetry_install")
-                    additional_poetry_arg = claim.get("additional_poetry_args", [])
+                    poetry_extra_args = claim.get("poetry_extra_args", [])
                     npm_requirements = claim.get("npm_package_json")
                     runtime = claim.get("runtime", query.runtime)
 
@@ -832,7 +832,7 @@ class BuildPlanManager:
                             poetry_install_step(
                                 path,
                                 prefix=prefix,
-                                poetry_args=additional_poetry_arg,
+                                poetry_extra_args=poetry_extra_args,
                                 required=True,
                             )
 
@@ -907,11 +907,11 @@ class BuildPlanManager:
                 (
                     runtime,
                     path,
-                    poetry_args,
+                    poetry_extra_args,
                     prefix,
                 ) = action[1:]
-                log.info("Poetry arguments: %s", poetry_args)
-                with install_poetry_dependencies(query, path, poetry_args) as rd:
+                log.info("poetry_extra_args: %s", poetry_extra_args)
+                with install_poetry_dependencies(query, path, poetry_extra_args) as rd:
                     if rd:
                         if pf:
                             self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
@@ -1106,7 +1106,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
-def install_poetry_dependencies(query, path, poetry_args):
+def install_poetry_dependencies(query, path, poetry_extra_args):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -1204,7 +1204,7 @@ def install_poetry_dependencies(query, path, poetry_args):
                 "--output",
                 "requirements.txt",
                 "--with-credentials",
-            ] + poetry_args
+            ] + poetry_extra_args
 
             poetry_commands = [
                 [
