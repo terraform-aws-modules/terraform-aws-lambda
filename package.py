@@ -693,7 +693,9 @@ class BuildPlanManager:
                 step("pip", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
-        def poetry_install_step(path, prefix=None, required=False):
+        def poetry_install_step(
+            path, poetry_export_extra_args=[], prefix=None, required=False
+        ):
             pyproject_file = path
             if os.path.isdir(path):
                 pyproject_file = os.path.join(path, "pyproject.toml")
@@ -703,7 +705,7 @@ class BuildPlanManager:
                         "poetry configuration not found: {}".format(pyproject_file)
                     )
             else:
-                step("poetry", runtime, path, prefix)
+                step("poetry", runtime, path, poetry_export_extra_args, prefix)
                 hash(pyproject_file)
                 pyproject_path = os.path.dirname(pyproject_file)
                 poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
@@ -807,6 +809,7 @@ class BuildPlanManager:
                     prefix = claim.get("prefix_in_zip")
                     pip_requirements = claim.get("pip_requirements")
                     poetry_install = claim.get("poetry_install")
+                    poetry_export_extra_args = claim.get("poetry_export_extra_args", [])
                     npm_requirements = claim.get("npm_package_json")
                     runtime = claim.get("runtime", query.runtime)
 
@@ -828,7 +831,12 @@ class BuildPlanManager:
 
                     if poetry_install and runtime.startswith("python"):
                         if path:
-                            poetry_install_step(path, prefix, required=True)
+                            poetry_install_step(
+                                path,
+                                prefix=prefix,
+                                poetry_export_extra_args=poetry_export_extra_args,
+                                required=True,
+                            )
 
                     if npm_requirements and runtime.startswith("nodejs"):
                         if isinstance(npm_requirements, bool) and path:
@@ -898,8 +906,16 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == "poetry":
-                runtime, path, prefix = action[1:]
-                with install_poetry_dependencies(query, path) as rd:
+                (
+                    runtime,
+                    path,
+                    poetry_export_extra_args,
+                    prefix,
+                ) = action[1:]
+                log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
+                with install_poetry_dependencies(
+                    query, path, poetry_export_extra_args
+                ) as rd:
                     if rd:
                         if pf:
                             self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
@@ -1094,7 +1110,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
-def install_poetry_dependencies(query, path):
+def install_poetry_dependencies(query, path, poetry_export_extra_args):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -1183,6 +1199,17 @@ def install_poetry_dependencies(query, path):
             # NOTE: poetry must be available in the build environment, which is the case with lambci/lambda:build-python* docker images but not public.ecr.aws/sam/build-python* docker images
             # FIXME: poetry install does not currently allow to specify the target directory so we export the
             # requirements then install them with "pip --no-deps" to avoid using pip dependency resolver
+
+            poetry_export = [
+                poetry_exec,
+                "export",
+                "--format",
+                "requirements.txt",
+                "--output",
+                "requirements.txt",
+                "--with-credentials",
+            ] + poetry_export_extra_args
+
             poetry_commands = [
                 [
                     poetry_exec,
@@ -1198,15 +1225,7 @@ def install_poetry_dependencies(query, path):
                     "virtualenvs.in-project",
                     "true",
                 ],
-                [
-                    poetry_exec,
-                    "export",
-                    "--format",
-                    "requirements.txt",
-                    "--output",
-                    "requirements.txt",
-                    "--with-credentials",
-                ],
+                poetry_export,
                 [
                     python_exec,
                     "-m",
