@@ -37,7 +37,7 @@ module "lambda_function" {
   function_name = "my-lambda1"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   source_path = "../src/lambda-function1"
 
@@ -56,7 +56,7 @@ module "lambda_function" {
   function_name = "lambda-with-layer"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   publish       = true
 
   source_path = "../src/lambda-function1"
@@ -84,7 +84,7 @@ module "lambda_layer_s3" {
 
   layer_name          = "lambda-layer-s3"
   description         = "My amazing lambda layer (deployed from S3)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
   source_path = "../src/lambda-layer"
 
@@ -102,7 +102,7 @@ module "lambda_function_existing_package_local" {
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
   local_existing_package = "../existing_package.zip"
@@ -126,7 +126,7 @@ module "lambda_function_externally_managed_package" {
   function_name = "my-lambda-externally-managed-package"
   description   = "My lambda function code is deployed separately"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
   local_existing_package = "./lambda_functions/code.zip"
@@ -161,7 +161,7 @@ module "lambda_function_existing_package_s3" {
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package      = false
   s3_existing_package = {
@@ -197,9 +197,9 @@ module "lambda_layer_local" {
 
   layer_name          = "my-layer-local"
   description         = "My amazing lambda layer (deployed from local)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 }
 
 module "lambda_layer_s3" {
@@ -209,9 +209,9 @@ module "lambda_layer_s3" {
 
   layer_name          = "my-layer-s3"
   description         = "My amazing lambda layer (deployed from S3)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 
   store_on_s3 = true
   s3_bucket   = "my-bucket-id-with-lambda-builds"
@@ -231,9 +231,9 @@ module "lambda_at_edge" {
   function_name = "my-lambda-at-edge"
   description   = "My awesome lambda@edge function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 
   tags = {
     Module = "lambda-at-edge"
@@ -250,9 +250,9 @@ module "lambda_function_in_vpc" {
   function_name = "my-lambda-in-vpc"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 
   vpc_subnet_ids         = module.vpc.intra_subnets
   vpc_security_group_ids = [module.vpc.default_security_group_id]
@@ -396,12 +396,12 @@ source_path = [
       "!.*/.*\\.txt", # Skip all txt files recursively
     ]
   }, {
-    path             = "src/python3.8-app1",
+    path             = "src/python-app1",
     pip_requirements = true,
     pip_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path             = "src/python3.8-app2",
+    path             = "src/python-app2",
     pip_requirements = "requirements-large.txt",
     patterns = [
       "!vendor/colorful-0.5.4.dist-info/RECORD",
@@ -414,7 +414,7 @@ source_path = [
     npm_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path     = "src/python3.8-app3",
+    path     = "src/python-app3",
     commands = [
       "npm install",
       ":zip"
@@ -424,7 +424,7 @@ source_path = [
       "node_modules/.+", # Include all node_modules
     ],
   }, {
-    path     = "src/python3.8-app3",
+    path     = "src/python-app3",
     commands = ["go build"],
     patterns = <<END
       bin/.*
@@ -459,6 +459,7 @@ source_path = [
 - `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead. When `source_path` is passed as a string containing a path (and not a list of maps), and `requirements.txt` is present, `pip install` is automatically executed.
 - `pip_tmp_dir` - Set the base directory to make the temporary directory for pip installs. Can be useful for Docker in Docker builds.
 - `poetry_install` - Controls whether to execute `poetry export` and `pip install`. Set to `false` to disable this feature, `true` to run `poetry export` with `pyproject.toml` and `poetry.lock` found in `path`. When `source_path` is passed as a string containing a path (and not a list of maps), and `pyproject.toml` with a build system `poetry` is present, `poetry export` and `pip install` are automatically executed.
+- `poetry_export_extra_args` - A list of additional poetry arguments to add to the poetry export command
 - `npm_requirements` - Controls whether to execute `npm install`. Set to `false` to disable this feature, `true` to run `npm install` with `package.json` found in `path`. Or set to another filename which you want to use instead.
 - `npm_tmp_dir` - Set the base directory to make the temporary directory for npm installs. Can be useful for Docker in Docker builds.
 - `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
@@ -468,16 +469,16 @@ source_path = [
 If your Lambda Function or Layer uses some dependencies you can build them in Docker and have them included into deployment package. Here is how you can do it:
 
     build_in_docker   = true
-    docker_file       = "src/python3.8-app1/docker/Dockerfile"
-    docker_build_root = "src/python3.8-app1/docker"
-    docker_image      = "public.ecr.aws/sam/build-python3.8"
-    runtime           = "python3.8"    # Setting runtime is required when building package in Docker and Lambda Layer resource.
+    docker_file       = "src/python-app1/docker/Dockerfile"
+    docker_build_root = "src/python-app1/docker"
+    docker_image      = "public.ecr.aws/sam/build-python"
+    runtime           = "python3.12"    # Setting runtime is required when building package in Docker and Lambda Layer resource.
 
 Using this module you can install dependencies from private hosts. To do this, you need for forward SSH agent:
 
     docker_with_ssh_agent = true
 
-Note that by default, the `docker_image` used comes from the registry `public.ecr.aws/sam/`, and will be based on the `runtime` that you specify. In other words, if you specify a runtime of `python3.8` and do not specify `docker_image`, then the `docker_image` will resolve to `public.ecr.aws/sam/build-python3.8`. This ensures that by default the `runtime` is available in the docker container.
+Note that by default, the `docker_image` used comes from the registry `public.ecr.aws/sam/`, and will be based on the `runtime` that you specify. In other words, if you specify a runtime of `python3.12` and do not specify `docker_image`, then the `docker_image` will resolve to `public.ecr.aws/sam/build-python3.12`. This ensures that by default the `runtime` is available in the docker container.
 
 If you override `docker_image`, be sure to keep the image in sync with your `runtime`. During the plan phase, when using docker, there is no check that the `runtime` is available to build the package. That means that if you use an image that does not have the runtime, the plan will still succeed, but then the apply will fail.
 
@@ -524,7 +525,7 @@ This can be implemented in two steps: download file locally using CURL, and pass
 
 ```hcl
 locals {
-  package_url = "https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-lambda/master/examples/fixtures/python3.8-zip/existing_package.zip"
+  package_url = "https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-lambda/master/examples/fixtures/python-zip/existing_package.zip"
   downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 }
 
@@ -551,7 +552,7 @@ module "lambda_function_existing_package_from_remote_url" {
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
   local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]

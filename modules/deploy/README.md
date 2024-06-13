@@ -22,7 +22,7 @@ module "lambda_function" {
 
   function_name = "my-lambda1"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   source_path = "../src/lambda-function1"
 }
