@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.6.0...v7.7.0) (2024-06-18)
+
+
+### Features
+
+* Added support for alias to have multiple filter criteria same as function ([#585](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/585)) ([6549ca1](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/6549ca1301c74880e41440aa314e732739283e8a))
+
 ## [7.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.5.0...v7.6.0) (2024-06-12)
 
 
