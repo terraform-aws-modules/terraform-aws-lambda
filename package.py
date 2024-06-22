@@ -48,7 +48,7 @@ def configure_logging(use_tf_stderr=False):
     global log_handler
 
     logging.addLevelName(DEBUG2, "DEBUG2")
-    logging.addLevelName(DEBUG3, "DEBUG4")
+    logging.addLevelName(DEBUG3, "DEBUG3")
     logging.addLevelName(DUMP_ENV, "DUMP_ENV")
 
     class LogFormatter(logging.Formatter):
