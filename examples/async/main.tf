@@ -16,10 +16,10 @@ module "lambda_function" {
 
   function_name = "${random_pet.this.id}-lambda-async"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   architectures = ["arm64"]
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
 
   create_async_event_config = true
   attach_async_event_policy = true

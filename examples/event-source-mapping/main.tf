@@ -26,9 +26,9 @@ module "lambda_function" {
 
   function_name = "${random_pet.this.id}-lambda-event-source-mapping"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1/index.py"
+  source_path = "${path.module}/../fixtures/python-app1/index.py"
 
   event_source_mapping = {
     sqs = {

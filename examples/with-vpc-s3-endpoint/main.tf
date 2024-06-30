@@ -20,9 +20,9 @@ module "lambda_s3_write" {
 
   function_name = random_pet.this.id
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app2"
+  source_path = "${path.module}/../fixtures/python-app2"
 
   environment_variables = {
     BUCKET_NAME = module.s3_bucket.s3_bucket_id

@@ -136,7 +136,11 @@ resource "aws_lambda_function" "this" {
     }
   }
 
-  tags = merge(var.tags, var.function_tags)
+  tags = merge(
+    { terraform-aws-modules = "lambda" },
+    var.tags,
+    var.function_tags
+  )
 
   depends_on = [
     null_resource.archive,
