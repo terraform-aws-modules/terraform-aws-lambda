@@ -124,11 +124,12 @@ def tempdir(dir=None):
     """Creates a temporary directory and then deletes it afterwards."""
     prefix = "terraform-aws-lambda-"
     path = tempfile.mkdtemp(prefix=prefix, dir=dir)
-    cmd_log.info("mktemp -d %sXXXXXXXX # %s", prefix, shlex.quote(path))
+    abs_path = os.path.abspath(path)
+    cmd_log.info("mktemp -d %sXXXXXXXX # %s", prefix, shlex.quote(abs_path))
     try:
-        yield path
+        yield abs_path
     finally:
-        shutil.rmtree(path)
+        shutil.rmtree(abs_path)
 
 
 def list_files(top_path, log=None):
