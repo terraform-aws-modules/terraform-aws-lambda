@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.7.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.7.0...v7.7.1) (2024-07-25)
+
+
+### Bug Fixes
+
+* Always use absolute path to temp folders ([#599](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/599)) ([a058372](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/a058372431c552a0cb740a76beffe77285edeb91))
+
 ## [7.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.6.0...v7.7.0) (2024-06-18)
 
 
