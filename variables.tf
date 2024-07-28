@@ -254,6 +254,12 @@ variable "timeouts" {
   default     = {}
 }
 
+variable "lambda_skip_destroy" {
+  description = "(Optional) Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state."
+  type        = bool
+  default     = null
+}
+
 ###############
 # Function URL
 ###############
