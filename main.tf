@@ -22,6 +22,16 @@ locals {
 }
 
 resource "aws_lambda_function" "this" {
+
+  lifecycle {
+    precondition {
+      condition     = var.create_role && var.lambda_role != []
+      error_message = "The 'create_role' and 'lambda_role' variables should not be used together. When creating a role, use 'role_name' to set the name."
+      # The lambda_role variable should only be used to attach a pre-existing role, and will do nothing
+      #    if create_role is true.
+    }
+  }
+
   count = local.create && var.create_function && !var.create_layer ? 1 : 0
 
   function_name                      = var.function_name
