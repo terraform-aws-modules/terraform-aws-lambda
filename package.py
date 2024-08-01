@@ -779,6 +779,9 @@ class BuildPlanManager:
                             )
                     else:
                         batch.append(c)
+            if batch:
+                step("sh", path, "\n".join(batch))
+                batch.clear()
 
         for claim in claims:
             if isinstance(claim, str):
@@ -1525,6 +1528,7 @@ def prepare_command(args):
 
     Outputs a filename and a command to run if the archive needs to be built.
     """
+
 
     log = logging.getLogger("prepare")
 
