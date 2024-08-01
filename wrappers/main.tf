@@ -129,6 +129,7 @@ module "wrapper" {
   trigger_on_package_timestamp                 = try(each.value.trigger_on_package_timestamp, var.defaults.trigger_on_package_timestamp, true)
   trusted_entities                             = try(each.value.trusted_entities, var.defaults.trusted_entities, [])
   use_existing_cloudwatch_log_group            = try(each.value.use_existing_cloudwatch_log_group, var.defaults.use_existing_cloudwatch_log_group, false)
+  vpc_ipv6_allowed_for_dual_stack              = try(each.value.vpc_ipv6_allowed_for_dual_stack, var.defaults.vpc_ipv6_allowed_for_dual_stack, false)
   vpc_security_group_ids                       = try(each.value.vpc_security_group_ids, var.defaults.vpc_security_group_ids, null)
   vpc_subnet_ids                               = try(each.value.vpc_subnet_ids, var.defaults.vpc_subnet_ids, null)
 }
