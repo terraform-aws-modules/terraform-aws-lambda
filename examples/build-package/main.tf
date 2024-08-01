@@ -247,19 +247,21 @@ module "package_with_commands_and_patterns" {
 # Some use cases might require the production packages are deployed while maintaining local node_modules folder
 # This example saves the node_modules folder by moving it to an ignored directory
 # After the zip file is created with production node_modules, the dev node_modules folder is restored
-module "package_with_commands_and_patterns" {
+module "npm_package_with_commands_and_patterns" {
   source = "../../"
+
+  create_function = false
 
   runtime = "nodejs18.x"
   source_path = [
     {
-      path = "./app"
+      path = "${path.module}/../fixtures/node-app"
       commands = [
-        "mv ./node_modules ./node_modules_temp",
+        "[ ! -d node_modules ] || mv node_modules node_modules_temp",
         "npm ci --production",
         ":zip",
         "rm -rf node_modules",
-        "mv ./node_modules_temp ./node_modules",
+        "[ ! -d node_modules_temp ] || mv node_modules_temp node_modules",
       ]
       patterns = [
         "!node_modules_temp/.*"
