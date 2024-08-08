@@ -176,6 +176,12 @@ variable "vpc_security_group_ids" {
   default     = null
 }
 
+variable "ipv6_allowed_for_dual_stack" {
+  description = "Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Default is false."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "A map of tags to assign to resources."
   type        = map(string)

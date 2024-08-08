@@ -254,9 +254,10 @@ module "lambda_function_in_vpc" {
 
   source_path = "../fixtures/python-app1"
 
-  vpc_subnet_ids         = module.vpc.intra_subnets
-  vpc_security_group_ids = [module.vpc.default_security_group_id]
-  attach_network_policy = true
+  vpc_subnet_ids              = module.vpc.intra_subnets
+  vpc_security_group_ids      = [module.vpc.default_security_group_id]
+  attach_network_policy       = true
+  ipv6_allowed_for_dual_stack = true
 }
 
 module "vpc" {
