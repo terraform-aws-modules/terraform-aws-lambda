@@ -23,6 +23,7 @@ module "lambda_function_in_vpc" {
 
   vpc_subnet_ids                     = module.vpc.intra_subnets
   vpc_security_group_ids             = [module.vpc.default_security_group_id]
+  ipv6_allowed_for_dual_stack        = true
   attach_network_policy              = true
   replace_security_groups_on_destroy = true
   replacement_security_group_ids     = [module.vpc.default_security_group_id]
