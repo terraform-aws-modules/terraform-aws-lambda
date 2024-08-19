@@ -454,8 +454,8 @@ variable "cloudwatch_logs_tags" {
 # IAM
 ######
 
-variable "role_name" {
-  description = "Name of IAM role to use for Lambda Function"
+variable "role_name_prefix" {
+  description = "Name prefix of IAM role to use for Lambda Function"
   type        = string
   default     = null
 }
@@ -500,8 +500,8 @@ variable "role_maximum_session_duration" {
 # Policies
 ###########
 
-variable "policy_name" {
-  description = "IAM policy name. It override the default value, which is the same as role_name"
+variable "policy_name_prefix" {
+  description = "IAM policy name prefix. It override the default value, which is the same as role_name"
   type        = string
   default     = null
 }
@@ -784,6 +784,12 @@ variable "trigger_on_package_timestamp" {
   description = "Whether to recreate the Lambda package if the timestamp changes"
   type        = bool
   default     = true
+}
+
+variable "quiet_local_exec" {
+  description = "Whether to disable local execution output."
+  type        = bool
+  default     = false
 }
 
 ############################################

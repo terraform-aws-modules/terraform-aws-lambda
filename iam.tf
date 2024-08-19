@@ -11,8 +11,8 @@ locals {
   #   attempting to plan if the role_name and function_name are not set.  This is a workaround
   #   for #83 that will allow one to import resources without receiving an error from coalesce.
   # @see https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/83
-  role_name   = local.create_role ? coalesce(var.role_name, var.function_name, "*") : null
-  policy_name = coalesce(var.policy_name, local.role_name, "*")
+  role_name_prefix   = local.create_role ? coalesce(var.role_name_prefix, var.function_name, "*") : null
+  policy_name_prefix = coalesce(var.policy_name_prefix, local.role_name_prefix, "*")
 
   # IAM Role trusted entities is a list of any (allow strings (services) and maps (type+identifiers))
   trusted_entities_services = distinct(compact(concat(
@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "assume_role" {
 resource "aws_iam_role" "lambda" {
   count = local.create_role ? 1 : 0
 
-  name                  = local.role_name
+  name_prefix           = local.role_name_prefix
   description           = var.role_description
   path                  = var.role_path
   force_detach_policies = var.role_force_detach_policies
@@ -134,10 +134,10 @@ data "aws_iam_policy_document" "logs" {
 resource "aws_iam_policy" "logs" {
   count = local.create_role && var.attach_cloudwatch_logs_policy ? 1 : 0
 
-  name   = "${local.policy_name}-logs"
-  path   = var.policy_path
-  policy = data.aws_iam_policy_document.logs[0].json
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-logs"
+  path        = var.policy_path
+  policy      = data.aws_iam_policy_document.logs[0].json
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "logs" {
@@ -171,10 +171,10 @@ data "aws_iam_policy_document" "dead_letter" {
 resource "aws_iam_policy" "dead_letter" {
   count = local.create_role && var.attach_dead_letter_policy ? 1 : 0
 
-  name   = "${local.policy_name}-dl"
-  path   = var.policy_path
-  policy = data.aws_iam_policy_document.dead_letter[0].json
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-dl"
+  path        = var.policy_path
+  policy      = data.aws_iam_policy_document.dead_letter[0].json
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "dead_letter" {
@@ -198,10 +198,10 @@ data "aws_iam_policy" "vpc" {
 resource "aws_iam_policy" "vpc" {
   count = local.create_role && var.attach_network_policy ? 1 : 0
 
-  name   = "${local.policy_name}-vpc"
-  path   = var.policy_path
-  policy = data.aws_iam_policy.vpc[0].policy
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-vpc"
+  path        = var.policy_path
+  policy      = data.aws_iam_policy.vpc[0].policy
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "vpc" {
@@ -225,10 +225,10 @@ data "aws_iam_policy" "tracing" {
 resource "aws_iam_policy" "tracing" {
   count = local.create_role && var.attach_tracing_policy ? 1 : 0
 
-  name   = "${local.policy_name}-tracing"
-  path   = var.policy_path
-  policy = data.aws_iam_policy.tracing[0].policy
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-tracing"
+  path        = var.policy_path
+  policy      = data.aws_iam_policy.tracing[0].policy
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "tracing" {
@@ -262,10 +262,10 @@ data "aws_iam_policy_document" "async" {
 resource "aws_iam_policy" "async" {
   count = local.create_role && var.attach_async_event_policy ? 1 : 0
 
-  name   = "${local.policy_name}-async"
-  path   = var.policy_path
-  policy = data.aws_iam_policy_document.async[0].json
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-async"
+  path        = var.policy_path
+  policy      = data.aws_iam_policy_document.async[0].json
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "async" {
@@ -282,10 +282,10 @@ resource "aws_iam_role_policy_attachment" "async" {
 resource "aws_iam_policy" "additional_json" {
   count = local.create_role && var.attach_policy_json ? 1 : 0
 
-  name   = local.policy_name
-  path   = var.policy_path
-  policy = var.policy_json
-  tags   = var.tags
+  name_prefix = local.policy_name_prefix
+  path        = var.policy_path
+  policy      = var.policy_json
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "additional_json" {
@@ -302,10 +302,10 @@ resource "aws_iam_role_policy_attachment" "additional_json" {
 resource "aws_iam_policy" "additional_jsons" {
   count = local.create_role && var.attach_policy_jsons ? var.number_of_policy_jsons : 0
 
-  name   = "${local.policy_name}-${count.index}"
-  path   = var.policy_path
-  policy = var.policy_jsons[count.index]
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-${count.index}"
+  path        = var.policy_path
+  policy      = var.policy_jsons[count.index]
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "additional_jsons" {
@@ -386,10 +386,10 @@ data "aws_iam_policy_document" "additional_inline" {
 resource "aws_iam_policy" "additional_inline" {
   count = local.create_role && var.attach_policy_statements ? 1 : 0
 
-  name   = "${local.policy_name}-inline"
-  path   = var.policy_path
-  policy = data.aws_iam_policy_document.additional_inline[0].json
-  tags   = var.tags
+  name_prefix = "${local.policy_name_prefix}-inline"
+  path        = var.policy_path
+  policy      = data.aws_iam_policy_document.additional_inline[0].json
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "additional_inline" {

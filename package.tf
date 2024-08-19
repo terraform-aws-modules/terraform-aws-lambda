@@ -70,6 +70,7 @@ resource "null_resource" "archive" {
       "--timestamp", data.external.archive_prepare[0].result.timestamp
     ]
     command = data.external.archive_prepare[0].result.build_plan_filename
+    quiet   = var.quiet_local_exec
   }
 
   depends_on = [local_file.archive_plan]
