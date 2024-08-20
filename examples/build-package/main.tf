@@ -258,7 +258,7 @@ module "npm_package_with_commands_and_patterns" {
       path = "${path.module}/../fixtures/node-app"
       commands = [
         "[ ! -d node_modules ] || mv node_modules node_modules_temp",
-        "npm ci --production",
+        "npm install --production",
         ":zip",
         "rm -rf node_modules",
         "[ ! -d node_modules_temp ] || mv node_modules_temp node_modules",
