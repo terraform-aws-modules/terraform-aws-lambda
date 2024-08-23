@@ -119,6 +119,7 @@ module "wrapper" {
   s3_object_tags_only                          = try(each.value.s3_object_tags_only, var.defaults.s3_object_tags_only, false)
   s3_prefix                                    = try(each.value.s3_prefix, var.defaults.s3_prefix, null)
   s3_server_side_encryption                    = try(each.value.s3_server_side_encryption, var.defaults.s3_server_side_encryption, null)
+  skip_destroy                                 = try(each.value.skip_destroy, var.defaults.skip_destroy, null)
   snap_start                                   = try(each.value.snap_start, var.defaults.snap_start, false)
   source_path                                  = try(each.value.source_path, var.defaults.source_path, null)
   store_on_s3                                  = try(each.value.store_on_s3, var.defaults.store_on_s3, false)
