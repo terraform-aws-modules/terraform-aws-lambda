@@ -254,8 +254,8 @@ variable "timeouts" {
   default     = {}
 }
 
-variable "lambda_skip_destroy" {
-  description = "(Optional) Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state."
+variable "skip_destroy" {
+  description = "Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state. Useful for Lambda@Edge functions attached to CloudFront distributions."
   type        = bool
   default     = null
 }
