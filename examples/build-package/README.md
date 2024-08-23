@@ -37,6 +37,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_layer"></a> [lambda\_layer](#module\_lambda\_layer) | ../../ | n/a |
 | <a name="module_lambda_layer_pip_requirements"></a> [lambda\_layer\_pip\_requirements](#module\_lambda\_layer\_pip\_requirements) | ../.. | n/a |
 | <a name="module_lambda_layer_poetry"></a> [lambda\_layer\_poetry](#module\_lambda\_layer\_poetry) | ../../ | n/a |
+| <a name="module_npm_package_with_commands_and_patterns"></a> [npm\_package\_with\_commands\_and\_patterns](#module\_npm\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
 | <a name="module_package_dir"></a> [package\_dir](#module\_package\_dir) | ../../ | n/a |
 | <a name="module_package_dir_pip_dir"></a> [package\_dir\_pip\_dir](#module\_package\_dir\_pip\_dir) | ../../ | n/a |
 | <a name="module_package_dir_poetry"></a> [package\_dir\_poetry](#module\_package\_dir\_poetry) | ../../ | n/a |
