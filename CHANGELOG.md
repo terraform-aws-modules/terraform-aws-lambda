@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.8.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.8.0...v7.8.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* Fix package.py commands after :zip not being executed ([#606](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/606)) ([801e69c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/801e69c08b74217e7f1319b128d5efd264162aaf))
+
 ## [7.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.7.1...v7.8.0) (2024-08-23)
 
 
