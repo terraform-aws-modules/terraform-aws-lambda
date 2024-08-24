@@ -244,6 +244,31 @@ module "package_with_commands_and_patterns" {
   ]
 }
 
+# Some use cases might require the production packages are deployed while maintaining local node_modules folder
+# This example saves the node_modules folder by moving it to an ignored directory
+# After the zip file is created with production node_modules, the dev node_modules folder is restored
+module "npm_package_with_commands_and_patterns" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "nodejs18.x"
+  source_path = [
+    {
+      path = "${path.module}/../fixtures/node-app"
+      commands = [
+        "[ ! -d node_modules ] || mv node_modules node_modules_temp",
+        "npm install --production",
+        ":zip",
+        "rm -rf node_modules",
+        "[ ! -d node_modules_temp ] || mv node_modules_temp node_modules",
+      ]
+      patterns = [
+        "!node_modules_temp/.*"
+      ]
+    }
+  ]
+}
 # Create zip-archive with various sources and patterns.
 # Note, that it is possible to write comments in patterns.
 module "package_with_patterns" {

@@ -779,6 +779,9 @@ class BuildPlanManager:
                             )
                     else:
                         batch.append(c)
+            if batch:
+                step("sh", path, "\n".join(batch))
+                batch.clear()
 
         for claim in claims:
             if isinstance(claim, str):

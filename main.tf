@@ -41,6 +41,7 @@ resource "aws_lambda_function" "this" {
   code_signing_config_arn            = var.code_signing_config_arn
   replace_security_groups_on_destroy = var.replace_security_groups_on_destroy
   replacement_security_group_ids     = var.replacement_security_group_ids
+  skip_destroy                       = var.skip_destroy
 
   /* ephemeral_storage is not supported in gov-cloud region, so it should be set to `null` */
   dynamic "ephemeral_storage" {
