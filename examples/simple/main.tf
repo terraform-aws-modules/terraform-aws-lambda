@@ -41,6 +41,8 @@ module "rust_lambda_function" {
   runtime       = "provided.al2023"
   architectures = ["arm64"]
 
+  create_lambda_function_url = true
+
   source_path = [
     {
       path = "${path.module}/../fixtures/rust-app1"
