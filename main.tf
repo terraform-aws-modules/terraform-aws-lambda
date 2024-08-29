@@ -19,10 +19,12 @@ locals {
   s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
   s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 
+  lambda_used = var.ignore_image_uri ? aws_lambda_function.this[0] : aws_lambda_function.image_function[0]
+
 }
 
 resource "aws_lambda_function" "this" {
-  count = local.create && var.create_function && !var.create_layer ? 1 : 0
+  count = local.create && var.create_function && !var.create_layer && !var.ignore_image_uri? 1 : 0
 
   function_name                      = var.function_name
   description                        = var.description
@@ -384,8 +386,8 @@ resource "aws_cloudwatch_log_group" "lambda" {
 resource "aws_lambda_provisioned_concurrency_config" "current_version" {
   count = local.create && var.create_function && !var.create_layer && var.provisioned_concurrent_executions > -1 ? 1 : 0
 
-  function_name = aws_lambda_function.this[0].function_name
-  qualifier     = aws_lambda_function.this[0].version
+  function_name = local.lambda_used
+  qualifier     = local.lambda_used.version
 
   provisioned_concurrent_executions = var.provisioned_concurrent_executions
 }
@@ -397,8 +399,8 @@ locals {
 resource "aws_lambda_function_event_invoke_config" "this" {
   for_each = { for k, v in local.qualifiers : k => v if v != null && local.create && var.create_function && !var.create_layer && var.create_async_event_config }
 
-  function_name = aws_lambda_function.this[0].function_name
-  qualifier     = each.key == "current_version" ? aws_lambda_function.this[0].version : null
+  function_name = local.lambda_used.function_name
+  qualifier     = each.key == "current_version" ? local.lambda_used.version : null
 
   maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
   maximum_retry_attempts       = var.maximum_retry_attempts
@@ -426,8 +428,8 @@ resource "aws_lambda_function_event_invoke_config" "this" {
 resource "aws_lambda_permission" "current_version_triggers" {
   for_each = { for k, v in var.allowed_triggers : k => v if local.create && var.create_function && !var.create_layer && var.create_current_version_allowed_triggers }
 
-  function_name = aws_lambda_function.this[0].function_name
-  qualifier     = aws_lambda_function.this[0].version
+  function_name = local.lambda_used.function_name
+  qualifier     = local.lambda_used.version
 
   statement_id_prefix = try(each.value.statement_id, each.key)
   action              = try(each.value.action, "lambda:InvokeFunction")
@@ -446,7 +448,7 @@ resource "aws_lambda_permission" "current_version_triggers" {
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
   for_each = { for k, v in var.allowed_triggers : k => v if local.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
-  function_name = aws_lambda_function.this[0].function_name
+  function_name = local.lambda_used.function_name
 
   statement_id_prefix = try(each.value.statement_id, each.key)
   action              = try(each.value.action, "lambda:InvokeFunction")
@@ -464,7 +466,7 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 resource "aws_lambda_event_source_mapping" "this" {
   for_each = { for k, v in var.event_source_mapping : k => v if local.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
-  function_name = aws_lambda_function.this[0].arn
+  function_name = local.lambda_used.arn
 
   event_source_arn = try(each.value.event_source_arn, null)
 
@@ -544,10 +546,10 @@ resource "aws_lambda_event_source_mapping" "this" {
 resource "aws_lambda_function_url" "this" {
   count = local.create && var.create_function && !var.create_layer && var.create_lambda_function_url ? 1 : 0
 
-  function_name = aws_lambda_function.this[0].function_name
+  function_name = local.lambda_used.function_name
 
   # Error: error creating Lambda Function URL: ValidationException
-  qualifier          = var.create_unqualified_alias_lambda_function_url ? null : aws_lambda_function.this[0].version
+  qualifier          = var.create_unqualified_alias_lambda_function_url ? null : local.lambda_used.version
   authorization_type = var.authorization_type
   invoke_mode        = var.invoke_mode
 
@@ -574,7 +576,7 @@ resource "null_resource" "sam_metadata_aws_lambda_function" {
   triggers = {
     # This is a way to let SAM CLI correlates between the Lambda function resource, and this metadata
     # resource
-    resource_name = "aws_lambda_function.this[0]"
+    resource_name = "local.lambda_used"
     resource_type = "ZIP_LAMBDA_FUNCTION"
 
     # The Lambda function source code.
