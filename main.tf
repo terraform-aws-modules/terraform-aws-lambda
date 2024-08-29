@@ -24,7 +24,7 @@ locals {
 }
 
 resource "aws_lambda_function" "this" {
-  count = local.create && var.create_function && !var.create_layer ? 1 : 0
+  count = local.create && var.create_function && !var.create_layer && !var.ignore_image_uri ? 1 : 0
 
   function_name                      = var.function_name
   description                        = var.description
