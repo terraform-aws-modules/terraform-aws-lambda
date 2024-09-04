@@ -161,7 +161,7 @@ resource "aws_lambda_event_source_mapping" "this" {
       consumer_group_id = self_managed_kafka_event_source_config.value.consumer_group_id
     }
   }
-  
+
   dynamic "amazon_managed_kafka_event_source_config" {
     for_each = try(each.value.amazon_managed_kafka_event_source_config, [])
     content {
