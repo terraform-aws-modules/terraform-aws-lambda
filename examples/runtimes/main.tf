@@ -76,7 +76,7 @@ module "java21_lambda_function" {
 
   handler       = "example.Handler"
   runtime       = "java21"
-  architectures = ["arm64"] # x86_64 (GOARCH=amd64); arm64 (GOARCH=arm64)
+  architectures = ["arm64"] # x86_64 or arm64
   timeout       = 30
 
   trigger_on_package_timestamp = false
