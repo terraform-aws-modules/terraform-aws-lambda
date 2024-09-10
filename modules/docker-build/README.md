@@ -52,7 +52,7 @@ module "docker_image" {
 * [Container Image](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/container-image) - Creates Docker Image, ECR resository and deploys it Lambda Function.
 
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -116,7 +116,7 @@ No modules.
 |------|-------------|
 | <a name="output_image_id"></a> [image\_id](#output\_image\_id) | The ID of the Docker image |
 | <a name="output_image_uri"></a> [image\_uri](#output\_image\_uri) | The ECR image URI for deploying lambda |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## Authors
 
