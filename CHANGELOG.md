@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.8.1...v7.9.0) (2024-09-10)
+
+
+### Features
+
+* Added more examples for Rust, Go, Java runtimes ([#612](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/612)) ([a6fe411](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/a6fe4115ac96592ecbda27f72d42536da6518add))
+
 ## [7.8.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.8.0...v7.8.1) (2024-08-23)
 
 
