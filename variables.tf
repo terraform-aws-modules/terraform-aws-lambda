@@ -206,6 +206,12 @@ variable "package_type" {
   default     = "Zip"
 }
 
+variable "ignore_image_uri" {
+  description = "Ignores changes to the image_uri"
+  type = bool
+  default = false
+}
+
 variable "image_uri" {
   description = "The ECR image URI containing the function's deployment package."
   type        = string
