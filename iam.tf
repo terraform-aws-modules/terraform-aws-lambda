@@ -52,6 +52,12 @@ data "aws_iam_policy_document" "assume_role" {
         identifiers = principals.value.identifiers
       }
     }
+
+    condition {
+      test     = "ForAnyValue:StringLike"
+      variable = "aws:SourceArn"
+      values   = var.trusted_entities_assume_role_source_arns
+    }
   }
 
   dynamic "statement" {

@@ -596,6 +596,12 @@ variable "trusted_entities" {
   default     = []
 }
 
+variable "trusted_entities_assume_role_source_arns" {
+  description = "List of additional trusted entities for assuming Lambda Function role (trust relationship) with source ARNs"
+  type        = list(string)
+  default     = []
+}
+
 variable "assume_role_policy_statements" {
   description = "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)"
   type        = any
