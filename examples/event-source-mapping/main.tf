@@ -247,7 +247,7 @@ module "vpc" {
 resource "aws_mq_broker" "this" {
   broker_name        = random_pet.this.id
   engine_type        = "RabbitMQ"
-  engine_version     = "3.10.10"
+  engine_version     = "3.12.13"
   host_instance_type = "mq.t3.micro"
   security_groups    = [module.vpc.default_security_group_id]
   subnet_ids         = slice(module.vpc.public_subnets, 0, 1)

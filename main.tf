@@ -331,6 +331,7 @@ resource "aws_lambda_event_source_mapping" "this" {
   topics                             = try(each.value.topics, null)
   queues                             = try(each.value.queues, null)
   function_response_types            = try(each.value.function_response_types, null)
+  tumbling_window_in_seconds         = try(each.value.tumbling_window_in_seconds, null)
 
   dynamic "destination_config" {
     for_each = try(each.value.destination_arn_on_failure, null) != null ? [true] : []
