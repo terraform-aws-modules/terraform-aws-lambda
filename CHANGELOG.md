@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.9.0...v7.10.0) (2024-09-29)
+
+
+### Features
+
+* Add `tumbling_window_in_seconds` ([#623](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/623)) ([eedacff](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/eedacffef287cb02f776da4950e8345d9ec0200f))
+
 ## [7.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.8.1...v7.9.0) (2024-09-10)
 
 
