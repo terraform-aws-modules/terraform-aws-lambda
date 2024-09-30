@@ -12,9 +12,9 @@ This wrapper does not implement any extra functionality.
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/lambda/aws//wrappers/docker-build"
+  source = "tfr:///gametimesf/tf-aws-lambda/aws//wrappers/docker-build"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda.git//wrappers/docker-build?ref=master"
+  # source = "git::git@github.com:gametimesf/terraform-aws-tf-aws-lambda.git//wrappers/docker-build?ref=master"
 }
 
 inputs = {
@@ -42,7 +42,7 @@ inputs = {
 
 ```hcl
 module "wrapper" {
-  source = "terraform-aws-modules/lambda/aws//wrappers/docker-build"
+  source = "gametimesf/tf-aws-lambda/aws//wrappers/docker-build"
 
   defaults = { # Default values
     create = true

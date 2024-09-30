@@ -4,6 +4,9 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_wrapper_module_for_each
+        args:
+          - "--args=--module-repo-org=gametimesf"
+          - "--args=--module-repo-shortname=tf-aws-lambda"
       - id: terraform_docs
         args:
           - "--args=--lockfile=false"
