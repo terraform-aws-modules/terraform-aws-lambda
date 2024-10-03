@@ -391,6 +391,16 @@ resource "aws_lambda_event_source_mapping" "this" {
       }
     }
   }
+
+  dynamic "document_db_event_source_config" {
+    for_each = try([each.value.document_db_event_source_config], [])
+
+    content {
+      database_name   = document_db_event_source_config.value.database_name
+      collection_name = try(document_db_event_source_config.value.collection_name, null)
+      full_document   = try(document_db_event_source_config.value.full_document, null)
+    }
+  }
 }
 
 resource "aws_lambda_function_url" "this" {
