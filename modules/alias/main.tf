@@ -155,6 +155,20 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
+  dynamic "self_managed_kafka_event_source_config" {
+    for_each = try(each.value.self_managed_kafka_event_source_config, [])
+    content {
+      consumer_group_id = try(self_managed_kafka_event_source_config.value.consumer_group_id, null)
+    }
+  }
+
+  dynamic "amazon_managed_kafka_event_source_config" {
+    for_each = try(each.value.amazon_managed_kafka_event_source_config, [])
+    content {
+      consumer_group_id = try(amazon_managed_kafka_event_source_config.value.consumer_group_id, null)
+    }
+  }
+
   dynamic "source_access_configuration" {
     for_each = try(each.value.source_access_configuration, [])
     content {
