@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.12.0...v7.13.0) (2024-10-05)
+
+
+### Features
+
+* Support `aws_lambda_event_source_mapping.document_db_event_source_config` ([#626](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/626)) ([5d48199](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/5d481996ed6ef5ce784847b7e5bae1bae1ee8bfd))
+
 ## [7.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.11.0...v7.12.0) (2024-10-05)
 
 
