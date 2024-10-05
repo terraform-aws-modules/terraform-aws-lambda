@@ -16,7 +16,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 ## Features
 
 - Build dependencies for your Lambda Function and Layer.
-- Support builds locally and in Docker (with or without SSH agent support for private builds).
+- Support builds locally and in Docker (with or without SSH agent support for private builds) for any runtime and architecture supported by AWS Lambda.
 - Create deployment package or deploy existing (previously built package) from local, from S3, from URL, or from AWS ECR repository.
 - Store deployment packages locally or in the S3 bucket.
 - Support almost all features of Lambda resources (function, layer, alias, etc.)
@@ -384,7 +384,7 @@ When `source_path` is set to a list of directories the content of each will be t
 
 ### Combine various options for extreme flexibility
 
-This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing some of the available options (see [examples/build-package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) for more):
+This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing some of the available options (see [examples/build-package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) and [examples/runtimes](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/runtimes) for more):
 
 ```hcl
 source_path = [
@@ -643,6 +643,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 - [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
 - [Container Image](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/container-image) - Create a Docker image with a platform specified in the Dockerfile (using [docker provider](https://registry.terraform.io/providers/kreuzwerker/docker)), push it to AWS ECR, and create Lambda function from it.
 - [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
+- [Runtimes](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages for various runtimes (such as Rust, Go, Java).
 - [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
 - [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
 - [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS, SNS, and EventBridge integration).
@@ -660,7 +661,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 - [1Mill/serverless-tf-examples](https://github.com/1Mill/serverless-tf-examples/tree/main/src)
 
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -904,7 +905,7 @@ No modules.
 | <a name="output_lambda_role_unique_id"></a> [lambda\_role\_unique\_id](#output\_lambda\_role\_unique\_id) | The unique id of the IAM role created for the Lambda Function |
 | <a name="output_local_filename"></a> [local\_filename](#output\_local\_filename) | The filename of zip archive deployed (if deployment was from local) |
 | <a name="output_s3_object"></a> [s3\_object](#output\_s3\_object) | The map with S3 object data of zip archive deployed (if deployment was from S3) |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## Development
 
