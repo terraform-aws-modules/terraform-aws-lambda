@@ -158,14 +158,14 @@ resource "aws_lambda_event_source_mapping" "this" {
   dynamic "self_managed_kafka_event_source_config" {
     for_each = try(each.value.self_managed_kafka_event_source_config, [])
     content {
-      consumer_group_id = self_managed_kafka_event_source_config.value.consumer_group_id
+      consumer_group_id = try(self_managed_kafka_event_source_config.value.consumer_group_id, null)
     }
   }
 
   dynamic "amazon_managed_kafka_event_source_config" {
     for_each = try(each.value.amazon_managed_kafka_event_source_config, [])
     content {
-      consumer_group_id = amazon_managed_kafka_event_source_config.value.consumer_group_id
+      consumer_group_id = try(amazon_managed_kafka_event_source_config.value.consumer_group_id, null)
     }
   }
 
