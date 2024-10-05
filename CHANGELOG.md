@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.11.0...v7.12.0) (2024-10-05)
+
+
+### Features
+
+* Add support for kafka event source config ([#617](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/617)) ([2c077cb](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2c077cb1450af76cf44b56bfeba796ee9d9d9a00))
+
 ## [7.11.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.10.0...v7.11.0) (2024-10-01)
 
 
