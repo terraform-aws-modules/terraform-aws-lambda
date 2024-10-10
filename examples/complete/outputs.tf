@@ -91,6 +91,21 @@ output "lambda_layer_version" {
   value       = module.lambda_function.lambda_layer_version
 }
 
+output "lambda_layer_code_sha256" {
+  description = "Base64-encoded representation of raw SHA-256 sum of the zip file"
+  value       = module.lambda_function.lambda_layer_code_sha256
+}
+
+output "lambda_layer_signing_job_arn" {
+  description = "ARN of a signing job"
+  value       = module.lambda_function.lambda_layer_signing_job_arn
+}
+
+output "lambda_layer_signing_profile_version_arn" {
+  description = "ARN for a signing profile version"
+  value       = module.lambda_function.lambda_layer_signing_profile_version_arn
+}
+
 # IAM Role
 output "lambda_role_arn" {
   description = "The ARN of the IAM role created for the Lambda Function"

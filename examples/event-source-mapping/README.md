@@ -61,6 +61,7 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_lambda_event_source_mapping_arn"></a> [lambda\_event\_source\_mapping\_arn](#output\_lambda\_event\_source\_mapping\_arn) | The event source mapping ARN |
 | <a name="output_lambda_event_source_mapping_function_arn"></a> [lambda\_event\_source\_mapping\_function\_arn](#output\_lambda\_event\_source\_mapping\_function\_arn) | The the ARN of the Lambda function the event source mapping is sending events to |
 | <a name="output_lambda_event_source_mapping_state"></a> [lambda\_event\_source\_mapping\_state](#output\_lambda\_event\_source\_mapping\_state) | The state of the event source mapping |
 | <a name="output_lambda_event_source_mapping_state_transition_reason"></a> [lambda\_event\_source\_mapping\_state\_transition\_reason](#output\_lambda\_event\_source\_mapping\_state\_transition\_reason) | The reason the event source mapping is in its current state |

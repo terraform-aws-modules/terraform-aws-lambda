@@ -405,7 +405,7 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
-  tags = var.tags
+  tags = merge(var.tags, try(each.value.tags, {}))
 }
 
 resource "aws_lambda_function_url" "this" {

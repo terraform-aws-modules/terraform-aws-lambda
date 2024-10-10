@@ -101,7 +101,7 @@ output "lambda_layer_signing_job_arn" {
   value       = try(aws_lambda_layer_version.this[0].signing_job_arn, "")
 }
 
-output "signing_profile_version_arn" {
+output "lambda_layer_signing_profile_version_arn" {
   description = "ARN for a signing profile version"
   value       = try(aws_lambda_layer_version.this[0].signing_profile_version_arn, "")
 }
