@@ -81,11 +81,6 @@ output "lambda_layer_arn" {
   value       = try(aws_lambda_layer_version.this[0].arn, "")
 }
 
-output "lambda_layer_code_sha256" {
-  description = "Base64-encoded representation of raw SHA-256 sum of the zip file"
-  value       = try(aws_lambda_layer_version.this[0].code_sha256, "")
-}
-
 output "lambda_layer_layer_arn" {
   description = "The ARN of the Lambda Layer without version"
   value       = try(aws_lambda_layer_version.this[0].layer_arn, "")
@@ -94,16 +89,6 @@ output "lambda_layer_layer_arn" {
 output "lambda_layer_created_date" {
   description = "The date Lambda Layer resource was created"
   value       = try(aws_lambda_layer_version.this[0].created_date, "")
-}
-
-output "lambda_layer_signing_job_arn" {
-  description = "ARN of a signing job"
-  value       = try(aws_lambda_layer_version.this[0].signing_job_arn, "")
-}
-
-output "lambda_layer_signing_profile_version_arn" {
-  description = "ARN for a signing profile version"
-  value       = try(aws_lambda_layer_version.this[0].signing_profile_version_arn, "")
 }
 
 output "lambda_layer_source_code_size" {

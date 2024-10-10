@@ -898,11 +898,8 @@ No modules.
 | <a name="output_lambda_function_url_id"></a> [lambda\_function\_url\_id](#output\_lambda\_function\_url\_id) | The Lambda Function URL generated id |
 | <a name="output_lambda_function_version"></a> [lambda\_function\_version](#output\_lambda\_function\_version) | Latest published version of Lambda Function |
 | <a name="output_lambda_layer_arn"></a> [lambda\_layer\_arn](#output\_lambda\_layer\_arn) | The ARN of the Lambda Layer with version |
-| <a name="output_lambda_layer_code_sha256"></a> [lambda\_layer\_code\_sha256](#output\_lambda\_layer\_code\_sha256) | Base64-encoded representation of raw SHA-256 sum of the zip file |
 | <a name="output_lambda_layer_created_date"></a> [lambda\_layer\_created\_date](#output\_lambda\_layer\_created\_date) | The date Lambda Layer resource was created |
 | <a name="output_lambda_layer_layer_arn"></a> [lambda\_layer\_layer\_arn](#output\_lambda\_layer\_layer\_arn) | The ARN of the Lambda Layer without version |
-| <a name="output_lambda_layer_signing_job_arn"></a> [lambda\_layer\_signing\_job\_arn](#output\_lambda\_layer\_signing\_job\_arn) | ARN of a signing job |
-| <a name="output_lambda_layer_signing_profile_version_arn"></a> [lambda\_layer\_signing\_profile\_version\_arn](#output\_lambda\_layer\_signing\_profile\_version\_arn) | ARN for a signing profile version |
 | <a name="output_lambda_layer_source_code_size"></a> [lambda\_layer\_source\_code\_size](#output\_lambda\_layer\_source\_code\_size) | The size in bytes of the Lambda Layer .zip file |
 | <a name="output_lambda_layer_version"></a> [lambda\_layer\_version](#output\_lambda\_layer\_version) | The Lambda Layer version |
 | <a name="output_lambda_role_arn"></a> [lambda\_role\_arn](#output\_lambda\_role\_arn) | The ARN of the IAM role created for the Lambda Function |
