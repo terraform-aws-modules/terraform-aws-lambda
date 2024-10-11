@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.14.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.13.0...v7.14.0) (2024-10-11)
+
+
+### Features
+
+* Support lambda function `vpc_config.ipv6_allowed_for_dual_stack` and event source mapping `tags` ([#628](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/628)) ([2a602f9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2a602f9a4f76d11005d1dba56d9c966a87553f4e))
+
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#631](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/631)) ([d06718f](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/d06718f605294f59a42ae6e3db70bfd7b9fa35f3))
+
 ## [7.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.12.0...v7.13.0) (2024-10-05)
 
 
