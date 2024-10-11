@@ -92,8 +92,9 @@ resource "aws_lambda_function" "this" {
   dynamic "vpc_config" {
     for_each = var.vpc_subnet_ids != null && var.vpc_security_group_ids != null ? [true] : []
     content {
-      security_group_ids = var.vpc_security_group_ids
-      subnet_ids         = var.vpc_subnet_ids
+      security_group_ids          = var.vpc_security_group_ids
+      subnet_ids                  = var.vpc_subnet_ids
+      ipv6_allowed_for_dual_stack = var.ipv6_allowed_for_dual_stack
     }
   }
 
@@ -403,6 +404,8 @@ resource "aws_lambda_event_source_mapping" "this" {
       full_document   = try(document_db_event_source_config.value.full_document, null)
     }
   }
+
+  tags = merge(var.tags, try(each.value.tags, {}))
 }
 
 resource "aws_lambda_function_url" "this" {
