@@ -69,3 +69,8 @@ output "lambda_event_source_mapping_uuid" {
   description = "The UUID of the created event source mapping"
   value       = module.lambda_function.lambda_event_source_mapping_uuid
 }
+
+output "lambda_event_source_mapping_arn" {
+  description = "The event source mapping ARN"
+  value       = module.lambda_function.lambda_event_source_mapping_arn
+}

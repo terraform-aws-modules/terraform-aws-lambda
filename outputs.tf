@@ -102,6 +102,11 @@ output "lambda_layer_version" {
 }
 
 # Lambda Event Source Mapping
+output "lambda_event_source_mapping_arn" {
+  description = "The event source mapping ARN"
+  value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.arn }
+}
+
 output "lambda_event_source_mapping_function_arn" {
   description = "The the ARN of the Lambda function the event source mapping is sending events to"
   value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.function_arn }
