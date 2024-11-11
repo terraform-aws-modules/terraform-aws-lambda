@@ -695,7 +695,7 @@ class BuildPlanManager:
                 hash(requirements)
 
         def poetry_install_step(
-            path, poetry_export_extra_args=[], prefix=None, required=False
+            path, poetry_export_extra_args=[], prefix=None, required=False, tmp_dir=None
         ):
             pyproject_file = path
             if os.path.isdir(path):
@@ -706,7 +706,7 @@ class BuildPlanManager:
                         "poetry configuration not found: {}".format(pyproject_file)
                     )
             else:
-                step("poetry", runtime, path, poetry_export_extra_args, prefix)
+                step("poetry", runtime, path, poetry_export_extra_args, prefix, tmp_dir)
                 hash(pyproject_file)
                 pyproject_path = os.path.dirname(pyproject_file)
                 poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
@@ -840,6 +840,7 @@ class BuildPlanManager:
                                 prefix=prefix,
                                 poetry_export_extra_args=poetry_export_extra_args,
                                 required=True,
+                                tmp_dir=claim.get("poetry_tmp_dir")
                             )
 
                     if npm_requirements and runtime.startswith("nodejs"):
@@ -915,10 +916,11 @@ class BuildPlanManager:
                     path,
                     poetry_export_extra_args,
                     prefix,
+                    tmp_dir
                 ) = action[1:]
                 log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
                 with install_poetry_dependencies(
-                    query, path, poetry_export_extra_args
+                    query, path, poetry_export_extra_args, tmp_dir
                 ) as rd:
                     if rd:
                         if pf:
@@ -1114,7 +1116,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
-def install_poetry_dependencies(query, path, poetry_export_extra_args):
+def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -1168,7 +1170,7 @@ def install_poetry_dependencies(query, path, poetry_export_extra_args):
     working_dir = os.getcwd()
 
     log.info("Installing python dependencies with poetry & pip: %s", poetry_lock_file)
-    with tempdir() as temp_dir:
+    with tempdir(tmp_dir) as temp_dir:
 
         def copy_file_to_target(file, temp_dir):
             filename = os.path.basename(file)
