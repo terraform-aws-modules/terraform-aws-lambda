@@ -840,7 +840,7 @@ class BuildPlanManager:
                                 prefix=prefix,
                                 poetry_export_extra_args=poetry_export_extra_args,
                                 required=True,
-                                tmp_dir=claim.get("poetry_tmp_dir")
+                                tmp_dir=claim.get("poetry_tmp_dir"),
                             )
 
                     if npm_requirements and runtime.startswith("nodejs"):
@@ -911,13 +911,7 @@ class BuildPlanManager:
                             # XXX: timestamp=0 - what actually do with it?
                             zs.write_dirs(rd, prefix=prefix, timestamp=0)
             elif cmd == "poetry":
-                (
-                    runtime,
-                    path,
-                    poetry_export_extra_args,
-                    prefix,
-                    tmp_dir
-                ) = action[1:]
+                (runtime, path, poetry_export_extra_args, prefix, tmp_dir) = action[1:]
                 log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
                 with install_poetry_dependencies(
                     query, path, poetry_export_extra_args, tmp_dir
