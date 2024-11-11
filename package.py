@@ -1195,7 +1195,6 @@ def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
         poetry_exec = "poetry"
         python_exec = runtime
         subproc_env = None
-        log.info("Dir contents: %s",os.listdir(temp_dir))
 
         if not docker:
             if WINDOWS:
