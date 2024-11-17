@@ -272,12 +272,16 @@ def update_hash(hash_obj, file_root, file_path):
     relative_path = os.path.join(file_root, file_path)
     hash_obj.update(relative_path.encode())
 
-    with open(relative_path, "rb") as open_file:
-        while True:
-            data = open_file.read(1024 * 8)
-            if not data:
-                break
-            hash_obj.update(data)
+    try:
+        with open(relative_path, "rb") as open_file:
+            while True:
+                data = open_file.read(1024 * 8)
+                if not data:
+                    break
+                hash_obj.update(data)
+    # ignore broken symlinks content to don't fail on `terraform destroy` command
+    except FileNotFoundError:
+        pass
 
 
 class ZipWriteStream:
