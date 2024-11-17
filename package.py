@@ -272,12 +272,16 @@ def update_hash(hash_obj, file_root, file_path):
     relative_path = os.path.join(file_root, file_path)
     hash_obj.update(relative_path.encode())
 
-    with open(relative_path, "rb") as open_file:
-        while True:
-            data = open_file.read(1024 * 8)
-            if not data:
-                break
-            hash_obj.update(data)
+    try:
+        with open(relative_path, "rb") as open_file:
+            while True:
+                data = open_file.read(1024 * 8)
+                if not data:
+                    break
+                hash_obj.update(data)
+    # ignore broken symlinks content to don't fail on `terraform destroy` command
+    except FileNotFoundError:
+        pass
 
 
 class ZipWriteStream:
@@ -939,7 +943,15 @@ class BuildPlanManager:
                 with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as temp_file:
                     path, script = action[1:]
                     # NOTE: Execute `pwd` to determine the subprocess shell's working directory after having executed all other commands.
-                    script = f"{script} && pwd >{temp_file.name}"
+                    script = "\n".join(
+                        (
+                            script,
+                            "retcode=$?",
+                            f"pwd >{temp_file.name}",
+                            "exit $retcode",
+                        )
+                    )
+
                     p = subprocess.Popen(
                         script,
                         shell=True,
