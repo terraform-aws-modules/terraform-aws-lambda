@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.15.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.14.1...v7.15.0) (2024-11-18)
+
+
+### Features
+
+* Make `source_path` blocks independent ([#640](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/640)) ([0fdac2e](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/0fdac2ec54fdcd5fd34787f348803000c1e21eb6))
+
 ## [7.14.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.14.0...v7.14.1) (2024-11-17)
 
 
