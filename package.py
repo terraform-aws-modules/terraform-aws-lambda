@@ -676,8 +676,11 @@ class BuildPlanManager:
         source_paths = []
         build_plan = []
 
-        step = lambda *x: build_plan.append(x)
-        hash = source_paths.append
+        def step(*x):
+            build_plan.append(x)
+
+        def hash(path):
+            source_paths.append(path)
 
         def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             command = runtime
@@ -753,13 +756,6 @@ class BuildPlanManager:
                     if c.startswith(":zip"):
                         if path:
                             hash(path)
-                        else:
-                            # If path doesn't defined for a block with
-                            # commands it will be set to Terraform's
-                            # current working directory
-                            # NB: cwd may vary when using Terraform 0.14+ like:
-                            # `terraform -chdir=...`
-                            path = query.paths.cwd
                         if batch:
                             step("sh", path, "\n".join(batch))
                             batch.clear()
