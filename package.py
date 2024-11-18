@@ -1616,11 +1616,11 @@ def prepare_command(args):
     content_hash = content_hash.hexdigest()
 
     # Generate a unique filename based on the hash.
-    filename = os.path.join(artifacts_dir, "{}.zip".format(content_hash))
+    zip_filename = os.path.join(artifacts_dir, "{}.zip".format(content_hash))
 
     # Compute timestamp trigger
     was_missing = False
-    filename_path = os.path.join(os.getcwd(), filename)
+    filename_path = os.path.join(os.getcwd(), zip_filename)
     if recreate_missing_package:
         if os.path.exists(filename_path):
             st = os.stat(filename_path)
@@ -1633,7 +1633,7 @@ def prepare_command(args):
 
     # Replace variables in the build command with calculated values.
     build_data = {
-        "filename": filename,
+        "filename": zip_filename,
         "runtime": runtime,
         "artifacts_dir": artifacts_dir,
         "build_plan": build_plan,
@@ -1653,7 +1653,7 @@ def prepare_command(args):
     # Output the result to Terraform.
     json.dump(
         {
-            "filename": filename,
+            "filename": zip_filename,
             "build_plan": build_plan,
             "build_plan_filename": build_plan_filename,
             "timestamp": str(timestamp),
