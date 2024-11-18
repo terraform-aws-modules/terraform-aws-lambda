@@ -572,6 +572,10 @@ class ZipContentFilter:
                 rules.append((None, r))
         self._rules = rules
 
+    def reset(self):
+        self._log.debug("reset filter patterns")
+        self._rules = None
+
     def filter(self, path, prefix=None):
         path = os.path.normpath(path)
         if prefix:
@@ -676,8 +680,11 @@ class BuildPlanManager:
         source_paths = []
         build_plan = []
 
-        step = lambda *x: build_plan.append(x)
-        hash = source_paths.append
+        def step(*x):
+            build_plan.append(x)
+
+        def hash(path):
+            source_paths.append(path)
 
         def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             command = runtime
@@ -753,13 +760,6 @@ class BuildPlanManager:
                     if c.startswith(":zip"):
                         if path:
                             hash(path)
-                        else:
-                            # If path doesn't defined for a block with
-                            # commands it will be set to Terraform's
-                            # current working directory
-                            # NB: cwd may vary when using Terraform 0.14+ like:
-                            # `terraform -chdir=...`
-                            path = query.paths.cwd
                         if batch:
                             step("sh", path, "\n".join(batch))
                             batch.clear()
@@ -770,12 +770,14 @@ class BuildPlanManager:
                             _path = os.path.normpath(os.path.join(path, _path))
                             step("zip:embedded", _path, prefix)
                         elif len(c) == 2:
-                            prefix = None
                             _, _path = c
+                            prefix = None
+                            _path = os.path.normpath(_path)
                             step("zip:embedded", _path, prefix)
                         elif len(c) == 1:
                             prefix = None
-                            step("zip:embedded", path, prefix)
+                            _path = None
+                            step("zip:embedded", _path, prefix)
                         else:
                             raise ValueError(
                                 ":zip invalid call signature, use: "
@@ -786,6 +788,8 @@ class BuildPlanManager:
             if batch:
                 step("sh", path, "\n".join(batch))
                 batch.clear()
+
+            step("reset:workdir")
 
         for claim in claims:
             if isinstance(claim, str):
@@ -862,6 +866,7 @@ class BuildPlanManager:
                                 tmp_dir=claim.get("npm_tmp_dir"),
                             )
                     if path:
+                        path = os.path.normpath(path)
                         step("zip", path, prefix)
                         if patterns:
                             # Take patterns into account when computing hash
@@ -882,6 +887,10 @@ class BuildPlanManager:
         return build_plan
 
     def execute(self, build_plan, zip_stream, query):
+        sh_log = logging.getLogger("sh")
+
+        tf_work_dir = os.getcwd()
+
         zs = zip_stream
         sh_work_dir = None
         pf = None
@@ -891,10 +900,16 @@ class BuildPlanManager:
             if cmd.startswith("zip"):
                 ts = 0 if cmd == "zip:embedded" else None
                 source_path, prefix = action[1:]
-                if sh_work_dir:
-                    if source_path != sh_work_dir:
-                        if not os.path.isfile(source_path):
-                            source_path = sh_work_dir
+                if not sh_work_dir:
+                    sh_work_dir = tf_work_dir
+                    log.debug("WORKDIR: %s", sh_work_dir)
+                if source_path:
+                    if not os.path.isabs(source_path):
+                        source_path = os.path.normpath(
+                            os.path.join(sh_work_dir, source_path)
+                        )
+                else:
+                    source_path = sh_work_dir
                 if os.path.isdir(source_path):
                     if pf:
                         self._zip_write_with_filter(
@@ -942,10 +957,22 @@ class BuildPlanManager:
             elif cmd == "sh":
                 with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as temp_file:
                     path, script = action[1:]
-                    # NOTE: Execute `pwd` to determine the subprocess shell's working directory after having executed all other commands.
+
+                    if not path:
+                        path = tf_work_dir
+                    if not os.path.isabs(path):
+                        path = os.path.normpath(os.path.join(tf_work_dir, path))
+
+                    if log.isEnabledFor(DEBUG2):
+                        log.debug("exec shell script ...")
+                        for line in script.splitlines():
+                            sh_log.debug(line)
+
                     script = "\n".join(
                         (
                             script,
+                            # NOTE: Execute `pwd` to determine the subprocess shell's
+                            # working directory after having executed all other commands.
                             "retcode=$?",
                             f"pwd >{temp_file.name}",
                             "exit $retcode",
@@ -960,17 +987,9 @@ class BuildPlanManager:
                         cwd=path,
                     )
 
-                    p.wait()
-                    temp_file.seek(0)
-
-                    # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
-                    sh_work_dir = temp_file.read().strip()
-
-                    log.info("WD: %s", sh_work_dir)
-
                     call_stdout, call_stderr = p.communicate()
                     exit_code = p.returncode
-                    log.info("exit_code: %s", exit_code)
+                    log.debug("exit_code: %s", exit_code)
                     if exit_code != 0:
                         raise RuntimeError(
                             "Script did not run successfully, exit code {}: {} - {}".format(
@@ -979,11 +998,21 @@ class BuildPlanManager:
                                 call_stderr.decode("utf-8").strip(),
                             )
                         )
+
+                    temp_file.seek(0)
+                    # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
+                    sh_work_dir = temp_file.read().strip()
+                    log.debug("WORKDIR: %s", sh_work_dir)
+
+            elif cmd == "reset:workdir":
+                sh_work_dir = tf_work_dir
+                log.debug("WORKDIR: %s", sh_work_dir)
             elif cmd == "set:filter":
                 patterns = action[1]
                 pf = ZipContentFilter(args=self._args)
                 pf.compile(patterns)
             elif cmd == "clear:filter":
+                pf.reset()
                 pf = None
 
     @staticmethod
