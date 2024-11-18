@@ -770,8 +770,9 @@ class BuildPlanManager:
                             _path = os.path.normpath(os.path.join(path, _path))
                             step("zip:embedded", _path, prefix)
                         elif len(c) == 2:
-                            prefix = None
                             _, _path = c
+                            prefix = None
+                            _path = os.path.normpath(_path)
                             step("zip:embedded", _path, prefix)
                         elif len(c) == 1:
                             prefix = None
@@ -862,6 +863,7 @@ class BuildPlanManager:
                                 tmp_dir=claim.get("npm_tmp_dir"),
                             )
                     if path:
+                        path = os.path.normpath(path)
                         step("zip", path, prefix)
                         if patterns:
                             # Take patterns into account when computing hash
