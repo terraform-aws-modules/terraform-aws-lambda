@@ -572,6 +572,10 @@ class ZipContentFilter:
                 rules.append((None, r))
         self._rules = rules
 
+    def reset(self):
+        self._log.debug("reset filter patterns")
+        self._rules = None
+
     def filter(self, path, prefix=None):
         path = os.path.normpath(path)
         if prefix:
@@ -883,6 +887,8 @@ class BuildPlanManager:
         return build_plan
 
     def execute(self, build_plan, zip_stream, query):
+        sh_log = logging.getLogger("sh")
+
         tf_work_dir = os.getcwd()
 
         zs = zip_stream
@@ -896,7 +902,7 @@ class BuildPlanManager:
                 source_path, prefix = action[1:]
                 if not sh_work_dir:
                     sh_work_dir = tf_work_dir
-                    log.info("WORKDIR: %s", sh_work_dir)
+                    log.debug("WORKDIR: %s", sh_work_dir)
                 if source_path:
                     if not os.path.isabs(source_path):
                         source_path = os.path.join(sh_work_dir, source_path)
@@ -955,6 +961,11 @@ class BuildPlanManager:
                     if not os.path.isabs(path):
                         path = os.path.join(tf_work_dir, path)
 
+                    if log.isEnabledFor(DEBUG2):
+                        log.debug("exec shell script ...")
+                        for line in script.splitlines():
+                            sh_log.debug(line)
+
                     script = "\n".join(
                         (
                             script,
@@ -974,17 +985,9 @@ class BuildPlanManager:
                         cwd=path,
                     )
 
-                    p.wait()
-                    temp_file.seek(0)
-
-                    # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
-                    sh_work_dir = temp_file.read().strip()
-
-                    log.info("WORKDIR: %s", sh_work_dir)
-
                     call_stdout, call_stderr = p.communicate()
                     exit_code = p.returncode
-                    log.info("exit_code: %s", exit_code)
+                    log.debug("exit_code: %s", exit_code)
                     if exit_code != 0:
                         raise RuntimeError(
                             "Script did not run successfully, exit code {}: {} - {}".format(
@@ -993,13 +996,21 @@ class BuildPlanManager:
                                 call_stderr.decode("utf-8").strip(),
                             )
                         )
+
+                    temp_file.seek(0)
+                    # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
+                    sh_work_dir = temp_file.read().strip()
+                    log.debug("WORKDIR: %s", sh_work_dir)
+
             elif cmd == "reset:workdir":
                 sh_work_dir = tf_work_dir
+                log.debug("WORKDIR: %s", sh_work_dir)
             elif cmd == "set:filter":
                 patterns = action[1]
                 pf = ZipContentFilter(args=self._args)
                 pf.compile(patterns)
             elif cmd == "clear:filter":
+                pf.reset()
                 pf = None
 
     @staticmethod
