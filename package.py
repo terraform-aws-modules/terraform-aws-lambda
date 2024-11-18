@@ -905,7 +905,9 @@ class BuildPlanManager:
                     log.debug("WORKDIR: %s", sh_work_dir)
                 if source_path:
                     if not os.path.isabs(source_path):
-                        source_path = os.path.join(sh_work_dir, source_path)
+                        source_path = os.path.normpath(
+                            os.path.join(sh_work_dir, source_path)
+                        )
                 else:
                     source_path = sh_work_dir
                 if os.path.isdir(source_path):
@@ -959,7 +961,7 @@ class BuildPlanManager:
                     if not path:
                         path = tf_work_dir
                     if not os.path.isabs(path):
-                        path = os.path.join(tf_work_dir, path)
+                        path = os.path.normpath(os.path.join(tf_work_dir, path))
 
                     if log.isEnabledFor(DEBUG2):
                         log.debug("exec shell script ...")
