@@ -115,6 +115,6 @@ variable "triggers" {
 
 variable "cache-from" {
   description = "List of images to consider as cache sources when building the image"
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
