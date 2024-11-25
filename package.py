@@ -776,8 +776,7 @@ class BuildPlanManager:
                             step("zip:embedded", _path, prefix)
                         elif len(c) == 1:
                             prefix = None
-                            _path = None
-                            step("zip:embedded", _path, prefix)
+                            step("zip:embedded", path, prefix)
                         else:
                             raise ValueError(
                                 ":zip invalid call signature, use: "
