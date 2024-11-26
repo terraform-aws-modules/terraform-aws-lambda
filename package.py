@@ -679,9 +679,10 @@ class BuildPlanManager:
 
         source_paths = []
         build_plan = []
+        build_step = []
 
         def step(*x):
-            build_plan.append(x)
+            build_step.append(x)
 
         def hash(path):
             source_paths.append(path)
@@ -754,6 +755,8 @@ class BuildPlanManager:
 
             if path:
                 path = os.path.normpath(path)
+                step("set:workdir", path)
+
             batch = []
             for c in commands:
                 if isinstance(c, str):
@@ -761,23 +764,21 @@ class BuildPlanManager:
                         if path:
                             hash(path)
                         if batch:
-                            step("sh", path, "\n".join(batch))
+                            step("sh", "\n".join(batch))
                             batch.clear()
                         c = shlex.split(c)
-                        if len(c) == 3:
+                        n = len(c)
+                        if n == 3:
                             _, _path, prefix = c
                             prefix = prefix.strip()
-                            _path = os.path.normpath(os.path.join(path, _path))
-                            step("zip:embedded", _path, prefix)
-                        elif len(c) == 2:
-                            _, _path = c
-                            prefix = None
                             _path = os.path.normpath(_path)
                             step("zip:embedded", _path, prefix)
-                        elif len(c) == 1:
-                            prefix = None
-                            _path = None
-                            step("zip:embedded", _path, prefix)
+                        elif n == 2:
+                            _, _path = c
+                            _path = os.path.normpath(_path)
+                            step("zip:embedded", _path)
+                        elif n == 1:
+                            step("zip:embedded")
                         else:
                             raise ValueError(
                                 ":zip invalid call signature, use: "
@@ -786,10 +787,8 @@ class BuildPlanManager:
                     else:
                         batch.append(c)
             if batch:
-                step("sh", path, "\n".join(batch))
+                step("sh", "\n".join(batch))
                 batch.clear()
-
-            step("reset:workdir")
 
         for claim in claims:
             if isinstance(claim, str):
@@ -877,11 +876,12 @@ class BuildPlanManager:
                                 hash(path_from_pattern)
                         else:
                             hash(path)
-
-                if patterns:
-                    step("clear:filter")
             else:
                 raise ValueError("Unsupported source_path item: {}".format(claim))
+
+            if build_step:
+                build_plan.append(build_step)
+                build_step = []
 
         self._source_paths = source_paths
         return build_plan
@@ -895,125 +895,145 @@ class BuildPlanManager:
         sh_work_dir = None
         pf = None
 
-        for action in build_plan:
-            cmd = action[0]
-            if cmd.startswith("zip"):
-                ts = 0 if cmd == "zip:embedded" else None
-                source_path, prefix = action[1:]
-                if not sh_work_dir:
-                    sh_work_dir = tf_work_dir
-                    log.debug("WORKDIR: %s", sh_work_dir)
-                if source_path:
-                    if not os.path.isabs(source_path):
-                        source_path = os.path.normpath(
-                            os.path.join(sh_work_dir, source_path)
-                        )
-                else:
-                    source_path = sh_work_dir
-                if os.path.isdir(source_path):
-                    if pf:
-                        self._zip_write_with_filter(
-                            zs, pf, source_path, prefix, timestamp=ts
-                        )
+        for step in build_plan:
+            # init step
+            sh_work_dir = tf_work_dir
+            if pf:
+                pf.reset()
+                pf = None
+
+            log.debug("STEPDIR: %s", sh_work_dir)
+
+            # execute step actions
+            for action in step:
+                cmd = action[0]
+                if cmd.startswith("zip"):
+                    ts = 0 if cmd == "zip:embedded" else None
+
+                    source_path, prefix = None, None
+                    n = len(action)
+                    if n == 2:
+                        source_path = action[1]
+                    elif n == 3:
+                        source_path, prefix = action[1:]
+
+                    if source_path:
+                        if not os.path.isabs(source_path):
+                            source_path = os.path.normpath(
+                                os.path.join(sh_work_dir, source_path)
+                            )
                     else:
-                        zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
-                else:
-                    zs.write_file(source_path, prefix=prefix, timestamp=ts)
-            elif cmd == "pip":
-                runtime, pip_requirements, prefix, tmp_dir = action[1:]
-                with install_pip_requirements(query, pip_requirements, tmp_dir) as rd:
-                    if rd:
+                        source_path = sh_work_dir
+                    if os.path.isdir(source_path):
                         if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
+                            self._zip_write_with_filter(
+                                zs, pf, source_path, prefix, timestamp=ts
+                            )
                         else:
-                            # XXX: timestamp=0 - what actually do with it?
-                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
-            elif cmd == "poetry":
-                (
-                    runtime,
-                    path,
-                    poetry_export_extra_args,
-                    prefix,
-                ) = action[1:]
-                log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
-                with install_poetry_dependencies(
-                    query, path, poetry_export_extra_args
-                ) as rd:
-                    if rd:
-                        if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
-                        else:
-                            # XXX: timestamp=0 - what actually do with it?
-                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
-            elif cmd == "npm":
-                runtime, npm_requirements, prefix, tmp_dir = action[1:]
-                with install_npm_requirements(query, npm_requirements, tmp_dir) as rd:
-                    if rd:
-                        if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
-                        else:
-                            # XXX: timestamp=0 - what actually do with it?
-                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
-            elif cmd == "sh":
-                with tempfile.NamedTemporaryFile(mode="w+t", delete=True) as temp_file:
-                    path, script = action[1:]
+                            zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
+                    else:
+                        zs.write_file(source_path, prefix=prefix, timestamp=ts)
+                elif cmd == "pip":
+                    runtime, pip_requirements, prefix, tmp_dir = action[1:]
+                    with install_pip_requirements(
+                        query, pip_requirements, tmp_dir
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                # XXX: timestamp=0 - what actually do with it?
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "poetry":
+                    (
+                        runtime,
+                        path,
+                        poetry_export_extra_args,
+                        prefix,
+                    ) = action[1:]
+                    log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
+                    with install_poetry_dependencies(
+                        query, path, poetry_export_extra_args
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                # XXX: timestamp=0 - what actually do with it?
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "npm":
+                    runtime, npm_requirements, prefix, tmp_dir = action[1:]
+                    with install_npm_requirements(
+                        query, npm_requirements, tmp_dir
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                # XXX: timestamp=0 - what actually do with it?
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "sh":
+                    with tempfile.NamedTemporaryFile(
+                        mode="w+t", delete=True
+                    ) as temp_file:
+                        script = action[1]
 
-                    if not path:
-                        path = tf_work_dir
-                    if not os.path.isabs(path):
-                        path = os.path.normpath(os.path.join(tf_work_dir, path))
+                        if log.isEnabledFor(DEBUG2):
+                            log.debug("exec shell script ...")
+                            for line in script.splitlines():
+                                sh_log.debug(line)
 
-                    if log.isEnabledFor(DEBUG2):
-                        log.debug("exec shell script ...")
-                        for line in script.splitlines():
-                            sh_log.debug(line)
-
-                    script = "\n".join(
-                        (
-                            script,
-                            # NOTE: Execute `pwd` to determine the subprocess shell's
-                            # working directory after having executed all other commands.
-                            "retcode=$?",
-                            f"pwd >{temp_file.name}",
-                            "exit $retcode",
-                        )
-                    )
-
-                    p = subprocess.Popen(
-                        script,
-                        shell=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        cwd=path,
-                    )
-
-                    call_stdout, call_stderr = p.communicate()
-                    exit_code = p.returncode
-                    log.debug("exit_code: %s", exit_code)
-                    if exit_code != 0:
-                        raise RuntimeError(
-                            "Script did not run successfully, exit code {}: {} - {}".format(
-                                exit_code,
-                                call_stdout.decode("utf-8").strip(),
-                                call_stderr.decode("utf-8").strip(),
+                        script = "\n".join(
+                            (
+                                script,
+                                # NOTE: Execute `pwd` to determine the subprocess shell's
+                                # working directory after having executed all other commands.
+                                "retcode=$?",
+                                f"pwd >{temp_file.name}",
+                                "exit $retcode",
                             )
                         )
 
-                    temp_file.seek(0)
-                    # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
-                    sh_work_dir = temp_file.read().strip()
+                        p = subprocess.Popen(
+                            script,
+                            shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            cwd=sh_work_dir,
+                        )
+
+                        call_stdout, call_stderr = p.communicate()
+                        exit_code = p.returncode
+                        log.debug("exit_code: %s", exit_code)
+                        if exit_code != 0:
+                            raise RuntimeError(
+                                "Script did not run successfully, exit code {}: {} - {}".format(
+                                    exit_code,
+                                    call_stdout.decode("utf-8").strip(),
+                                    call_stderr.decode("utf-8").strip(),
+                                )
+                            )
+
+                        temp_file.seek(0)
+                        # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
+                        sh_work_dir = temp_file.read().strip()
+                        log.debug("WORKDIR: %s", sh_work_dir)
+
+                elif cmd == "set:workdir":
+                    path = action[1]
+                    sh_work_dir = os.path.normpath(os.path.join(tf_work_dir, path))
                     log.debug("WORKDIR: %s", sh_work_dir)
 
-            elif cmd == "reset:workdir":
-                sh_work_dir = tf_work_dir
-                log.debug("WORKDIR: %s", sh_work_dir)
-            elif cmd == "set:filter":
-                patterns = action[1]
-                pf = ZipContentFilter(args=self._args)
-                pf.compile(patterns)
-            elif cmd == "clear:filter":
-                pf.reset()
-                pf = None
+                elif cmd == "set:filter":
+                    patterns = action[1]
+                    pf = ZipContentFilter(args=self._args)
+                    pf.compile(patterns)
 
     @staticmethod
     def _zip_write_with_filter(
