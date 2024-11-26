@@ -26,7 +26,7 @@ def test_build_manager_failing_command():
     bpm = BuildPlanManager(args=Mock())
     with raises(Exception):
         bpm.execute(
-            build_plan=[["sh", "/tmp", "NOTACOMMAND"]],
+            build_plan=[[["sh", "/tmp", "NOTACOMMAND"]]],
             zip_stream=None,
             query=None,
         )
