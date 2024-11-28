@@ -17,6 +17,7 @@ resource "docker_image" "this" {
     dockerfile = var.docker_file_path
     build_args = var.build_args
     platform   = var.platform
+    cache_from = var.cache_from
   }
 
   force_remove = var.force_remove
