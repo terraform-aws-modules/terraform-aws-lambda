@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.16.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.15.0...v7.16.0) (2024-11-26)
+
+
+### Features
+
+* Radically redesign the build plan form ([#646](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/646)) ([32d8d06](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/32d8d060a660b0ec5702403da1b970118f62a314))
+
+## [7.15.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.14.1...v7.15.0) (2024-11-18)
+
+
+### Features
+
+* Make `source_path` blocks independent ([#640](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/640)) ([0fdac2e](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/0fdac2ec54fdcd5fd34787f348803000c1e21eb6))
+
+## [7.14.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.14.0...v7.14.1) (2024-11-17)
+
+
+### Bug Fixes
+
+* Skip broken symlinks on hash computing ([#639](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/639)) ([c28b940](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/c28b940c8b8a8ea8b423728e05883942f5eaf661))
+
 ## [7.14.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.13.0...v7.14.0) (2024-10-11)
 
 
