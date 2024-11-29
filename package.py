@@ -948,14 +948,18 @@ class BuildPlanManager:
                                 # XXX: timestamp=0 - what actually do with it?
                                 zs.write_dirs(rd, prefix=prefix, timestamp=0)
                 elif cmd == "poetry":
-                    (runtime, path, poetry_export_extra_args, prefix, tmp_dir) = action[1:]
+                    (runtime, path, poetry_export_extra_args, prefix, tmp_dir) = action[
+                        1:
+                    ]
                     log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
                     with install_poetry_dependencies(
                         query, path, poetry_export_extra_args, tmp_dir
                     ) as rd:
                         if rd:
                             if pf:
-                                self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
                             else:
                                 # XXX: timestamp=0 - what actually do with it?
                                 zs.write_dirs(rd, prefix=prefix, timestamp=0)
