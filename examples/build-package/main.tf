@@ -426,7 +426,7 @@ module "lambda_layer_poetry" {
     {
       path           = "${path.module}/../fixtures/python-app-poetry"
       poetry_install = true
-      poetry_tmp_dir = "${path.root}/builds/"
+      poetry_tmp_dir = "${path.cwd}/../fixtures"
     }
   ]
   hash_extra = "extra-hash-to-prevent-conflicts-with-module.package_dir"
