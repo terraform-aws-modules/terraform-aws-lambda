@@ -449,9 +449,9 @@ resource "aws_lambda_function_url" "this" {
 }
 
 resource "aws_lambda_function_recursion_config" "this" {
-  count = local.create && var.recursive_loop == "Allow" ? 1 : 0
+  count = local.create && var.create_function && !var.create_layer && var.recursive_loop == "Allow" ? 1 : 0
 
-  function_name  = var.function_name
+  function_name  = aws_lambda_function.this[0].function_name
   recursive_loop = var.recursive_loop
 
   depends_on = [
