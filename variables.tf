@@ -825,3 +825,13 @@ variable "logging_log_group" {
   type        = string
   default     = null
 }
+
+############################################
+# Lambda Recursive Loop Settings
+############################################
+
+variable "recursive_loop" {
+  description = "Lambda function recursion configuration. Valid values are Allow or Terminate."
+  type        = string
+  default     = null
+}
