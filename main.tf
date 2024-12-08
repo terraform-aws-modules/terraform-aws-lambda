@@ -453,10 +453,6 @@ resource "aws_lambda_function_recursion_config" "this" {
 
   function_name  = aws_lambda_function.this[0].function_name
   recursive_loop = var.recursive_loop
-
-  depends_on = [
-    aws_lambda_function.this
-  ]
 }
 
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities
