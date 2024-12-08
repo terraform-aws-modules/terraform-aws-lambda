@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.17.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.16.0...v7.17.0) (2024-12-08)
+
+
+### Features
+
+* Support Event Source Mapping `metrics_config`, `provisioned_poller_config`, and Lambda Recursion Loop ([#649](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/649)) ([002d7ec](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/002d7ec3c9bc3e7a44fac536c3443ba640ff9828))
+
 ## [7.16.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.15.0...v7.16.0) (2024-11-26)
 
 
