@@ -798,6 +798,12 @@ variable "trigger_on_package_timestamp" {
   default     = true
 }
 
+variable "quiet_archive_local_exec" {
+  description = "Whether to disable archive local execution output."
+  type        = bool
+  default     = false
+}
+
 ############################################
 # Lambda Advanced Logging Settings
 ############################################
