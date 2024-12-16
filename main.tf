@@ -405,6 +405,22 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
+  dynamic "metrics_config" {
+    for_each = try([each.value.metrics_config], [])
+
+    content {
+      metrics = metrics_config.value.metrics
+    }
+  }
+
+  dynamic "provisioned_poller_config" {
+    for_each = try([each.value.provisioned_poller_config], [])
+    content {
+      maximum_pollers = try(provisioned_poller_config.value.maximum_pollers, null)
+      minimum_pollers = try(provisioned_poller_config.value.minimum_pollers, null)
+    }
+  }
+
   tags = merge(var.tags, try(each.value.tags, {}))
 }
 
@@ -430,6 +446,13 @@ resource "aws_lambda_function_url" "this" {
       max_age           = try(cors.value.max_age, null)
     }
   }
+}
+
+resource "aws_lambda_function_recursion_config" "this" {
+  count = local.create && var.create_function && !var.create_layer && var.recursive_loop == "Allow" ? 1 : 0
+
+  function_name  = aws_lambda_function.this[0].function_name
+  recursive_loop = var.recursive_loop
 }
 
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities
