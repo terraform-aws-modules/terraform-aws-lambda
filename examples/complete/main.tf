@@ -26,6 +26,7 @@ module "lambda_function" {
   ephemeral_storage_size = 10240
   architectures          = ["x86_64"]
   publish                = true
+  # recursive_loop       = "Allow"
 
   source_path = "${path.module}/../fixtures/python-app1"
 
