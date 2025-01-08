@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.19.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.18.0...v7.19.0) (2025-01-08)
+
+
+### Features
+
+* Add `cache_from` option in the docker-build module ([#641](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/641)) ([55cdaa6](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/55cdaa68a63413f4ae5724c8b3a09a6b10d72f12))
+
 ## [7.18.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.17.1...v7.18.0) (2025-01-08)
 
 
