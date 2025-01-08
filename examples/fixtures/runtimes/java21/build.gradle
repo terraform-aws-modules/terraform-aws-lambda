@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'org.slf4j:slf4j-nop:2.0.6'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Using terraform-aws-lambda module, there is no need to make Zip archive by Gradle. Terraform AWS module will make it for you.
+// task buildZip(type: Zip) {
+//     from compileJava
+//     from processResources
+//     into('lib') {
+//         from configurations.runtimeClasspath
+//     }
+// }
+
+task copyFiles(type: Copy) {
+    into("$buildDir/output")
+
+    from sourceSets.main.output
+
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+build.dependsOn copyFiles

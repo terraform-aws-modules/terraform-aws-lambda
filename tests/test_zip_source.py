@@ -12,8 +12,10 @@ def test_zip_source_path_sh_work_dir():
 
     bpm.execute(
         build_plan=[
-            ["sh", ".", "cd $(mktemp -d)\n echo pip install"],
-            ["zip:embedded", ".", "./python"],
+            [
+                ["sh", "cd $(mktemp -d)\n echo pip install"],
+                ["zip:embedded", ".", "./python"],
+            ]
         ],
         zip_stream=zs,
         query=None,
@@ -33,8 +35,10 @@ def test_zip_source_path():
 
     bpm.execute(
         build_plan=[
-            ["sh", ".", "echo pip install"],
-            ["zip:embedded", ".", "./python"],
+            [
+                ["sh", "echo pip install"],
+                ["zip:embedded", ".", "./python"],
+            ]
         ],
         zip_stream=zs,
         query=None,

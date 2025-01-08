@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.92.2
+    rev: v1.96.1
     hooks:
       - id: terraform_fmt
       - id: terraform_wrapper_module_for_each
@@ -24,8 +24,10 @@ repos:
           - "--args=--only=terraform_workspace_remote"
       - id: terraform_validate
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-merge-conflict
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: [--fix=lf]

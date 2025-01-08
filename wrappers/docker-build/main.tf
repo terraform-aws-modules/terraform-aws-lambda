@@ -4,6 +4,7 @@ module "wrapper" {
   for_each = var.items
 
   build_args                = try(each.value.build_args, var.defaults.build_args, {})
+  cache_from                = try(each.value.cache_from, var.defaults.cache_from, [])
   create_ecr_repo           = try(each.value.create_ecr_repo, var.defaults.create_ecr_repo, false)
   create_sam_metadata       = try(each.value.create_sam_metadata, var.defaults.create_sam_metadata, false)
   docker_file_path          = try(each.value.docker_file_path, var.defaults.docker_file_path, "Dockerfile")
