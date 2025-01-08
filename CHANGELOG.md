@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.18.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.17.1...v7.18.0) (2025-01-08)
+
+
+### Features
+
+* Allow temp dir for poetry docker builds ([#638](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/638)) ([65ffea2](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/65ffea2cfd99a27b6be3fc3e48482cf0fb821f2f))
+
 ## [7.17.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.17.0...v7.17.1) (2025-01-07)
 
 
