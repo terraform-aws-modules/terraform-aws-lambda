@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.20.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.19.0...v7.20.0) (2025-01-08)
+
+
+### Features
+
+* Use inline instead of managed policies ([#615](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/615)) ([394d337](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/394d337450d88aa877ec560cd49080bb8b9a45ba))
+
 ## [7.19.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.18.0...v7.19.0) (2025-01-08)
 
 
