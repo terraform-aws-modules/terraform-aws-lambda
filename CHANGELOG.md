@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.17.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.17.0...v7.17.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* Rename npm_package_json to npm_requirements ([#621](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/621)) ([4bc61eb](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/4bc61eb58005e149dc1ca87ba79f42b0cba944fd))
+
 ## [7.17.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.16.0...v7.17.0) (2024-12-08)
 
 
