@@ -154,16 +154,16 @@ resource "aws_lambda_function" "this" {
     aws_cloudwatch_log_group.lambda,
 
     # Before the lambda is created the execution role with all its policies should be ready
-    aws_iam_role_policy_attachment.additional_inline,
-    aws_iam_role_policy_attachment.additional_json,
-    aws_iam_role_policy_attachment.additional_jsons,
+    aws_iam_role_policy.additional_inline,
+    aws_iam_role_policy.additional_json,
+    aws_iam_role_policy.additional_jsons,
+    aws_iam_role_policy.async,
+    aws_iam_role_policy.dead_letter,
+    aws_iam_role_policy.logs,
+    aws_iam_role_policy.tracing,
+    aws_iam_role_policy.vpc,
     aws_iam_role_policy_attachment.additional_many,
     aws_iam_role_policy_attachment.additional_one,
-    aws_iam_role_policy_attachment.async,
-    aws_iam_role_policy_attachment.logs,
-    aws_iam_role_policy_attachment.dead_letter,
-    aws_iam_role_policy_attachment.vpc,
-    aws_iam_role_policy_attachment.tracing,
   ]
 }
 

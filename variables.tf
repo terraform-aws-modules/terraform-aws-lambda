@@ -578,6 +578,8 @@ variable "attach_policies" {
   default     = false
 }
 
+# TODO: DEPRECATED: Remove this variable in the next major version
+# tflint-ignore: all
 variable "policy_path" {
   description = "Path of policies to that should be added to IAM role for Lambda Function"
   type        = string
