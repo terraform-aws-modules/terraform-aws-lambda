@@ -93,6 +93,7 @@ module "wrapper" {
   policy_json                                  = try(each.value.policy_json, var.defaults.policy_json, null)
   policy_jsons                                 = try(each.value.policy_jsons, var.defaults.policy_jsons, [])
   policy_name                                  = try(each.value.policy_name, var.defaults.policy_name, null)
+  policy_path                                  = try(each.value.policy_path, var.defaults.policy_path, null)
   policy_statements                            = try(each.value.policy_statements, var.defaults.policy_statements, {})
   provisioned_concurrent_executions            = try(each.value.provisioned_concurrent_executions, var.defaults.provisioned_concurrent_executions, -1)
   publish                                      = try(each.value.publish, var.defaults.publish, false)
