@@ -687,7 +687,7 @@ class BuildPlanManager:
         def hash(path):
             source_paths.append(path)
 
-        def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
+        def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None, pip_install_extra_args=[]):
             command = runtime
             requirements = path
             if os.path.isdir(path):
@@ -703,11 +703,11 @@ class BuildPlanManager:
                         "available in system PATH".format(command)
                     )
 
-                step("pip", runtime, requirements, prefix, tmp_dir)
+                step("pip", runtime, requirements, prefix, tmp_dir, pip_install_extra_args)
                 hash(requirements)
 
         def poetry_install_step(
-            path, poetry_export_extra_args=[], prefix=None, required=False, tmp_dir=None
+            path, poetry_export_extra_args=[], prefix=None, required=False, tmp_dir=None, pip_install_extra_args=[]
         ):
             pyproject_file = path
             if os.path.isdir(path):
@@ -718,7 +718,7 @@ class BuildPlanManager:
                         "poetry configuration not found: {}".format(pyproject_file)
                     )
             else:
-                step("poetry", runtime, path, poetry_export_extra_args, prefix, tmp_dir)
+                step("poetry", runtime, path, poetry_export_extra_args, prefix, tmp_dir, pip_install_extra_args)
                 hash(pyproject_file)
                 pyproject_path = os.path.dirname(pyproject_file)
                 poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
@@ -819,6 +819,7 @@ class BuildPlanManager:
                 else:
                     prefix = claim.get("prefix_in_zip")
                     pip_requirements = claim.get("pip_requirements")
+                    pip_install_extra_args = claim.get("pip_install_extra_args", [])
                     poetry_install = claim.get("poetry_install")
                     poetry_export_extra_args = claim.get("poetry_export_extra_args", [])
                     npm_requirements = claim.get(
@@ -833,6 +834,7 @@ class BuildPlanManager:
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("pip_tmp_dir"),
+                                pip_install_extra_args=pip_install_extra_args,
                             )
                         else:
                             pip_requirements_step(
@@ -840,6 +842,7 @@ class BuildPlanManager:
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("pip_tmp_dir"),
+                                pip_install_extra_args=pip_install_extra_args,
                             )
 
                     if poetry_install and runtime.startswith("python"):
@@ -850,6 +853,7 @@ class BuildPlanManager:
                                 poetry_export_extra_args=poetry_export_extra_args,
                                 required=True,
                                 tmp_dir=claim.get("poetry_tmp_dir"),
+                                pip_install_extra_args=pip_install_extra_args,
                             )
 
                     if npm_requirements and runtime.startswith("nodejs"):
@@ -937,9 +941,9 @@ class BuildPlanManager:
                     else:
                         zs.write_file(source_path, prefix=prefix, timestamp=ts)
                 elif cmd == "pip":
-                    runtime, pip_requirements, prefix, tmp_dir = action[1:]
+                    runtime, pip_requirements, prefix, tmp_dir, pip_install_extra_args = action[1:]
                     with install_pip_requirements(
-                        query, pip_requirements, tmp_dir
+                        query, pip_requirements, tmp_dir, pip_install_extra_args
                     ) as rd:
                         if rd:
                             if pf:
@@ -950,12 +954,12 @@ class BuildPlanManager:
                                 # XXX: timestamp=0 - what actually do with it?
                                 zs.write_dirs(rd, prefix=prefix, timestamp=0)
                 elif cmd == "poetry":
-                    (runtime, path, poetry_export_extra_args, prefix, tmp_dir) = action[
+                    (runtime, path, poetry_export_extra_args, prefix, tmp_dir, pip_install_extra_args) = action[
                         1:
                     ]
                     log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
                     with install_poetry_dependencies(
-                        query, path, poetry_export_extra_args, tmp_dir
+                        query, path, poetry_export_extra_args, tmp_dir, pip_install_extra_args
                     ) as rd:
                         if rd:
                             if pf:
@@ -1048,7 +1052,7 @@ class BuildPlanManager:
 
 
 @contextmanager
-def install_pip_requirements(query, requirements_file, tmp_dir):
+def install_pip_requirements(query, requirements_file, tmp_dir, pip_install_extra_args):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -1125,7 +1129,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 "--prefix=",
                 "--target=.",
                 "--requirement={}".format(requirements_filename),
-            ]
+            ] + pip_install_extra_args
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
                 pip_cache_dir = docker.docker_pip_cache
@@ -1175,7 +1179,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
-def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
+def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir, pip_install_extra_args):
     # TODO:
     #  1. Emit files instead of temp_dir
 
@@ -1301,7 +1305,7 @@ def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
                     "--prefix=",
                     "--target=.",
                     "--requirement=requirements.txt",
-                ],
+                ] + pip_install_extra_args,
             ]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
