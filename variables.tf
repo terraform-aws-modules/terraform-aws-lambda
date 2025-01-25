@@ -189,7 +189,7 @@ variable "tags" {
 }
 
 variable "include_default_tag" {
-  description = "Set to false to not include the default tags in the tags map."
+  description = "Set to false to not include the default tag in the tags map."
   type        = bool
   default     = true
 }
