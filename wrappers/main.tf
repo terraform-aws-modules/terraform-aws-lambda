@@ -43,6 +43,7 @@ module "wrapper" {
   create_unqualified_alias_async_event_config  = try(each.value.create_unqualified_alias_async_event_config, var.defaults.create_unqualified_alias_async_event_config, true)
   create_unqualified_alias_lambda_function_url = try(each.value.create_unqualified_alias_lambda_function_url, var.defaults.create_unqualified_alias_lambda_function_url, true)
   dead_letter_target_arn                       = try(each.value.dead_letter_target_arn, var.defaults.dead_letter_target_arn, null)
+  default_tf_aws_modules_tag                   = try(each.value.default_tf_aws_modules_tag, var.defaults.default_tf_aws_modules_tag, true)
   description                                  = try(each.value.description, var.defaults.description, "")
   destination_on_failure                       = try(each.value.destination_on_failure, var.defaults.destination_on_failure, null)
   destination_on_success                       = try(each.value.destination_on_success, var.defaults.destination_on_success, null)
