@@ -138,7 +138,7 @@ resource "aws_lambda_function" "this" {
   }
 
   tags = merge(
-    { terraform-aws-modules = "lambda" },
+    var.default_tf_aws_modules_tag ? { terraform-aws-modules = "lambda" } : {},
     var.tags,
     var.function_tags
   )

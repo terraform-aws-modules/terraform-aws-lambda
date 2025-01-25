@@ -188,6 +188,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "default_tf_aws_modules_tag" {
+  description = "Set to false to not include the default tag for all AWS modules."
+  type        = bool
+  default     = true
+}
+
 variable "function_tags" {
   description = "A map of tags to assign only to the lambda function"
   type        = map(string)
