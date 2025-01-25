@@ -188,7 +188,7 @@ variable "tags" {
   default     = {}
 }
 
-variable "default_tf_aws_modules_tag" {
+variable "include_default_tag" {
   description = "Set to false to not include the default tag for all AWS modules."
   type        = bool
   default     = true
