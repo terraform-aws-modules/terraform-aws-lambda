@@ -188,6 +188,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "include_default_tag" {
+  description = "Set to false to not include the default tag in the tags map."
+  type        = bool
+  default     = true
+}
+
 variable "function_tags" {
   description = "A map of tags to assign only to the lambda function"
   type        = map(string)
