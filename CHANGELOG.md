@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.20.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.0...v7.20.1) (2025-01-26)
+
+
+### Bug Fixes
+
+* Make default tag `terraform-aws-modules` optional ([#657](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/657)) ([685af53](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/685af5370e580a89cee68aeae06bb40dc3257892))
+
 ## [7.20.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.19.0...v7.20.0) (2025-01-08)
 
 

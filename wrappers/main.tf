@@ -67,6 +67,7 @@ module "wrapper" {
   image_config_entry_point                     = try(each.value.image_config_entry_point, var.defaults.image_config_entry_point, [])
   image_config_working_directory               = try(each.value.image_config_working_directory, var.defaults.image_config_working_directory, null)
   image_uri                                    = try(each.value.image_uri, var.defaults.image_uri, null)
+  include_default_tag                          = try(each.value.include_default_tag, var.defaults.include_default_tag, true)
   invoke_mode                                  = try(each.value.invoke_mode, var.defaults.invoke_mode, null)
   ipv6_allowed_for_dual_stack                  = try(each.value.ipv6_allowed_for_dual_stack, var.defaults.ipv6_allowed_for_dual_stack, null)
   kms_key_arn                                  = try(each.value.kms_key_arn, var.defaults.kms_key_arn, null)
