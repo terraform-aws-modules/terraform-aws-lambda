@@ -20,7 +20,7 @@ locals {
   s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 
   # s3_signing
-  s3_signing_enabled = local.create && var.store_on_s3 && var.create_package && var.enable_code_signing && var.lambda_code_signing_profile_name != null
+  s3_signing_enabled = local.s3_key != null && local.s3_bucket != null && var.enable_code_signing && var.lambda_code_signing_profile_name != null
   s3_signing_bucket  = var.s3_signing_bucket != null && local.s3_signing_enabled ? var.s3_signing_bucket : local.s3_bucket
   s3_signing_prefix  = var.s3_signing_prefix != null && local.s3_signing_enabled ? var.s3_signing_prefix : (var.s3_prefix != null ? var.s3_prefix : "")
 
