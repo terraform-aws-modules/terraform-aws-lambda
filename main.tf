@@ -19,6 +19,14 @@ locals {
   s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
   s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 
+  # s3_signing
+  s3_signing_enabled = local.create && var.store_on_s3 && var.create_package && var.enable_code_signing && var.lambda_code_signing_profile_name != null
+  s3_signing_bucket  = var.s3_signing_bucket != null && local.s3_signing_enabled ? var.s3_signing_bucket : local.s3_bucket
+  s3_signing_prefix  = var.s3_signing_prefix != null && local.s3_signing_enabled ? var.s3_signing_prefix : (var.s3_prefix != null ? var.s3_prefix : "")
+
+  lambda_s3_bucket  = local.s3_signing_enabled ? aws_signer_signing_job.lambda_code_signing[0].signed_object[0].s3[0].bucket : local.s3_bucket
+  lambda_s3_key     = local.s3_signing_enabled ? aws_signer_signing_job.lambda_code_signing[0].signed_object[0].s3[0].key : local.s3_key
+  lambda_s3_version = local.s3_signing_enabled ? null : local.s3_object_version # aws_signer_signing_job does not return a version id
 }
 
 resource "aws_lambda_function" "this" {
@@ -55,9 +63,9 @@ resource "aws_lambda_function" "this" {
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
-  s3_bucket         = local.s3_bucket
-  s3_key            = local.s3_key
-  s3_object_version = local.s3_object_version
+  s3_bucket         = local.lambda_s3_bucket
+  s3_key            = local.lambda_s3_key
+  s3_object_version = local.lambda_s3_version
 
   dynamic "image_config" {
     for_each = length(var.image_config_entry_point) > 0 || length(var.image_config_command) > 0 || var.image_config_working_directory != null ? [true] : []
@@ -181,9 +189,9 @@ resource "aws_lambda_layer_version" "this" {
   filename         = local.filename
   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
-  s3_bucket         = local.s3_bucket
-  s3_key            = local.s3_key
-  s3_object_version = local.s3_object_version
+  s3_bucket         = local.lambda_s3_bucket
+  s3_key            = local.lambda_s3_key
+  s3_object_version = local.lambda_s3_version
 
   depends_on = [null_resource.archive, aws_s3_object.lambda_package]
 }
@@ -213,6 +221,27 @@ resource "aws_s3_object" "lambda_package" {
   }
 
   depends_on = [null_resource.archive]
+}
+
+resource "aws_signer_signing_job" "lambda_code_signing" {
+  count        = local.s3_signing_enabled ? 1 : 0
+  profile_name = var.lambda_code_signing_profile_name
+
+  source {
+    s3 {
+      bucket  = local.s3_bucket
+      key     = local.s3_key
+      version = local.s3_object_version
+    }
+  }
+
+  destination {
+    s3 {
+      bucket = local.s3_signing_bucket
+      prefix = local.s3_signing_prefix
+    }
+  }
+  ignore_signing_job_failure = var.ignore_signing_job_failure
 }
 
 data "aws_cloudwatch_log_group" "lambda" {

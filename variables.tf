@@ -843,3 +843,37 @@ variable "recursive_loop" {
   type        = string
   default     = null
 }
+
+###############
+# Code Signing
+###############
+
+variable "enable_code_signing" {
+  description = "Must be used with a lambda storing code on s3. Set this to true for triggering a signing job creating a signed copy of the lambda zip. https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
+  type        = bool
+  default     = false
+}
+
+variable "lambda_code_signing_profile_name" {
+  description = "Lambda code signing profile name https://console.aws.amazon.com/lambda/home#/code-signing-configurations"
+  type        = string
+  default     = null
+}
+
+variable "s3_signing_bucket" {
+  description = "Bucket where to upload the signed s3 file. If omitted default to var.s3_bucket"
+  type        = string
+  default     = null
+}
+
+variable "s3_signing_prefix" {
+  description = "Prefix for the generated signed object. If omitted default to var.s3_prefix"
+  type        = string
+  default     = null
+}
+
+variable "ignore_signing_job_failure" {
+  description = "Set this argument to true to ignore signing job failures and retrieve failed status and reason"
+  type        = bool
+  default     = false
+}
