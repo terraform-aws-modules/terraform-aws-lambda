@@ -12,9 +12,9 @@ This wrapper does not implement any extra functionality.
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/lambda/aws//wrappers/deploy"
+  source = "tfr:///terraform-aws-modules/lambda-secure-fork/aws//wrappers/deploy"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda.git//wrappers/deploy?ref=master"
+  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-lambda-secure-fork.git//wrappers/deploy?ref=master"
 }
 
 inputs = {
@@ -42,7 +42,7 @@ inputs = {
 
 ```hcl
 module "wrapper" {
-  source = "terraform-aws-modules/lambda/aws//wrappers/deploy"
+  source = "terraform-aws-modules/lambda-secure-fork/aws//wrappers/deploy"
 
   defaults = { # Default values
     create = true
