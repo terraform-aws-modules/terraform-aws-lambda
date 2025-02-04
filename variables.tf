@@ -4,11 +4,11 @@ variable "create" {
   default     = true
 }
 
-variable "create_package" {
-  description = "Controls whether Lambda package should be created"
-  type        = bool
-  default     = true
-}
+# variable "create_package" {
+#   description = "Controls whether Lambda package should be created"
+#   type        = bool
+#   default     = true
+# }
 
 variable "create_function" {
   description = "Controls whether Lambda Function resource should be created"
@@ -34,11 +34,11 @@ variable "create_lambda_function_url" {
   default     = false
 }
 
-variable "create_sam_metadata" {
-  description = "Controls whether the SAM metadata null resource should be created"
-  type        = bool
-  default     = false
-}
+# variable "create_sam_metadata" {
+#   description = "Controls whether the SAM metadata null resource should be created"
+#   type        = bool
+#   default     = false
+# }
 
 variable "putin_khuylo" {
   description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
@@ -200,17 +200,17 @@ variable "function_tags" {
   default     = {}
 }
 
-variable "s3_object_tags" {
-  description = "A map of tags to assign to S3 bucket object."
-  type        = map(string)
-  default     = {}
-}
+# variable "s3_object_tags" {
+#   description = "A map of tags to assign to S3 bucket object."
+#   type        = map(string)
+#   default     = {}
+# }
 
-variable "s3_object_tags_only" {
-  description = "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit."
-  type        = bool
-  default     = false
-}
+# variable "s3_object_tags_only" {
+#   description = "Set to true to not merge tags with s3_object_tags. Useful to avoid breaching S3 Object 10 tag limit."
+#   type        = bool
+#   default     = false
+# }
 
 variable "package_type" {
   description = "The Lambda deployment package type. Valid options: Zip or Image"
@@ -300,45 +300,45 @@ variable "invoke_mode" {
   default     = null
 }
 
-variable "s3_object_override_default_tags" {
-  description = "Whether to override the default_tags from provider? NB: S3 objects support a maximum of 10 tags."
-  type        = bool
-  default     = false
-}
+# variable "s3_object_override_default_tags" {
+#   description = "Whether to override the default_tags from provider? NB: S3 objects support a maximum of 10 tags."
+#   type        = bool
+#   default     = false
+# }
 
 ########
 # Layer
 ########
 
-variable "layer_name" {
-  description = "Name of Lambda Layer to create"
-  type        = string
-  default     = ""
-}
+# variable "layer_name" {
+#   description = "Name of Lambda Layer to create"
+#   type        = string
+#   default     = ""
+# }
 
-variable "layer_skip_destroy" {
-  description = "Whether to retain the old version of a previously deployed Lambda Layer."
-  type        = bool
-  default     = false
-}
+# variable "layer_skip_destroy" {
+#   description = "Whether to retain the old version of a previously deployed Lambda Layer."
+#   type        = bool
+#   default     = false
+# }
 
-variable "license_info" {
-  description = "License info for your Lambda Layer. Eg, MIT or full url of a license."
-  type        = string
-  default     = ""
-}
+# variable "license_info" {
+#   description = "License info for your Lambda Layer. Eg, MIT or full url of a license."
+#   type        = string
+#   default     = ""
+# }
 
-variable "compatible_runtimes" {
-  description = "A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified."
-  type        = list(string)
-  default     = []
-}
+# variable "compatible_runtimes" {
+#   description = "A list of Runtimes this layer is compatible with. Up to 5 runtimes can be specified."
+#   type        = list(string)
+#   default     = []
+# }
 
-variable "compatible_architectures" {
-  description = "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified."
-  type        = list(string)
-  default     = null
-}
+# variable "compatible_architectures" {
+#   description = "A list of Architectures Lambda layer is compatible with. Currently x86_64 and arm64 can be specified."
+#   type        = list(string)
+#   default     = null
+# }
 
 ############################
 # Lambda Async Event Config
@@ -668,143 +668,143 @@ variable "file_system_local_mount_path" {
 # Build artifact settings
 ##########################
 
-variable "artifacts_dir" {
-  description = "Directory name where artifacts should be stored"
-  type        = string
-  default     = "builds"
-}
+# variable "artifacts_dir" {
+#   description = "Directory name where artifacts should be stored"
+#   type        = string
+#   default     = "builds"
+# }
 
-variable "s3_prefix" {
-  description = "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used"
-  type        = string
-  default     = null
-}
+# variable "s3_prefix" {
+#   description = "Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used"
+#   type        = string
+#   default     = null
+# }
 
-variable "ignore_source_code_hash" {
-  description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
-  type        = bool
-  default     = false
-}
+# variable "ignore_source_code_hash" {
+#   description = "Whether to ignore changes to the function's source code hash. Set to true if you manage infrastructure and code deployments separately."
+#   type        = bool
+#   default     = false
+# }
 
-variable "local_existing_package" {
-  description = "The absolute path to an existing zip-file to use"
-  type        = string
-  default     = null
-}
+# variable "local_existing_package" {
+#   description = "The absolute path to an existing zip-file to use"
+#   type        = string
+#   default     = null
+# }
 
-variable "s3_existing_package" {
-  description = "The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use"
-  type        = map(string)
-  default     = null
-}
+# variable "s3_existing_package" {
+#   description = "The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use"
+#   type        = map(string)
+#   default     = null
+# }
 
-variable "store_on_s3" {
-  description = "Whether to store produced artifacts on S3 or locally."
-  type        = bool
-  default     = false
-}
+# variable "store_on_s3" {
+#   description = "Whether to store produced artifacts on S3 or locally."
+#   type        = bool
+#   default     = false
+# }
 
-variable "s3_object_storage_class" {
-  description = "Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED_REDUNDANCY, ONEZONE_IA, INTELLIGENT_TIERING, or STANDARD_IA."
-  type        = string
-  default     = "ONEZONE_IA" # Cheaper than STANDARD and it is enough for Lambda deployments
-}
+# variable "s3_object_storage_class" {
+#   description = "Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED_REDUNDANCY, ONEZONE_IA, INTELLIGENT_TIERING, or STANDARD_IA."
+#   type        = string
+#   default     = "ONEZONE_IA" # Cheaper than STANDARD and it is enough for Lambda deployments
+# }
 
-variable "s3_bucket" {
-  description = "S3 bucket to store artifacts"
-  type        = string
-  default     = null
-}
+# variable "s3_bucket" {
+#   description = "S3 bucket to store artifacts"
+#   type        = string
+#   default     = null
+# }
 
-variable "s3_acl" {
-  description = "The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private."
-  type        = string
-  default     = "private"
-}
+# variable "s3_acl" {
+#   description = "The canned ACL to apply. Valid values are private, public-read, public-read-write, aws-exec-read, authenticated-read, bucket-owner-read, and bucket-owner-full-control. Defaults to private."
+#   type        = string
+#   default     = "private"
+# }
 
-variable "s3_server_side_encryption" {
-  description = "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\"."
-  type        = string
-  default     = null
-}
+# variable "s3_server_side_encryption" {
+#   description = "Specifies server-side encryption of the object in S3. Valid values are \"AES256\" and \"aws:kms\"."
+#   type        = string
+#   default     = null
+# }
 
-variable "s3_kms_key_id" {
-  description = "Specifies a custom KMS key to use for S3 object encryption."
-  type        = string
-  default     = null
-}
+# variable "s3_kms_key_id" {
+#   description = "Specifies a custom KMS key to use for S3 object encryption."
+#   type        = string
+#   default     = null
+# }
 
-variable "source_path" {
-  description = "The absolute path to a local file or directory containing your Lambda source code"
-  type        = any # string | list(string | map(any))
-  default     = null
-}
+# variable "source_path" {
+#   description = "The absolute path to a local file or directory containing your Lambda source code"
+#   type        = any # string | list(string | map(any))
+#   default     = null
+# }
 
-variable "hash_extra" {
-  description = "The string to add into hashing function. Useful when building same source path for different functions."
-  type        = string
-  default     = ""
-}
+# variable "hash_extra" {
+#   description = "The string to add into hashing function. Useful when building same source path for different functions."
+#   type        = string
+#   default     = ""
+# }
 
-variable "build_in_docker" {
-  description = "Whether to build dependencies in Docker"
-  type        = bool
-  default     = false
-}
+# variable "build_in_docker" {
+#   description = "Whether to build dependencies in Docker"
+#   type        = bool
+#   default     = false
+# }
 
-variable "docker_file" {
-  description = "Path to a Dockerfile when building in Docker"
-  type        = string
-  default     = ""
-}
+# variable "docker_file" {
+#   description = "Path to a Dockerfile when building in Docker"
+#   type        = string
+#   default     = ""
+# }
 
-variable "docker_build_root" {
-  description = "Root dir where to build in Docker"
-  type        = string
-  default     = ""
-}
+# variable "docker_build_root" {
+#   description = "Root dir where to build in Docker"
+#   type        = string
+#   default     = ""
+# }
 
-variable "docker_image" {
-  description = "Docker image to use for the build"
-  type        = string
-  default     = ""
-}
+# variable "docker_image" {
+#   description = "Docker image to use for the build"
+#   type        = string
+#   default     = ""
+# }
 
-variable "docker_with_ssh_agent" {
-  description = "Whether to pass SSH_AUTH_SOCK into docker environment or not"
-  type        = bool
-  default     = false
-}
+# variable "docker_with_ssh_agent" {
+#   description = "Whether to pass SSH_AUTH_SOCK into docker environment or not"
+#   type        = bool
+#   default     = false
+# }
 
-variable "docker_pip_cache" {
-  description = "Whether to mount a shared pip cache folder into docker environment or not"
-  type        = any
-  default     = null
-}
+# variable "docker_pip_cache" {
+#   description = "Whether to mount a shared pip cache folder into docker environment or not"
+#   type        = any
+#   default     = null
+# }
 
-variable "docker_additional_options" {
-  description = "Additional options to pass to the docker run command (e.g. to set environment variables, volumes, etc.)"
-  type        = list(string)
-  default     = []
-}
+# variable "docker_additional_options" {
+#   description = "Additional options to pass to the docker run command (e.g. to set environment variables, volumes, etc.)"
+#   type        = list(string)
+#   default     = []
+# }
 
-variable "docker_entrypoint" {
-  description = "Path to the Docker entrypoint to use"
-  type        = string
-  default     = null
-}
+# variable "docker_entrypoint" {
+#   description = "Path to the Docker entrypoint to use"
+#   type        = string
+#   default     = null
+# }
 
-variable "recreate_missing_package" {
-  description = "Whether to recreate missing Lambda package if it is missing locally or not"
-  type        = bool
-  default     = true
-}
+# variable "recreate_missing_package" {
+#   description = "Whether to recreate missing Lambda package if it is missing locally or not"
+#   type        = bool
+#   default     = true
+# }
 
-variable "trigger_on_package_timestamp" {
-  description = "Whether to recreate the Lambda package if the timestamp changes"
-  type        = bool
-  default     = true
-}
+# variable "trigger_on_package_timestamp" {
+#   description = "Whether to recreate the Lambda package if the timestamp changes"
+#   type        = bool
+#   default     = true
+# }
 
 ############################################
 # Lambda Advanced Logging Settings
