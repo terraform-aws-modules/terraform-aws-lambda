@@ -5,19 +5,19 @@ data "aws_caller_identity" "current" {}
 locals {
   create = var.create && var.putin_khuylo
 
-  archive_filename        = try(data.external.archive_prepare[0].result.filename, null)
-  archive_filename_string = local.archive_filename != null ? local.archive_filename : ""
-  archive_was_missing     = try(data.external.archive_prepare[0].result.was_missing, false)
+  # archive_filename        = try(data.external.archive_prepare[0].result.filename, null)
+  # archive_filename_string = local.archive_filename != null ? local.archive_filename : ""
+  # archive_was_missing     = try(data.external.archive_prepare[0].result.was_missing, false)
 
   # Use a generated filename to determine when the source code has changed.
   # filename - to get package from local
-  filename    = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
-  was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : local.archive_was_missing
+  # filename = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
+  # was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : local.archive_was_missing
 
   # s3_* - to get package from S3
-  s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
-  s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
-  s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
+  # s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
+  # s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
+  # s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 
 }
 
@@ -52,12 +52,12 @@ resource "aws_lambda_function" "this" {
     }
   }
 
-  filename         = local.filename
-  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+  # filename         = local.filename
+  # source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
-  s3_bucket         = local.s3_bucket
-  s3_key            = local.s3_key
-  s3_object_version = local.s3_object_version
+  # s3_bucket         = local.s3_bucket
+  # s3_key            = local.s3_key
+  # s3_object_version = local.s3_object_version
 
   dynamic "image_config" {
     for_each = length(var.image_config_entry_point) > 0 || length(var.image_config_command) > 0 || var.image_config_working_directory != null ? [true] : []
@@ -144,8 +144,8 @@ resource "aws_lambda_function" "this" {
   )
 
   depends_on = [
-    null_resource.archive,
-    aws_s3_object.lambda_package,
+    # null_resource.archive,
+    # aws_s3_object.lambda_package,
 
     # Depending on the log group is necessary to allow Terraform to create the log group before AWS can.
     # When a lambda function is invoked, AWS creates the log group automatically if it doesn't exist yet.
@@ -167,53 +167,53 @@ resource "aws_lambda_function" "this" {
   ]
 }
 
-resource "aws_lambda_layer_version" "this" {
-  count = local.create && var.create_layer ? 1 : 0
+# resource "aws_lambda_layer_version" "this" {
+#   count = local.create && var.create_layer ? 1 : 0
 
-  layer_name   = var.layer_name
-  description  = var.description
-  license_info = var.license_info
+#   layer_name   = var.layer_name
+#   description  = var.description
+#   license_info = var.license_info
 
-  compatible_runtimes      = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : (var.runtime == "" ? null : [var.runtime])
-  compatible_architectures = var.compatible_architectures
-  skip_destroy             = var.layer_skip_destroy
+#   compatible_runtimes      = length(var.compatible_runtimes) > 0 ? var.compatible_runtimes : (var.runtime == "" ? null : [var.runtime])
+#   compatible_architectures = var.compatible_architectures
+#   skip_destroy             = var.layer_skip_destroy
 
-  filename         = local.filename
-  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+#   filename         = local.filename
+#   source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
 
-  s3_bucket         = local.s3_bucket
-  s3_key            = local.s3_key
-  s3_object_version = local.s3_object_version
+#   s3_bucket         = local.s3_bucket
+#   s3_key            = local.s3_key
+#   s3_object_version = local.s3_object_version
 
-  depends_on = [null_resource.archive, aws_s3_object.lambda_package]
-}
+#   depends_on = [null_resource.archive, aws_s3_object.lambda_package]
+# }
 
-resource "aws_s3_object" "lambda_package" {
-  count = local.create && var.store_on_s3 && var.create_package ? 1 : 0
+# resource "aws_s3_object" "lambda_package" {
+#   count = local.create && var.store_on_s3 && var.create_package ? 1 : 0
 
-  bucket        = var.s3_bucket
-  acl           = var.s3_acl
-  key           = local.s3_key
-  source        = data.external.archive_prepare[0].result.filename
-  storage_class = var.s3_object_storage_class
+#   bucket        = var.s3_bucket
+#   acl           = var.s3_acl
+#   key           = local.s3_key
+#   source        = data.external.archive_prepare[0].result.filename
+#   storage_class = var.s3_object_storage_class
 
-  server_side_encryption = var.s3_server_side_encryption
-  kms_key_id             = var.s3_kms_key_id
+#   server_side_encryption = var.s3_server_side_encryption
+#   kms_key_id             = var.s3_kms_key_id
 
-  tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
+#   tags = var.s3_object_tags_only ? var.s3_object_tags : merge(var.tags, var.s3_object_tags)
 
-  dynamic "override_provider" {
-    for_each = var.s3_object_override_default_tags ? [true] : []
+#   dynamic "override_provider" {
+#     for_each = var.s3_object_override_default_tags ? [true] : []
 
-    content {
-      default_tags {
-        tags = {}
-      }
-    }
-  }
+#     content {
+#       default_tags {
+#         tags = {}
+#       }
+#     }
+#   }
 
-  depends_on = [null_resource.archive]
-}
+#   depends_on = [null_resource.archive]
+# }
 
 data "aws_cloudwatch_log_group" "lambda" {
   count = local.create && var.create_function && !var.create_layer && var.use_existing_cloudwatch_log_group ? 1 : 0
@@ -458,55 +458,55 @@ resource "aws_lambda_function_recursion_config" "this" {
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities
 # to the TF application. The required data is where SAM CLI can find the Lambda function source code
 # and what are the resources that contain the building logic.
-resource "null_resource" "sam_metadata_aws_lambda_function" {
-  count = local.create && var.create_sam_metadata && var.create_package && var.create_function && !var.create_layer ? 1 : 0
+# resource "null_resource" "sam_metadata_aws_lambda_function" {
+#   count = local.create && var.create_sam_metadata && var.create_package && var.create_function && !var.create_layer ? 1 : 0
 
-  triggers = {
-    # This is a way to let SAM CLI correlates between the Lambda function resource, and this metadata
-    # resource
-    resource_name = "aws_lambda_function.this[0]"
-    resource_type = "ZIP_LAMBDA_FUNCTION"
+#   triggers = {
+#     # This is a way to let SAM CLI correlates between the Lambda function resource, and this metadata
+#     # resource
+#     resource_name = "aws_lambda_function.this[0]"
+#     resource_type = "ZIP_LAMBDA_FUNCTION"
 
-    # The Lambda function source code.
-    original_source_code = jsonencode(var.source_path)
+#     # The Lambda function source code.
+#     original_source_code = jsonencode(var.source_path)
 
-    # a property to let SAM CLI knows where to find the Lambda function source code if the provided
-    # value for original_source_code attribute is map.
-    source_code_property = "path"
+#     # a property to let SAM CLI knows where to find the Lambda function source code if the provided
+#     # value for original_source_code attribute is map.
+#     source_code_property = "path"
 
-    # A property to let SAM CLI knows where to find the Lambda function built output
-    built_output_path = data.external.archive_prepare[0].result.filename
-  }
+#     # A property to let SAM CLI knows where to find the Lambda function built output
+#     built_output_path = data.external.archive_prepare[0].result.filename
+#   }
 
-  # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
-  # resources as well
-  depends_on = [data.external.archive_prepare, null_resource.archive]
-}
+#   # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
+#   # resources as well
+#   depends_on = [data.external.archive_prepare, null_resource.archive]
+# }
 
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities
 # to the TF application. The required data is where SAM CLI can find the Lambda layer source code
 # and what are the resources that contain the building logic.
-resource "null_resource" "sam_metadata_aws_lambda_layer_version" {
-  count = local.create && var.create_sam_metadata && var.create_package && var.create_layer ? 1 : 0
+# resource "null_resource" "sam_metadata_aws_lambda_layer_version" {
+#   count = local.create && var.create_sam_metadata && var.create_package && var.create_layer ? 1 : 0
 
-  triggers = {
-    # This is a way to let SAM CLI correlates between the Lambda layer resource, and this metadata
-    # resource
-    resource_name = "aws_lambda_layer_version.this[0]"
-    resource_type = "LAMBDA_LAYER"
+#   triggers = {
+#     # This is a way to let SAM CLI correlates between the Lambda layer resource, and this metadata
+#     # resource
+#     resource_name = "aws_lambda_layer_version.this[0]"
+#     resource_type = "LAMBDA_LAYER"
 
-    # The Lambda layer source code.
-    original_source_code = jsonencode(var.source_path)
+#     # The Lambda layer source code.
+#     original_source_code = jsonencode(var.source_path)
 
-    # a property to let SAM CLI knows where to find the Lambda layer source code if the provided
-    # value for original_source_code attribute is map.
-    source_code_property = "path"
+#     # a property to let SAM CLI knows where to find the Lambda layer source code if the provided
+#     # value for original_source_code attribute is map.
+#     source_code_property = "path"
 
-    # A property to let SAM CLI knows where to find the Lambda layer built output
-    built_output_path = data.external.archive_prepare[0].result.filename
-  }
+#     # A property to let SAM CLI knows where to find the Lambda layer built output
+#     built_output_path = data.external.archive_prepare[0].result.filename
+#   }
 
-  # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
-  # resources as well
-  depends_on = [data.external.archive_prepare, null_resource.archive]
-}
+#   # SAM CLI can run terraform apply -target metadata resource, and this will apply the building
+#   # resources as well
+#   depends_on = [data.external.archive_prepare, null_resource.archive]
+# }

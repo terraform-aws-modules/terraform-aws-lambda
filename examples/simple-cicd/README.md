@@ -27,21 +27,15 @@ Note that this example may create resources which cost money. Run `terraform des
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
+No providers.
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
+No modules.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
+No resources.
 
 ## Inputs
 

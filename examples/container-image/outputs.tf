@@ -50,30 +50,30 @@ output "lambda_function_source_code_size" {
 }
 
 # Lambda Layer
-output "lambda_layer_arn" {
-  description = "The ARN of the Lambda Layer with version"
-  value       = module.lambda_function_with_docker_build.lambda_layer_arn
-}
+# output "lambda_layer_arn" {
+#   description = "The ARN of the Lambda Layer with version"
+#   value       = module.lambda_function_with_docker_build.lambda_layer_arn
+# }
 
-output "lambda_layer_layer_arn" {
-  description = "The ARN of the Lambda Layer without version"
-  value       = module.lambda_function_with_docker_build.lambda_layer_layer_arn
-}
+# output "lambda_layer_layer_arn" {
+#   description = "The ARN of the Lambda Layer without version"
+#   value       = module.lambda_function_with_docker_build.lambda_layer_layer_arn
+# }
 
-output "lambda_layer_created_date" {
-  description = "The date Lambda Layer resource was created"
-  value       = module.lambda_function_with_docker_build.lambda_layer_created_date
-}
+# output "lambda_layer_created_date" {
+#   description = "The date Lambda Layer resource was created"
+#   value       = module.lambda_function_with_docker_build.lambda_layer_created_date
+# }
 
-output "lambda_layer_source_code_size" {
-  description = "The size in bytes of the Lambda Layer .zip file"
-  value       = module.lambda_function_with_docker_build.lambda_layer_source_code_size
-}
+# output "lambda_layer_source_code_size" {
+#   description = "The size in bytes of the Lambda Layer .zip file"
+#   value       = module.lambda_function_with_docker_build.lambda_layer_source_code_size
+# }
 
-output "lambda_layer_version" {
-  description = "The Lambda Layer version"
-  value       = module.lambda_function_with_docker_build.lambda_layer_version
-}
+# output "lambda_layer_version" {
+#   description = "The Lambda Layer version"
+#   value       = module.lambda_function_with_docker_build.lambda_layer_version
+# }
 
 # IAM Role
 output "lambda_role_arn" {

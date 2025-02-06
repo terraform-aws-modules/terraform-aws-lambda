@@ -38,7 +38,7 @@ module "lambda_function_with_docker_build" {
   function_name = "${random_pet.this.id}-lambda-with-docker-build"
   description   = "My awesome lambda function with container image by modules/docker-build"
 
-  create_package = false
+  # create_package = false
 
   ##################
   # Container Image
@@ -55,7 +55,7 @@ module "lambda_function_with_docker_build_from_ecr" {
   function_name = "${random_pet.this.id}-lambda-with-docker-build-from-ecr"
   description   = "My awesome lambda function with container image by modules/docker-build and ECR repository created by terraform-aws-ecr module"
 
-  create_package = false
+  # create_package = false
 
   ##################
   # Container Image
