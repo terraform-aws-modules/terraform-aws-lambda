@@ -1,0 +1,19 @@
+name: " trp caller workflow "
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+      - sandbox
+  workflow_dispatch:
+  
+jobs:
+          
+  Validate-TRP-Job:
+    uses: Eaton-Vance-Corp/SRE-Utilities/.github/workflows/trp.yml@master
+    with:
+      call-repo: ${{github.event.repository.name}}
+
+    secrets: inherit
