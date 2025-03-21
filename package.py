@@ -1060,6 +1060,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
     artifacts_dir = query.artifacts_dir
     docker = query.docker
     temp_dir = query.temp_dir
+    pip_additional_options = query.pip_additional_options
     docker_image_tag_id = None
 
     if docker:
@@ -1125,7 +1126,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 "--prefix=",
                 "--target=.",
                 "--requirement={}".format(requirements_filename),
-            ]
+            ] + pip_additional_options
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
                 pip_cache_dir = docker.docker_pip_cache

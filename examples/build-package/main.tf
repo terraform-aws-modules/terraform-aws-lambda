@@ -165,6 +165,24 @@ module "package_file_with_pip_requirements" {
 
 # Create zip-archive which contains:
 # 1. A single file - index.py
+# 2. Run "pip install" with specified requirements.txt with additional options CLI --only-binary=:all: --platform manylinux2014_x86_64
+module "package_file_with_pip_requirements_and_pip_additional_options" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.12"
+  pip_additional_options = ["-only-binary=:all:", "--platform", "manylinux2014_x86_64"]
+  source_path = [
+    "${path.module}/../fixtures/python-app1/index.py",
+    {
+      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
+    }
+  ]
+}
+
+# Create zip-archive which contains:
+# 1. A single file - index.py
 # 2. Content of directory "dir2"
 # 3. Install pip requirements
 # "pip install" is running in a Docker container for the specified runtime
