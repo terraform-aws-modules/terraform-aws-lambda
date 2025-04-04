@@ -86,6 +86,8 @@ EOF
 
 }
 
+data "aws_partition" "current" {}
+
 data "aws_lambda_alias" "this" {
   count = var.create && var.create_deployment ? 1 : 0
 
@@ -209,7 +211,7 @@ resource "aws_iam_role_policy_attachment" "codedeploy" {
   count = var.create && var.create_codedeploy_role ? 1 : 0
 
   role       = try(aws_iam_role.codedeploy[0].id, "")
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
 }
 
 data "aws_iam_policy_document" "hooks" {
