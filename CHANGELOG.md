@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.20.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.1...v7.20.2) (2025-04-09)
+
+
+### Bug Fixes
+
+* Add aws_partition to support usage of this module in aws-cn and gov ([64433c0](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/64433c096e690b767a8b106b67383edfe8263ba7))
+
 ## [7.20.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.0...v7.20.1) (2025-01-26)
 
 
