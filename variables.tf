@@ -806,6 +806,12 @@ variable "trigger_on_package_timestamp" {
   default     = true
 }
 
+variable "pip_additional_options" {
+  description = "Additional options to pass to the pip install command (e.g. to platform, etc.)"
+  type        = list(string)
+  default     = []
+}
+
 ############################################
 # Lambda Advanced Logging Settings
 ############################################

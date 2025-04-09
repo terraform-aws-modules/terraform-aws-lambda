@@ -40,6 +40,8 @@ data "external" "archive_prepare" {
     )
 
     recreate_missing_package = var.recreate_missing_package
+
+    pip_additional_options = jsonencode(var.pip_additional_options)
   }
 }
 
