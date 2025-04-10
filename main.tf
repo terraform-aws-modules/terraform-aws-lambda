@@ -19,6 +19,7 @@ locals {
   s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, replace(local.archive_filename_string, "/^.*//", "")) : replace(local.archive_filename_string, "/^\\.//", "") : null)
   s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 
+  log_group = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
 }
 
 resource "aws_lambda_function" "this" {
@@ -115,12 +116,12 @@ resource "aws_lambda_function" "this" {
   }
 
   dynamic "logging_config" {
-    # Dont create logging config on gov cloud as it is not avaible.
+    # Dont create logging config on gov cloud as it is not available.
     # See https://github.com/hashicorp/terraform-provider-aws/issues/34810
     for_each = data.aws_partition.current.partition == "aws" ? [true] : []
 
     content {
-      log_group             = var.logging_log_group
+      log_group             = local.log_group
       log_format            = var.logging_log_format
       application_log_level = var.logging_log_format == "Text" ? null : var.logging_application_log_level
       system_log_level      = var.logging_log_format == "Text" ? null : var.logging_system_log_level
@@ -218,13 +219,13 @@ resource "aws_s3_object" "lambda_package" {
 data "aws_cloudwatch_log_group" "lambda" {
   count = local.create && var.create_function && !var.create_layer && var.use_existing_cloudwatch_log_group ? 1 : 0
 
-  name = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
+  name = local.log_group
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {
   count = local.create && var.create_function && !var.create_layer && !var.use_existing_cloudwatch_log_group ? 1 : 0
 
-  name              = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
+  name              = local.log_group
   retention_in_days = var.cloudwatch_logs_retention_in_days
   kms_key_id        = var.cloudwatch_logs_kms_key_id
   skip_destroy      = var.cloudwatch_logs_skip_destroy
