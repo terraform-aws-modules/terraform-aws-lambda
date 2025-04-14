@@ -224,6 +224,12 @@ variable "image_uri" {
   default     = null
 }
 
+variable "ignore_image_uri" {
+  description = "Whether to ignore changes to the function's image URI. Set to true if you manage infrastructure and code deployments separately."
+  type        = bool
+  default     = false
+}
+
 variable "image_config_entry_point" {
   description = "The ENTRYPOINT for the docker image"
   type        = list(string)
