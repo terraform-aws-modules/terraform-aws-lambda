@@ -7,6 +7,15 @@ locals {
   ecr_repo       = var.create_ecr_repo ? aws_ecr_repository.this[0].id : var.ecr_repo
   image_tag      = var.use_image_tag ? coalesce(var.image_tag, formatdate("YYYYMMDDhhmmss", timestamp())) : null
   ecr_image_name = var.use_image_tag ? format("%v/%v:%v", local.ecr_address, local.ecr_repo, local.image_tag) : format("%v/%v", local.ecr_address, local.ecr_repo)
+
+  previous_image_from_ecr = try(data.external.latest_ecr_image[0].result.image_uri, "")
+
+  previous_image_list = (
+  var.use_cache_from_previous_image && local.previous_image_from_ecr != ""
+  ) ? [local.previous_image_from_ecr] : []
+
+  cache_from_effective = concat(var.cache_from, local.previous_image_list)
+
 }
 
 resource "docker_image" "this" {
@@ -17,7 +26,7 @@ resource "docker_image" "this" {
     dockerfile = var.docker_file_path
     build_args = var.build_args
     platform   = var.platform
-    cache_from = var.cache_from
+    cache_from = local.cache_from_effective
   }
 
   force_remove = var.force_remove
@@ -31,6 +40,17 @@ resource "docker_registry_image" "this" {
   keep_remotely = var.keep_remotely
 
   triggers = length(var.triggers) == 0 ? { image_id = docker_image.this.image_id } : var.triggers
+}
+
+data "external" "latest_ecr_image" {
+  count = var.use_cache_from_previous_image ? 1 : 0
+
+  program = ["bash", "${path.module}/scripts/get-latest-ecr-image.sh"]
+
+  query = {
+    repository = var.ecr_repo
+    region     = data.aws_region.current.name
+  }
 }
 
 resource "aws_ecr_repository" "this" {

@@ -118,3 +118,10 @@ variable "cache_from" {
   type        = list(string)
   default     = []
 }
+
+variable "use_cache_from_previous_image" {
+  description = "If true, use the most recently pushed image in ECR as Docker cache source (cache_from). Requires an existing ECR repo."
+  type        = bool
+  default     = false
+}
+

@@ -129,6 +129,7 @@ module "docker_build_from_ecr" {
   }
 
   cache_from = ["${module.ecr.repository_url}:latest"]
+  use_cache_from_previous_image = true
 }
 
 module "ecr" {
