@@ -11,7 +11,7 @@ locals {
   previous_image_from_ecr = try(data.external.latest_ecr_image[0].result.image_uri, "")
 
   previous_image_list = (
-  var.use_cache_from_previous_image && local.previous_image_from_ecr != ""
+    var.use_cache_from_previous_image && local.previous_image_from_ecr != ""
   ) ? [local.previous_image_from_ecr] : []
 
   cache_from_effective = concat(var.cache_from, local.previous_image_list)

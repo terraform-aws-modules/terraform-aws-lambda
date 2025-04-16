@@ -124,4 +124,3 @@ variable "use_cache_from_previous_image" {
   type        = bool
   default     = false
 }
-

@@ -4,7 +4,6 @@ module "wrapper" {
   for_each = var.items
 
   build_args                    = try(each.value.build_args, var.defaults.build_args, {})
-  use_cache_from_previous_image = try(each.value.use_cache_from_previous_image, var.defaults.use_cache_from_previous_image, false)
   cache_from                    = try(each.value.cache_from, var.defaults.cache_from, [])
   create_ecr_repo               = try(each.value.create_ecr_repo, var.defaults.create_ecr_repo, false)
   create_sam_metadata           = try(each.value.create_sam_metadata, var.defaults.create_sam_metadata, false)
@@ -23,5 +22,6 @@ module "wrapper" {
   scan_on_push                  = try(each.value.scan_on_push, var.defaults.scan_on_push, false)
   source_path                   = try(each.value.source_path, var.defaults.source_path, null)
   triggers                      = try(each.value.triggers, var.defaults.triggers, {})
+  use_cache_from_previous_image = try(each.value.use_cache_from_previous_image, var.defaults.use_cache_from_previous_image, false)
   use_image_tag                 = try(each.value.use_image_tag, var.defaults.use_image_tag, true)
 }

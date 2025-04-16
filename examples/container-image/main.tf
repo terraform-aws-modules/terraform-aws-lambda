@@ -128,7 +128,7 @@ module "docker_build_from_ecr" {
     dir_sha = local.dir_sha
   }
 
-  cache_from = ["${module.ecr.repository_url}:latest"]
+  cache_from                    = ["${module.ecr.repository_url}:latest"]
   use_cache_from_previous_image = true
 }
 
