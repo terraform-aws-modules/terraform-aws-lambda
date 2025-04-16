@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Lecture de l'entrée JSON
 read -r INPUT
 REPO=$(echo "$INPUT" | jq -r '.repository // empty')
 REGION=$(echo "$INPUT" | jq -r '.region // empty')
