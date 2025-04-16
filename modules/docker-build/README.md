@@ -60,6 +60,7 @@ module "docker_image" {
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.22 |
 | <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 3.0 |
+| <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.3 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
 
 ## Providers
@@ -68,6 +69,7 @@ module "docker_image" {
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.22 |
 | <a name="provider_docker"></a> [docker](#provider\_docker) | >= 3.0 |
+| <a name="provider_external"></a> [external](#provider\_external) | >= 2.3 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
 
 ## Modules
@@ -85,6 +87,7 @@ No modules.
 | [null_resource.sam_metadata_docker_registry_image](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_caller_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+| [external_external.latest_ecr_image](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
 
 ## Inputs
 
@@ -109,6 +112,7 @@ No modules.
 | <a name="input_scan_on_push"></a> [scan\_on\_push](#input\_scan\_on\_push) | Indicates whether images are scanned after being pushed to the repository | `bool` | `false` | no |
 | <a name="input_source_path"></a> [source\_path](#input\_source\_path) | Path to folder containing application code | `string` | `null` | no |
 | <a name="input_triggers"></a> [triggers](#input\_triggers) | A map of arbitrary strings that, when changed, will force the docker\_image resource to be replaced. This can be used to rebuild an image when contents of source code folders change | `map(string)` | `{}` | no |
+| <a name="input_use_cache_from_previous_image"></a> [use\_cache\_from\_previous\_image](#input\_use\_cache\_from\_previous\_image) | If true, use the most recently pushed image in ECR as Docker cache source (cache\_from). Requires an existing ECR repo. | `bool` | `false` | no |
 | <a name="input_use_image_tag"></a> [use\_image\_tag](#input\_use\_image\_tag) | Controls whether to use image tag in ECR repository URI or not. Disable this to deploy latest image using ID (sha256:...) | `bool` | `true` | no |
 
 ## Outputs
