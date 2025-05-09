@@ -71,10 +71,22 @@ variable "ecr_repo_tags" {
   default     = {}
 }
 
+variable "builder" {
+  description = "The buildx builder to use for the Docker build."
+  type        = string
+  default     = null
+}
+
 variable "build_args" {
   description = "A map of Docker build arguments."
   type        = map(string)
   default     = {}
+}
+
+variable "build_target" {
+  description = "Set the target build stage to build"
+  type        = string
+  default     = null
 }
 
 variable "ecr_repo_lifecycle_policy" {
