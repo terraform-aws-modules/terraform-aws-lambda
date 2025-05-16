@@ -49,7 +49,7 @@ data "external" "archive_prepare" {
 resource "local_file" "archive_plan" {
   count = var.create && var.create_package ? 1 : 0
 
-  content              = data.external.archive_prepare[0].result.build_plan
+  content              = var.build_in_docker ? sensitive(data.external.archive_prepare[0].result.build_plan) : data.external.archive_prepare[0].result.build_plan
   filename             = data.external.archive_prepare[0].result.build_plan_filename
   directory_permission = "0755"
   file_permission      = "0644"
