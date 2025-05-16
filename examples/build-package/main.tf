@@ -41,6 +41,8 @@ module "package_dir_pip_dir" {
     pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
   }]
   artifacts_dir = "${path.root}/builds/package_dir_pip_dir/"
+
+  quiet_archive_local_exec = true
 }
 
 # Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (using docker)
@@ -82,6 +84,8 @@ module "package_src_poetry" {
     }
   ]
   artifacts_dir = "${path.root}/builds/package_src_poetry/"
+
+  quiet_archive_local_exec = true
 }
 
 # Create zip-archive of a src directory where "poetry export" & "pip install --no-deps" will also be executed (using docker)
@@ -255,7 +259,7 @@ module "npm_package_with_commands_and_patterns" {
   runtime = "nodejs18.x"
   source_path = [
     {
-      path = "${path.module}/../fixtures/node-app"
+      path = "${path.module}/../fixtures/nodejs14.x-app1"
       commands = [
         "[ ! -d node_modules ] || mv node_modules node_modules_temp",
         "npm install --production",

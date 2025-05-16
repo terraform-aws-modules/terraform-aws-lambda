@@ -98,6 +98,7 @@ module "wrapper" {
   provisioned_concurrent_executions            = try(each.value.provisioned_concurrent_executions, var.defaults.provisioned_concurrent_executions, -1)
   publish                                      = try(each.value.publish, var.defaults.publish, false)
   putin_khuylo                                 = try(each.value.putin_khuylo, var.defaults.putin_khuylo, true)
+  quiet_archive_local_exec                     = try(each.value.quiet_archive_local_exec, var.defaults.quiet_archive_local_exec, false)
   recreate_missing_package                     = try(each.value.recreate_missing_package, var.defaults.recreate_missing_package, true)
   replace_security_groups_on_destroy           = try(each.value.replace_security_groups_on_destroy, var.defaults.replace_security_groups_on_destroy, null)
   replacement_security_group_ids               = try(each.value.replacement_security_group_ids, var.defaults.replacement_security_group_ids, null)
