@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.20.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.1...v7.20.2) (2025-04-09)
+
+
+### Bug Fixes
+
+* Add aws_partition to support usage of this module in aws-cn and gov ([64433c0](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/64433c096e690b767a8b106b67383edfe8263ba7))
+
+## [7.20.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.0...v7.20.1) (2025-01-26)
+
+
+### Bug Fixes
+
+* Make default tag `terraform-aws-modules` optional ([#657](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/657)) ([685af53](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/685af5370e580a89cee68aeae06bb40dc3257892))
+
+## [7.20.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.19.0...v7.20.0) (2025-01-08)
+
+
+### Features
+
+* Use inline instead of managed policies ([#615](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/615)) ([394d337](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/394d337450d88aa877ec560cd49080bb8b9a45ba))
+
+## [7.19.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.18.0...v7.19.0) (2025-01-08)
+
+
+### Features
+
+* Add `cache_from` option in the docker-build module ([#641](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/641)) ([55cdaa6](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/55cdaa68a63413f4ae5724c8b3a09a6b10d72f12))
+
+## [7.18.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.17.1...v7.18.0) (2025-01-08)
+
+
+### Features
+
+* Allow temp dir for poetry docker builds ([#638](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/638)) ([65ffea2](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/65ffea2cfd99a27b6be3fc3e48482cf0fb821f2f))
+
+## [7.17.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.17.0...v7.17.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* Rename npm_package_json to npm_requirements ([#621](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/621)) ([4bc61eb](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/4bc61eb58005e149dc1ca87ba79f42b0cba944fd))
+
+## [7.17.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.16.0...v7.17.0) (2024-12-08)
+
+
+### Features
+
+* Support Event Source Mapping `metrics_config`, `provisioned_poller_config`, and Lambda Recursion Loop ([#649](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/649)) ([002d7ec](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/002d7ec3c9bc3e7a44fac536c3443ba640ff9828))
+
+## [7.16.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.15.0...v7.16.0) (2024-11-26)
+
+
+### Features
+
+* Radically redesign the build plan form ([#646](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/646)) ([32d8d06](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/32d8d060a660b0ec5702403da1b970118f62a314))
+
+## [7.15.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.14.1...v7.15.0) (2024-11-18)
+
+
+### Features
+
+* Make `source_path` blocks independent ([#640](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/640)) ([0fdac2e](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/0fdac2ec54fdcd5fd34787f348803000c1e21eb6))
+
+## [7.14.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.14.0...v7.14.1) (2024-11-17)
+
+
+### Bug Fixes
+
+* Skip broken symlinks on hash computing ([#639](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/639)) ([c28b940](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/c28b940c8b8a8ea8b423728e05883942f5eaf661))
+
 ## [7.14.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.13.0...v7.14.0) (2024-10-11)
 
 

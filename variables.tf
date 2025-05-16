@@ -188,6 +188,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "include_default_tag" {
+  description = "Set to false to not include the default tag in the tags map."
+  type        = bool
+  default     = true
+}
+
 variable "function_tags" {
   description = "A map of tags to assign only to the lambda function"
   type        = map(string)
@@ -578,6 +584,8 @@ variable "attach_policies" {
   default     = false
 }
 
+# TODO: DEPRECATED: Remove this variable in the next major version
+# tflint-ignore: all
 variable "policy_path" {
   description = "Path of policies to that should be added to IAM role for Lambda Function"
   type        = string
@@ -828,6 +836,16 @@ variable "logging_system_log_level" {
 
 variable "logging_log_group" {
   description = "The CloudWatch log group to send logs to."
+  type        = string
+  default     = null
+}
+
+############################################
+# Lambda Recursive Loop Settings
+############################################
+
+variable "recursive_loop" {
+  description = "Lambda function recursion configuration. Valid values are Allow or Terminate."
   type        = string
   default     = null
 }

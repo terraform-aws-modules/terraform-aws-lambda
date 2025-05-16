@@ -138,7 +138,7 @@ resource "aws_lambda_function" "this" {
   }
 
   tags = merge(
-    { terraform-aws-modules = "lambda" },
+    var.include_default_tag ? { terraform-aws-modules = "lambda" } : {},
     var.tags,
     var.function_tags
   )
@@ -154,16 +154,16 @@ resource "aws_lambda_function" "this" {
     aws_cloudwatch_log_group.lambda,
 
     # Before the lambda is created the execution role with all its policies should be ready
-    aws_iam_role_policy_attachment.additional_inline,
-    aws_iam_role_policy_attachment.additional_json,
-    aws_iam_role_policy_attachment.additional_jsons,
+    aws_iam_role_policy.additional_inline,
+    aws_iam_role_policy.additional_json,
+    aws_iam_role_policy.additional_jsons,
+    aws_iam_role_policy.async,
+    aws_iam_role_policy.dead_letter,
+    aws_iam_role_policy.logs,
+    aws_iam_role_policy.tracing,
+    aws_iam_role_policy.vpc,
     aws_iam_role_policy_attachment.additional_many,
     aws_iam_role_policy_attachment.additional_one,
-    aws_iam_role_policy_attachment.async,
-    aws_iam_role_policy_attachment.logs,
-    aws_iam_role_policy_attachment.dead_letter,
-    aws_iam_role_policy_attachment.vpc,
-    aws_iam_role_policy_attachment.tracing,
   ]
 }
 
@@ -405,6 +405,22 @@ resource "aws_lambda_event_source_mapping" "this" {
     }
   }
 
+  dynamic "metrics_config" {
+    for_each = try([each.value.metrics_config], [])
+
+    content {
+      metrics = metrics_config.value.metrics
+    }
+  }
+
+  dynamic "provisioned_poller_config" {
+    for_each = try([each.value.provisioned_poller_config], [])
+    content {
+      maximum_pollers = try(provisioned_poller_config.value.maximum_pollers, null)
+      minimum_pollers = try(provisioned_poller_config.value.minimum_pollers, null)
+    }
+  }
+
   tags = merge(var.tags, try(each.value.tags, {}))
 }
 
@@ -430,6 +446,13 @@ resource "aws_lambda_function_url" "this" {
       max_age           = try(cors.value.max_age, null)
     }
   }
+}
+
+resource "aws_lambda_function_recursion_config" "this" {
+  count = local.create && var.create_function && !var.create_layer && var.recursive_loop == "Allow" ? 1 : 0
+
+  function_name  = aws_lambda_function.this[0].function_name
+  recursive_loop = var.recursive_loop
 }
 
 # This resource contains the extra information required by SAM CLI to provide the testing capabilities

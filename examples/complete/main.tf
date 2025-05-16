@@ -26,6 +26,7 @@ module "lambda_function" {
   ephemeral_storage_size = 10240
   architectures          = ["x86_64"]
   publish                = true
+  # recursive_loop       = "Allow"
 
   source_path = "${path.module}/../fixtures/python-app1"
 
@@ -53,8 +54,7 @@ module "lambda_function" {
 
   cloudwatch_logs_log_group_class = "INFREQUENT_ACCESS"
 
-  role_path   = "/tf-managed/"
-  policy_path = "/tf-managed/"
+  role_path = "/tf-managed/"
 
   attach_dead_letter_policy = true
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
