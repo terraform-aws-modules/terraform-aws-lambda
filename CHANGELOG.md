@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.21.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.3...v7.21.0) (2025-05-16)
+
+
+### Features
+
+* Add buildx and multi-stage build support to docker-build module ([#679](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/679)) ([29893ab](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/29893ab17086b6ec45955f1f5d2f1be4f7cf2285))
+
 ## [7.20.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.2...v7.20.3) (2025-05-16)
 
 
