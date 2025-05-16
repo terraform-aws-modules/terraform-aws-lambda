@@ -94,7 +94,7 @@ module "docker_build" {
   # image_tag   = "2.0"
 
   source_path = local.source_path
-  platform    = "linux/amd64"
+  platform    = "linux/arm64" # "linux/amd64"
   build_args = {
     FOO = "bar"
   }
