@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.20.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.2...v7.20.3) (2025-05-16)
+
+
+### Bug Fixes
+
+* Do not expose output from build command in Docker ([#677](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/677)) ([75ee97d](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/75ee97d184231a45bdb8d8398ecccb6f2558d0a5))
+
 ## [7.20.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.1...v7.20.2) (2025-04-09)
 
 
