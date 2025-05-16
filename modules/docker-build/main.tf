@@ -16,6 +16,8 @@ resource "docker_image" "this" {
     context    = var.source_path
     dockerfile = var.docker_file_path
     build_args = var.build_args
+    builder    = var.builder
+    target     = var.build_target
     platform   = var.platform
     cache_from = var.cache_from
   }
