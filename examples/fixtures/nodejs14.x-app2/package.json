@@ -1,0 +1,8 @@
+{
+  "name": "nodejs14.x-app1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "requests": "^0.2.0"
+  }
+}
