@@ -45,6 +45,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_dir_poetry"></a> [package\_dir\_poetry](#module\_package\_dir\_poetry) | ../../ | n/a |
 | <a name="module_package_dir_poetry_no_docker"></a> [package\_dir\_poetry\_no\_docker](#module\_package\_dir\_poetry\_no\_docker) | ../../ | n/a |
 | <a name="module_package_dir_with_npm_install"></a> [package\_dir\_with\_npm\_install](#module\_package\_dir\_with\_npm\_install) | ../../ | n/a |
+| <a name="module_package_dir_with_npm_install_lock_file"></a> [package\_dir\_with\_npm\_install\_lock\_file](#module\_package\_dir\_with\_npm\_install\_lock\_file) | ../../ | n/a |
 | <a name="module_package_dir_without_npm_install"></a> [package\_dir\_without\_npm\_install](#module\_package\_dir\_without\_npm\_install) | ../../ | n/a |
 | <a name="module_package_dir_without_pip_install"></a> [package\_dir\_without\_pip\_install](#module\_package\_dir\_without\_pip\_install) | ../../ | n/a |
 | <a name="module_package_file"></a> [package\_file](#module\_package\_file) | ../../ | n/a |
@@ -53,6 +54,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_src_poetry2"></a> [package\_src\_poetry2](#module\_package\_src\_poetry2) | ../../ | n/a |
 | <a name="module_package_with_commands_and_patterns"></a> [package\_with\_commands\_and\_patterns](#module\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
 | <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ | n/a |
+| <a name="module_package_with_npm_lock_in_docker"></a> [package\_with\_npm\_lock\_in\_docker](#module\_package\_with\_npm\_lock\_in\_docker) | ../../ | n/a |
 | <a name="module_package_with_npm_requirements_in_docker"></a> [package\_with\_npm\_requirements\_in\_docker](#module\_package\_with\_npm\_requirements\_in\_docker) | ../../ | n/a |
 | <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
 | <a name="module_package_with_pip_requirements_in_docker"></a> [package\_with\_pip\_requirements\_in\_docker](#module\_package\_with\_pip\_requirements\_in\_docker) | ../../ | n/a |

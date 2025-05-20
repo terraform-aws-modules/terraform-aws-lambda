@@ -365,6 +365,18 @@ module "package_dir_with_npm_install" {
   source_path = "${path.module}/../fixtures/nodejs14.x-app1"
 }
 
+# Create zip-archive of a single directory where "npm install" will also be
+# executed (default for nodejs runtime). This example has package-lock.json which
+# is respected when installing dependencies.
+module "package_dir_with_npm_install_lock_file" {
+  source = "../../"
+
+  create_function = false
+
+  runtime     = "nodejs14.x"
+  source_path = "${path.module}/../fixtures/nodejs14.x-app2"
+}
+
 # Create zip-archive of a single directory without running "npm install" (which is the default for nodejs runtime)
 module "package_dir_without_npm_install" {
   source = "../../"
@@ -389,6 +401,20 @@ module "package_with_npm_requirements_in_docker" {
 
   runtime         = "nodejs14.x"
   source_path     = "${path.module}/../fixtures/nodejs14.x-app1"
+  build_in_docker = true
+  hash_extra      = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
+}
+
+# Create zip-archive of a single directory where "npm install" will also be
+# executed using docker. This example has package-lock.json which is respected
+# when installing dependencies.
+module "package_with_npm_lock_in_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime         = "nodejs14.x"
+  source_path     = "${path.module}/../fixtures/nodejs14.x-app2"
   build_in_docker = true
   hash_extra      = "something-unique-to-not-conflict-with-module.package_dir_with_npm_install"
 }
