@@ -1088,7 +1088,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
-                "docker_image must be specified " "for a custom image future references"
+                "docker_image must be specified for a custom image future references"
             )
 
     working_dir = os.getcwd()
@@ -1108,7 +1108,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
             elif OSX:
                 # Workaround for OSX when XCode command line tools'
                 # python becomes the main system python interpreter
-                os_path = "{}:/Library/Developer/CommandLineTools" "/usr/bin".format(
+                os_path = "{}:/Library/Developer/CommandLineTools/usr/bin".format(
                     os.environ["PATH"]
                 )
                 subproc_env = os.environ.copy()
@@ -1390,7 +1390,7 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
-                "docker_image must be specified " "for a custom image future references"
+                "docker_image must be specified for a custom image future references"
             )
 
     log.info("Installing npm requirements: %s", requirements_file)
@@ -1649,7 +1649,7 @@ def prepare_command(args):
             timestamp = timestamp_now_ns()
             was_missing = True
     else:
-        timestamp = "<WARNING: Missing lambda zip artifacts " "wouldn't be restored>"
+        timestamp = "<WARNING: Missing lambda zip artifacts wouldn't be restored>"
 
     # Replace variables in the build command with calculated values.
     build_data = {
