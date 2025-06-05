@@ -1123,7 +1123,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 "install",
                 "--no-compile",
                 "--prefix=",
-                "--target=.",
+                "--target=python/.",
                 "--requirement={}".format(requirements_filename),
             ]
             if docker:
