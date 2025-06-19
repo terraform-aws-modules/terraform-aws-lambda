@@ -1,6 +1,6 @@
 # Runtimes Examples
 
-Configuration in this directory creates deployment packages for [various runtimes and programming languages (Rust, Go, Java)](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html).
+Configuration in this directory creates deployment packages for [various runtimes and programming languages (Rust, Go, Java, .NET)](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html).
 
 Each runtime is executable by calling created Lambda Functions at the end.
 
@@ -40,6 +40,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_dotnet8_lambda_function"></a> [dotnet8\_lambda\_function](#module\_dotnet8\_lambda\_function) | ../../ | n/a |
 | <a name="module_go_lambda_function"></a> [go\_lambda\_function](#module\_go\_lambda\_function) | ../../ | n/a |
 | <a name="module_java21_lambda_function"></a> [java21\_lambda\_function](#module\_java21\_lambda\_function) | ../../ | n/a |
 | <a name="module_rust_lambda_function"></a> [rust\_lambda\_function](#module\_rust\_lambda\_function) | ../../ | n/a |
@@ -60,6 +61,7 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_dotnet8_lambda_function_url"></a> [dotnet8\_lambda\_function\_url](#output\_dotnet8\_lambda\_function\_url) | The URL of the Lambda Function in .NET 8 |
 | <a name="output_go_lambda_function_url"></a> [go\_lambda\_function\_url](#output\_go\_lambda\_function\_url) | The URL of the Lambda Function in Go |
 | <a name="output_java21_lambda_function_arn"></a> [java21\_lambda\_function\_arn](#output\_java21\_lambda\_function\_arn) | The ARN of the Lambda Function in Java 21 |
 | <a name="output_lambda_function_result"></a> [lambda\_function\_result](#output\_lambda\_function\_result) | The results of the Lambda Function calls |
