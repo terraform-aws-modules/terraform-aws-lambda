@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.21.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.21.0...v7.21.1) (2025-06-19)
+
+
+### Bug Fixes
+
+* Add .NET 8 runtime example ([#685](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/685)) ([d5c657c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/d5c657c96234b1ee352af418243690c297f3f3b2))
+
 ## [7.21.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.20.3...v7.21.0) (2025-05-16)
 
 
