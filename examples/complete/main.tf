@@ -352,6 +352,8 @@ module "lambda_function_for_each" {
 
   for_each = toset(["dev", "staging", "prod"])
 
+  region = "us-east-1"
+
   function_name = "my-${each.value}"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
@@ -459,7 +461,7 @@ resource "random_pet" "this" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
+  version = "~> 5.0"
 
   bucket_prefix = "${random_pet.this.id}-"
   force_destroy = true

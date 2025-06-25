@@ -24,6 +24,8 @@ locals {
 resource "aws_lambda_function" "this" {
   count = local.create && var.create_function && !var.create_layer ? 1 : 0
 
+  region = var.region
+
   function_name                      = var.function_name
   description                        = var.description
   role                               = var.create_role ? aws_iam_role.lambda[0].arn : var.lambda_role
@@ -170,6 +172,8 @@ resource "aws_lambda_function" "this" {
 resource "aws_lambda_layer_version" "this" {
   count = local.create && var.create_layer ? 1 : 0
 
+  region = var.region
+
   layer_name   = var.layer_name
   description  = var.description
   license_info = var.license_info
@@ -190,6 +194,8 @@ resource "aws_lambda_layer_version" "this" {
 
 resource "aws_s3_object" "lambda_package" {
   count = local.create && var.store_on_s3 && var.create_package ? 1 : 0
+
+  region = var.region
 
   bucket        = var.s3_bucket
   acl           = var.s3_acl
@@ -218,11 +224,15 @@ resource "aws_s3_object" "lambda_package" {
 data "aws_cloudwatch_log_group" "lambda" {
   count = local.create && var.create_function && !var.create_layer && var.use_existing_cloudwatch_log_group ? 1 : 0
 
+  region = var.region
+
   name = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {
   count = local.create && var.create_function && !var.create_layer && !var.use_existing_cloudwatch_log_group ? 1 : 0
+
+  region = var.region
 
   name              = coalesce(var.logging_log_group, "/aws/lambda/${var.lambda_at_edge ? "us-east-1." : ""}${var.function_name}")
   retention_in_days = var.cloudwatch_logs_retention_in_days
@@ -236,6 +246,8 @@ resource "aws_cloudwatch_log_group" "lambda" {
 resource "aws_lambda_provisioned_concurrency_config" "current_version" {
   count = local.create && var.create_function && !var.create_layer && var.provisioned_concurrent_executions > -1 ? 1 : 0
 
+  region = var.region
+
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
 
@@ -248,6 +260,8 @@ locals {
 
 resource "aws_lambda_function_event_invoke_config" "this" {
   for_each = { for k, v in local.qualifiers : k => v if v != null && local.create && var.create_function && !var.create_layer && var.create_async_event_config }
+
+  region = var.region
 
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = each.key == "current_version" ? aws_lambda_function.this[0].version : null
@@ -278,6 +292,8 @@ resource "aws_lambda_function_event_invoke_config" "this" {
 resource "aws_lambda_permission" "current_version_triggers" {
   for_each = { for k, v in var.allowed_triggers : k => v if local.create && var.create_function && !var.create_layer && var.create_current_version_allowed_triggers }
 
+  region = var.region
+
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
 
@@ -299,6 +315,8 @@ resource "aws_lambda_permission" "current_version_triggers" {
 resource "aws_lambda_permission" "unqualified_alias_triggers" {
   for_each = { for k, v in var.allowed_triggers : k => v if local.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
 
+  region = var.region
+
   function_name = aws_lambda_function.this[0].function_name
 
   statement_id_prefix    = try(each.value.statement_id, each.key)
@@ -317,6 +335,8 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 
 resource "aws_lambda_event_source_mapping" "this" {
   for_each = { for k, v in var.event_source_mapping : k => v if local.create && var.create_function && !var.create_layer && var.create_unqualified_alias_allowed_triggers }
+
+  region = var.region
 
   function_name = aws_lambda_function.this[0].arn
 
@@ -427,6 +447,8 @@ resource "aws_lambda_event_source_mapping" "this" {
 resource "aws_lambda_function_url" "this" {
   count = local.create && var.create_function && !var.create_layer && var.create_lambda_function_url ? 1 : 0
 
+  region = var.region
+
   function_name = aws_lambda_function.this[0].function_name
 
   # Error: error creating Lambda Function URL: ValidationException
@@ -450,6 +472,8 @@ resource "aws_lambda_function_url" "this" {
 
 resource "aws_lambda_function_recursion_config" "this" {
   count = local.create && var.create_function && !var.create_layer && var.recursive_loop == "Allow" ? 1 : 0
+
+  region = var.region
 
   function_name  = aws_lambda_function.this[0].function_name
   recursive_loop = var.recursive_loop

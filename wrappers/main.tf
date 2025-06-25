@@ -101,6 +101,7 @@ module "wrapper" {
   putin_khuylo                                 = try(each.value.putin_khuylo, var.defaults.putin_khuylo, true)
   recreate_missing_package                     = try(each.value.recreate_missing_package, var.defaults.recreate_missing_package, true)
   recursive_loop                               = try(each.value.recursive_loop, var.defaults.recursive_loop, null)
+  region                                       = try(each.value.region, var.defaults.region, null)
   replace_security_groups_on_destroy           = try(each.value.replace_security_groups_on_destroy, var.defaults.replace_security_groups_on_destroy, null)
   replacement_security_group_ids               = try(each.value.replacement_security_group_ids, var.defaults.replacement_security_group_ids, null)
   reserved_concurrent_executions               = try(each.value.reserved_concurrent_executions, var.defaults.reserved_concurrent_executions, -1)
