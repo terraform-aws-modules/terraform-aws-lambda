@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.21.1...v8.0.0) (2025-06-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade AWS provider and min required Terraform version to 6.0 and 1.10 respectively (#687)
+
+### Features
+
+* Upgrade AWS provider and min required Terraform version to 6.0 and 1.10 respectively ([#687](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/687)) ([367e9a2](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/367e9a2c5c7e6a4335fcc7c13c14e54f8e347f9c))
+
 ## [7.21.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.21.0...v7.21.1) (2025-06-19)
 
 
