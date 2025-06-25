@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.0.0...v8.0.1) (2025-06-25)
+
+
+### Bug Fixes
+
+* Lower minimum Terraform version to 1.5.7 ([#688](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/688)) ([ab60651](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/ab606514be095d7ad55ebd920069cb090fa39cd5))
+
 ## [8.0.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v7.21.1...v8.0.0) (2025-06-25)
 
 
