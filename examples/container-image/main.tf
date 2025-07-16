@@ -26,7 +26,7 @@ provider "aws" {
 
 provider "docker" {
   registry_auth {
-    address  = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.this.account_id, data.aws_region.current.name)
+    address  = format("%v.dkr.ecr.%v.amazonaws.com", data.aws_caller_identity.this.account_id, data.aws_region.current.region)
     username = data.aws_ecr_authorization_token.token.user_name
     password = data.aws_ecr_authorization_token.token.password
   }
@@ -123,6 +123,35 @@ module "docker_build_from_ecr" {
   build_args = {
     FOO = "bar"
   }
+  # Can also use buildx
+  builder          = "default"
+  docker_file_path = "${local.source_path}/Dockerfile"
+
+  triggers = {
+    dir_sha = local.dir_sha
+  }
+
+  cache_from = ["${module.ecr.repository_url}:latest"]
+}
+
+module "docker_build_multistage" {
+  source = "../../modules/docker-build"
+
+  ecr_repo = module.ecr.repository_name
+
+  use_image_tag = true
+  image_tag     = "first_stage"
+
+  source_path = local.source_path
+  platform    = "linux/amd64"
+  build_args = {
+    FOO = "bar"
+  }
+  builder          = "default"
+  docker_file_path = "${local.source_path}/Dockerfile"
+
+  # multi-stage builds
+  build_target = "first_stage"
 
   triggers = {
     dir_sha = local.dir_sha

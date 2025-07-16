@@ -13,6 +13,11 @@ output "java21_lambda_function_arn" {
   value       = module.java21_lambda_function.lambda_function_arn
 }
 
+output "dotnet8_lambda_function_url" {
+  description = "The URL of the Lambda Function in .NET 8"
+  value       = module.dotnet8_lambda_function.lambda_function_url
+}
+
 output "lambda_function_result" {
   description = "The results of the Lambda Function calls"
   value       = { for k, v in data.aws_lambda_invocation.this : k => jsondecode(v.result) }
