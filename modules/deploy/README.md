@@ -22,7 +22,7 @@ module "lambda_function" {
 
   function_name = "my-lambda1"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   source_path = "../src/lambda-function1"
 }
@@ -95,13 +95,13 @@ module "lambda" {
 * [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Creates Lambda Function, Alias, and all resources required to create deployments using AWS CodeDeploy.
 
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
 
@@ -109,7 +109,7 @@ module "lambda" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.35 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
 
@@ -137,6 +137,7 @@ No modules.
 | [aws_iam_role.codedeploy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_role) | data source |
 | [aws_lambda_alias.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_alias) | data source |
 | [aws_lambda_function.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_function) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
 ## Inputs
 
@@ -151,10 +152,10 @@ No modules.
 | <a name="input_attach_hooks_policy"></a> [attach\_hooks\_policy](#input\_attach\_hooks\_policy) | Whether to attach Invoke policy to CodeDeploy role when before allow traffic or after allow traffic hooks are defined. | `bool` | `true` | no |
 | <a name="input_attach_triggers_policy"></a> [attach\_triggers\_policy](#input\_attach\_triggers\_policy) | Whether to attach SNS policy to CodeDeploy role when triggers are defined | `bool` | `false` | no |
 | <a name="input_auto_rollback_enabled"></a> [auto\_rollback\_enabled](#input\_auto\_rollback\_enabled) | Indicates whether a defined automatic rollback configuration is currently enabled for this Deployment Group. | `bool` | `true` | no |
-| <a name="input_auto_rollback_events"></a> [auto\_rollback\_events](#input\_auto\_rollback\_events) | List of event types that trigger a rollback. Supported types are DEPLOYMENT\_FAILURE and DEPLOYMENT\_STOP\_ON\_ALARM. | `list(string)` | <pre>[<br>  "DEPLOYMENT_STOP_ON_ALARM"<br>]</pre> | no |
+| <a name="input_auto_rollback_events"></a> [auto\_rollback\_events](#input\_auto\_rollback\_events) | List of event types that trigger a rollback. Supported types are DEPLOYMENT\_FAILURE and DEPLOYMENT\_STOP\_ON\_ALARM. | `list(string)` | <pre>[<br/>  "DEPLOYMENT_STOP_ON_ALARM"<br/>]</pre> | no |
 | <a name="input_aws_cli_command"></a> [aws\_cli\_command](#input\_aws\_cli\_command) | Command to run as AWS CLI. May include extra arguments like region and profile. | `string` | `"aws"` | no |
 | <a name="input_before_allow_traffic_hook_arn"></a> [before\_allow\_traffic\_hook\_arn](#input\_before\_allow\_traffic\_hook\_arn) | ARN of Lambda function to execute before allow traffic during deployment. This function should be named CodeDeployHook\_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role | `string` | `""` | no |
-| <a name="input_codedeploy_principals"></a> [codedeploy\_principals](#input\_codedeploy\_principals) | List of CodeDeploy service principals to allow. The list can include global or regional endpoints. | `list(string)` | <pre>[<br>  "codedeploy.amazonaws.com"<br>]</pre> | no |
+| <a name="input_codedeploy_principals"></a> [codedeploy\_principals](#input\_codedeploy\_principals) | List of CodeDeploy service principals to allow. The list can include global or regional endpoints. | `list(string)` | <pre>[<br/>  "codedeploy.amazonaws.com"<br/>]</pre> | no |
 | <a name="input_codedeploy_role_name"></a> [codedeploy\_role\_name](#input\_codedeploy\_role\_name) | IAM role name to create or use by CodeDeploy | `string` | `""` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls whether resources should be created | `bool` | `true` | no |
 | <a name="input_create_app"></a> [create\_app](#input\_create\_app) | Whether to create new AWS CodeDeploy app | `bool` | `false` | no |
@@ -168,7 +169,7 @@ No modules.
 | <a name="input_force_deploy"></a> [force\_deploy](#input\_force\_deploy) | Force deployment every time (even when nothing changes) | `bool` | `false` | no |
 | <a name="input_function_name"></a> [function\_name](#input\_function\_name) | The name of the Lambda function to deploy | `string` | `""` | no |
 | <a name="input_get_deployment_sleep_timer"></a> [get\_deployment\_sleep\_timer](#input\_get\_deployment\_sleep\_timer) | Adds additional sleep time to get-deployment command to avoid the service throttling | `number` | `5` | no |
-| <a name="input_interpreter"></a> [interpreter](#input\_interpreter) | List of interpreter arguments used to execute deploy script, first arg is path | `list(string)` | <pre>[<br>  "/bin/bash",<br>  "-c"<br>]</pre> | no |
+| <a name="input_interpreter"></a> [interpreter](#input\_interpreter) | List of interpreter arguments used to execute deploy script, first arg is path | `list(string)` | <pre>[<br/>  "/bin/bash",<br/>  "-c"<br/>]</pre> | no |
 | <a name="input_run_deployment"></a> [run\_deployment](#input\_run\_deployment) | Run AWS CLI command to start the deployment | `bool` | `false` | no |
 | <a name="input_save_deploy_script"></a> [save\_deploy\_script](#input\_save\_deploy\_script) | Save deploy script locally | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to resources. | `map(string)` | `{}` | no |
@@ -191,7 +192,7 @@ No modules.
 | <a name="output_codedeploy_iam_role_name"></a> [codedeploy\_iam\_role\_name](#output\_codedeploy\_iam\_role\_name) | Name of IAM role used by CodeDeploy |
 | <a name="output_deploy_script"></a> [deploy\_script](#output\_deploy\_script) | Path to a deployment script |
 | <a name="output_script"></a> [script](#output\_script) | Deployment script |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## Authors
 

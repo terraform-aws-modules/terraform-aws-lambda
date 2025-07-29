@@ -6,7 +6,7 @@ output "lambda_function_arn" {
 
 output "lambda_function_arn_static" {
   description = "The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions)"
-  value       = local.create && var.create_function && !var.create_layer ? "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:${var.function_name}" : ""
+  value       = local.create && var.create_function && !var.create_layer ? "arn:${data.aws_partition.current.partition}:lambda:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:function:${var.function_name}" : ""
 }
 
 output "lambda_function_invoke_arn" {
@@ -102,6 +102,11 @@ output "lambda_layer_version" {
 }
 
 # Lambda Event Source Mapping
+output "lambda_event_source_mapping_arn" {
+  description = "The event source mapping ARN"
+  value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.arn }
+}
+
 output "lambda_event_source_mapping_function_arn" {
   description = "The the ARN of the Lambda function the event source mapping is sending events to"
   value       = { for k, v in aws_lambda_event_source_mapping.this : k => v.function_arn }

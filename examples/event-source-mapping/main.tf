@@ -26,9 +26,9 @@ module "lambda_function" {
 
   function_name = "${random_pet.this.id}-lambda-event-source-mapping"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1/index.py"
+  source_path = "${path.module}/../fixtures/python-app1/index.py"
 
   event_source_mapping = {
     sqs = {
@@ -36,6 +36,9 @@ module "lambda_function" {
       function_response_types = ["ReportBatchItemFailures"]
       scaling_config = {
         maximum_concurrency = 20
+      }
+      metrics_config = {
+        metrics = ["EventCount"]
       }
     }
     dynamodb = {
@@ -83,6 +86,7 @@ module "lambda_function" {
           uri  = "/"
         }
       ]
+      tags = { mapping = "amq" }
     }
     #    self_managed_kafka = {
     #      batch_size        = 1
@@ -179,6 +183,10 @@ module "lambda_function" {
     "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole",
     "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole",
   ]
+
+  tags = {
+    example = "event-source-mapping"
+  }
 }
 
 ##################
@@ -247,7 +255,7 @@ module "vpc" {
 resource "aws_mq_broker" "this" {
   broker_name        = random_pet.this.id
   engine_type        = "RabbitMQ"
-  engine_version     = "3.10.10"
+  engine_version     = "3.12.13"
   host_instance_type = "mq.t3.micro"
   security_groups    = [module.vpc.default_security_group_id]
   subnet_ids         = slice(module.vpc.public_subnets, 0, 1)

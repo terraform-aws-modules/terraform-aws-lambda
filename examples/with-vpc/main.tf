@@ -17,9 +17,9 @@ module "lambda_function_in_vpc" {
   function_name = "${random_pet.this.id}-lambda-in-vpc"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
 
   vpc_subnet_ids                     = module.vpc.intra_subnets
   vpc_security_group_ids             = [module.vpc.default_security_group_id]

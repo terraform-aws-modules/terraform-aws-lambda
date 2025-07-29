@@ -22,8 +22,8 @@ module "package_dir" {
   create_function = false
 
   build_in_docker = true
-  runtime         = "python3.8"
-  source_path     = "${path.module}/../fixtures/python3.8-app1"
+  runtime         = "python3.12"
+  source_path     = "${path.module}/../fixtures/python-app1"
   artifacts_dir   = "${path.root}/builds/package_dir/"
 }
 
@@ -34,11 +34,11 @@ module "package_dir_pip_dir" {
   create_function = false
 
   build_in_docker = true
-  runtime         = "python3.8"
+  runtime         = "python3.12"
   source_path = [{
-    path             = "${path.module}/../fixtures/python3.8-app1"
+    path             = "${path.module}/../fixtures/python-app1"
     pip_tmp_dir      = "${path.cwd}/../fixtures"
-    pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+    pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
   }]
   artifacts_dir = "${path.root}/builds/package_dir_pip_dir/"
 }
@@ -50,17 +50,56 @@ module "package_dir_poetry" {
   create_function = false
 
   build_in_docker = true
-  runtime         = "python3.9"
-  docker_image    = "build-python3.9-poetry"
-  docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
+  runtime         = "python3.12"
+  docker_image    = "build-python-poetry"
+  docker_file     = "${path.module}/../fixtures/python-app-poetry/docker/Dockerfile"
 
   source_path = [
     {
-      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      path           = "${path.module}/../fixtures/python-app-poetry"
       poetry_install = true
     }
   ]
   artifacts_dir = "${path.root}/builds/package_dir_poetry/"
+}
+
+# Create zip-archive of a src directory where "poetry export" & "pip install --no-deps" will also be executed (using docker)
+module "package_src_poetry" {
+  source = "../../"
+
+  create_function = false
+
+  build_in_docker = true
+  runtime         = "python3.12"
+  docker_image    = "build-python-poetry"
+  docker_file     = "${path.module}/../fixtures/python-app-src-poetry/docker/Dockerfile"
+
+  source_path = [
+    "${path.module}/../fixtures/python-app-src-poetry/src",
+    {
+      path           = "${path.module}/../fixtures/python-app-src-poetry/pyproject.toml"
+      poetry_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_src_poetry/"
+}
+
+# Create zip-archive of a src directory where "poetry export" & "pip install --no-deps" will also be executed (using docker)
+module "package_src_poetry2" {
+  source = "../../"
+
+  create_function = false
+
+  build_in_docker = true
+  runtime         = "python3.12"
+  docker_image    = "build-python-poetry"
+  docker_file     = "${path.module}/../fixtures/python-app-src-poetry/docker/Dockerfile"
+
+  source_path = [
+    "${path.module}/../fixtures/python-app-src-poetry/src",
+    "${path.module}/../fixtures/python-app-src-poetry/pyproject.toml"
+  ]
+  artifacts_dir = "${path.root}/builds/package_src_poetry2/"
 }
 
 # Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (not using docker)
@@ -69,11 +108,11 @@ module "package_dir_poetry_no_docker" {
 
   create_function = false
 
-  runtime = "python3.9"
+  runtime = "python3.12"
 
   source_path = [
     {
-      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      path           = "${path.module}/../fixtures/python-app-poetry"
       poetry_install = true
     }
   ]
@@ -86,10 +125,10 @@ module "package_dir_without_pip_install" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
     {
-      path             = "${path.module}/../fixtures/python3.8-app1"
+      path             = "${path.module}/../fixtures/python-app1"
       pip_requirements = false
       # pip_requirements = true  # Will run "pip install" with default requirements.txt
     }
@@ -102,8 +141,8 @@ module "package_file" {
 
   create_function = false
 
-  runtime     = "python3.8"
-  source_path = "${path.module}/../fixtures/python3.8-app1/index.py"
+  runtime     = "python3.12"
+  source_path = "${path.module}/../fixtures/python-app1/index.py"
 }
 
 # Create zip-archive which contains:
@@ -114,11 +153,11 @@ module "package_file_with_pip_requirements" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
-    "${path.module}/../fixtures/python3.8-app1/index.py",
+    "${path.module}/../fixtures/python-app1/index.py",
     {
-      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
       prefix_in_zip    = "vendor"
     }
   ]
@@ -134,12 +173,12 @@ module "package_with_pip_requirements_in_docker" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
-    "${path.module}/../fixtures/python3.8-app1/index.py",
-    "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
+    "${path.module}/../fixtures/python-app1/index.py",
+    "${path.module}/../fixtures/python-app1/dir1/dir2",
     {
-      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
     }
   ]
 
@@ -157,12 +196,12 @@ module "package_with_pip_requirements_in_docker_overriding_entrypoint" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
-    "${path.module}/../fixtures/python3.8-app1/index.py",
-    "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
+    "${path.module}/../fixtures/python-app1/index.py",
+    "${path.module}/../fixtures/python-app1/dir1/dir2",
     {
-      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
     }
   ]
   hash_extra = "package_with_pip_requirements_in_docker_overriding_entrypoint"
@@ -170,7 +209,7 @@ module "package_with_pip_requirements_in_docker_overriding_entrypoint" {
   build_in_docker = true
   docker_additional_options = [
     "-e", "MY_ENV_VAR='My environment variable value'",
-    "-v", "${abspath(path.module)}/../fixtures/python3.8-app1/docker/entrypoint.sh:/entrypoint/entrypoint.sh:ro",
+    "-v", "${abspath(path.module)}/../fixtures/python-app1/docker/entrypoint.sh:/entrypoint/entrypoint.sh:ro",
   ]
   docker_entrypoint = "/entrypoint/entrypoint.sh"
 }
@@ -186,14 +225,14 @@ module "package_with_commands_and_patterns" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
     {
-      path = "${path.module}/../fixtures/python3.8-app1"
+      path = "${path.module}/../fixtures/python-app1"
       commands = [
         ":zip",
         "cd `mktemp -d`",
-        "pip install --target=. -r ${abspath(path.module)}/../fixtures/python3.8-app1/requirements.txt",
+        "pip install --target=. -r ${abspath(path.module)}/../fixtures/python-app1/requirements.txt",
         ":zip . vendor/",
       ]
       patterns = [
@@ -205,6 +244,31 @@ module "package_with_commands_and_patterns" {
   ]
 }
 
+# Some use cases might require the production packages are deployed while maintaining local node_modules folder
+# This example saves the node_modules folder by moving it to an ignored directory
+# After the zip file is created with production node_modules, the dev node_modules folder is restored
+module "npm_package_with_commands_and_patterns" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "nodejs18.x"
+  source_path = [
+    {
+      path = "${path.module}/../fixtures/node-app"
+      commands = [
+        "[ ! -d node_modules ] || mv node_modules node_modules_temp",
+        "npm install --production",
+        ":zip",
+        "rm -rf node_modules",
+        "[ ! -d node_modules_temp ] || mv node_modules_temp node_modules",
+      ]
+      patterns = [
+        "!node_modules_temp/.*"
+      ]
+    }
+  ]
+}
 # Create zip-archive with various sources and patterns.
 # Note, that it is possible to write comments in patterns.
 module "package_with_patterns" {
@@ -212,14 +276,14 @@ module "package_with_patterns" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
     {
-      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
     },
-    "${path.module}/../fixtures/python3.8-app1/index.py",
+    "${path.module}/../fixtures/python-app1/index.py",
     {
-      path     = "${path.module}/../fixtures/python3.8-app1/index.py"
+      path     = "${path.module}/../fixtures/python-app1/index.py"
       patterns = <<END
             # To use comments in heredoc patterns set the env var:
             # export TF_LAMBDA_PACKAGE_PATTERN_COMMENTS=true
@@ -273,12 +337,12 @@ module "package_with_docker" {
 
   create_function = false
 
-  runtime = "python3.8"
+  runtime = "python3.12"
   source_path = [
-    "${path.module}/../fixtures/python3.8-app1/index.py",
-    "${path.module}/../fixtures/python3.8-app1/dir1/dir2",
+    "${path.module}/../fixtures/python-app1/index.py",
+    "${path.module}/../fixtures/python-app1/dir1/dir2",
     {
-      pip_requirements = "${path.module}/../fixtures/python3.8-app1/requirements.txt"
+      pip_requirements = "${path.module}/../fixtures/python-app1/requirements.txt"
     }
   ]
   hash_extra = "something-unique-to-not-conflict-with-module.package_with_pip_requirements_in_docker"
@@ -286,9 +350,9 @@ module "package_with_docker" {
   build_in_docker       = true
   docker_pip_cache      = true
   docker_with_ssh_agent = true
-  #  docker_file           = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
-  docker_build_root = "${path.module}/../fixtures/python3.8-app1/docker"
-  docker_image      = "public.ecr.aws/sam/build-python3.8:latest"
+  #  docker_file           = "${path.module}/../fixtures/python-app1/docker/Dockerfile"
+  docker_build_root = "${path.module}/../fixtures/python-app1/docker"
+  docker_image      = "public.ecr.aws/sam/build-python3.12:latest"
 }
 
 # Create zip-archive of a single directory where "npm install" will also be executed (default for nodejs runtime)
@@ -339,15 +403,15 @@ module "lambda_layer" {
 
   create_layer        = true
   layer_name          = "${random_pet.this.id}-layer-dockerfile"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
   hash_extra  = "extra-hash-to-prevent-conflicts-with-module.package_dir"
 
   build_in_docker = true
-  runtime         = "python3.8"
-  docker_image    = "public.ecr.aws/sam/build-python3.8:latest"
-  docker_file     = "${path.module}/../fixtures/python3.8-app1/docker/Dockerfile"
+  runtime         = "python3.12"
+  docker_image    = "public.ecr.aws/sam/build-python3.12:latest"
+  docker_file     = "${path.module}/../fixtures/python-app1/docker/Dockerfile"
   artifacts_dir   = "${path.root}/builds/lambda_layer/"
 }
 
@@ -356,20 +420,21 @@ module "lambda_layer_poetry" {
 
   create_layer        = true
   layer_name          = "${random_pet.this.id}-layer-poetry-dockerfile"
-  compatible_runtimes = ["python3.9"]
+  compatible_runtimes = ["python3.12"]
 
   source_path = [
     {
-      path           = "${path.module}/../fixtures/python3.9-app-poetry"
+      path           = "${path.module}/../fixtures/python-app-poetry"
       poetry_install = true
+      poetry_tmp_dir = "${path.cwd}/../fixtures"
     }
   ]
   hash_extra = "extra-hash-to-prevent-conflicts-with-module.package_dir"
 
   build_in_docker = true
-  runtime         = "python3.9"
-  docker_image    = "build-python3.9-poetry"
-  docker_file     = "${path.module}/../fixtures/python3.9-app-poetry/docker/Dockerfile"
+  runtime         = "python3.12"
+  docker_image    = "build-python-poetry"
+  docker_file     = "${path.module}/../fixtures/python-app-poetry/docker/Dockerfile"
   artifacts_dir   = "${path.root}/builds/lambda_layer_poetry/"
 }
 
@@ -385,7 +450,7 @@ module "lambda_function_from_package" {
 
   function_name = "${random_pet.this.id}-function-packaged"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   layers = [
     module.lambda_layer.lambda_layer_arn
@@ -402,12 +467,12 @@ module "lambda_layer_pip_requirements" {
   create_layer    = true
 
   layer_name          = "${random_pet.this.id}-layer-pip-requirements"
-  compatible_runtimes = ["python3.8"]
-  runtime             = "python3.8" # required to force layers to do pip install
+  compatible_runtimes = ["python3.12"]
+  runtime             = "python3.12" # required to force layers to do pip install
 
   source_path = [
     {
-      path             = "${path.module}/../fixtures/python3.8-app1"
+      path             = "${path.module}/../fixtures/python-app1"
       pip_requirements = true
       prefix_in_zip    = "python" # required to get the path correct
     }

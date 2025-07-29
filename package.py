@@ -29,8 +29,8 @@ PY38 = sys.version_info >= (3, 8)
 PY37 = sys.version_info >= (3, 7)
 PY36 = sys.version_info >= (3, 6)
 
-WINDOWS = platform.system() == 'Windows'
-OSX = platform.system() == 'Darwin'
+WINDOWS = platform.system() == "Windows"
+OSX = platform.system() == "Darwin"
 
 ################################################################################
 # Logging
@@ -41,29 +41,29 @@ DUMP_ENV = 1
 
 log_handler = None
 log = logging.getLogger()
-cmd_log = logging.getLogger('cmd')
+cmd_log = logging.getLogger("cmd")
 
 
 def configure_logging(use_tf_stderr=False):
     global log_handler
 
-    logging.addLevelName(DEBUG2, 'DEBUG2')
-    logging.addLevelName(DEBUG3, 'DEBUG3')
-    logging.addLevelName(DUMP_ENV, 'DUMP_ENV')
+    logging.addLevelName(DEBUG2, "DEBUG2")
+    logging.addLevelName(DEBUG3, "DEBUG3")
+    logging.addLevelName(DUMP_ENV, "DUMP_ENV")
 
     class LogFormatter(logging.Formatter):
-        default_format = '%(message)s'
+        default_format = "%(message)s"
         formats = {
-            'root': default_format,
-            'build': default_format,
-            'prepare': '[{}] %(name)s: %(message)s'.format(os.getpid()),
-            'cmd': '> %(message)s',
-            '': '%(name)s: %(message)s'
+            "root": default_format,
+            "build": default_format,
+            "prepare": "[{}] %(name)s: %(message)s".format(os.getpid()),
+            "cmd": "> %(message)s",
+            "": "%(name)s: %(message)s",
         }
 
         def formatMessage(self, record):
-            prefix = record.name.rsplit('.')
-            self._style._fmt = self.formats.get(prefix[0], self.formats[''])
+            prefix = record.name.rsplit(".")
+            self._style._fmt = self.formats.get(prefix[0], self.formats[""])
             return super().formatMessage(record)
 
     tf_stderr_fd = 5
@@ -71,7 +71,7 @@ def configure_logging(use_tf_stderr=False):
     if use_tf_stderr:
         try:
             if os.isatty(tf_stderr_fd):
-                log_stream = os.fdopen(tf_stderr_fd, mode='w')
+                log_stream = os.fdopen(tf_stderr_fd, mode="w")
         except OSError:
             pass
 
@@ -84,19 +84,21 @@ def configure_logging(use_tf_stderr=False):
 
 def dump_env():
     if log.isEnabledFor(DUMP_ENV):
-        log.debug('ENV: %s', json.dumps(dict(os.environ), indent=2))
+        log.debug("ENV: %s", json.dumps(dict(os.environ), indent=2))
 
 
 ################################################################################
 # Backports
 
+
 def shlex_join(split_command):
     """Return a shell-escaped string from *split_command*."""
-    return ' '.join(shlex.quote(arg) for arg in split_command)
+    return " ".join(shlex.quote(arg) for arg in split_command)
 
 
 ################################################################################
 # Common functions
+
 
 def abort(message):
     """Exits with an error message."""
@@ -109,7 +111,7 @@ def cd(path, silent=False):
     """Changes the working directory."""
     cwd = os.getcwd()
     if not silent:
-        cmd_log.info('cd %s', shlex.quote(path))
+        cmd_log.info("cd %s", shlex.quote(path))
     try:
         os.chdir(path)
         yield
@@ -120,13 +122,14 @@ def cd(path, silent=False):
 @contextmanager
 def tempdir(dir=None):
     """Creates a temporary directory and then deletes it afterwards."""
-    prefix = 'terraform-aws-lambda-'
+    prefix = "terraform-aws-lambda-"
     path = tempfile.mkdtemp(prefix=prefix, dir=dir)
-    cmd_log.info('mktemp -d %sXXXXXXXX # %s', prefix, shlex.quote(path))
+    abs_path = os.path.abspath(path)
+    cmd_log.info("mktemp -d %sXXXXXXXX # %s", prefix, shlex.quote(abs_path))
     try:
-        yield path
+        yield abs_path
     finally:
-        shutil.rmtree(path)
+        shutil.rmtree(abs_path)
 
 
 def list_files(top_path, log=None):
@@ -135,7 +138,7 @@ def list_files(top_path, log=None):
     """
 
     if log:
-        log = log.getChild('ls')
+        log = log.getChild("ls")
 
     results = []
 
@@ -155,10 +158,14 @@ def list_files(top_path, log=None):
 
 
 def dataclass(name):
-    typ = type(name, (dict,), {
-        '__getattr__': lambda self, x: self.get(x),
-        '__init__': lambda self, **k: self.update(k),
-    })
+    typ = type(
+        name,
+        (dict,),
+        {
+            "__getattr__": lambda self, x: self.get(x),
+            "__init__": lambda self, **k: self.update(k),
+        },
+    )
     return typ
 
 
@@ -174,14 +181,19 @@ def datatree(name, **fields):
                 pass
         return v
 
-    return dataclass(name)(**dict(((
-        k, datatree(k, **v) if isinstance(v, dict) else decode_json(k, v))
-        for k, v in fields.items())))
+    return dataclass(name)(
+        **dict(
+            (
+                (k, datatree(k, **v) if isinstance(v, dict) else decode_json(k, v))
+                for k, v in fields.items()
+            )
+        )
+    )
 
 
 def timestamp_now_ns():
     timestamp = datetime.datetime.now().timestamp()
-    timestamp = int(timestamp * 10 ** 7) * 10 ** 2
+    timestamp = int(timestamp * 10**7) * 10**2
     return timestamp
 
 
@@ -200,9 +212,9 @@ def yesno_bool(val):
         if val.isnumeric():
             return bool(int(val))
         val = val.lower()
-        if val in ('true', 'yes', 'y'):
+        if val in ("true", "yes", "y"):
             return True
-        elif val in ('false', 'no', 'n'):
+        elif val in ("false", "no", "n"):
             return False
         else:
             raise ValueError("Unsupported value: %s" % val)
@@ -211,6 +223,7 @@ def yesno_bool(val):
 
 ################################################################################
 # Packaging functions
+
 
 def emit_dir_content(base_dir):
     for root, dirs, files in os.walk(base_dir, followlinks=True):
@@ -223,14 +236,13 @@ def emit_dir_content(base_dir):
             yield os.path.normpath(os.path.join(root, name))
 
 
-def generate_content_hash(source_paths,
-                          hash_func=hashlib.sha256, log=None):
+def generate_content_hash(source_paths, hash_func=hashlib.sha256, log=None):
     """
     Generate a content hash of the source paths.
     """
 
     if log:
-        log = log.getChild('hash')
+        log = log.getChild("hash")
 
     hash_obj = hash_func()
 
@@ -260,48 +272,55 @@ def update_hash(hash_obj, file_root, file_path):
     relative_path = os.path.join(file_root, file_path)
     hash_obj.update(relative_path.encode())
 
-    with open(relative_path, 'rb') as open_file:
-        while True:
-            data = open_file.read(1024 * 8)
-            if not data:
-                break
-            hash_obj.update(data)
+    try:
+        with open(relative_path, "rb") as open_file:
+            while True:
+                data = open_file.read(1024 * 8)
+                if not data:
+                    break
+                hash_obj.update(data)
+    # ignore broken symlinks content to don't fail on `terraform destroy` command
+    except FileNotFoundError:
+        pass
 
 
 class ZipWriteStream:
     """"""
 
-    def __init__(self, zip_filename,
-                 compress_type=zipfile.ZIP_DEFLATED,
-                 compresslevel=None,
-                 timestamp=None):
-
+    def __init__(
+        self,
+        zip_filename,
+        compress_type=zipfile.ZIP_DEFLATED,
+        compresslevel=None,
+        timestamp=None,
+    ):
         self.timestamp = timestamp
         self.filename = zip_filename
 
         if not (self.filename and isinstance(self.filename, str)):
-            raise ValueError('Zip file path must be provided')
+            raise ValueError("Zip file path must be provided")
 
         self._tmp_filename = None
         self._compress_type = compress_type
         self._compresslevel = compresslevel
         self._zip = None
 
-        self._log = logging.getLogger('zip')
+        self._log = logging.getLogger("zip")
 
     def open(self):
         if self._tmp_filename:
             raise zipfile.BadZipFile("ZipStream object can't be reused")
         self._ensure_base_path(self.filename)
-        self._tmp_filename = '{}.tmp'.format(self.filename)
+        self._tmp_filename = "{}.tmp".format(self.filename)
         self._log.info("creating '%s' archive", self.filename)
-        self._zip = zipfile.ZipFile(self._tmp_filename, "w",
-                                    self._compress_type)
+        self._zip = zipfile.ZipFile(self._tmp_filename, "w", self._compress_type)
         return self
 
     def close(self, failed=False):
         self._zip.close()
         self._zip = None
+        if not os.path.exists(self._tmp_filename):
+            return
         if failed:
             os.unlink(self._tmp_filename)
         else:
@@ -322,7 +341,7 @@ class ZipWriteStream:
             return True
         if self._tmp_filename:
             raise zipfile.BadZipFile("ZipWriteStream object can't be reused")
-        raise zipfile.BadZipFile('ZipWriteStream should be opened first')
+        raise zipfile.BadZipFile("ZipWriteStream should be opened first")
 
     def _ensure_base_path(self, zip_filename):
         archive_dir = os.path.dirname(zip_filename)
@@ -381,15 +400,13 @@ class ZipWriteStream:
         self._ensure_open()
         raise NotImplementedError
 
-    def _write_zinfo(self, zinfo, filename,
-                     compress_type=None, compresslevel=None):
+    def _write_zinfo(self, zinfo, filename, compress_type=None, compresslevel=None):
         self._ensure_open()
 
         zip = self._zip
 
         if not zip.fp:
-            raise ValueError(
-                "Attempt to write to ZIP archive that was already closed")
+            raise ValueError("Attempt to write to ZIP archive that was already closed")
         if zip._writing:
             raise ValueError(
                 "Can't write to ZIP archive while an open writing handle exists"
@@ -427,7 +444,7 @@ class ZipWriteStream:
                 zip.fp.write(zinfo.FileHeader(False))
                 zip.start_dir = zip.fp.tell()
         else:
-            with open(filename, "rb") as src, zip.open(zinfo, 'w') as dest:
+            with open(filename, "rb") as src, zip.open(zinfo, "w") as dest:
                 shutil.copyfileobj(src, dest, 1024 * 8)
 
     def _make_zinfo_from_file(self, filename, arcname=None):
@@ -438,8 +455,7 @@ class ZipWriteStream:
             zinfo_func = self._zinfo_from_file
             strict_timestamps = True
 
-        return zinfo_func(filename, arcname,
-                          strict_timestamps=strict_timestamps)
+        return zinfo_func(filename, arcname, strict_timestamps=strict_timestamps)
 
     @staticmethod
     def _update_zinfo(zinfo, date_time):
@@ -474,7 +490,7 @@ class ZipWriteStream:
         while arcname[0] in (os.sep, os.altsep):
             arcname = arcname[1:]
         if isdir:
-            arcname += '/'
+            arcname += "/"
         zinfo = zipfile.ZipInfo(arcname, date_time)
         zinfo.external_attr = (st.st_mode & 0xFFFF) << 16  # Unix attributes
         if isdir:
@@ -494,7 +510,7 @@ class ZipWriteStream:
                 return min_zip_ts
             deg = len(str(int(s))) - 9
             if deg < 0:
-                ts = ts * 10 ** deg
+                ts = ts * 10**deg
             return ts
 
         date_time = None
@@ -510,23 +526,26 @@ class ZipWriteStream:
             date_time = datetime.datetime.fromtimestamp(timestamp).timetuple()
             date_time = date_time[:6]
             if date_time[0] < 1980:
-                raise ValueError('ZIP does not support timestamps before 1980')
+                raise ValueError("ZIP does not support timestamps before 1980")
         return date_time
 
 
 ################################################################################
 # Building
 
+
 def patterns_list(args, patterns):
     _filter = str.strip
     if args.pattern_comments:
+
         def _filter(x):
             x = x.strip()
             p = re.search("^(.*?)[ \t]*(?:[ \t]{2}#.*)?$", x).group(1).rstrip()
-            if p.startswith('#'):
+            if p.startswith("#"):
                 return
             if p:
                 return p
+
     if isinstance(patterns, str):
         return list(filter(None, map(_filter, patterns.splitlines())))
     return patterns
@@ -539,19 +558,23 @@ class ZipContentFilter:
         self._args = args
         self._rules = None
         self._excludes = set()
-        self._log = logging.getLogger('zip')
+        self._log = logging.getLogger("zip")
 
     def compile(self, patterns):
         rules = []
         for p in patterns_list(self._args, patterns):
             self._log.debug("filter pattern: %s", p)
-            if p.startswith('!'):
+            if p.startswith("!"):
                 r = re.compile(p[1:])
                 rules.append((operator.not_, r))
             else:
                 r = re.compile(p)
                 rules.append((None, r))
         self._rules = rules
+
+    def reset(self):
+        self._log.debug("reset filter patterns")
+        self._rules = None
 
     def filter(self, path, prefix=None):
         path = os.path.normpath(path)
@@ -586,13 +609,13 @@ class ZipContentFilter:
             if apply(dpath):
                 yield opath
             else:
-                self._log.debug('skip:   %s', dpath)
+                self._log.debug("skip:   %s", dpath)
 
         def emit_file(fpath, opath):
             if apply(fpath):
                 yield opath
             else:
-                self._log.debug('skip:   %s', fpath)
+                self._log.debug("skip:   %s", fpath)
 
         if os.path.isfile(path):
             name = os.path.basename(path)
@@ -638,7 +661,7 @@ class BuildPlanManager:
 
     def hash(self, extra_paths):
         if not self._source_paths:
-            raise ValueError('BuildPlanManager.plan() should be called first')
+            raise ValueError("BuildPlanManager.plan() should be called first")
 
         content_hash_paths = self._source_paths + extra_paths
 
@@ -646,8 +669,7 @@ class BuildPlanManager:
         # runtime value, build command, and content of the build paths
         # because they can have an effect on the resulting archive.
         self._log.debug("Computing content hash on files...")
-        content_hash = generate_content_hash(content_hash_paths,
-                                             log=self._log)
+        content_hash = generate_content_hash(content_hash_paths, log=self._log)
         return content_hash
 
     def plan(self, source_path, query):
@@ -657,43 +679,52 @@ class BuildPlanManager:
 
         source_paths = []
         build_plan = []
+        build_step = []
 
-        step = lambda *x: build_plan.append(x)
-        hash = source_paths.append
+        def step(*x):
+            build_step.append(x)
+
+        def hash(path):
+            source_paths.append(path)
 
         def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             command = runtime
             requirements = path
             if os.path.isdir(path):
-                requirements = os.path.join(path, 'requirements.txt')
+                requirements = os.path.join(path, "requirements.txt")
             if not os.path.isfile(requirements):
                 if required:
-                    raise RuntimeError(
-                        'File not found: {}'.format(requirements))
+                    raise RuntimeError("File not found: {}".format(requirements))
             else:
                 if not query.docker and not shutil.which(command):
                     raise RuntimeError(
                         "Python interpreter version equal "
                         "to defined lambda runtime ({}) should be "
-                        "available in system PATH".format(command))
+                        "available in system PATH".format(command)
+                    )
 
-                step('pip', runtime, requirements, prefix, tmp_dir)
+                step("pip", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
-        def poetry_install_step(path, prefix=None, required=False):
+        def poetry_install_step(
+            path, poetry_export_extra_args=[], prefix=None, required=False, tmp_dir=None
+        ):
             pyproject_file = path
             if os.path.isdir(path):
                 pyproject_file = os.path.join(path, "pyproject.toml")
             if get_build_system_from_pyproject_toml(pyproject_file) != "poetry":
                 if required:
-                    raise RuntimeError("poetry configuration not found: {}".format(pyproject_file))
+                    raise RuntimeError(
+                        "poetry configuration not found: {}".format(pyproject_file)
+                    )
             else:
-                step("poetry", runtime, path, prefix)
+                step("poetry", runtime, path, poetry_export_extra_args, prefix, tmp_dir)
                 hash(pyproject_file)
-                poetry_lock_file = os.path.join(path, "poetry.lock")
+                pyproject_path = os.path.dirname(pyproject_file)
+                poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
                 if os.path.isfile(poetry_lock_file):
                     hash(poetry_lock_file)
-                poetry_toml_file = os.path.join(path, "poetry.toml")
+                poetry_toml_file = os.path.join(pyproject_path, "poetry.toml")
                 if os.path.isfile(poetry_toml_file):
                     hash(poetry_toml_file)
 
@@ -701,18 +732,18 @@ class BuildPlanManager:
             command = "npm"
             requirements = path
             if os.path.isdir(path):
-                requirements = os.path.join(path, 'package.json')
+                requirements = os.path.join(path, "package.json")
             if not os.path.isfile(requirements):
                 if required:
-                    raise RuntimeError(
-                        'File not found: {}'.format(requirements))
+                    raise RuntimeError("File not found: {}".format(requirements))
             else:
                 if not query.docker and not shutil.which(command):
                     raise RuntimeError(
                         "Nodejs package manager ({}) should be "
-                        "available in system PATH".format(command))
+                        "available in system PATH".format(command)
+                    )
 
-                step('npm', runtime, requirements, prefix, tmp_dir)
+                step("npm", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
         def commands_step(path, commands):
@@ -724,95 +755,121 @@ class BuildPlanManager:
 
             if path:
                 path = os.path.normpath(path)
+                step("set:workdir", path)
+
             batch = []
             for c in commands:
                 if isinstance(c, str):
-                    if c.startswith(':zip'):
+                    if c.startswith(":zip"):
                         if path:
                             hash(path)
-                        else:
-                            # If path doesn't defined for a block with
-                            # commands it will be set to Terraform's
-                            # current working directory
-                            # NB: cwd may vary when using Terraform 0.14+ like:
-                            # `terraform -chdir=...`
-                            path = query.paths.cwd
                         if batch:
-                            step('sh', path, '\n'.join(batch))
+                            step("sh", "\n".join(batch))
                             batch.clear()
                         c = shlex.split(c)
-                        if len(c) == 3:
+                        n = len(c)
+                        if n == 3:
                             _, _path, prefix = c
                             prefix = prefix.strip()
-                            _path = os.path.normpath(os.path.join(path, _path))
-                            step('zip:embedded', _path, prefix)
-                        elif len(c) == 2:
-                            prefix = None
+                            _path = os.path.normpath(_path)
+                            step("zip:embedded", _path, prefix)
+                        elif n == 2:
                             _, _path = c
-                            step('zip:embedded', _path, prefix)
-                        elif len(c) == 1:
-                            prefix = None
-                            step('zip:embedded', path, prefix)
+                            _path = os.path.normpath(_path)
+                            step("zip:embedded", _path)
+                        elif n == 1:
+                            step("zip:embedded")
                         else:
                             raise ValueError(
                                 ":zip invalid call signature, use: "
-                                "':zip [path [prefix_in_zip]]'")
+                                "':zip [path [prefix_in_zip]]'"
+                            )
                     else:
                         batch.append(c)
+            if batch:
+                step("sh", "\n".join(batch))
+                batch.clear()
 
         for claim in claims:
             if isinstance(claim, str):
                 path = claim
                 if not os.path.exists(path):
-                    abort('Could not locate source_path "{path}".  Paths are relative to directory where `terraform plan` is being run ("{pwd}")'.format(
-                        path=path,
-                        pwd=os.getcwd()
-                    ))
+                    abort(
+                        'Could not locate source_path "{path}".  Paths are relative to directory where `terraform plan` is being run ("{pwd}")'.format(
+                            path=path, pwd=os.getcwd()
+                        )
+                    )
                 runtime = query.runtime
-                if runtime.startswith('python'):
-                    pip_requirements_step(
-                        os.path.join(path, 'requirements.txt'))
+                if runtime.startswith("python"):
+                    pip_requirements_step(os.path.join(path, "requirements.txt"))
                     poetry_install_step(path)
-                elif runtime.startswith('nodejs'):
-                    npm_requirements_step(
-                        os.path.join(path, 'package.json'))
-                step('zip', path, None)
+                elif runtime.startswith("nodejs"):
+                    npm_requirements_step(os.path.join(path, "package.json"))
+                step("zip", path, None)
                 hash(path)
 
             elif isinstance(claim, dict):
-                path = claim.get('path')
-                patterns = claim.get('patterns')
-                commands = claim.get('commands')
+                path = claim.get("path")
+                patterns = claim.get("patterns")
+                commands = claim.get("commands")
                 if patterns:
-                    step('set:filter', patterns_list(self._args, patterns))
+                    step("set:filter", patterns_list(self._args, patterns))
                 if commands:
                     commands_step(path, commands)
                 else:
-                    prefix = claim.get('prefix_in_zip')
-                    pip_requirements = claim.get('pip_requirements')
+                    prefix = claim.get("prefix_in_zip")
+                    pip_requirements = claim.get("pip_requirements")
                     poetry_install = claim.get("poetry_install")
-                    npm_requirements = claim.get('npm_package_json')
-                    runtime = claim.get('runtime', query.runtime)
+                    poetry_export_extra_args = claim.get("poetry_export_extra_args", [])
+                    npm_requirements = claim.get(
+                        "npm_requirements", claim.get("npm_package_json")
+                    )
+                    runtime = claim.get("runtime", query.runtime)
 
-                    if pip_requirements and runtime.startswith('python'):
+                    if pip_requirements and runtime.startswith("python"):
                         if isinstance(pip_requirements, bool) and path:
-                            pip_requirements_step(path, prefix, required=True, tmp_dir=claim.get('pip_tmp_dir'))
+                            pip_requirements_step(
+                                path,
+                                prefix,
+                                required=True,
+                                tmp_dir=claim.get("pip_tmp_dir"),
+                            )
                         else:
-                            pip_requirements_step(pip_requirements, prefix,
-                                                  required=True, tmp_dir=claim.get('pip_tmp_dir'))
+                            pip_requirements_step(
+                                pip_requirements,
+                                prefix,
+                                required=True,
+                                tmp_dir=claim.get("pip_tmp_dir"),
+                            )
 
                     if poetry_install and runtime.startswith("python"):
                         if path:
-                            poetry_install_step(path, prefix, required=True)
+                            poetry_install_step(
+                                path,
+                                prefix=prefix,
+                                poetry_export_extra_args=poetry_export_extra_args,
+                                required=True,
+                                tmp_dir=claim.get("poetry_tmp_dir"),
+                            )
 
-                    if npm_requirements and runtime.startswith('nodejs'):
+                    if npm_requirements and runtime.startswith("nodejs"):
                         if isinstance(npm_requirements, bool) and path:
-                            npm_requirements_step(path, prefix, required=True, tmp_dir=claim.get('npm_tmp_dir'))
+                            npm_requirements_step(
+                                path,
+                                prefix,
+                                required=True,
+                                tmp_dir=claim.get("npm_tmp_dir"),
+                            )
                         else:
-                            npm_requirements_step(npm_requirements, prefix,
-                                                  required=True, tmp_dir=claim.get('npm_tmp_dir'))
+                            npm_requirements_step(
+                                npm_requirements,
+                                prefix,
+                                required=True,
+                                tmp_dir=claim.get("npm_tmp_dir"),
+                            )
                     if path:
-                        step('zip', path, prefix)
+                        path = os.path.normpath(path)
+                        step("zip", path, prefix)
                         if patterns:
                             # Take patterns into account when computing hash
                             pf = ZipContentFilter(args=self._args)
@@ -822,89 +879,166 @@ class BuildPlanManager:
                                 hash(path_from_pattern)
                         else:
                             hash(path)
-
-                if patterns:
-                    step('clear:filter')
             else:
-                raise ValueError(
-                    'Unsupported source_path item: {}'.format(claim))
+                raise ValueError("Unsupported source_path item: {}".format(claim))
+
+            if build_step:
+                build_plan.append(build_step)
+                build_step = []
 
         self._source_paths = source_paths
         return build_plan
 
     def execute(self, build_plan, zip_stream, query):
+        sh_log = logging.getLogger("sh")
+
+        tf_work_dir = os.getcwd()
+
         zs = zip_stream
         sh_work_dir = None
         pf = None
 
-        for action in build_plan:
-            cmd = action[0]
-            if cmd.startswith('zip'):
-                ts = 0 if cmd == 'zip:embedded' else None
-                source_path, prefix = action[1:]
-                if sh_work_dir:
-                    if source_path != sh_work_dir:
-                        if not os.path.isfile(source_path):
-                            source_path = sh_work_dir
-                if os.path.isdir(source_path):
-                    if pf:
-                        self._zip_write_with_filter(zs, pf, source_path, prefix,
-                                                    timestamp=ts)
-                    else:
-                        zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
-                else:
-                    zs.write_file(source_path, prefix=prefix, timestamp=ts)
-            elif cmd == 'pip':
-                runtime, pip_requirements, prefix, tmp_dir = action[1:]
-                with install_pip_requirements(query, pip_requirements, tmp_dir) as rd:
-                    if rd:
-                        if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
-                        else:
-                            # XXX: timestamp=0 - what actually do with it?
-                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
-            elif cmd == "poetry":
-                runtime, path, prefix = action[1:]
-                with install_poetry_dependencies(query, path) as rd:
-                    if rd:
-                        if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix, timestamp=0)
-                        else:
-                            # XXX: timestamp=0 - what actually do with it?
-                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
-            elif cmd == 'npm':
-                runtime, npm_requirements, prefix, tmp_dir = action[1:]
-                with install_npm_requirements(query, npm_requirements, tmp_dir) as rd:
-                    if rd:
-                        if pf:
-                            self._zip_write_with_filter(zs, pf, rd, prefix,
-                                                        timestamp=0)
-                        else:
-                            # XXX: timestamp=0 - what actually do with it?
-                            zs.write_dirs(rd, prefix=prefix, timestamp=0)
-            elif cmd == 'sh':
-                r, w = os.pipe()
-                side_ch = os.fdopen(r)
-                path, script = action[1:]
-                script = "{}\npwd >&{}".format(script, w)
-
-                p = subprocess.Popen(script, shell=True, cwd=path,
-                                     pass_fds=(w,))
-                os.close(w)
-                sh_work_dir = side_ch.read().strip()
-                p.wait()
-                log.info('WD: %s', sh_work_dir)
-                side_ch.close()
-            elif cmd == 'set:filter':
-                patterns = action[1]
-                pf = ZipContentFilter(args=self._args)
-                pf.compile(patterns)
-            elif cmd == 'clear:filter':
+        for step in build_plan:
+            # init step
+            sh_work_dir = tf_work_dir
+            if pf:
+                pf.reset()
                 pf = None
 
+            log.debug("STEPDIR: %s", sh_work_dir)
+
+            # execute step actions
+            for action in step:
+                cmd = action[0]
+                if cmd.startswith("zip"):
+                    ts = 0 if cmd == "zip:embedded" else None
+
+                    source_path, prefix = None, None
+                    n = len(action)
+                    if n == 2:
+                        source_path = action[1]
+                    elif n == 3:
+                        source_path, prefix = action[1:]
+
+                    if source_path:
+                        if not os.path.isabs(source_path):
+                            source_path = os.path.normpath(
+                                os.path.join(sh_work_dir, source_path)
+                            )
+                    else:
+                        source_path = sh_work_dir
+                    if os.path.isdir(source_path):
+                        if pf:
+                            self._zip_write_with_filter(
+                                zs, pf, source_path, prefix, timestamp=ts
+                            )
+                        else:
+                            zs.write_dirs(source_path, prefix=prefix, timestamp=ts)
+                    else:
+                        zs.write_file(source_path, prefix=prefix, timestamp=ts)
+                elif cmd == "pip":
+                    runtime, pip_requirements, prefix, tmp_dir = action[1:]
+                    with install_pip_requirements(
+                        query, pip_requirements, tmp_dir
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                # XXX: timestamp=0 - what actually do with it?
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "poetry":
+                    (runtime, path, poetry_export_extra_args, prefix, tmp_dir) = action[
+                        1:
+                    ]
+                    log.info("poetry_export_extra_args: %s", poetry_export_extra_args)
+                    with install_poetry_dependencies(
+                        query, path, poetry_export_extra_args, tmp_dir
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                # XXX: timestamp=0 - what actually do with it?
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "npm":
+                    runtime, npm_requirements, prefix, tmp_dir = action[1:]
+                    with install_npm_requirements(
+                        query, npm_requirements, tmp_dir
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                # XXX: timestamp=0 - what actually do with it?
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "sh":
+                    with tempfile.NamedTemporaryFile(
+                        mode="w+t", delete=True
+                    ) as temp_file:
+                        script = action[1]
+
+                        if log.isEnabledFor(DEBUG2):
+                            log.debug("exec shell script ...")
+                            for line in script.splitlines():
+                                sh_log.debug(line)
+
+                        script = "\n".join(
+                            (
+                                script,
+                                # NOTE: Execute `pwd` to determine the subprocess shell's
+                                # working directory after having executed all other commands.
+                                "retcode=$?",
+                                f"pwd >{temp_file.name}",
+                                "exit $retcode",
+                            )
+                        )
+
+                        p = subprocess.Popen(
+                            script,
+                            shell=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            cwd=sh_work_dir,
+                        )
+
+                        call_stdout, call_stderr = p.communicate()
+                        exit_code = p.returncode
+                        log.debug("exit_code: %s", exit_code)
+                        if exit_code != 0:
+                            raise RuntimeError(
+                                "Script did not run successfully, exit code {}: {} - {}".format(
+                                    exit_code,
+                                    call_stdout.decode("utf-8").strip(),
+                                    call_stderr.decode("utf-8").strip(),
+                                )
+                            )
+
+                        temp_file.seek(0)
+                        # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
+                        sh_work_dir = temp_file.read().strip()
+                        log.debug("WORKDIR: %s", sh_work_dir)
+
+                elif cmd == "set:workdir":
+                    path = action[1]
+                    sh_work_dir = os.path.normpath(os.path.join(tf_work_dir, path))
+                    log.debug("WORKDIR: %s", sh_work_dir)
+
+                elif cmd == "set:filter":
+                    patterns = action[1]
+                    pf = ZipContentFilter(args=self._args)
+                    pf.compile(patterns)
+
     @staticmethod
-    def _zip_write_with_filter(zip_stream, path_filter, source_path, prefix,
-                               timestamp=None):
+    def _zip_write_with_filter(
+        zip_stream, path_filter, source_path, prefix, timestamp=None
+    ):
         for path in path_filter.filter(source_path, prefix):
             if os.path.isdir(source_path):
                 arcname = os.path.relpath(path, source_path)
@@ -939,8 +1073,9 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 output = check_output(docker_image_id_command(docker_image))
                 if output:
                     docker_image_tag_id = output.decode().strip()
-                    log.debug("DOCKER TAG ID: %s -> %s",
-                              docker_image, docker_image_tag_id)
+                    log.debug(
+                        "DOCKER TAG ID: %s -> %s", docker_image, docker_image_tag_id
+                    )
                     ok = True
                 if ok:
                     break
@@ -952,12 +1087,13 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 check_call(docker_cmd)
                 ok = True
         elif docker_file or docker_build_root:
-            raise ValueError('docker_image must be specified '
-                             'for a custom image future references')
+            raise ValueError(
+                "docker_image must be specified " "for a custom image future references"
+            )
 
     working_dir = os.getcwd()
 
-    log.info('Installing python requirements: %s', requirements_file)
+    log.info("Installing python requirements: %s", requirements_file)
     with tempdir(tmp_dir) as temp_dir:
         requirements_filename = os.path.basename(requirements_file)
         target_file = os.path.join(temp_dir, requirements_filename)
@@ -968,22 +1104,27 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
         if not docker:
             if WINDOWS:
-                python_exec = 'python.exe'
+                python_exec = "python.exe"
             elif OSX:
                 # Workaround for OSX when XCode command line tools'
                 # python becomes the main system python interpreter
-                os_path = '{}:/Library/Developer/CommandLineTools' \
-                          '/usr/bin'.format(os.environ['PATH'])
+                os_path = "{}:/Library/Developer/CommandLineTools" "/usr/bin".format(
+                    os.environ["PATH"]
+                )
                 subproc_env = os.environ.copy()
-                subproc_env['PATH'] = os_path
+                subproc_env["PATH"] = os_path
 
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
             pip_command = [
-                python_exec, '-m', 'pip',
-                'install', '--no-compile',
-                '--prefix=', '--target=.',
-                '--requirement={}'.format(requirements_filename),
+                python_exec,
+                "-m",
+                "pip",
+                "install",
+                "--no-compile",
+                "--prefix=",
+                "--target=.",
+                "--requirement={}".format(requirements_filename),
             ]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
@@ -991,22 +1132,32 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 if pip_cache_dir:
                     if isinstance(pip_cache_dir, str):
                         pip_cache_dir = os.path.abspath(
-                            os.path.join(working_dir, pip_cache_dir))
+                            os.path.join(working_dir, pip_cache_dir)
+                        )
                     else:
-                        pip_cache_dir = os.path.abspath(os.path.join(
-                            working_dir, artifacts_dir, 'cache/pip'))
+                        pip_cache_dir = os.path.abspath(
+                            os.path.join(working_dir, artifacts_dir, "cache/pip")
+                        )
 
-                chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                shell_command = [shlex_join(pip_command), '&&',
-                                 shlex_join(['chown', '-R',
-                                             chown_mask, '.'])]
-                shell_command = [' '.join(shell_command)]
-                check_call(docker_run_command(
-                    '.', shell_command, runtime,
-                    image=docker_image_tag_id,
-                    shell=True, ssh_agent=with_ssh_agent,
-                    pip_cache_dir=pip_cache_dir, docker=docker,
-                ))
+                chown_mask = "{}:{}".format(os.getuid(), os.getgid())
+                shell_command = [
+                    shlex_join(pip_command),
+                    "&&",
+                    shlex_join(["chown", "-R", chown_mask, "."]),
+                ]
+                shell_command = [" ".join(shell_command)]
+                check_call(
+                    docker_run_command(
+                        ".",
+                        shell_command,
+                        runtime,
+                        image=docker_image_tag_id,
+                        shell=True,
+                        ssh_agent=with_ssh_agent,
+                        pip_cache_dir=pip_cache_dir,
+                        docker=docker,
+                    )
+                )
             else:
                 cmd_log.info(shlex_join(pip_command))
                 log_handler and log_handler.flush()
@@ -1024,19 +1175,22 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
 
 
 @contextmanager
-def install_poetry_dependencies(query, path):
+def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
     # TODO:
     #  1. Emit files instead of temp_dir
 
     # pyproject.toml is always required by poetry
-    pyproject_file = os.path.join(path, "pyproject.toml")
+    pyproject_file = path
+    if os.path.isdir(path):
+        pyproject_file = os.path.join(path, "pyproject.toml")
     if not os.path.exists(pyproject_file):
         yield
         return
 
     # poetry.lock & poetry.toml are optional
-    poetry_lock_file = os.path.join(path, "poetry.lock")
-    poetry_toml_file = os.path.join(path, "poetry.toml")
+    pyproject_path = os.path.dirname(pyproject_file)
+    poetry_lock_file = os.path.join(pyproject_path, "poetry.lock")
+    poetry_toml_file = os.path.join(pyproject_path, "poetry.toml")
 
     runtime = query.runtime
     artifacts_dir = query.artifacts_dir
@@ -1075,7 +1229,8 @@ def install_poetry_dependencies(query, path):
     working_dir = os.getcwd()
 
     log.info("Installing python dependencies with poetry & pip: %s", poetry_lock_file)
-    with tempdir() as temp_dir:
+    with tempdir(tmp_dir) as temp_dir:
+
         def copy_file_to_target(file, temp_dir):
             filename = os.path.basename(file)
             target_file = os.path.join(temp_dir, filename)
@@ -1085,13 +1240,13 @@ def install_poetry_dependencies(query, path):
         pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
 
         if os.path.isfile(poetry_lock_file):
-            log.info("Using poetry lock file: %s", poetry_lock_file)
+            log.info("Using poetry.lock file: %s", poetry_lock_file)
             poetry_lock_target_file = copy_file_to_target(poetry_lock_file, temp_dir)
         else:
             poetry_lock_target_file = None
 
         if os.path.isfile(poetry_toml_file):
-            log.info("Using poetry configuration file: %s", poetry_lock_file)
+            log.info("Using poetry.toml configuration file: %s", poetry_toml_file)
             poetry_toml_target_file = copy_file_to_target(poetry_toml_file, temp_dir)
         else:
             poetry_toml_target_file = None
@@ -1109,6 +1264,17 @@ def install_poetry_dependencies(query, path):
             # NOTE: poetry must be available in the build environment, which is the case with lambci/lambda:build-python* docker images but not public.ecr.aws/sam/build-python* docker images
             # FIXME: poetry install does not currently allow to specify the target directory so we export the
             # requirements then install them with "pip --no-deps" to avoid using pip dependency resolver
+
+            poetry_export = [
+                poetry_exec,
+                "export",
+                "--format",
+                "requirements.txt",
+                "--output",
+                "requirements.txt",
+                "--with-credentials",
+            ] + poetry_export_extra_args
+
             poetry_commands = [
                 [
                     poetry_exec,
@@ -1124,15 +1290,7 @@ def install_poetry_dependencies(query, path):
                     "virtualenvs.in-project",
                     "true",
                 ],
-                [
-                    poetry_exec,
-                    "export",
-                    "--format",
-                    "requirements.txt",
-                    "--output",
-                    "requirements.txt",
-                    "--with-credentials",
-                ],
+                poetry_export,
                 [
                     python_exec,
                     "-m",
@@ -1217,8 +1375,9 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 output = check_output(docker_image_id_command(docker_image))
                 if output:
                     docker_image_tag_id = output.decode().strip()
-                    log.debug("DOCKER TAG ID: %s -> %s",
-                              docker_image, docker_image_tag_id)
+                    log.debug(
+                        "DOCKER TAG ID: %s -> %s", docker_image, docker_image_tag_id
+                    )
                     ok = True
                 if ok:
                     break
@@ -1230,39 +1389,47 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 check_call(docker_cmd)
                 ok = True
         elif docker_file or docker_build_root:
-            raise ValueError('docker_image must be specified '
-                             'for a custom image future references')
+            raise ValueError(
+                "docker_image must be specified " "for a custom image future references"
+            )
 
-    log.info('Installing npm requirements: %s', requirements_file)
+    log.info("Installing npm requirements: %s", requirements_file)
     with tempdir(tmp_dir) as temp_dir:
         requirements_filename = os.path.basename(requirements_file)
         target_file = os.path.join(temp_dir, requirements_filename)
         shutil.copyfile(requirements_file, target_file)
 
         subproc_env = None
-        npm_exec = 'npm'
+        npm_exec = "npm"
         if not docker:
             if WINDOWS:
-                npm_exec = 'npm.cmd'
+                npm_exec = "npm.cmd"
             elif OSX:
                 subproc_env = os.environ.copy()
 
         # Install dependencies into the temporary directory.
         with cd(temp_dir):
-            npm_command = [npm_exec, 'install']
+            npm_command = [npm_exec, "install"]
             if docker:
                 with_ssh_agent = docker.with_ssh_agent
-                chown_mask = '{}:{}'.format(os.getuid(), os.getgid())
-                shell_command = [shlex_join(npm_command), '&&',
-                                    shlex_join(['chown', '-R',
-                                                chown_mask, '.'])]
-                shell_command = [' '.join(shell_command)]
-                check_call(docker_run_command(
-                    '.', shell_command, runtime,
-                    image=docker_image_tag_id,
-                    shell=True, ssh_agent=with_ssh_agent,
-                    docker=docker,
-                ))
+                chown_mask = "{}:{}".format(os.getuid(), os.getgid())
+                shell_command = [
+                    shlex_join(npm_command),
+                    "&&",
+                    shlex_join(["chown", "-R", chown_mask, "."]),
+                ]
+                shell_command = [" ".join(shell_command)]
+                check_call(
+                    docker_run_command(
+                        ".",
+                        shell_command,
+                        runtime,
+                        image=docker_image_tag_id,
+                        shell=True,
+                        ssh_agent=with_ssh_agent,
+                        docker=docker,
+                    )
+                )
             else:
                 cmd_log.info(shlex_join(npm_command))
                 log_handler and log_handler.flush()
@@ -1281,7 +1448,7 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
 
 def docker_image_id_command(tag):
     """"""
-    docker_cmd = ['docker', 'images', '--format={{.ID}}', tag]
+    docker_cmd = ["docker", "images", "--format={{.ID}}", tag]
     cmd_log.info(shlex_join(docker_cmd))
     log_handler and log_handler.flush()
     return docker_cmd
@@ -1290,18 +1457,18 @@ def docker_image_id_command(tag):
 def docker_build_command(tag=None, docker_file=None, build_root=False):
     """"""
     if not (build_root or docker_file):
-        raise ValueError('docker_build_root or docker_file must be provided')
+        raise ValueError("docker_build_root or docker_file must be provided")
 
-    docker_cmd = ['docker', 'build']
+    docker_cmd = ["docker", "build"]
 
     if tag:
-        docker_cmd.extend(['--tag', tag])
+        docker_cmd.extend(["--tag", tag])
     else:
-        raise ValueError('docker_image must be specified')
+        raise ValueError("docker_image must be specified")
     if not build_root:
         build_root = os.path.dirname(docker_file)
     if docker_file:
-        docker_cmd.extend(['--file', docker_file])
+        docker_cmd.extend(["--file", docker_file])
     docker_cmd.append(build_root)
 
     cmd_log.info(shlex_join(docker_cmd))
@@ -1309,76 +1476,101 @@ def docker_build_command(tag=None, docker_file=None, build_root=False):
     return docker_cmd
 
 
-def docker_run_command(build_root, command, runtime,
-                       image=None, shell=None, ssh_agent=False,
-                       interactive=False, pip_cache_dir=None, poetry_cache_dir=None,
-                       docker=None):
+def docker_run_command(
+    build_root,
+    command,
+    runtime,
+    image=None,
+    shell=None,
+    ssh_agent=False,
+    interactive=False,
+    pip_cache_dir=None,
+    poetry_cache_dir=None,
+    docker=None,
+):
     """"""
-    if platform.system() not in ('Linux', 'Darwin'):
+    if platform.system() not in ("Linux", "Darwin"):
         raise RuntimeError("Unsupported platform for docker building")
 
-    workdir = '/var/task'
+    workdir = "/var/task"
 
-    docker_cmd = ['docker', 'run', '--rm', '-w', workdir]
+    docker_cmd = ["docker", "run", "--rm", "-w", workdir]
 
     if interactive:
-        docker_cmd.append('-it')
+        docker_cmd.append("-it")
 
     bind_path = os.path.abspath(build_root)
-    docker_cmd.extend(['-v', "{}:{}:z".format(bind_path, workdir)])
+    docker_cmd.extend(["-v", "{}:{}:z".format(bind_path, workdir)])
 
-    home = os.environ['HOME']
-    docker_cmd.extend([
-        # '-v', '{}/.ssh/id_rsa:/root/.ssh/id_rsa:z'.format(home),
-        '-v', '{}/.ssh/known_hosts:/root/.ssh/known_hosts:z'.format(home),
-    ])
+    home = os.environ["HOME"]
+    docker_cmd.extend(
+        [
+            # '-v', '{}/.ssh/id_rsa:/root/.ssh/id_rsa:z'.format(home),
+            "-v",
+            "{}/.ssh/known_hosts:/root/.ssh/known_hosts:z".format(home),
+        ]
+    )
 
     if docker and docker.docker_additional_options:
         docker_cmd.extend(docker.docker_additional_options)
 
     if ssh_agent:
-        if platform.system() == 'Darwin':
+        if platform.system() == "Darwin":
             # https://docs.docker.com/docker-for-mac/osxfs/#ssh-agent-forwarding
-            docker_cmd.extend([
-                '--mount', 'type=bind,'
-                           'src=/run/host-services/ssh-auth.sock,'
-                           'target=/run/host-services/ssh-auth.sock',
-                '-e', 'SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock',
-            ])
-        elif platform.system() == 'Linux':
-            sock = os.environ['SSH_AUTH_SOCK']  # TODO: Handle missing env var
-            docker_cmd.extend([
-                '-v', '{}:/tmp/ssh_sock:z'.format(sock),
-                '-e', 'SSH_AUTH_SOCK=/tmp/ssh_sock',
-            ])
+            docker_cmd.extend(
+                [
+                    "--mount",
+                    "type=bind,"
+                    "src=/run/host-services/ssh-auth.sock,"
+                    "target=/run/host-services/ssh-auth.sock",
+                    "-e",
+                    "SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock",
+                ]
+            )
+        elif platform.system() == "Linux":
+            sock = os.environ["SSH_AUTH_SOCK"]  # TODO: Handle missing env var
+            docker_cmd.extend(
+                [
+                    "-v",
+                    "{}:/tmp/ssh_sock:z".format(sock),
+                    "-e",
+                    "SSH_AUTH_SOCK=/tmp/ssh_sock",
+                ]
+            )
 
-    if platform.system() in ('Linux', 'Darwin'):
+    if platform.system() in ("Linux", "Darwin"):
         if pip_cache_dir:
             pip_cache_dir = os.path.abspath(pip_cache_dir)
-            docker_cmd.extend([
-                '-v', '{}:/root/.cache/pip:z'.format(pip_cache_dir),
-            ])
+            docker_cmd.extend(
+                [
+                    "-v",
+                    "{}:/root/.cache/pip:z".format(pip_cache_dir),
+                ]
+            )
         if poetry_cache_dir:
             poetry_cache_dir = os.path.abspath(poetry_cache_dir)
-            docker_cmd.extend([
-                '-v', '{}:/root/.cache/pypoetry:z'.format(poetry_cache_dir),
-            ])
+            docker_cmd.extend(
+                [
+                    "-v",
+                    "{}:/root/.cache/pypoetry:z".format(poetry_cache_dir),
+                ]
+            )
 
     if not image:
-        image = 'public.ecr.aws/sam/build-{}'.format(runtime)
+        image = "public.ecr.aws/sam/build-{}".format(runtime)
 
     if docker and docker.docker_entrypoint:
-        docker_cmd.extend(['--entrypoint', docker.docker_entrypoint])
+        docker_cmd.extend(["--entrypoint", docker.docker_entrypoint])
     else:
-        docker_cmd.extend(['--entrypoint', ''])
+        docker_cmd.extend(["--entrypoint", ""])
 
     docker_cmd.append(image)
 
     assert isinstance(command, list)
     if shell:
         if not isinstance(shell, str):
-            shell = '/bin/sh'
-        docker_cmd.extend([shell, '-c'])
+            shell = "/bin/sh"
+        docker_cmd.extend([shell, "-c"])
     docker_cmd.extend(command)
 
     cmd_log.info(shlex_join(docker_cmd))
@@ -1389,6 +1581,7 @@ def docker_run_command(build_root, command, runtime,
 ################################################################################
 # Commands
 
+
 def prepare_command(args):
     """
     Generates a content hash of the source_path, which is used to determine if
@@ -1397,7 +1590,7 @@ def prepare_command(args):
     Outputs a filename and a command to run if the archive needs to be built.
     """
 
-    log = logging.getLogger('prepare')
+    log = logging.getLogger("prepare")
 
     # Load the query.
     query_data = json.load(sys.stdin)
@@ -1405,13 +1598,13 @@ def prepare_command(args):
     dump_env()
     if log.isEnabledFor(DEBUG2):
         if log.isEnabledFor(DEBUG3):
-            log.debug('QUERY: %s', json.dumps(query_data, indent=2))
+            log.debug("QUERY: %s", json.dumps(query_data, indent=2))
         else:
-            log_excludes = ('source_path', 'hash_extra_paths', 'paths')
+            log_excludes = ("source_path", "hash_extra_paths", "paths")
             qd = {k: v for k, v in query_data.items() if k not in log_excludes}
-            log.debug('QUERY (excerpt): %s', json.dumps(qd, indent=2))
+            log.debug("QUERY (excerpt): %s", json.dumps(qd, indent=2))
 
-    query = datatree('prepare_query', **query_data)
+    query = datatree("prepare_query", **query_data)
 
     tf_paths = query.paths
     runtime = query.runtime
@@ -1420,14 +1613,18 @@ def prepare_command(args):
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
-    recreate_missing_package = yesno_bool(args.recreate_missing_package if args.recreate_missing_package is not None else query.recreate_missing_package)
+    recreate_missing_package = yesno_bool(
+        args.recreate_missing_package
+        if args.recreate_missing_package is not None
+        else query.recreate_missing_package
+    )
     docker = query.docker
 
     bpm = BuildPlanManager(args, log=log)
     build_plan = bpm.plan(source_path, query)
 
     if log.isEnabledFor(DEBUG2):
-        log.debug('BUILD_PLAN: %s', json.dumps(build_plan, indent=2))
+        log.debug("BUILD_PLAN: %s", json.dumps(build_plan, indent=2))
 
     # Expand a Terraform path.<cwd|root|module> references
     hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
@@ -1439,11 +1636,11 @@ def prepare_command(args):
     content_hash = content_hash.hexdigest()
 
     # Generate a unique filename based on the hash.
-    filename = os.path.join(artifacts_dir, '{}.zip'.format(content_hash))
+    zip_filename = os.path.join(artifacts_dir, "{}.zip".format(content_hash))
 
     # Compute timestamp trigger
     was_missing = False
-    filename_path = os.path.join(os.getcwd(), filename)
+    filename_path = os.path.join(os.getcwd(), zip_filename)
     if recreate_missing_package:
         if os.path.exists(filename_path):
             st = os.stat(filename_path)
@@ -1452,36 +1649,40 @@ def prepare_command(args):
             timestamp = timestamp_now_ns()
             was_missing = True
     else:
-        timestamp = "<WARNING: Missing lambda zip artifacts " \
-                    "wouldn't be restored>"
+        timestamp = "<WARNING: Missing lambda zip artifacts " "wouldn't be restored>"
 
     # Replace variables in the build command with calculated values.
     build_data = {
-        'filename': filename,
-        'runtime': runtime,
-        'artifacts_dir': artifacts_dir,
-        'build_plan': build_plan,
+        "filename": zip_filename,
+        "runtime": runtime,
+        "artifacts_dir": artifacts_dir,
+        "build_plan": build_plan,
     }
     if docker:
-        build_data['docker'] = docker
+        build_data["docker"] = docker
 
     build_plan = json.dumps(build_data)
-    build_plan_filename = os.path.join(artifacts_dir,
-                                       '{}.plan.json'.format(content_hash))
+    build_plan_filename = os.path.join(
+        artifacts_dir, "{}.plan.json".format(content_hash)
+    )
     if not os.path.exists(artifacts_dir):
         os.makedirs(artifacts_dir, exist_ok=True)
-    with open(build_plan_filename, 'w') as f:
+    with open(build_plan_filename, "w") as f:
         f.write(build_plan)
 
     # Output the result to Terraform.
-    json.dump({
-        'filename': filename,
-        'build_plan': build_plan,
-        'build_plan_filename': build_plan_filename,
-        'timestamp': str(timestamp),
-        'was_missing': 'true' if was_missing else 'false',
-    }, sys.stdout, indent=2)
-    sys.stdout.write('\n')
+    json.dump(
+        {
+            "filename": zip_filename,
+            "build_plan": build_plan,
+            "build_plan_filename": build_plan_filename,
+            "timestamp": str(timestamp),
+            "was_missing": "true" if was_missing else "false",
+        },
+        sys.stdout,
+        indent=2,
+    )
+    sys.stdout.write("\n")
 
 
 def build_command(args):
@@ -1490,15 +1691,15 @@ def build_command(args):
     Installs dependencies with pip or npm automatically.
     """
 
-    log = logging.getLogger('build')
+    log = logging.getLogger("build")
 
     dump_env()
     if log.isEnabledFor(DEBUG2):
-        log.debug('CMD: python3 %s', shlex_join(sys.argv))
+        log.debug("CMD: python3 %s", shlex_join(sys.argv))
 
     with open(args.build_plan_file) as f:
         query_data = json.load(f)
-    query = datatree('build_query', **query_data)
+    query = datatree("build_query", **query_data)
 
     runtime = query.runtime
     filename = query.filename
@@ -1510,7 +1711,7 @@ def build_command(args):
         timestamp = int(_timestamp)
 
     if os.path.exists(filename) and not args.force:
-        log.info('Reused: %s', shlex.quote(filename))
+        log.info("Reused: %s", shlex.quote(filename))
         return
 
     # Zip up the build plan and write it to the target filename.
@@ -1520,10 +1721,10 @@ def build_command(args):
         bpm.execute(build_plan, zs, query)
 
     os.utime(filename, ns=(timestamp, timestamp))
-    log.info('Created: %s', shlex.quote(filename))
+    log.info("Created: %s", shlex.quote(filename))
     if log.isEnabledFor(logging.DEBUG):
-        with open(filename, 'rb') as f:
-            log.info('Base64sha256: %s', source_code_hash(f.read()))
+        with open(filename, "rb") as f:
+            log.info("Base64sha256: %s", source_code_hash(f.read()))
 
 
 def add_hidden_commands(sub_parsers):
@@ -1534,22 +1735,34 @@ def add_hidden_commands(sub_parsers):
         sp._choices_actions.pop()  # XXX: help=argparse.SUPPRESS - doesn't work
         return p
 
-    p = hidden_parser('docker', help='Run docker build')
-    p.set_defaults(command=lambda args: subprocess.call(docker_run_command(
-        args.build_root, args.docker_command, args.runtime, interactive=True)))
-    p.add_argument('build_root', help='A docker build root folder')
-    p.add_argument('docker_command', help='A docker container command',
-                   metavar='command', nargs=argparse.REMAINDER)
-    p.add_argument('-r', '--runtime', help='A docker image runtime',
-                   default='python3.8')
+    p = hidden_parser("docker", help="Run docker build")
+    p.set_defaults(
+        command=lambda args: subprocess.call(
+            docker_run_command(
+                args.build_root, args.docker_command, args.runtime, interactive=True
+            )
+        )
+    )
+    p.add_argument("build_root", help="A docker build root folder")
+    p.add_argument(
+        "docker_command",
+        help="A docker container command",
+        metavar="command",
+        nargs=argparse.REMAINDER,
+    )
+    p.add_argument(
+        "-r", "--runtime", help="A docker image runtime", default="python3.12"
+    )
 
-    p = hidden_parser('docker-image', help='Run docker build')
-    p.set_defaults(command=lambda args: subprocess.call(docker_build_command(
-        args.build_root, args.docker_file, args.tag)))
-    p.add_argument('-t', '--tag', help='A docker image tag')
-    p.add_argument('build_root', help='A docker build root folder')
-    p.add_argument('docker_file', help='A docker file path',
-                   nargs=argparse.OPTIONAL)
+    p = hidden_parser("docker-image", help="Run docker build")
+    p.set_defaults(
+        command=lambda args: subprocess.call(
+            docker_build_command(args.build_root, args.docker_file, args.tag)
+        )
+    )
+    p.add_argument("-t", "--tag", help="A docker image tag")
+    p.add_argument("build_root", help="A docker build root folder")
+    p.add_argument("docker_file", help="A docker file path", nargs=argparse.OPTIONAL)
 
     def zip_cmd(args):
         if args.verbose:
@@ -1557,27 +1770,33 @@ def add_hidden_commands(sub_parsers):
         with ZipWriteStream(args.zipfile) as zs:
             zs.write_dirs(*args.dir, timestamp=args.timestamp)
         if log.isEnabledFor(logging.DEBUG):
-            zipinfo = shutil.which('zipinfo')
+            zipinfo = shutil.which("zipinfo")
             if zipinfo:
-                log.debug('-' * 80)
+                log.debug("-" * 80)
                 subprocess.call([zipinfo, args.zipfile])
-            log.debug('-' * 80)
-            log.debug('Source code hash: %s',
-                      source_code_hash(open(args.zipfile, 'rb').read()))
+            log.debug("-" * 80)
+            log.debug(
+                "Source code hash: %s",
+                source_code_hash(open(args.zipfile, "rb").read()),
+            )
 
-    p = hidden_parser('zip', help='Zip folder with provided files timestamp')
+    p = hidden_parser("zip", help="Zip folder with provided files timestamp")
     p.set_defaults(command=zip_cmd)
-    p.add_argument('zipfile', help='Path to a zip file')
-    p.add_argument('dir', nargs=argparse.ONE_OR_MORE,
-                   help='Path to a directory for packaging')
-    p.add_argument('-t', '--timestamp', type=int,
-                   help='A timestamp to override for all zip members')
-    p.add_argument('-v', '--verbose', action='store_true')
+    p.add_argument("zipfile", help="Path to a zip file")
+    p.add_argument(
+        "dir", nargs=argparse.ONE_OR_MORE, help="Path to a directory for packaging"
+    )
+    p.add_argument(
+        "-t",
+        "--timestamp",
+        type=int,
+        help="A timestamp to override for all zip members",
+    )
+    p.add_argument("-v", "--verbose", action="store_true")
 
-    p = hidden_parser('hash', help='Generate content hash for a file')
-    p.set_defaults(
-        command=lambda args: print(source_code_hash(args.file.read())))
-    p.add_argument('file', help='Path to a file', type=argparse.FileType('rb'))
+    p = hidden_parser("hash", help="Generate content hash for a file")
+    p.set_defaults(command=lambda args: print(source_code_hash(args.file.read())))
+    p.add_argument("file", help="Path to a file", type=argparse.FileType("rb"))
 
 
 def args_parser():
@@ -1585,31 +1804,41 @@ def args_parser():
     ap.set_defaults(command=lambda _: ap.print_usage())
     sp = ap.add_subparsers(metavar="COMMAND")
 
-    p = sp.add_parser('prepare',
-                      help='compute a filename hash for a zip archive')
+    p = sp.add_parser("prepare", help="compute a filename hash for a zip archive")
     p.set_defaults(command=prepare_command)
 
-    p = sp.add_parser('build',
-                      help='build and pack to a zip archive')
+    p = sp.add_parser("build", help="build and pack to a zip archive")
     p.set_defaults(command=build_command)
-    p.add_argument('--force', action='store_true',
-                   help='Force rebuilding even if a zip artifact exists')
-    p.add_argument('-t', '--timestamp',
-                   dest='zip_file_timestamp', required=True,
-                   help='A zip file timestamp generated by the prepare command')
-    p.add_argument('build_plan_file', metavar='PLAN_FILE',
-                   help='A build plan file provided by the prepare command')
+    p.add_argument(
+        "--force",
+        action="store_true",
+        help="Force rebuilding even if a zip artifact exists",
+    )
+    p.add_argument(
+        "-t",
+        "--timestamp",
+        dest="zip_file_timestamp",
+        required=True,
+        help="A zip file timestamp generated by the prepare command",
+    )
+    p.add_argument(
+        "build_plan_file",
+        metavar="PLAN_FILE",
+        help="A build plan file provided by the prepare command",
+    )
     add_hidden_commands(sp)
     return ap
 
 
 def main():
     ns = argparse.Namespace(
-        pattern_comments=yesno_bool(os.environ.get(
-            'TF_LAMBDA_PACKAGE_PATTERN_COMMENTS', False)),
+        pattern_comments=yesno_bool(
+            os.environ.get("TF_LAMBDA_PACKAGE_PATTERN_COMMENTS", False)
+        ),
         recreate_missing_package=os.environ.get(
-            'TF_RECREATE_MISSING_LAMBDA_PACKAGE', None),
-        log_level=os.environ.get('TF_LAMBDA_PACKAGE_LOG_LEVEL', 'INFO'),
+            "TF_RECREATE_MISSING_LAMBDA_PACKAGE", None
+        ),
+        log_level=os.environ.get("TF_LAMBDA_PACKAGE_LOG_LEVEL", "INFO"),
     )
 
     p = args_parser()
@@ -1628,5 +1857,5 @@ def main():
     exit(args.command(args))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

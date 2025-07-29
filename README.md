@@ -16,7 +16,7 @@ This Terraform module is the part of [serverless.tf framework](https://github.co
 ## Features
 
 - Build dependencies for your Lambda Function and Layer.
-- Support builds locally and in Docker (with or without SSH agent support for private builds).
+- Support builds locally and in Docker (with or without SSH agent support for private builds) for any runtime and architecture supported by AWS Lambda.
 - Create deployment package or deploy existing (previously built package) from local, from S3, from URL, or from AWS ECR repository.
 - Store deployment packages locally or in the S3 bucket.
 - Support almost all features of Lambda resources (function, layer, alias, etc.)
@@ -37,7 +37,7 @@ module "lambda_function" {
   function_name = "my-lambda1"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   source_path = "../src/lambda-function1"
 
@@ -56,7 +56,7 @@ module "lambda_function" {
   function_name = "lambda-with-layer"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   publish       = true
 
   source_path = "../src/lambda-function1"
@@ -84,7 +84,7 @@ module "lambda_layer_s3" {
 
   layer_name          = "lambda-layer-s3"
   description         = "My amazing lambda layer (deployed from S3)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
   source_path = "../src/lambda-layer"
 
@@ -102,7 +102,7 @@ module "lambda_function_existing_package_local" {
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
   local_existing_package = "../existing_package.zip"
@@ -126,7 +126,7 @@ module "lambda_function_externally_managed_package" {
   function_name = "my-lambda-externally-managed-package"
   description   = "My lambda function code is deployed separately"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
   local_existing_package = "./lambda_functions/code.zip"
@@ -161,7 +161,7 @@ module "lambda_function_existing_package_s3" {
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package      = false
   s3_existing_package = {
@@ -197,9 +197,9 @@ module "lambda_layer_local" {
 
   layer_name          = "my-layer-local"
   description         = "My amazing lambda layer (deployed from local)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 }
 
 module "lambda_layer_s3" {
@@ -209,9 +209,9 @@ module "lambda_layer_s3" {
 
   layer_name          = "my-layer-s3"
   description         = "My amazing lambda layer (deployed from S3)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 
   store_on_s3 = true
   s3_bucket   = "my-bucket-id-with-lambda-builds"
@@ -231,9 +231,9 @@ module "lambda_at_edge" {
   function_name = "my-lambda-at-edge"
   description   = "My awesome lambda@edge function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 
   tags = {
     Module = "lambda-at-edge"
@@ -250,9 +250,9 @@ module "lambda_function_in_vpc" {
   function_name = "my-lambda-in-vpc"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "../fixtures/python3.8-app1"
+  source_path = "../fixtures/python-app1"
 
   vpc_subnet_ids         = module.vpc.intra_subnets
   vpc_security_group_ids = [module.vpc.default_security_group_id]
@@ -384,7 +384,7 @@ When `source_path` is set to a list of directories the content of each will be t
 
 ### Combine various options for extreme flexibility
 
-This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing some of the available options (see [examples/build-package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) for more):
+This is the most complete way of creating a deployment package from multiple sources with multiple dependencies. This example is showing some of the available options (see [examples/build-package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) and [examples/runtimes](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/runtimes) for more):
 
 ```hcl
 source_path = [
@@ -396,12 +396,12 @@ source_path = [
       "!.*/.*\\.txt", # Skip all txt files recursively
     ]
   }, {
-    path             = "src/python3.8-app1",
+    path             = "src/python-app1",
     pip_requirements = true,
     pip_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path             = "src/python3.8-app2",
+    path             = "src/python-app2",
     pip_requirements = "requirements-large.txt",
     patterns = [
       "!vendor/colorful-0.5.4.dist-info/RECORD",
@@ -414,7 +414,7 @@ source_path = [
     npm_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path     = "src/python3.8-app3",
+    path     = "src/python-app3",
     commands = [
       "npm install",
       ":zip"
@@ -424,7 +424,7 @@ source_path = [
       "node_modules/.+", # Include all node_modules
     ],
   }, {
-    path     = "src/python3.8-app3",
+    path     = "src/python-app3",
     commands = ["go build"],
     patterns = <<END
       bin/.*
@@ -439,6 +439,7 @@ source_path = [
 - If you specify a source path as a string that references a folder and the runtime begins with `python` or `nodejs`, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
 - All arguments except `path` are optional.
 - `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
+- If you use the `commands` option and chain multiple commands, only the exit code of last command will be checked for success. If you prefer to fail fast, start the commands with the bash option `set -e` or powershell option `$ErrorActionPreference="Stop"`
 
 ```txt
     !.*/.*\.txt        # Filter all txt files recursively
@@ -458,6 +459,7 @@ source_path = [
 - `pip_requirements` - Controls whether to execute `pip install`. Set to `false` to disable this feature, `true` to run `pip install` with `requirements.txt` found in `path`. Or set to another filename which you want to use instead. When `source_path` is passed as a string containing a path (and not a list of maps), and `requirements.txt` is present, `pip install` is automatically executed.
 - `pip_tmp_dir` - Set the base directory to make the temporary directory for pip installs. Can be useful for Docker in Docker builds.
 - `poetry_install` - Controls whether to execute `poetry export` and `pip install`. Set to `false` to disable this feature, `true` to run `poetry export` with `pyproject.toml` and `poetry.lock` found in `path`. When `source_path` is passed as a string containing a path (and not a list of maps), and `pyproject.toml` with a build system `poetry` is present, `poetry export` and `pip install` are automatically executed.
+- `poetry_export_extra_args` - A list of additional poetry arguments to add to the poetry export command
 - `npm_requirements` - Controls whether to execute `npm install`. Set to `false` to disable this feature, `true` to run `npm install` with `package.json` found in `path`. Or set to another filename which you want to use instead.
 - `npm_tmp_dir` - Set the base directory to make the temporary directory for npm installs. Can be useful for Docker in Docker builds.
 - `prefix_in_zip` - If specified, will be used as a prefix inside zip-archive. By default, everything installs into the root of zip-archive.
@@ -467,16 +469,16 @@ source_path = [
 If your Lambda Function or Layer uses some dependencies you can build them in Docker and have them included into deployment package. Here is how you can do it:
 
     build_in_docker   = true
-    docker_file       = "src/python3.8-app1/docker/Dockerfile"
-    docker_build_root = "src/python3.8-app1/docker"
-    docker_image      = "public.ecr.aws/sam/build-python3.8"
-    runtime           = "python3.8"    # Setting runtime is required when building package in Docker and Lambda Layer resource.
+    docker_file       = "src/python-app1/docker/Dockerfile"
+    docker_build_root = "src/python-app1/docker"
+    docker_image      = "public.ecr.aws/sam/build-python"
+    runtime           = "python3.12"    # Setting runtime is required when building package in Docker and Lambda Layer resource.
 
 Using this module you can install dependencies from private hosts. To do this, you need for forward SSH agent:
 
     docker_with_ssh_agent = true
 
-Note that by default, the `docker_image` used comes from the registry `public.ecr.aws/sam/`, and will be based on the `runtime` that you specify. In other words, if you specify a runtime of `python3.8` and do not specify `docker_image`, then the `docker_image` will resolve to `public.ecr.aws/sam/build-python3.8`. This ensures that by default the `runtime` is available in the docker container.
+Note that by default, the `docker_image` used comes from the registry `public.ecr.aws/sam/`, and will be based on the `runtime` that you specify. In other words, if you specify a runtime of `python3.12` and do not specify `docker_image`, then the `docker_image` will resolve to `public.ecr.aws/sam/build-python3.12`. This ensures that by default the `runtime` is available in the docker container.
 
 If you override `docker_image`, be sure to keep the image in sync with your `runtime`. During the plan phase, when using docker, there is no check that the `runtime` is available to build the package. That means that if you use an image that does not have the runtime, the plan will still succeed, but then the apply will fail.
 
@@ -523,7 +525,7 @@ This can be implemented in two steps: download file locally using CURL, and pass
 
 ```hcl
 locals {
-  package_url = "https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-lambda/master/examples/fixtures/python3.8-zip/existing_package.zip"
+  package_url = "https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-lambda/master/examples/fixtures/python-zip/existing_package.zip"
   downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 }
 
@@ -550,7 +552,7 @@ module "lambda_function_existing_package_from_remote_url" {
   function_name = "my-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
   local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
@@ -621,7 +623,7 @@ Q2: How to force recreate deployment package?
 
 Q3: `null_resource.archive[0] must be replaced`
 
-> Answer: This probably mean that zip-archive has been deployed, but is currently absent locally, and it has to be recreated locally. When you run into this issue during CI/CD process (where workspace is clean) or from multiple workspaces, you can set environment variable `TF_RECREATE_MISSING_LAMBDA_PACKAGE=false` or pass `recreate_missing_package = false` as a parameter to the module and run `terraform apply`.
+> Answer: This probably mean that zip-archive has been deployed, but is currently absent locally, and it has to be recreated locally. When you run into this issue during CI/CD process (where workspace is clean) or from multiple workspaces, you can set environment variable `TF_RECREATE_MISSING_LAMBDA_PACKAGE=false` or pass `recreate_missing_package = false` as a parameter to the module and run `terraform apply`. Alternatively, you can pass `trigger_on_package_timestamp = false` as a parameter to ignore the file timestamp when deciding to create the archive or not.
 
 Q4: What does this error mean - `"We currently do not support adding policies for $LATEST."` ?
 
@@ -641,6 +643,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 - [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
 - [Container Image](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/container-image) - Create a Docker image with a platform specified in the Dockerfile (using [docker provider](https://registry.terraform.io/providers/kreuzwerker/docker)), push it to AWS ECR, and create Lambda function from it.
 - [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
+- [Runtimes](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages for various runtimes (such as Rust, Go, Java).
 - [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
 - [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
 - [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS, SNS, and EventBridge integration).
@@ -651,19 +654,20 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 - [Event Source Mapping](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/event-source-mapping) - Create Lambda Function with event source mapping configuration (SQS, DynamoDB, Amazon MQ, and Kinesis).
 - [Triggers](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/triggers) - Create Lambda Function with some triggers (eg, Cloudwatch Events, EventBridge).
 - [Code Signing](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/code-signing) - Create Lambda Function with code signing configuration.
+- [Simple CI/CD](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/simple-cicd) - Create Lambda Function as if it runs on CI/CD platform where `builds` directory is often absent.
 
 # Examples by the users of this module
 
 - [1Mill/serverless-tf-examples](https://github.com/1Mill/serverless-tf-examples/tree/main/src)
 
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.63 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 1.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
@@ -672,7 +676,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.63 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_external"></a> [external](#provider\_external) | >= 1.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
@@ -686,28 +690,21 @@ No modules.
 | Name | Type |
 |------|------|
 | [aws_cloudwatch_log_group.lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
-| [aws_iam_policy.additional_inline](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.additional_json](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.additional_jsons](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.async](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.dead_letter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.tracing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_iam_policy.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy_attachment.additional_inline](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.additional_json](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.additional_jsons](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy.additional_inline](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.additional_json](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.additional_jsons](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.async](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.dead_letter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.tracing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_iam_role_policy_attachment.additional_many](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.additional_one](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.async](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.dead_letter](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.tracing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_lambda_event_source_mapping.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_event_source_mapping) | resource |
 | [aws_lambda_function.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function) | resource |
 | [aws_lambda_function_event_invoke_config.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_event_invoke_config) | resource |
+| [aws_lambda_function_recursion_config.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_recursion_config) | resource |
 | [aws_lambda_function_url.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function_url) | resource |
 | [aws_lambda_layer_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_layer_version) | resource |
 | [aws_lambda_permission.current_version_triggers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
@@ -742,6 +739,7 @@ No modules.
 | <a name="input_assume_role_policy_statements"></a> [assume\_role\_policy\_statements](#input\_assume\_role\_policy\_statements) | Map of dynamic policy statements for assuming Lambda Function role (trust relationship) | `any` | `{}` | no |
 | <a name="input_attach_async_event_policy"></a> [attach\_async\_event\_policy](#input\_attach\_async\_event\_policy) | Controls whether async event policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | <a name="input_attach_cloudwatch_logs_policy"></a> [attach\_cloudwatch\_logs\_policy](#input\_attach\_cloudwatch\_logs\_policy) | Controls whether CloudWatch Logs policy should be added to IAM role for Lambda Function | `bool` | `true` | no |
+| <a name="input_attach_create_log_group_permission"></a> [attach\_create\_log\_group\_permission](#input\_attach\_create\_log\_group\_permission) | Controls whether to add the create log group permission to the CloudWatch logs policy | `bool` | `true` | no |
 | <a name="input_attach_dead_letter_policy"></a> [attach\_dead\_letter\_policy](#input\_attach\_dead\_letter\_policy) | Controls whether SNS/SQS dead letter notification policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | <a name="input_attach_network_policy"></a> [attach\_network\_policy](#input\_attach\_network\_policy) | Controls whether VPC/network policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | <a name="input_attach_policies"></a> [attach\_policies](#input\_attach\_policies) | Controls whether list of policies should be added to IAM role for Lambda Function | `bool` | `false` | no |
@@ -753,7 +751,9 @@ No modules.
 | <a name="input_authorization_type"></a> [authorization\_type](#input\_authorization\_type) | The type of authentication that the Lambda Function URL uses. Set to 'AWS\_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint. | `string` | `"NONE"` | no |
 | <a name="input_build_in_docker"></a> [build\_in\_docker](#input\_build\_in\_docker) | Whether to build dependencies in Docker | `bool` | `false` | no |
 | <a name="input_cloudwatch_logs_kms_key_id"></a> [cloudwatch\_logs\_kms\_key\_id](#input\_cloudwatch\_logs\_kms\_key\_id) | The ARN of the KMS Key to use when encrypting log data. | `string` | `null` | no |
+| <a name="input_cloudwatch_logs_log_group_class"></a> [cloudwatch\_logs\_log\_group\_class](#input\_cloudwatch\_logs\_log\_group\_class) | Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS` | `string` | `null` | no |
 | <a name="input_cloudwatch_logs_retention_in_days"></a> [cloudwatch\_logs\_retention\_in\_days](#input\_cloudwatch\_logs\_retention\_in\_days) | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `null` | no |
+| <a name="input_cloudwatch_logs_skip_destroy"></a> [cloudwatch\_logs\_skip\_destroy](#input\_cloudwatch\_logs\_skip\_destroy) | Whether to keep the log group (and any logs it may contain) at destroy time. | `bool` | `false` | no |
 | <a name="input_cloudwatch_logs_tags"></a> [cloudwatch\_logs\_tags](#input\_cloudwatch\_logs\_tags) | A map of tags to assign to the resource. | `map(string)` | `{}` | no |
 | <a name="input_code_signing_config_arn"></a> [code\_signing\_config\_arn](#input\_code\_signing\_config\_arn) | Amazon Resource Name (ARN) for a Code Signing Configuration | `string` | `null` | no |
 | <a name="input_compatible_architectures"></a> [compatible\_architectures](#input\_compatible\_architectures) | A list of Architectures Lambda layer is compatible with. Currently x86\_64 and arm64 can be specified. | `list(string)` | `null` | no |
@@ -797,7 +797,9 @@ No modules.
 | <a name="input_image_config_entry_point"></a> [image\_config\_entry\_point](#input\_image\_config\_entry\_point) | The ENTRYPOINT for the docker image | `list(string)` | `[]` | no |
 | <a name="input_image_config_working_directory"></a> [image\_config\_working\_directory](#input\_image\_config\_working\_directory) | The working directory for the docker image | `string` | `null` | no |
 | <a name="input_image_uri"></a> [image\_uri](#input\_image\_uri) | The ECR image URI containing the function's deployment package. | `string` | `null` | no |
+| <a name="input_include_default_tag"></a> [include\_default\_tag](#input\_include\_default\_tag) | Set to false to not include the default tag in the tags map. | `bool` | `true` | no |
 | <a name="input_invoke_mode"></a> [invoke\_mode](#input\_invoke\_mode) | Invoke mode of the Lambda Function URL. Valid values are BUFFERED (default) and RESPONSE\_STREAM. | `string` | `null` | no |
+| <a name="input_ipv6_allowed_for_dual_stack"></a> [ipv6\_allowed\_for\_dual\_stack](#input\_ipv6\_allowed\_for\_dual\_stack) | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets | `bool` | `null` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | The ARN of KMS key to use by your Lambda Function | `string` | `null` | no |
 | <a name="input_lambda_at_edge"></a> [lambda\_at\_edge](#input\_lambda\_at\_edge) | Set this to true if using Lambda@Edge, to enable publishing, limit the timeout, and allow edgelambda.amazonaws.com to invoke the function | `bool` | `false` | no |
 | <a name="input_lambda_at_edge_logs_all_regions"></a> [lambda\_at\_edge\_logs\_all\_regions](#input\_lambda\_at\_edge\_logs\_all\_regions) | Whether to specify a wildcard in IAM policy used by Lambda@Edge to allow logging in all regions | `bool` | `true` | no |
@@ -807,6 +809,10 @@ No modules.
 | <a name="input_layers"></a> [layers](#input\_layers) | List of Lambda Layer Version ARNs (maximum of 5) to attach to your Lambda Function. | `list(string)` | `null` | no |
 | <a name="input_license_info"></a> [license\_info](#input\_license\_info) | License info for your Lambda Layer. Eg, MIT or full url of a license. | `string` | `""` | no |
 | <a name="input_local_existing_package"></a> [local\_existing\_package](#input\_local\_existing\_package) | The absolute path to an existing zip-file to use | `string` | `null` | no |
+| <a name="input_logging_application_log_level"></a> [logging\_application\_log\_level](#input\_logging\_application\_log\_level) | The application log level of the Lambda Function. Valid values are "TRACE", "DEBUG", "INFO", "WARN", "ERROR", or "FATAL". | `string` | `"INFO"` | no |
+| <a name="input_logging_log_format"></a> [logging\_log\_format](#input\_logging\_log\_format) | The log format of the Lambda Function. Valid values are "JSON" or "Text". | `string` | `"Text"` | no |
+| <a name="input_logging_log_group"></a> [logging\_log\_group](#input\_logging\_log\_group) | The CloudWatch log group to send logs to. | `string` | `null` | no |
+| <a name="input_logging_system_log_level"></a> [logging\_system\_log\_level](#input\_logging\_system\_log\_level) | The system log level of the Lambda Function. Valid values are "DEBUG", "INFO", or "WARN". | `string` | `"INFO"` | no |
 | <a name="input_maximum_event_age_in_seconds"></a> [maximum\_event\_age\_in\_seconds](#input\_maximum\_event\_age\_in\_seconds) | Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600. | `number` | `null` | no |
 | <a name="input_maximum_retry_attempts"></a> [maximum\_retry\_attempts](#input\_maximum\_retry\_attempts) | Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2. | `number` | `null` | no |
 | <a name="input_memory_size"></a> [memory\_size](#input\_memory\_size) | Amount of memory in MB your Lambda Function can use at runtime. Valid value between 128 MB to 10,240 MB (10 GB), in 64 MB increments. | `number` | `128` | no |
@@ -818,12 +824,14 @@ No modules.
 | <a name="input_policy_json"></a> [policy\_json](#input\_policy\_json) | An additional policy document as JSON to attach to the Lambda Function role | `string` | `null` | no |
 | <a name="input_policy_jsons"></a> [policy\_jsons](#input\_policy\_jsons) | List of additional policy documents as JSON to attach to Lambda Function role | `list(string)` | `[]` | no |
 | <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | IAM policy name. It override the default value, which is the same as role\_name | `string` | `null` | no |
-| <a name="input_policy_path"></a> [policy\_path](#input\_policy\_path) | Path of policies to that should be added to IAM role for Lambda Function | `string` | `null` | no |
 | <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | Map of dynamic policy statements to attach to Lambda Function role | `any` | `{}` | no |
 | <a name="input_provisioned_concurrent_executions"></a> [provisioned\_concurrent\_executions](#input\_provisioned\_concurrent\_executions) | Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency. | `number` | `-1` | no |
 | <a name="input_publish"></a> [publish](#input\_publish) | Whether to publish creation/change as new Lambda Function Version. | `bool` | `false` | no |
 | <a name="input_putin_khuylo"></a> [putin\_khuylo](#input\_putin\_khuylo) | Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo! | `bool` | `true` | no |
+| <a name="input_quiet_archive_local_exec"></a> [quiet\_archive\_local\_exec](#input\_quiet\_archive\_local\_exec) | Whether to disable archive local execution output | `bool` | `true` | no |
 | <a name="input_recreate_missing_package"></a> [recreate\_missing\_package](#input\_recreate\_missing\_package) | Whether to recreate missing Lambda package if it is missing locally or not | `bool` | `true` | no |
+| <a name="input_recursive_loop"></a> [recursive\_loop](#input\_recursive\_loop) | Lambda function recursion configuration. Valid values are Allow or Terminate. | `string` | `null` | no |
+| <a name="input_region"></a> [region](#input\_region) | Region where the resource(s) will be managed. Defaults to the region set in the provider configuration | `string` | `null` | no |
 | <a name="input_replace_security_groups_on_destroy"></a> [replace\_security\_groups\_on\_destroy](#input\_replace\_security\_groups\_on\_destroy) | (Optional) When true, all security groups defined in vpc\_security\_group\_ids will be replaced with the default security group after the function is destroyed. Set the replacement\_security\_group\_ids variable to use a custom list of security groups for replacement instead. | `bool` | `null` | no |
 | <a name="input_replacement_security_group_ids"></a> [replacement\_security\_group\_ids](#input\_replacement\_security\_group\_ids) | (Optional) List of security group IDs to assign to orphaned Lambda function network interfaces upon destruction. replace\_security\_groups\_on\_destroy must be set to true to use this attribute. | `list(string)` | `null` | no |
 | <a name="input_reserved_concurrent_executions"></a> [reserved\_concurrent\_executions](#input\_reserved\_concurrent\_executions) | The amount of reserved concurrent executions for this Lambda Function. A value of 0 disables Lambda Function from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1. | `number` | `-1` | no |
@@ -839,11 +847,13 @@ No modules.
 | <a name="input_s3_bucket"></a> [s3\_bucket](#input\_s3\_bucket) | S3 bucket to store artifacts | `string` | `null` | no |
 | <a name="input_s3_existing_package"></a> [s3\_existing\_package](#input\_s3\_existing\_package) | The S3 bucket object with keys bucket, key, version pointing to an existing zip-file to use | `map(string)` | `null` | no |
 | <a name="input_s3_kms_key_id"></a> [s3\_kms\_key\_id](#input\_s3\_kms\_key\_id) | Specifies a custom KMS key to use for S3 object encryption. | `string` | `null` | no |
+| <a name="input_s3_object_override_default_tags"></a> [s3\_object\_override\_default\_tags](#input\_s3\_object\_override\_default\_tags) | Whether to override the default\_tags from provider? NB: S3 objects support a maximum of 10 tags. | `bool` | `false` | no |
 | <a name="input_s3_object_storage_class"></a> [s3\_object\_storage\_class](#input\_s3\_object\_storage\_class) | Specifies the desired Storage Class for the artifact uploaded to S3. Can be either STANDARD, REDUCED\_REDUNDANCY, ONEZONE\_IA, INTELLIGENT\_TIERING, or STANDARD\_IA. | `string` | `"ONEZONE_IA"` | no |
 | <a name="input_s3_object_tags"></a> [s3\_object\_tags](#input\_s3\_object\_tags) | A map of tags to assign to S3 bucket object. | `map(string)` | `{}` | no |
 | <a name="input_s3_object_tags_only"></a> [s3\_object\_tags\_only](#input\_s3\_object\_tags\_only) | Set to true to not merge tags with s3\_object\_tags. Useful to avoid breaching S3 Object 10 tag limit. | `bool` | `false` | no |
 | <a name="input_s3_prefix"></a> [s3\_prefix](#input\_s3\_prefix) | Directory name where artifacts should be stored in the S3 bucket. If unset, the path from `artifacts_dir` is used | `string` | `null` | no |
 | <a name="input_s3_server_side_encryption"></a> [s3\_server\_side\_encryption](#input\_s3\_server\_side\_encryption) | Specifies server-side encryption of the object in S3. Valid values are "AES256" and "aws:kms". | `string` | `null` | no |
+| <a name="input_skip_destroy"></a> [skip\_destroy](#input\_skip\_destroy) | Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state. Useful for Lambda@Edge functions attached to CloudFront distributions. | `bool` | `null` | no |
 | <a name="input_snap_start"></a> [snap\_start](#input\_snap\_start) | (Optional) Snap start settings for low-latency startups | `bool` | `false` | no |
 | <a name="input_source_path"></a> [source\_path](#input\_source\_path) | The absolute path to a local file or directory containing your Lambda source code | `any` | `null` | no |
 | <a name="input_store_on_s3"></a> [store\_on\_s3](#input\_store\_on\_s3) | Whether to store produced artifacts on S3 or locally. | `bool` | `false` | no |
@@ -851,6 +861,7 @@ No modules.
 | <a name="input_timeout"></a> [timeout](#input\_timeout) | The amount of time your Lambda Function has to run in seconds. | `number` | `3` | no |
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | Define maximum timeout for creating, updating, and deleting Lambda Function resources | `map(string)` | `{}` | no |
 | <a name="input_tracing_mode"></a> [tracing\_mode](#input\_tracing\_mode) | Tracing mode of the Lambda Function. Valid value can be either PassThrough or Active. | `string` | `null` | no |
+| <a name="input_trigger_on_package_timestamp"></a> [trigger\_on\_package\_timestamp](#input\_trigger\_on\_package\_timestamp) | Whether to recreate the Lambda package if the timestamp changes | `bool` | `true` | no |
 | <a name="input_trusted_entities"></a> [trusted\_entities](#input\_trusted\_entities) | List of additional trusted entities for assuming Lambda Function role (trust relationship) | `any` | `[]` | no |
 | <a name="input_use_existing_cloudwatch_log_group"></a> [use\_existing\_cloudwatch\_log\_group](#input\_use\_existing\_cloudwatch\_log\_group) | Whether to use an existing CloudWatch log group or create new | `bool` | `false` | no |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | List of security group ids when Lambda Function should run in the VPC. | `list(string)` | `null` | no |
@@ -862,6 +873,7 @@ No modules.
 |------|-------------|
 | <a name="output_lambda_cloudwatch_log_group_arn"></a> [lambda\_cloudwatch\_log\_group\_arn](#output\_lambda\_cloudwatch\_log\_group\_arn) | The ARN of the Cloudwatch Log Group |
 | <a name="output_lambda_cloudwatch_log_group_name"></a> [lambda\_cloudwatch\_log\_group\_name](#output\_lambda\_cloudwatch\_log\_group\_name) | The name of the Cloudwatch Log Group |
+| <a name="output_lambda_event_source_mapping_arn"></a> [lambda\_event\_source\_mapping\_arn](#output\_lambda\_event\_source\_mapping\_arn) | The event source mapping ARN |
 | <a name="output_lambda_event_source_mapping_function_arn"></a> [lambda\_event\_source\_mapping\_function\_arn](#output\_lambda\_event\_source\_mapping\_function\_arn) | The the ARN of the Lambda function the event source mapping is sending events to |
 | <a name="output_lambda_event_source_mapping_state"></a> [lambda\_event\_source\_mapping\_state](#output\_lambda\_event\_source\_mapping\_state) | The state of the event source mapping |
 | <a name="output_lambda_event_source_mapping_state_transition_reason"></a> [lambda\_event\_source\_mapping\_state\_transition\_reason](#output\_lambda\_event\_source\_mapping\_state\_transition\_reason) | The reason the event source mapping is in its current state |
@@ -891,7 +903,7 @@ No modules.
 | <a name="output_lambda_role_unique_id"></a> [lambda\_role\_unique\_id](#output\_lambda\_role\_unique\_id) | The unique id of the IAM role created for the Lambda Function |
 | <a name="output_local_filename"></a> [local\_filename](#output\_local\_filename) | The filename of zip archive deployed (if deployment was from local) |
 | <a name="output_s3_object"></a> [s3\_object](#output\_s3\_object) | The map with S3 object data of zip archive deployed (if deployment was from S3) |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## Development
 

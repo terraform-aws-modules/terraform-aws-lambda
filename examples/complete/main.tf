@@ -22,16 +22,23 @@ module "lambda_function" {
   function_name          = "${random_pet.this.id}-lambda1"
   description            = "My awesome lambda function"
   handler                = "index.lambda_handler"
-  runtime                = "python3.8"
+  runtime                = "python3.12"
   ephemeral_storage_size = 10240
   architectures          = ["x86_64"]
   publish                = true
+  # recursive_loop       = "Allow"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
 
   store_on_s3 = true
   s3_bucket   = module.s3_bucket.s3_bucket_id
   s3_prefix   = "lambda-builds/"
+
+  s3_object_override_default_tags = true
+  s3_object_tags = {
+    S3ObjectName = "lambda1"
+    Override     = "true"
+  }
 
   artifacts_dir = "${path.root}/.terraform/lambda-builds/"
 
@@ -45,8 +52,9 @@ module "lambda_function" {
     Serverless = "Terraform"
   }
 
-  role_path   = "/tf-managed/"
-  policy_path = "/tf-managed/"
+  cloudwatch_logs_log_group_class = "INFREQUENT_ACCESS"
+
+  role_path = "/tf-managed/"
 
   attach_dead_letter_policy = true
   dead_letter_target_arn    = aws_sqs_queue.dlq.arn
@@ -190,11 +198,11 @@ module "lambda_function_existing_package_local" {
   function_name = "${random_pet.this.id}-lambda-existing-package-local"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   publish       = true
 
   create_package         = false
-  local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
+  local_existing_package = "${path.module}/../fixtures/python-zip/existing_package.zip"
   #  s3_existing_package = {
   #    bucket = "humane-bear-bucket"
   #    key = "builds/506df8bef5a4fb01883cce3673c9ff0ed88fb52e8583410e0cca7980a72211a0.zip"
@@ -218,10 +226,10 @@ module "lambda_layer_local" {
 
   layer_name               = "${random_pet.this.id}-layer-local"
   description              = "My amazing lambda layer (deployed from local)"
-  compatible_runtimes      = ["python3.8"]
+  compatible_runtimes      = ["python3.12"]
   compatible_architectures = ["arm64"]
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
 }
 
 ####################################################
@@ -236,10 +244,10 @@ module "lambda_layer_with_package_deploying_externally" {
 
   layer_name          = "${random_pet.this.id}-layer-local"
   description         = "My amazing lambda layer (deployed from local)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
   create_package         = false
-  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+  local_existing_package = "../fixtures/python-zip/existing_package.zip"
 
   ignore_source_code_hash = true
 }
@@ -255,9 +263,9 @@ module "lambda_layer_s3" {
 
   layer_name          = "${random_pet.this.id}-layer-s3"
   description         = "My amazing lambda layer (deployed from S3)"
-  compatible_runtimes = ["python3.8"]
+  compatible_runtimes = ["python3.12"]
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
 
   store_on_s3 = true
   s3_bucket   = module.s3_bucket.s3_bucket_id
@@ -275,9 +283,9 @@ module "lambda_at_edge" {
   function_name = "${random_pet.this.id}-lambda-at-edge"
   description   = "My awesome lambda@edge function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
   hash_extra  = "this string should be included in hash function to produce different filename for the same source" # this is also a build trigger if this changes
 
   tags = {
@@ -294,9 +302,9 @@ module "lambda_with_provisioned_concurrency" {
 
   function_name = "${random_pet.this.id}-lambda-provisioned"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
   publish     = true
 
   hash_extra = "hash-extra-lambda-provisioned"
@@ -313,9 +321,9 @@ module "lambda_with_mixed_trusted_entities" {
 
   function_name = "${random_pet.this.id}-lambda-mixed-trusted-entities"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app1"
+  source_path = "${path.module}/../fixtures/python-app1"
 
   trusted_entities = [
     "appsync.amazonaws.com",
@@ -344,14 +352,16 @@ module "lambda_function_for_each" {
 
   for_each = toset(["dev", "staging", "prod"])
 
+  region = "us-east-1"
+
   function_name = "my-${each.value}"
   description   = "My awesome lambda function"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
   publish       = true
 
   create_package         = false
-  local_existing_package = "${path.module}/../fixtures/python3.8-zip/existing_package.zip"
+  local_existing_package = "${path.module}/../fixtures/python-zip/existing_package.zip"
 }
 
 ####################################################
@@ -364,12 +374,71 @@ module "lambda_function_with_package_deploying_externally" {
 
   function_name = "${random_pet.this.id}-lambda-with-package-deploying-externally"
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
   create_package         = false
-  local_existing_package = "../fixtures/python3.8-zip/existing_package.zip"
+  local_existing_package = "../fixtures/python-zip/existing_package.zip"
 
   ignore_source_code_hash = true
+}
+
+####################################################
+# Lambda Function no create log group permission
+####################################################
+
+module "lambda_function_no_create_log_group_permission" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-no-create-log-group-permission"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.12"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python-zip/existing_package.zip"
+
+  attach_create_log_group_permission = false
+}
+
+####################################################
+# Lambda Function with custom log group (existing)
+####################################################
+
+module "lambda_function_with_custom_log_group" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-custom-log-group"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.12"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python-zip/existing_package.zip"
+
+  use_existing_cloudwatch_log_group = true
+
+  logging_log_group             = aws_cloudwatch_log_group.custom.name
+  logging_log_format            = "JSON"
+  logging_application_log_level = "INFO"
+  logging_system_log_level      = "DEBUG"
+}
+
+####################################################################
+# Lambda Function with custom log group (automatically provisioned)
+####################################################################
+
+module "lambda_function_with_custom_auto_log_group" {
+  source = "../../"
+
+  function_name = "${random_pet.this.id}-lambda-with-custom-auto-log-group"
+  handler       = "index.lambda_handler"
+  runtime       = "python3.12"
+
+  create_package         = false
+  local_existing_package = "../fixtures/python-zip/existing_package.zip"
+
+  logging_log_group             = "/example-auto/${random_pet.this.id}"
+  logging_log_format            = "JSON"
+  logging_application_log_level = "INFO"
+  logging_system_log_level      = "DEBUG"
 }
 
 ###########
@@ -392,7 +461,7 @@ resource "random_pet" "this" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
+  version = "~> 5.0"
 
   bucket_prefix = "${random_pet.this.id}-"
   force_destroy = true
@@ -410,4 +479,9 @@ module "s3_bucket" {
 
 resource "aws_sqs_queue" "dlq" {
   name = random_pet.this.id
+}
+
+resource "aws_cloudwatch_log_group" "custom" {
+  name              = "/example/${random_pet.this.id}"
+  retention_in_days = 1
 }

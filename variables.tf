@@ -46,6 +46,12 @@ variable "putin_khuylo" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 ###########
 # Function
 ###########
@@ -176,10 +182,22 @@ variable "vpc_security_group_ids" {
   default     = null
 }
 
+variable "ipv6_allowed_for_dual_stack" {
+  description = "Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets"
+  type        = bool
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to assign to resources."
   type        = map(string)
   default     = {}
+}
+
+variable "include_default_tag" {
+  description = "Set to false to not include the default tag in the tags map."
+  type        = bool
+  default     = true
 }
 
 variable "function_tags" {
@@ -254,6 +272,12 @@ variable "timeouts" {
   default     = {}
 }
 
+variable "skip_destroy" {
+  description = "Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state. Useful for Lambda@Edge functions attached to CloudFront distributions."
+  type        = bool
+  default     = null
+}
+
 ###############
 # Function URL
 ###############
@@ -280,6 +304,12 @@ variable "invoke_mode" {
   description = "Invoke mode of the Lambda Function URL. Valid values are BUFFERED (default) and RESPONSE_STREAM."
   type        = string
   default     = null
+}
+
+variable "s3_object_override_default_tags" {
+  description = "Whether to override the default_tags from provider? NB: S3 objects support a maximum of 10 tags."
+  type        = bool
+  default     = false
 }
 
 ########
@@ -426,6 +456,18 @@ variable "cloudwatch_logs_kms_key_id" {
   default     = null
 }
 
+variable "cloudwatch_logs_skip_destroy" {
+  description = "Whether to keep the log group (and any logs it may contain) at destroy time."
+  type        = bool
+  default     = false
+}
+
+variable "cloudwatch_logs_log_group_class" {
+  description = "Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`"
+  type        = string
+  default     = null
+}
+
 variable "cloudwatch_logs_tags" {
   description = "A map of tags to assign to the resource."
   type        = map(string)
@@ -494,6 +536,12 @@ variable "attach_cloudwatch_logs_policy" {
   default     = true
 }
 
+variable "attach_create_log_group_permission" {
+  description = "Controls whether to add the create log group permission to the CloudWatch logs policy"
+  type        = bool
+  default     = true
+}
+
 variable "attach_dead_letter_policy" {
   description = "Controls whether SNS/SQS dead letter notification policy should be added to IAM role for Lambda Function"
   type        = bool
@@ -540,12 +588,6 @@ variable "attach_policies" {
   description = "Controls whether list of policies should be added to IAM role for Lambda Function"
   type        = bool
   default     = false
-}
-
-variable "policy_path" {
-  description = "Path of policies to that should be added to IAM role for Lambda Function"
-  type        = string
-  default     = null
 }
 
 variable "number_of_policy_jsons" {
@@ -754,4 +796,54 @@ variable "recreate_missing_package" {
   description = "Whether to recreate missing Lambda package if it is missing locally or not"
   type        = bool
   default     = true
+}
+
+variable "trigger_on_package_timestamp" {
+  description = "Whether to recreate the Lambda package if the timestamp changes"
+  type        = bool
+  default     = true
+}
+
+variable "quiet_archive_local_exec" {
+  description = "Whether to disable archive local execution output"
+  type        = bool
+  default     = true
+}
+
+############################################
+# Lambda Advanced Logging Settings
+############################################
+
+variable "logging_log_format" {
+  description = "The log format of the Lambda Function. Valid values are \"JSON\" or \"Text\"."
+  type        = string
+  default     = "Text"
+}
+
+variable "logging_application_log_level" {
+  description = "The application log level of the Lambda Function. Valid values are \"TRACE\", \"DEBUG\", \"INFO\", \"WARN\", \"ERROR\", or \"FATAL\"."
+  type        = string
+  default     = "INFO"
+}
+
+variable "logging_system_log_level" {
+  description = "The system log level of the Lambda Function. Valid values are \"DEBUG\", \"INFO\", or \"WARN\"."
+  type        = string
+  default     = "INFO"
+}
+
+variable "logging_log_group" {
+  description = "The CloudWatch log group to send logs to."
+  type        = string
+  default     = null
+}
+
+############################################
+# Lambda Recursive Loop Settings
+############################################
+
+variable "recursive_loop" {
+  description = "Lambda function recursion configuration. Valid values are Allow or Terminate."
+  type        = string
+  default     = null
 }
