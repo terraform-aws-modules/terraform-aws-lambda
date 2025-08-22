@@ -4,8 +4,9 @@ locals {
 
 data "http" "this" {
   for_each = {
-    rust = module.rust_lambda_function.lambda_function_url,
-    go   = module.go_lambda_function.lambda_function_url,
+    rust    = module.rust_lambda_function.lambda_function_url,
+    go      = module.go_lambda_function.lambda_function_url,
+    dotnet8 = module.dotnet8_lambda_function.lambda_function_url,
   }
 
   url = each.value
