@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.0.1...v8.1.0) (2025-08-22)
+
+
+### Features
+
+* Respect the package-lock.json for a NodeJS Lambda function ([#681](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/681)) ([5e4391c](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/5e4391c55605d11ac98655a2fd2d6a8f2583d3b6))
+
 ## [8.0.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.0.0...v8.0.1) (2025-06-25)
 
 
