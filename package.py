@@ -733,6 +733,14 @@ class BuildPlanManager:
             requirements = path
             if os.path.isdir(path):
                 requirements = os.path.join(path, "package.json")
+                npm_lock_file = os.path.join(path, "package-lock.json")
+            else:
+                npm_lock_file = os.path.join(os.path.dirname(path), "package-lock.json")
+
+            if os.path.isfile(npm_lock_file):
+                hash(npm_lock_file)
+                log.info("Added npm lock file: %s", npm_lock_file)
+
             if not os.path.isfile(requirements):
                 if required:
                     raise RuntimeError("File not found: {}".format(requirements))
@@ -1088,7 +1096,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
-                "docker_image must be specified " "for a custom image future references"
+                "docker_image must be specified for a custom image future references"
             )
 
     working_dir = os.getcwd()
@@ -1108,7 +1116,7 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
             elif OSX:
                 # Workaround for OSX when XCode command line tools'
                 # python becomes the main system python interpreter
-                os_path = "{}:/Library/Developer/CommandLineTools" "/usr/bin".format(
+                os_path = "{}:/Library/Developer/CommandLineTools/usr/bin".format(
                     os.environ["PATH"]
                 )
                 subproc_env = os.environ.copy()
@@ -1390,14 +1398,15 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
-                "docker_image must be specified " "for a custom image future references"
+                "docker_image must be specified for a custom image future references"
             )
 
     log.info("Installing npm requirements: %s", requirements_file)
     with tempdir(tmp_dir) as temp_dir:
-        requirements_filename = os.path.basename(requirements_file)
-        target_file = os.path.join(temp_dir, requirements_filename)
-        shutil.copyfile(requirements_file, target_file)
+        temp_copy = TemporaryCopy(os.path.dirname(requirements_file), temp_dir, log)
+        temp_copy.add(os.path.basename(requirements_file))
+        temp_copy.add("package-lock.json", required=False)
+        temp_copy.copy_to_target_dir()
 
         subproc_env = None
         npm_exec = "npm"
@@ -1442,8 +1451,61 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                         "available in system PATH".format(runtime)
                     ) from e
 
-            os.remove(target_file)
+            temp_copy.remove_from_target_dir()
             yield temp_dir
+
+
+class TemporaryCopy:
+    """Temporarily copy files to a specified location and remove them when
+    not needed.
+    """
+
+    def __init__(self, source_dir_path, target_dir_path, logger=None):
+        """Initialise with a target and a source directories."""
+        self.source_dir_path = source_dir_path
+        self.target_dir_path = target_dir_path
+        self._filenames = []
+        self._logger = logger
+
+    def _make_source_path(self, filename):
+        return os.path.join(self.source_dir_path, filename)
+
+    def _make_target_path(self, filename):
+        return os.path.join(self.target_dir_path, filename)
+
+    def add(self, filename, *, required=True):
+        """Add a file to be copied from from source to target directory
+        when `TemporaryCopy.copy_to_target_dir()` is called.
+
+        By default, the file must exist in the source directory. Set `required`
+        to `False` if the file is optional.
+        """
+        if os.path.exists(self._make_source_path(filename)):
+            self._filenames.append(filename)
+        elif required:
+            raise RuntimeError("File not found: {}".format(filename))
+
+    def copy_to_target_dir(self):
+        """Copy files (added so far) to the target directory."""
+        for filename in self._filenames:
+            if self._logger:
+                self._logger.info("Copying temporarily '%s'", filename)
+
+            shutil.copyfile(
+                self._make_source_path(filename),
+                self._make_target_path(filename),
+            )
+
+    def remove_from_target_dir(self):
+        """Remove files (added so far) from the target directory."""
+        for filename in self._filenames:
+            if self._logger:
+                self._logger.info("Removing temporarily copied '%s'", filename)
+
+            try:
+                os.remove(self._make_target_path(filename))
+            except FileNotFoundError:
+                pass
 
 
 def docker_image_id_command(tag):
@@ -1649,7 +1711,7 @@ def prepare_command(args):
             timestamp = timestamp_now_ns()
             was_missing = True
     else:
-        timestamp = "<WARNING: Missing lambda zip artifacts " "wouldn't be restored>"
+        timestamp = "<WARNING: Missing lambda zip artifacts wouldn't be restored>"
 
     # Replace variables in the build command with calculated values.
     build_data = {
