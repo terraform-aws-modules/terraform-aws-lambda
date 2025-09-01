@@ -20,30 +20,23 @@ module "lambda" {
   function_name                    = random_pet.this.id
   handler                          = "index.lambda_handler"
   runtime                          = "python3.12"
-  create_package                   = false
+  create_package                   = true
   enable_code_signing              = true
   code_signing_config_arn          = aws_lambda_code_signing_config.this.arn
   lambda_code_signing_profile_name = local.lambda_code_signing_profile_name
   s3_signing_prefix                = "signed/"
 
+  source_path = "${path.module}/../fixtures/python-app1"
+
   store_on_s3 = true
-  s3_existing_package = {
-    bucket     = module.s3_bucket.s3_bucket_id
-    key        = aws_s3_object.unsigned.key
-    version_id = aws_s3_object.unsigned.version_id
+  s3_bucket   = module.s3_bucket.s3_bucket_id
+  s3_prefix   = "lambda-builds/"
+
+  s3_object_override_default_tags = true
+  s3_object_tags = {
+    S3ObjectName = "lambda1"
+    Override     = "true"
   }
-
-}
-
-resource "aws_s3_object" "unsigned" {
-  bucket = module.s3_bucket.s3_bucket_id
-  key    = "unsigned/existing_package.zip"
-  source = "${path.module}/../fixtures/python-zip/existing_package.zip"
-
-  # Making sure that S3 versioning configuration is propagated properly
-  depends_on = [
-    module.s3_bucket
-  ]
 }
 
 # ################################################################################

@@ -853,13 +853,13 @@ variable "recursive_loop" {
 ###############
 
 variable "enable_code_signing" {
-  description = "Must be used with a lambda storing code on s3. Set this to true for triggering a signing job creating a signed copy of the lambda zip. https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html"
+  description = "Must be used with a lambda storing code on s3. Set this to true for triggering a signing job creating a signed copy of the lambda zip"
   type        = bool
   default     = false
 }
 
 variable "lambda_code_signing_profile_name" {
-  description = "Lambda code signing profile name https://console.aws.amazon.com/lambda/home#/code-signing-configurations"
+  description = "Lambda code signing profile name"
   type        = string
   default     = null
 }
