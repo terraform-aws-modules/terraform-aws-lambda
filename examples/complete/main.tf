@@ -30,6 +30,8 @@ module "lambda_function" {
 
   source_path = "${path.module}/../fixtures/python-app1"
 
+  source_kms_key_arn = aws_kms_key.function_deployment_package_encrypt.arn
+
   store_on_s3 = true
   s3_bucket   = module.s3_bucket.s3_bucket_id
   s3_prefix   = "lambda-builds/"
@@ -484,4 +486,9 @@ resource "aws_sqs_queue" "dlq" {
 resource "aws_cloudwatch_log_group" "custom" {
   name              = "/example/${random_pet.this.id}"
   retention_in_days = 1
+}
+
+resource "aws_kms_key" "function_deployment_package_encrypt" {
+  description             = "KMS key to encrypt Lambda source code"
+  deletion_window_in_days = 7
 }

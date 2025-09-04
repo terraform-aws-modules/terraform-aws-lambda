@@ -667,7 +667,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.12 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | >= 1.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
@@ -676,7 +676,7 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.12 |
 | <a name="provider_external"></a> [external](#provider\_external) | >= 1.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
@@ -855,6 +855,7 @@ No modules.
 | <a name="input_s3_server_side_encryption"></a> [s3\_server\_side\_encryption](#input\_s3\_server\_side\_encryption) | Specifies server-side encryption of the object in S3. Valid values are "AES256" and "aws:kms". | `string` | `null` | no |
 | <a name="input_skip_destroy"></a> [skip\_destroy](#input\_skip\_destroy) | Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state. Useful for Lambda@Edge functions attached to CloudFront distributions. | `bool` | `null` | no |
 | <a name="input_snap_start"></a> [snap\_start](#input\_snap\_start) | (Optional) Snap start settings for low-latency startups | `bool` | `false` | no |
+| <a name="input_source_kms_key_arn"></a> [source\_kms\_key\_arn](#input\_source\_kms\_key\_arn) | The ARN of the AWS Key Management Service key used to encrypt the function's .zip deployment package. Conflicts with image\_uri. | `string` | `null` | no |
 | <a name="input_source_path"></a> [source\_path](#input\_source\_path) | The absolute path to a local file or directory containing your Lambda source code | `any` | `null` | no |
 | <a name="input_store_on_s3"></a> [store\_on\_s3](#input\_store\_on\_s3) | Whether to store produced artifacts on S3 or locally. | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to assign to resources. | `map(string)` | `{}` | no |

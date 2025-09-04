@@ -278,6 +278,12 @@ variable "skip_destroy" {
   default     = null
 }
 
+variable "source_kms_key_arn" {
+  description = "The ARN of the AWS Key Management Service key used to encrypt the function's .zip deployment package. Conflicts with image_uri."
+  type        = string
+  default     = null
+}
+
 ###############
 # Function URL
 ###############

@@ -126,6 +126,7 @@ module "wrapper" {
   skip_destroy                                 = try(each.value.skip_destroy, var.defaults.skip_destroy, null)
   snap_start                                   = try(each.value.snap_start, var.defaults.snap_start, false)
   source_path                                  = try(each.value.source_path, var.defaults.source_path, null)
+  source_kms_key_arn                           = try(each.value.source_kms_key_arn, var.defaults.source_kms_key_arn, null)
   store_on_s3                                  = try(each.value.store_on_s3, var.defaults.store_on_s3, false)
   tags                                         = try(each.value.tags, var.defaults.tags, {})
   timeout                                      = try(each.value.timeout, var.defaults.timeout, 3)
