@@ -7,8 +7,7 @@ repos:
       - id: terraform_docs
         exclude: |
           (?x)^(
-            examples/.*|
-            wrappers/.*
+            examples/.*
           )$
         args:
           - "--args=--lockfile=false"
@@ -30,8 +29,7 @@ repos:
       - id: terraform_validate
         exclude: |
           (?x)^(
-            examples/.*|
-            wrappers/.*
+            examples/.*
           )$
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
