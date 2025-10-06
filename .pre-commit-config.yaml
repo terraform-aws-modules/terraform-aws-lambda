@@ -5,6 +5,11 @@ repos:
       - id: terraform_fmt
       - id: terraform_wrapper_module_for_each
       - id: terraform_docs
+        exclude: |
+          (?x)^(
+            examples/.*|
+            wrappers/.*
+          )$
         args:
           - "--args=--lockfile=false"
       - id: terraform_tflint
@@ -24,8 +29,10 @@ repos:
           - "--args=--only=terraform_workspace_remote"
       - id: terraform_validate
         exclude: |
-          ^examples/.*|
-          ^wrappers/.*
+          (?x)^(
+            examples/.*|
+            wrappers/.*
+          )$
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
