@@ -1,16 +1,16 @@
 # Lambda Function Deployment via AWS CodeDeploy
 
-Terraform module, which creates Lambda alias as well as AWS CodeDeploy resources  required to deploy.
+Terraform module, which creates Lambda alias as well as AWS CodeDeploy resources required to deploy.
 
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform.
 
 This module can create AWS CodeDeploy application and deployment group, if necessary. If you have several functions, you probably want to create those resources externally, and then set `use_existing_deployment_group = true`.
 
 During deployment this module does the following:
+
 1. Create JSON object with required AppSpec configuration. Optionally, you can store deploy script for debug purposes by setting `save_deploy_script = true`.
 1. Run [`aws deploy create-deployment` command](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html) if `create_deployment = true` and `run_deployment = true` was set.
 1. After deployment is created, it can wait for the completion if `wait_deployment_completion = true`. Be aware, that Terraform will lock the execution and it can fail if it runs for a long period of time. Set this flag for fast deployments (eg, `deployment_config_name = "CodeDeployDefault.LambdaAllAtOnce"`).
-
 
 ## Usage
 
@@ -92,15 +92,14 @@ module "lambda" {
 
 ## Examples
 
-* [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Creates Lambda Function, Alias, and all resources required to create deployments using AWS CodeDeploy.
-
+- [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Creates Lambda Function, Alias, and all resources required to create deployments using AWS CodeDeploy.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.35 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 2.0 |
@@ -198,7 +197,6 @@ No modules.
 Module managed by [Anton Babenko](https://github.com/antonbabenko). Check out [serverless.tf](https://serverless.tf) to learn more about doing serverless with Terraform.
 
 Please reach out to [Betajob](https://www.betajob.com/) if you are looking for commercial support for your Terraform, AWS, or serverless project.
-
 
 ## License
 

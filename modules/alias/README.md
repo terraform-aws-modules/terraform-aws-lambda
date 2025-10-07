@@ -6,7 +6,6 @@ Lambda Alias is required to do complex Lambda deployments, eg. using external to
 
 This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform.
 
-
 ## Usage
 
 ### Lambda Function and statically configured alias with the version of Lambda Function
@@ -83,7 +82,6 @@ module "alias_existing" {
 }
 ```
 
-
 ## Conditional creation
 
 Sometimes you need to have a way to create resources conditionally but Terraform does not allow usage of `count` inside `module` block, so the solution is to specify `create` arguments.
@@ -107,15 +105,14 @@ module "lambda" {
 
 ## Examples
 
-* [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create Lambda function and aliases in various combinations with all supported features.
-
+- [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create Lambda function and aliases in various combinations with all supported features.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.9 |
 
 ## Providers
@@ -184,7 +181,6 @@ No modules.
 Module managed by [Anton Babenko](https://github.com/antonbabenko). Check out [serverless.tf](https://serverless.tf) to learn more about doing serverless with Terraform.
 
 Please reach out to [Betajob](https://www.betajob.com/) if you are looking for commercial support for your Terraform, AWS, or serverless project.
-
 
 ## License
 

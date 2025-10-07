@@ -143,6 +143,10 @@ resource "aws_lambda_function" "this" {
     var.function_tags
   )
 
+  lifecycle {
+    ignore_changes = [image_uri]
+  }
+
   depends_on = [
     # null_resource.archive,
     # aws_s3_object.lambda_package,

@@ -434,7 +434,7 @@ source_path = [
 ]
 ```
 
-*Few notes:*
+_Few notes:_
 
 - If you specify a source path as a string that references a folder and the runtime begins with `python` or `nodejs`, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
 - All arguments except `path` are optional.
@@ -560,29 +560,35 @@ module "lambda_function_existing_package_from_remote_url" {
 ```
 
 ## <a name="sam_cli_integration"></a> How to use AWS SAM CLI to test Lambda Function?
+
 [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-command-reference.html) is an open source tool that help the developers to initiate, build, test, and deploy serverless
 applications. SAM CLI tool [supports Terraform applications](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-terraform-support.html).
 
 SAM CLI provides two ways of testing: local testing and testing on-cloud (Accelerate).
 
 ### Local Testing
+
 Using SAM CLI, you can invoke the lambda functions defined in the terraform application locally using the [sam local invoke](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-invoke.html)
 command, providing the function terraform address, or function name, and to set the `hook-name` to `terraform` to tell SAM CLI that the underlying project is a terraform application.
 
 You can execute the `sam local invoke` command from your terraform application root directory as following:
+
 ```
 sam local invoke --hook-name terraform module.hello_world_function.aws_lambda_function.this[0]
 ```
+
 You can also pass an event to your lambda function, or overwrite its environment variables. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) for more information.
 
 You can also invoke your lambda function in debugging mode, and step-through your lambda function source code locally in your preferred editor. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-debugging.html) for more information.
 
 ### Testing on-cloud (Accelerate)
+
 You can use AWS SAM CLI to quickly test your application on your AWS development account. Using SAM Accelerate, you will be able to develop your lambda functions locally,
 and once you save your updates, SAM CLI will update your development account with the updated Lambda functions. So, you can test it on cloud, and if there is any bug,
 you can quickly update the code, and SAM CLI will take care of pushing it to the cloud. Check [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/accelerate.html) for more information about SAM Accelerate.
 
 You can execute the `sam sync` command from your terraform application root directory as following:
+
 ```
 sam sync --hook-name terraform --watch
 ```
@@ -660,13 +666,12 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 
 - [1Mill/serverless-tf-examples](https://github.com/1Mill/serverless-tf-examples/tree/main/src)
 
-
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.79 |
 
 ## Providers
@@ -870,6 +875,7 @@ tox -e py
 ```
 
 You can also pass additional positional arguments to pytest which is used to run test, e.g. to make it verbose:
+
 ```
 tox -e py -- -vvv
 ```
@@ -886,6 +892,6 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 
 ## Additional information for users from Russia and Belarus
 
-* Russia has [illegally annexed Crimea in 2014](https://en.wikipedia.org/wiki/Annexation_of_Crimea_by_the_Russian_Federation) and [brought the war in Donbas](https://en.wikipedia.org/wiki/War_in_Donbas) followed by [full-scale invasion of Ukraine in 2022](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine).
-* Russia has brought sorrow and devastations to millions of Ukrainians, killed hundreds of innocent people, damaged thousands of buildings, and forced several million people to flee.
-* [Putin khuylo!](https://en.wikipedia.org/wiki/Putin_khuylo!)
+- Russia has [illegally annexed Crimea in 2014](https://en.wikipedia.org/wiki/Annexation_of_Crimea_by_the_Russian_Federation) and [brought the war in Donbas](https://en.wikipedia.org/wiki/War_in_Donbas) followed by [full-scale invasion of Ukraine in 2022](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine).
+- Russia has brought sorrow and devastations to millions of Ukrainians, killed hundreds of innocent people, damaged thousands of buildings, and forced several million people to flee.
+- [Putin khuylo!](https://en.wikipedia.org/wiki/Putin_khuylo!)
