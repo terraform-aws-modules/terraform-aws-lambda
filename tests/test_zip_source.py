@@ -24,9 +24,9 @@ def test_sh_with_docker_basic():
     bpm = BuildPlanManager(args=Mock())
 
     # Mock subprocess functions
-    with patch("package.check_output") as mock_check_output, \
-         patch("package.subprocess.run") as mock_run:
-
+    with patch("package.check_output") as mock_check_output, patch(
+        "package.subprocess.run"
+    ) as mock_run:
         # Mock docker image ID lookup
         mock_check_output.return_value = b"sha256:abc123"
 
@@ -88,10 +88,9 @@ def test_sh_with_docker_workdir_tracking():
         subdir = os.path.join(tmpdir, "subdir")
         os.makedirs(subdir, exist_ok=True)
 
-        with patch("package.check_output") as mock_check_output, \
-             patch("package.subprocess.run") as mock_run, \
-             patch("os.getcwd", return_value=tmpdir):
-
+        with patch("package.check_output") as mock_check_output, patch(
+            "package.subprocess.run"
+        ) as mock_run, patch("os.getcwd", return_value=tmpdir):
             mock_check_output.return_value = b"sha256:abc123"
 
             # Mock docker execution returning changed working directory
@@ -163,9 +162,9 @@ def test_sh_docker_error_handling():
 
     bpm = BuildPlanManager(args=Mock())
 
-    with patch("package.check_output") as mock_check_output, \
-         patch("package.subprocess.run") as mock_run:
-
+    with patch("package.check_output") as mock_check_output, patch(
+        "package.subprocess.run"
+    ) as mock_run:
         mock_check_output.return_value = b"sha256:abc123"
 
         # Mock docker execution failure

@@ -920,11 +920,11 @@ class BuildPlanManager:
                         "DOCKER TAG ID: %s -> %s", docker_image, docker_image_tag_id
                     )
                 else:
-                    # Image not found locally, try to pull it
-                    log.info("Docker image not found locally, pulling: %s", docker_image)
+                    log.info(
+                        "Docker image not found locally, pulling: %s", docker_image
+                    )
                     try:
                         check_call(docker_pull_command(docker_image))
-                        # Get the image ID after pulling
                         output = check_output(docker_image_id_command(docker_image))
                         if output:
                             docker_image_tag_id = output.decode().strip()
@@ -1022,7 +1022,6 @@ class BuildPlanManager:
                     script = action[1]
 
                     if docker and docker_image_tag_id:
-                        # Execute shell commands in Docker container
                         if log.isEnabledFor(DEBUG2):
                             log.debug("exec shell script in docker...")
                             for line in script.splitlines():
@@ -1033,7 +1032,7 @@ class BuildPlanManager:
                             [
                                 script,
                                 "retcode=$?",
-                                "pwd",  # Output final working directory to stdout
+                                "pwd",
                                 "exit $retcode",
                             ]
                         )
@@ -1041,14 +1040,14 @@ class BuildPlanManager:
                         # Add chown to fix file ownership (like pip at line 1150-1154)
                         chown_mask = "{}:{}".format(os.getuid(), os.getgid())
                         full_script = "{} && {}".format(
-                            enhanced_script, shlex_join(["chown", "-R", chown_mask, "."])
+                            enhanced_script,
+                            shlex_join(["chown", "-R", chown_mask, "."]),
                         )
 
                         shell_command = [full_script]
 
-                        # Execute in Docker
                         docker_cmd = docker_run_command(
-                            sh_work_dir,  # build_root = current working directory
+                            sh_work_dir,
                             shell_command,
                             query.runtime,
                             image=docker_image_tag_id,
@@ -1076,16 +1075,17 @@ class BuildPlanManager:
                             )
 
                         # Extract final working directory from stdout
-                        # The 'pwd' command output is in the stdout, but we need to parse it
+                        # The 'pwd' command output is in stdout, but we need to parse it
                         # because there might be other output from the script
                         output_lines = result.stdout.strip().split("\n")
                         if output_lines:
-                            # The last line should be the pwd output
                             final_pwd = output_lines[-1]
                             # Map container path back to host path
                             # Container path structure: /var/task = sh_work_dir (via volume mount)
                             if final_pwd.startswith("/var/task"):
-                                relative_path = final_pwd[len("/var/task") :].lstrip("/")
+                                relative_path = final_pwd[len("/var/task") :].lstrip(
+                                    "/"
+                                )
                                 sh_work_dir = (
                                     os.path.join(sh_work_dir, relative_path)
                                     if relative_path
@@ -1096,7 +1096,7 @@ class BuildPlanManager:
                         log.debug("WORKDIR: %s", sh_work_dir)
 
                     else:
-                        # Execute shell commands on host (existing behavior)
+                        # Execute shell commands on host
                         with tempfile.NamedTemporaryFile(
                             mode="w+t", delete=True
                         ) as temp_file:
