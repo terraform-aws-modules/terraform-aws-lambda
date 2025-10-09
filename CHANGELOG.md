@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Features
+
+* Add Docker execution support for shell commands in build process
+
 ## [8.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.0.1...v8.1.0) (2025-08-22)
 
 

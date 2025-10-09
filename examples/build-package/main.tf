@@ -102,6 +102,27 @@ module "package_src_poetry2" {
   artifacts_dir = "${path.root}/builds/package_src_poetry2/"
 }
 
+# Create zip-archive with custom shell commands executed in Docker container
+module "package_with_docker_shell_commands" {
+  source = "../../"
+
+  create_function = false
+
+  build_in_docker = true
+  runtime         = "python3.12"
+  docker_image    = "public.ecr.aws/lambda/python:3.12"
+
+  source_path = [{
+    path = "${path.module}/../fixtures/python-app1"
+    commands = [
+      "echo 'Running shell commands in Docker container'",
+      "ls -la",
+      ":zip"
+    ]
+  }]
+  artifacts_dir = "${path.root}/builds/package_docker_shell_commands/"
+}
+
 # Create zip-archive of a single directory where "poetry export" & "pip install --no-deps" will also be executed (not using docker)
 module "package_dir_poetry_no_docker" {
   source = "../../"

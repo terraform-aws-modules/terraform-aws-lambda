@@ -503,6 +503,34 @@ To override the docker entrypoint when building in docker, set `docker_entrypoin
 
 The entrypoint must map to a path within your container, so you need to either build your own image that contains the entrypoint or map it to a file on the host by mounting a volume (see [Passing additional Docker options](#passing-additional-docker-options)).
 
+#### Shell Commands with Docker
+
+When `build_in_docker = true`, shell commands specified in the `commands` parameter are executed inside the Docker container. This allows you to run package managers or other tools that are only available in the Lambda runtime environment:
+
+```hcl
+module "lambda_function" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name   = "my-lambda"
+  runtime         = "python3.12"
+  build_in_docker = true
+  docker_image    = "public.ecr.aws/lambda/python:3.12"
+
+  source_path = [{
+    path = "${path.module}/src"
+    commands = [
+      # Install system dependencies in Lambda container
+      "microdnf install -y gcc",
+      # Build native extensions
+      "pip install --target=. -r requirements.txt",
+      ":zip"
+    ]
+  }]
+}
+```
+
+This is particularly useful when you need to install packages or compile code using tools that are specific to the Lambda runtime environment but may not be available on your build machine.
+
 ## <a name="package"></a> Deployment package - Create or use existing
 
 By default, this module creates deployment package and uses it to create or update Lambda Function or Lambda Layer.

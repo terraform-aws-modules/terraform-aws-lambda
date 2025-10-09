@@ -906,6 +906,38 @@ class BuildPlanManager:
         sh_work_dir = None
         pf = None
 
+        # Resolve Docker image ID once for all steps
+        docker = query.docker if query else None
+        docker_image_tag_id = None
+
+        if docker:
+            docker_image = docker.docker_image
+            if docker_image:
+                output = check_output(docker_image_id_command(docker_image))
+                if output:
+                    docker_image_tag_id = output.decode().strip()
+                    log.debug(
+                        "DOCKER TAG ID: %s -> %s", docker_image, docker_image_tag_id
+                    )
+                else:
+                    # Image not found locally, try to pull it
+                    log.info("Docker image not found locally, pulling: %s", docker_image)
+                    try:
+                        check_call(docker_pull_command(docker_image))
+                        # Get the image ID after pulling
+                        output = check_output(docker_image_id_command(docker_image))
+                        if output:
+                            docker_image_tag_id = output.decode().strip()
+                            log.debug(
+                                "DOCKER TAG ID (after pull): %s -> %s",
+                                docker_image,
+                                docker_image_tag_id,
+                            )
+                    except subprocess.CalledProcessError as e:
+                        log.warning(
+                            "Failed to pull Docker image %s: %s", docker_image, e
+                        )
+
         for step in build_plan:
             # init step
             sh_work_dir = tf_work_dir
@@ -987,51 +1019,127 @@ class BuildPlanManager:
                                 # XXX: timestamp=0 - what actually do with it?
                                 zs.write_dirs(rd, prefix=prefix, timestamp=0)
                 elif cmd == "sh":
-                    with tempfile.NamedTemporaryFile(
-                        mode="w+t", delete=True
-                    ) as temp_file:
-                        script = action[1]
+                    script = action[1]
 
+                    if docker and docker_image_tag_id:
+                        # Execute shell commands in Docker container
                         if log.isEnabledFor(DEBUG2):
-                            log.debug("exec shell script ...")
+                            log.debug("exec shell script in docker...")
                             for line in script.splitlines():
                                 sh_log.debug(line)
 
-                        script = "\n".join(
-                            (
+                        # Prepare script with working directory tracking
+                        enhanced_script = "\n".join(
+                            [
                                 script,
-                                # NOTE: Execute `pwd` to determine the subprocess shell's
-                                # working directory after having executed all other commands.
                                 "retcode=$?",
-                                f"pwd >{temp_file.name}",
+                                "pwd",  # Output final working directory to stdout
                                 "exit $retcode",
-                            )
+                            ]
                         )
 
-                        p = subprocess.Popen(
-                            script,
+                        # Add chown to fix file ownership (like pip at line 1150-1154)
+                        chown_mask = "{}:{}".format(os.getuid(), os.getgid())
+                        full_script = "{} && {}".format(
+                            enhanced_script, shlex_join(["chown", "-R", chown_mask, "."])
+                        )
+
+                        shell_command = [full_script]
+
+                        # Execute in Docker
+                        docker_cmd = docker_run_command(
+                            sh_work_dir,  # build_root = current working directory
+                            shell_command,
+                            query.runtime,
+                            image=docker_image_tag_id,
                             shell=True,
+                            ssh_agent=docker.with_ssh_agent,
+                            docker=docker,
+                        )
+
+                        # Capture output to extract new working directory
+                        result = subprocess.run(
+                            docker_cmd,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
-                            cwd=sh_work_dir,
+                            text=True,
+                            check=False,
                         )
 
-                        call_stdout, call_stderr = p.communicate()
-                        exit_code = p.returncode
-                        log.debug("exit_code: %s", exit_code)
-                        if exit_code != 0:
+                        if result.returncode != 0:
                             raise RuntimeError(
-                                "Script did not run successfully, exit code {}: {} - {}".format(
-                                    exit_code,
-                                    call_stdout.decode("utf-8").strip(),
-                                    call_stderr.decode("utf-8").strip(),
+                                "Script did not run successfully in docker, exit code {}: {} - {}".format(
+                                    result.returncode,
+                                    result.stdout.strip(),
+                                    result.stderr.strip(),
                                 )
                             )
 
-                        temp_file.seek(0)
-                        # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
-                        sh_work_dir = temp_file.read().strip()
+                        # Extract final working directory from stdout
+                        # The 'pwd' command output is in the stdout, but we need to parse it
+                        # because there might be other output from the script
+                        output_lines = result.stdout.strip().split("\n")
+                        if output_lines:
+                            # The last line should be the pwd output
+                            final_pwd = output_lines[-1]
+                            # Map container path back to host path
+                            # Container path structure: /var/task = sh_work_dir (via volume mount)
+                            if final_pwd.startswith("/var/task"):
+                                relative_path = final_pwd[len("/var/task") :].lstrip("/")
+                                sh_work_dir = (
+                                    os.path.join(sh_work_dir, relative_path)
+                                    if relative_path
+                                    else sh_work_dir
+                                )
+                                sh_work_dir = os.path.normpath(sh_work_dir)
+
                         log.debug("WORKDIR: %s", sh_work_dir)
+
+                    else:
+                        # Execute shell commands on host (existing behavior)
+                        with tempfile.NamedTemporaryFile(
+                            mode="w+t", delete=True
+                        ) as temp_file:
+                            if log.isEnabledFor(DEBUG2):
+                                log.debug("exec shell script ...")
+                                for line in script.splitlines():
+                                    sh_log.debug(line)
+
+                            script = "\n".join(
+                                (
+                                    script,
+                                    # NOTE: Execute `pwd` to determine the subprocess shell's
+                                    # working directory after having executed all other commands.
+                                    "retcode=$?",
+                                    f"pwd >{temp_file.name}",
+                                    "exit $retcode",
+                                )
+                            )
+
+                            p = subprocess.Popen(
+                                script,
+                                shell=True,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                cwd=sh_work_dir,
+                            )
+
+                            call_stdout, call_stderr = p.communicate()
+                            exit_code = p.returncode
+                            log.debug("exit_code: %s", exit_code)
+                            if exit_code != 0:
+                                raise RuntimeError(
+                                    "Script did not run successfully, exit code {}: {} - {}".format(
+                                        exit_code,
+                                        call_stdout.decode("utf-8").strip(),
+                                        call_stderr.decode("utf-8").strip(),
+                                    )
+                                )
+
+                            temp_file.seek(0)
+                            # NOTE: This var `sh_work_dir` is consumed in cmd == "zip" loop
+                            sh_work_dir = temp_file.read().strip()
+                            log.debug("WORKDIR: %s", sh_work_dir)
 
                 elif cmd == "set:workdir":
                     path = action[1]
@@ -1511,6 +1619,14 @@ class TemporaryCopy:
 def docker_image_id_command(tag):
     """"""
     docker_cmd = ["docker", "images", "--format={{.ID}}", tag]
+    cmd_log.info(shlex_join(docker_cmd))
+    log_handler and log_handler.flush()
+    return docker_cmd
+
+
+def docker_pull_command(image):
+    """"""
+    docker_cmd = ["docker", "pull", image]
     cmd_log.info(shlex_join(docker_cmd))
     log_handler and log_handler.flush()
     return docker_cmd
