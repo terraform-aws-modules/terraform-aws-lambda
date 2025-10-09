@@ -54,6 +54,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_src_poetry2"></a> [package\_src\_poetry2](#module\_package\_src\_poetry2) | ../../ | n/a |
 | <a name="module_package_with_commands_and_patterns"></a> [package\_with\_commands\_and\_patterns](#module\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
 | <a name="module_package_with_docker"></a> [package\_with\_docker](#module\_package\_with\_docker) | ../../ | n/a |
+| <a name="module_package_with_docker_shell_commands"></a> [package\_with\_docker\_shell\_commands](#module\_package\_with\_docker\_shell\_commands) | ../../ | n/a |
 | <a name="module_package_with_npm_lock_in_docker"></a> [package\_with\_npm\_lock\_in\_docker](#module\_package\_with\_npm\_lock\_in\_docker) | ../../ | n/a |
 | <a name="module_package_with_npm_requirements_in_docker"></a> [package\_with\_npm\_requirements\_in\_docker](#module\_package\_with\_npm\_requirements\_in\_docker) | ../../ | n/a |
 | <a name="module_package_with_patterns"></a> [package\_with\_patterns](#module\_package\_with\_patterns) | ../../ | n/a |
