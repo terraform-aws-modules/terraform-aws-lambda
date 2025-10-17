@@ -1,15 +1,15 @@
 # AWS Lambda Alias
 
-Terraform module, which creates Lambda alias as well as takes care of async event configuration and Lambda permissions for alias.
+Terraform module, which creates a Lambda alias as well as takes care of async event configuration and Lambda permissions for the alias.
 
-Lambda Alias is required to do complex Lambda deployments, eg. using external tools like AWS CodeDeploy.
+Lambda Alias is required to do complex Lambda deployments, e.g., using external tools like AWS CodeDeploy.
 
-This Terraform module is the part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with the serverless in Terraform.
+This Terraform module is part of [serverless.tf framework](https://github.com/antonbabenko/serverless.tf), which aims to simplify all operations when working with serverless in Terraform.
 
 
 ## Usage
 
-### Lambda Function and statically configured alias with the version of Lambda Function
+### Lambda Function and statically configured alias with the version of the Lambda Function
 
 ```hcl
 module "lambda_function" {
@@ -43,7 +43,7 @@ module "alias_no_refresh" {
 
 ### Lambda Alias (auto-refreshing when version changed externally)
 
-This is useful when doing complex deployments using external tool.
+This is useful when doing complex deployments using an external tool.
 
 ```hcl
 module "alias_refresh" {
@@ -56,7 +56,7 @@ module "alias_refresh" {
 
 ### Lambda Alias (using existing alias)
 
-This is useful when extra configuration on existing Lambda alias is required.
+This is useful when extra configuration on the existing Lambda alias is required.
 
 ```hcl
 module "alias_refresh" {
@@ -86,7 +86,7 @@ module "alias_existing" {
 
 ## Conditional creation
 
-Sometimes you need to have a way to create resources conditionally but Terraform does not allow usage of `count` inside `module` block, so the solution is to specify `create` arguments.
+Sometimes you need to have a way to create resources conditionally, but Terraform does not allow the usage of `count` inside `module` block, so the solution is to specify `create` arguments.
 
 ```hcl
 module "lambda" {
@@ -155,7 +155,7 @@ No modules.
 | <a name="input_destination_on_failure"></a> [destination\_on\_failure](#input\_destination\_on\_failure) | Amazon Resource Name (ARN) of the destination resource for failed asynchronous invocations | `string` | `null` | no |
 | <a name="input_destination_on_success"></a> [destination\_on\_success](#input\_destination\_on\_success) | Amazon Resource Name (ARN) of the destination resource for successful asynchronous invocations | `string` | `null` | no |
 | <a name="input_event_source_mapping"></a> [event\_source\_mapping](#input\_event\_source\_mapping) | Map of event source mapping | `any` | `{}` | no |
-| <a name="input_function_name"></a> [function\_name](#input\_function\_name) | The function ARN of the Lambda function for which you want to create an alias. | `string` | `""` | no |
+| <a name="input_function_name"></a> [function\_name](#input\_function\_name) | Name or ARN of the Lambda function for which you want to create an alias. | `string` | `""` | yes |
 | <a name="input_function_version"></a> [function\_version](#input\_function\_version) | Lambda function version for which you are creating the alias. Pattern: ($LATEST\|[0-9]+). | `string` | `""` | no |
 | <a name="input_maximum_event_age_in_seconds"></a> [maximum\_event\_age\_in\_seconds](#input\_maximum\_event\_age\_in\_seconds) | Maximum age of a request that Lambda sends to a function for processing in seconds. Valid values between 60 and 21600. | `number` | `null` | no |
 | <a name="input_maximum_retry_attempts"></a> [maximum\_retry\_attempts](#input\_maximum\_retry\_attempts) | Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2. | `number` | `null` | no |
