@@ -7,7 +7,6 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
-*.tfplan
 
 # Crash log files
 crash.log
@@ -29,9 +28,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Lambda directories
-builds/
-__pycache__/
+# Zip archive
+*.zip
+builds
 
-# Test directories
-.tox
+.DS_Store
+.idea
