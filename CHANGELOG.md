@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.1.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.1.0...v8.1.1) (2025-10-21)
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#713](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/713)) ([feb4561](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/feb456187b3727b6b94562cc39d3cbce509b3d03))
+
 ## [8.1.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.0.1...v8.1.0) (2025-08-22)
 
 
