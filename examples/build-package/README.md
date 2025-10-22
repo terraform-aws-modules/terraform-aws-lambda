@@ -7,7 +7,7 @@ This example demonstrates various packaging scenarios including:
 - Poetry-based Python packages
 - Node.js packages with npm
 - Docker-based builds
-- **Quiet packaging** - suppressing Poetry/pip/npm output during builds using `quiet_archive_local_exec = true`
+- Quiet packaging - suppressing Poetry/pip/npm output during builds using `quiet_archive_local_exec = true`
 
 Look into [Runtimes Examples](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/runtimes) for more ways to build and deploy AWS Lambda Functions using supported runtimes (Rust, Go, Java).
 
