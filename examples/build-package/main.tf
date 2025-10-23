@@ -119,6 +119,24 @@ module "package_dir_poetry_no_docker" {
   artifacts_dir = "${path.root}/builds/package_dir_poetry/"
 }
 
+# Create zip-archive with Poetry dependencies and demonstrate quiet packaging output
+module "package_dir_poetry_quiet" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.12"
+
+  source_path = [
+    {
+      path           = "${path.module}/../fixtures/python-app-poetry"
+      poetry_install = true
+    }
+  ]
+  artifacts_dir            = "${path.root}/builds/package_dir_poetry_quiet/"
+  quiet_archive_local_exec = true # Suppress Poetry/pip output during packaging
+}
+
 # Create zip-archive of a single directory without running "pip install" (which is default for python runtime)
 module "package_dir_without_pip_install" {
   source = "../../"
