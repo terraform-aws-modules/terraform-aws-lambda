@@ -293,9 +293,11 @@ class ZipWriteStream:
         compress_type=zipfile.ZIP_DEFLATED,
         compresslevel=None,
         timestamp=None,
+        quiet=False,
     ):
         self.timestamp = timestamp
         self.filename = zip_filename
+        self.quiet = quiet
 
         if not (self.filename and isinstance(self.filename, str)):
             raise ValueError("Zip file path must be provided")
@@ -312,7 +314,8 @@ class ZipWriteStream:
             raise zipfile.BadZipFile("ZipStream object can't be reused")
         self._ensure_base_path(self.filename)
         self._tmp_filename = "{}.tmp".format(self.filename)
-        self._log.info("creating '%s' archive", self.filename)
+        if not self.quiet:
+            self._log.info("creating '%s' archive", self.filename)
         self._zip = zipfile.ZipFile(self._tmp_filename, "w", self._compress_type)
         return self
 
@@ -356,7 +359,8 @@ class ZipWriteStream:
         """
         self._ensure_open()
         for base_dir in base_dirs:
-            self._log.info("adding content of directory: %s", base_dir)
+            if not self.quiet:
+                self._log.info("adding content of directory: %s", base_dir)
             for path in emit_dir_content(base_dir):
                 arcname = os.path.relpath(path, base_dir)
                 self._write_file(path, prefix, arcname, timestamp)
@@ -382,10 +386,11 @@ class ZipWriteStream:
         if prefix:
             arcname = os.path.join(prefix, arcname)
         zinfo = self._make_zinfo_from_file(file_path, arcname)
-        if zinfo.is_dir():
-            self._log.info("adding: %s/", arcname)
-        else:
-            self._log.info("adding: %s", arcname)
+        if not self.quiet:
+            if zinfo.is_dir():
+                self._log.info("adding: %s/", arcname)
+            else:
+                self._log.info("adding: %s", arcname)
         if timestamp is None:
             timestamp = self.timestamp
         date_time = self._timestamp_to_date_time(timestamp)
@@ -1173,7 +1178,15 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 cmd_log.info(shlex_join(pip_command))
                 log_handler and log_handler.flush()
                 try:
-                    check_call(pip_command, env=subproc_env)
+                    if query.quiet:
+                        check_call(
+                            pip_command,
+                            env=subproc_env,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                        )
+                    else:
+                        check_call(pip_command, env=subproc_env)
                 except FileNotFoundError as e:
                     raise RuntimeError(
                         "Python interpreter version equal "
@@ -1349,7 +1362,15 @@ def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
                 cmd_log.info(poetry_commands)
                 log_handler and log_handler.flush()
                 for poetry_command in poetry_commands:
-                    check_call(poetry_command, env=subproc_env)
+                    if query.quiet:
+                        check_call(
+                            poetry_command,
+                            env=subproc_env,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                        )
+                    else:
+                        check_call(poetry_command, env=subproc_env)
 
             os.remove(pyproject_target_file)
             if poetry_lock_target_file:
@@ -1446,7 +1467,15 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                 cmd_log.info(shlex_join(npm_command))
                 log_handler and log_handler.flush()
                 try:
-                    check_call(npm_command, env=subproc_env)
+                    if query.quiet:
+                        check_call(
+                            npm_command,
+                            env=subproc_env,
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                        )
+                    else:
+                        check_call(npm_command, env=subproc_env)
                 except FileNotFoundError as e:
                     raise RuntimeError(
                         "Nodejs interpreter version equal "
@@ -1722,6 +1751,7 @@ def prepare_command(args):
         "runtime": runtime,
         "artifacts_dir": artifacts_dir,
         "build_plan": build_plan,
+        "quiet": query.quiet,
     }
     if docker:
         build_data["docker"] = docker
@@ -1781,12 +1811,13 @@ def build_command(args):
 
     # Zip up the build plan and write it to the target filename.
     # This will be used by the Lambda function as the source code package.
-    with ZipWriteStream(filename) as zs:
+    with ZipWriteStream(filename, quiet=getattr(query, "quiet", False)) as zs:
         bpm = BuildPlanManager(args, log=log)
         bpm.execute(build_plan, zs, query)
 
     os.utime(filename, ns=(timestamp, timestamp))
-    log.info("Created: %s", shlex.quote(filename))
+    if not getattr(query, "quiet", False):
+        log.info("Created: %s", shlex.quote(filename))
     if log.isEnabledFor(logging.DEBUG):
         with open(filename, "rb") as f:
             log.info("Base64sha256: %s", source_code_hash(f.read()))

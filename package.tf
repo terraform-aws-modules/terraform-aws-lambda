@@ -40,6 +40,7 @@ data "external" "archive_prepare" {
     )
 
     recreate_missing_package = var.recreate_missing_package
+    quiet                    = var.quiet_archive_local_exec
   }
 }
 
