@@ -875,7 +875,10 @@ class BuildPlanManager:
                                 required=True,
                                 tmp_dir=claim.get("npm_tmp_dir"),
                             )
-                    if path:
+                    
+                    # Only zip the source path if not using dependency managers
+                    # (pip/poetry/npm handle their own zipping)
+                    if path and not (pip_requirements or poetry_install or npm_requirements):
                         path = os.path.normpath(path)
                         step("zip", path, prefix)
                         if patterns:
