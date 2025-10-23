@@ -471,6 +471,15 @@ module "lambda_layer_poetry" {
       path           = "${path.module}/../fixtures/python-app-poetry"
       poetry_install = true
       poetry_tmp_dir = "${path.cwd}/../fixtures"
+      # Patterns work correctly with poetry_install - only poetry files are needed
+      # The installed dependencies will be in the layer, but source files will be excluded
+      patterns = [
+        "!ignore_please.txt", # Exclude this file
+        "!index.py",          # Exclude source code
+        "pyproject.toml",     # Include poetry config
+        "poetry.lock",        # Include lock file
+        "poetry.toml"         # Include poetry settings
+      ]
     }
   ]
   hash_extra = "extra-hash-to-prevent-conflicts-with-module.package_dir"
