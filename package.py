@@ -798,7 +798,6 @@ class BuildPlanManager:
                 commands = map(str.strip, commands.splitlines())
 
             if path:
-                path = os.path.normpath(path)
                 step("set:workdir", path)
 
             batch = []
@@ -836,7 +835,7 @@ class BuildPlanManager:
 
         for claim in claims:
             if isinstance(claim, str):
-                path = claim
+                path = os.path.normpath(claim)
                 if not os.path.exists(path):
                     abort(
                         'Could not locate source_path "{path}".  Paths are relative to directory where `terraform plan` is being run ("{pwd}")'.format(
@@ -862,6 +861,8 @@ class BuildPlanManager:
 
             elif isinstance(claim, dict):
                 path = claim.get("path")
+                if path:
+                    path = os.path.normpath(path)
                 patterns = claim.get("patterns")
                 commands = claim.get("commands")
                 if patterns:
@@ -890,7 +891,7 @@ class BuildPlanManager:
                             )
                         else:
                             pip_requirements_step(
-                                pip_requirements,
+                                os.path.normpath(pip_requirements),
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("pip_tmp_dir"),
@@ -926,13 +927,12 @@ class BuildPlanManager:
                             )
                         else:
                             npm_requirements_step(
-                                npm_requirements,
+                                os.path.normpath(npm_requirements),
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("npm_tmp_dir"),
                             )
                     if path:
-                        path = os.path.normpath(path)
                         step("zip", path, prefix)
                         if patterns:
                             # Take patterns into account when computing hash
