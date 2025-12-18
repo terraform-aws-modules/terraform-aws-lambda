@@ -1959,7 +1959,7 @@ def prepare_command(args):
         if log.isEnabledFor(DEBUG3):
             log.debug("QUERY: %s", json.dumps(query_data, indent=2))
         else:
-            log_excludes = ("source_path", "hash_extra_paths", "paths")
+            log_excludes = ("source_path", "hash_extra_paths", "hash_internal", "paths")
             qd = {k: v for k, v in query_data.items() if k not in log_excludes}
             log.debug("QUERY (excerpt): %s", json.dumps(qd, indent=2))
 
@@ -1972,6 +1972,7 @@ def prepare_command(args):
     hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
+    hash_internal = query.hash_internal
     recreate_missing_package = yesno_bool(
         args.recreate_missing_package
         if args.recreate_missing_package is not None
@@ -1991,6 +1992,8 @@ def prepare_command(args):
     content_hash = bpm.hash(hash_extra_paths)
     content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
+    for c in hash_internal:
+        content_hash.update(c.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
 
