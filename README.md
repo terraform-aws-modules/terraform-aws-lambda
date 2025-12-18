@@ -414,7 +414,7 @@ source_path = [
     npm_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path     = "src/python-app3",
+    path     = "src/nodejs-app2",
     commands = [
       "npm install",
       ":zip"
@@ -424,7 +424,7 @@ source_path = [
       "node_modules/.+", # Include all node_modules
     ],
   }, {
-    path     = "src/python-app3",
+    path     = "src/go-app1",
     commands = ["go build"],
     patterns = <<END
       bin/.*
