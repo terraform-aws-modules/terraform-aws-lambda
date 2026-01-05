@@ -5,6 +5,7 @@ Configuration in this directory creates deployment packages in a variety of comb
 This example demonstrates various packaging scenarios including:
 - Python packages with pip requirements
 - Poetry-based Python packages
+- UV-based Python packages
 - Node.js packages with npm
 - Docker-based builds
 - Quiet packaging - suppressing Poetry/pip/npm output during builds using `quiet_archive_local_exec = true`
@@ -46,12 +47,15 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_lambda_layer"></a> [lambda\_layer](#module\_lambda\_layer) | ../../ | n/a |
 | <a name="module_lambda_layer_pip_requirements"></a> [lambda\_layer\_pip\_requirements](#module\_lambda\_layer\_pip\_requirements) | ../.. | n/a |
 | <a name="module_lambda_layer_poetry"></a> [lambda\_layer\_poetry](#module\_lambda\_layer\_poetry) | ../../ | n/a |
+| <a name="module_lambda_layer_uv"></a> [lambda\_layer\_uv](#module\_lambda\_layer\_uv) | ../../ | n/a |
 | <a name="module_npm_package_with_commands_and_patterns"></a> [npm\_package\_with\_commands\_and\_patterns](#module\_npm\_package\_with\_commands\_and\_patterns) | ../../ | n/a |
 | <a name="module_package_dir"></a> [package\_dir](#module\_package\_dir) | ../../ | n/a |
 | <a name="module_package_dir_pip_dir"></a> [package\_dir\_pip\_dir](#module\_package\_dir\_pip\_dir) | ../../ | n/a |
 | <a name="module_package_dir_poetry"></a> [package\_dir\_poetry](#module\_package\_dir\_poetry) | ../../ | n/a |
 | <a name="module_package_dir_poetry_no_docker"></a> [package\_dir\_poetry\_no\_docker](#module\_package\_dir\_poetry\_no\_docker) | ../../ | n/a |
 | <a name="module_package_dir_poetry_quiet"></a> [package\_dir\_poetry\_quiet](#module\_package\_dir\_poetry\_quiet) | ../../ | n/a |
+| <a name="module_package_dir_uv"></a> [package\_dir\_uv](#module\_package\_dir\_uv) | ../../ | n/a |
+| <a name="module_package_dir_uv_no_docker"></a> [package\_dir\_uv\_no\_docker](#module\_package\_dir\_uv\_no\_docker) | ../../ | n/a |
 | <a name="module_package_dir_with_npm_install"></a> [package\_dir\_with\_npm\_install](#module\_package\_dir\_with\_npm\_install) | ../../ | n/a |
 | <a name="module_package_dir_with_npm_install_lock_file"></a> [package\_dir\_with\_npm\_install\_lock\_file](#module\_package\_dir\_with\_npm\_install\_lock\_file) | ../../ | n/a |
 | <a name="module_package_dir_without_npm_install"></a> [package\_dir\_without\_npm\_install](#module\_package\_dir\_without\_npm\_install) | ../../ | n/a |

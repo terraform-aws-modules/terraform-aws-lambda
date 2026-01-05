@@ -39,3 +39,12 @@ def test_get_build_system_from_pyproject_toml_poetry():
         )
         == "poetry"
     )
+
+
+def test_get_build_system_from_pyproject_toml_uv():
+    assert (
+        get_build_system_from_pyproject_toml(
+            "examples/fixtures/python-app-uv/pyproject.toml"
+        )
+        == "uv"
+    )

@@ -654,6 +654,8 @@ def get_build_system_from_pyproject_toml(pyproject_file):
                     continue
                 if bs and line.startswith("build-backend") and "poetry" in line:
                     return "poetry"
+                if line.startswith("[tool.uv]"):
+                    return "uv"
 
 
 class BuildPlanManager:
@@ -710,6 +712,25 @@ class BuildPlanManager:
 
                 step("pip", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
+
+        def uv_install_step(
+            path, uv_export_extra_args=[], prefix=None, required=False, tmp_dir=None
+        ):
+            uv_lock_file = path
+            if os.path.isdir(path):
+                uv_lock_file = os.path.join(path, "uv.lock")
+
+            if not os.path.isfile(uv_lock_file):
+                if required:
+                    raise RuntimeError("uv.lock not found: {}".format(uv_lock_file))
+            else:
+                step("uv", runtime, path, uv_export_extra_args, prefix, tmp_dir)
+                hash(uv_lock_file)
+
+                uv_project_path = os.path.dirname(uv_lock_file)
+                pyproject_file = os.path.join(uv_project_path, "pyproject.toml")
+                if os.path.isfile(pyproject_file):
+                    hash(pyproject_file)
 
         def poetry_install_step(
             path, poetry_export_extra_args=[], prefix=None, required=False, tmp_dir=None
@@ -814,8 +835,11 @@ class BuildPlanManager:
                     )
                 runtime = query.runtime
                 if runtime.startswith("python"):
-                    pip_requirements_step(os.path.join(path, "requirements.txt"))
-                    poetry_install_step(path)
+                    if os.path.isfile(os.path.join(path, "uv.lock")):
+                        uv_install_step(path)
+                    else:
+                        pip_requirements_step(os.path.join(path, "requirements.txt"))
+                        poetry_install_step(path)
                 elif runtime.startswith("nodejs"):
                     npm_requirements_step(os.path.join(path, "package.json"))
                 step("zip", path, None)
@@ -832,6 +856,8 @@ class BuildPlanManager:
                 else:
                     prefix = claim.get("prefix_in_zip")
                     pip_requirements = claim.get("pip_requirements")
+                    uv_install = claim.get("uv_install")
+                    uv_export_extra_args = claim.get("uv_export_extra_args", [])
                     poetry_install = claim.get("poetry_install")
                     poetry_export_extra_args = claim.get("poetry_export_extra_args", [])
                     npm_requirements = claim.get(
@@ -853,6 +879,16 @@ class BuildPlanManager:
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("pip_tmp_dir"),
+                            )
+
+                    if uv_install and runtime.startswith("python"):
+                        if path:
+                            uv_install_step(
+                                path,
+                                prefix=prefix,
+                                uv_export_extra_args=uv_export_extra_args,
+                                required=True,
+                                tmp_dir=claim.get("uv_tmp_dir"),
                             )
 
                     if poetry_install and runtime.startswith("python"):
@@ -978,6 +1014,20 @@ class BuildPlanManager:
                             else:
                                 # XXX: timestamp=0 - what actually do with it?
                                 zs.write_dirs(rd, prefix=prefix, timestamp=0)
+                elif cmd == "uv":
+                    (runtime, path, uv_export_extra_args, prefix, tmp_dir) = action[1:]
+                    log.info("uv_export_extra_args: %s", uv_export_extra_args)
+                    with install_uv_dependencies(
+                        query, path, uv_export_extra_args, tmp_dir
+                    ) as rd:
+                        if rd:
+                            if pf:
+                                self._zip_write_with_filter(
+                                    zs, pf, rd, prefix, timestamp=0
+                                )
+                            else:
+                                zs.write_dirs(rd, prefix=prefix, timestamp=0)
+
                 elif cmd == "npm":
                     runtime, npm_requirements, prefix, tmp_dir = action[1:]
                     with install_npm_requirements(
@@ -1376,6 +1426,145 @@ def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
                 os.remove(poetry_toml_target_file)
 
             yield temp_dir
+
+
+@contextmanager
+def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
+    # uv.lock is required for uv
+    uv_lock_file = path
+    if os.path.isdir(path):
+        uv_lock_file = os.path.join(path, "uv.lock")
+    if not os.path.exists(uv_lock_file):
+        yield
+        return
+
+    # pyproject.toml is required by uv
+    project_path = os.path.dirname(uv_lock_file)
+    pyproject_file = os.path.join(project_path, "pyproject.toml")
+    if not os.path.isfile(pyproject_file):
+        yield
+        return
+
+    runtime = query.runtime
+    artifacts_dir = query.artifacts_dir
+    docker = query.docker
+    docker_image_tag_id = None
+
+    if docker:
+        docker_file = docker.docker_file
+        docker_image = docker.docker_image
+        docker_build_root = docker.docker_build_root
+
+        if docker_image:
+            ok = False
+            while True:
+                output = check_output(docker_image_id_command(docker_image))
+                if output:
+                    docker_image_tag_id = output.decode().strip()
+                    log.debug(
+                        "DOCKER TAG ID: %s -> %s", docker_image, docker_image_tag_id
+                    )
+                    ok = True
+                if ok:
+                    break
+                docker_cmd = docker_build_command(
+                    build_root=docker_build_root,
+                    docker_file=docker_file,
+                    tag=docker_image,
+                )
+                check_call(docker_cmd)
+                ok = True
+        elif docker_file or docker_build_root:
+            raise ValueError(
+                "docker_image must be specified for a custom image future references"
+            )
+
+    working_dir = os.getcwd()
+
+    log.info("Installing python dependencies with uv & pip: %s", uv_lock_file)
+    with tempdir(tmp_dir) as temp_dir:
+
+        def copy_file_to_target(file, temp_dir):
+            filename = os.path.basename(file)
+            target_file = os.path.join(temp_dir, filename)
+            shutil.copyfile(file, target_file)
+            return target_file
+
+        pyproject_target_file = copy_file_to_target(pyproject_file, temp_dir)
+        uv_lock_target_file = copy_file_to_target(uv_lock_file, temp_dir)
+
+        uv_exec = "uv"
+        python_exec = runtime
+        subproc_env = None
+
+        if not docker:
+            if WINDOWS:
+                uv_exec = "uv.exe"
+
+        with cd(temp_dir):
+            uv_export = [
+                uv_exec,
+                "export",
+                "--frozen",
+                "--no-dev",
+                "-o",
+                "requirements.txt",
+            ] + uv_export_extra_args
+
+            uv_commands = [
+                uv_export,
+                [
+                    python_exec,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--no-compile",
+                    "--target=.",
+                    "--requirement=requirements.txt",
+                ],
+            ]
+
+            if docker:
+                with_ssh_agent = docker.with_ssh_agent
+                chown_mask = "{}:{}".format(os.getuid(), os.getgid())
+                uv_commands += [["chown", "-R", chown_mask, "."]]
+                shell_commands = [shlex_join(cmd) for cmd in uv_commands]
+                shell_command = [" && ".join(shell_commands)]
+                check_call(
+                    docker_run_command(
+                        ".",
+                        shell_command,
+                        runtime,
+                        image=docker_image_tag_id,
+                        shell=True,
+                        ssh_agent=with_ssh_agent,
+                        docker=docker,
+                    )
+                )
+            else:
+                cmd_log.info(uv_commands)
+                log_handler and log_handler.flush()
+                for uv_command in uv_commands:
+                    try:
+                        if query.quiet:
+                            check_call(
+                                uv_command,
+                                env=subproc_env,
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL,
+                            )
+                        else:
+                            check_call(uv_command, env=subproc_env)
+                    except FileNotFoundError as e:
+                        raise RuntimeError(
+                            "UV executable must be installed and available in PATH "
+                            "for runtime ({})".format(runtime)
+                        ) from e
+
+        os.remove(pyproject_target_file)
+        os.remove(uv_lock_target_file)
+
+        yield temp_dir
 
 
 @contextmanager
