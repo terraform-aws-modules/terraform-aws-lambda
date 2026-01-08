@@ -24,7 +24,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.27 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
 
@@ -32,7 +32,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.27 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_http"></a> [http](#provider\_http) | >= 3.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
 
