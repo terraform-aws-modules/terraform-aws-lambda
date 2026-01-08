@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.2.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.1.2...v8.2.0) (2026-01-08)
+
+### Features
+
+* Add provider meta user-agent, replacing static tag ([#721](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/721)) ([1309f7e](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/1309f7e8a816fb2fea1764e15ef9965bfa938c00))
+
 ## [8.1.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.1.1...v8.1.2) (2025-10-22)
 
 ### Bug Fixes
