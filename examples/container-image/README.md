@@ -14,13 +14,13 @@ $ terraform apply
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.32 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
 
@@ -28,7 +28,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.32 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 
 ## Modules
@@ -37,6 +37,7 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|--------|---------|
 | <a name="module_docker_build"></a> [docker\_build](#module\_docker\_build) | ../../modules/docker-build | n/a |
 | <a name="module_docker_build_from_ecr"></a> [docker\_build\_from\_ecr](#module\_docker\_build\_from\_ecr) | ../../modules/docker-build | n/a |
+| <a name="module_docker_build_multistage"></a> [docker\_build\_multistage](#module\_docker\_build\_multistage) | ../../modules/docker-build | n/a |
 | <a name="module_ecr"></a> [ecr](#module\_ecr) | terraform-aws-modules/ecr/aws | n/a |
 | <a name="module_lambda_function_with_docker_build"></a> [lambda\_function\_with\_docker\_build](#module\_lambda\_function\_with\_docker\_build) | ../../ | n/a |
 | <a name="module_lambda_function_with_docker_build_from_ecr"></a> [lambda\_function\_with\_docker\_build\_from\_ecr](#module\_lambda\_function\_with\_docker\_build\_from\_ecr) | ../../ | n/a |
@@ -79,4 +80,4 @@ No inputs.
 | <a name="output_lambda_layer_version"></a> [lambda\_layer\_version](#output\_lambda\_layer\_version) | The Lambda Layer version |
 | <a name="output_lambda_role_arn"></a> [lambda\_role\_arn](#output\_lambda\_role\_arn) | The ARN of the IAM role created for the Lambda Function |
 | <a name="output_lambda_role_name"></a> [lambda\_role\_name](#output\_lambda\_role\_name) | The name of the IAM role created for the Lambda Function |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->

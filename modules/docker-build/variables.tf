@@ -71,10 +71,22 @@ variable "ecr_repo_tags" {
   default     = {}
 }
 
+variable "builder" {
+  description = "The buildx builder to use for the Docker build."
+  type        = string
+  default     = null
+}
+
 variable "build_args" {
   description = "A map of Docker build arguments."
   type        = map(string)
   default     = {}
+}
+
+variable "build_target" {
+  description = "Set the target build stage to build"
+  type        = string
+  default     = null
 }
 
 variable "ecr_repo_lifecycle_policy" {
@@ -111,4 +123,10 @@ variable "triggers" {
   description = "A map of arbitrary strings that, when changed, will force the docker_image resource to be replaced. This can be used to rebuild an image when contents of source code folders change"
   type        = map(string)
   default     = {}
+}
+
+variable "cache_from" {
+  description = "List of images to consider as cache sources when building the image."
+  type        = list(string)
+  default     = []
 }

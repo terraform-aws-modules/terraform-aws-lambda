@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>bootstrap</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishAot>false</PublishAot>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.6.0" />
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.13.1" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4" />
+  </ItemGroup>
+</Project>

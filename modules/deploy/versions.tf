@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.5.7"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 3.35"
+      version = ">= 6.28"
     }
     local = {
       source  = "hashicorp/local"
@@ -14,5 +14,11 @@ terraform {
       source  = "hashicorp/null"
       version = ">= 2.0"
     }
+  }
+
+  provider_meta "aws" {
+    user_agent = [
+      "github.com/terraform-aws-modules/terraform-aws-lambda"
+    ]
   }
 }

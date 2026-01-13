@@ -65,7 +65,7 @@ terraform() {
 :note "Preparing ..."
 rm -rf src
 mkdir -p src
-cp -r "../fixtures/python3.10-app1" src
+cp -r "../fixtures/python-app1" src
 terraform init
 :echo "Destroy / Remove ZIP files"
 terraform destroy
@@ -96,7 +96,7 @@ rm -rf builds 2>/dev/null || true
 :note "Starting Part 2: Check that CICD environment will detect diff if lambda code changes"
 
 :note "Change the source code / Remove 'builds' dir"
-echo "" >> src/python3.10-app1/index.py
+echo "" >> src/python-app1/index.py
 rm -rf builds
 
 :case "Plan / Expect diff" && {

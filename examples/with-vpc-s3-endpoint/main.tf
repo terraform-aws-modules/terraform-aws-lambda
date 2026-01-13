@@ -20,13 +20,13 @@ module "lambda_s3_write" {
 
   function_name = random_pet.this.id
   handler       = "index.lambda_handler"
-  runtime       = "python3.8"
+  runtime       = "python3.12"
 
-  source_path = "${path.module}/../fixtures/python3.8-app2"
+  source_path = "${path.module}/../fixtures/python-app2"
 
   environment_variables = {
     BUCKET_NAME = module.s3_bucket.s3_bucket_id
-    REGION_NAME = data.aws_region.current.name
+    REGION_NAME = data.aws_region.current.region
   }
 
   # Let the module create a role for us
@@ -54,7 +54,7 @@ resource "random_pet" "this" {
 }
 
 data "aws_ec2_managed_prefix_list" "this" {
-  name = "com.amazonaws.${data.aws_region.current.name}.s3"
+  name = "com.amazonaws.${data.aws_region.current.region}.s3"
 }
 
 module "vpc" {
@@ -64,7 +64,7 @@ module "vpc" {
   name = random_pet.this.id
   cidr = "10.0.0.0/16"
 
-  azs = ["${data.aws_region.current.name}a", "${data.aws_region.current.name}b", "${data.aws_region.current.name}c"]
+  azs = ["${data.aws_region.current.region}a", "${data.aws_region.current.region}b", "${data.aws_region.current.region}c"]
 
   # Intra subnets are designed to have no Internet access via NAT Gateway.
   intra_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
@@ -160,7 +160,7 @@ module "kms" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
+  version = "~> 5.0"
 
   bucket_prefix = "${random_pet.this.id}-"
   force_destroy = true
