@@ -56,6 +56,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_package_dir_poetry_quiet"></a> [package\_dir\_poetry\_quiet](#module\_package\_dir\_poetry\_quiet) | ../../ | n/a |
 | <a name="module_package_dir_uv"></a> [package\_dir\_uv](#module\_package\_dir\_uv) | ../../ | n/a |
 | <a name="module_package_dir_uv_no_docker"></a> [package\_dir\_uv\_no\_docker](#module\_package\_dir\_uv\_no\_docker) | ../../ | n/a |
+| <a name="module_package_dir_uv_no_lock"></a> [package\_dir\_uv\_no\_lock](#module\_package\_dir\_uv\_no\_lock) | ../../ | n/a |
 | <a name="module_package_dir_with_npm_install"></a> [package\_dir\_with\_npm\_install](#module\_package\_dir\_with\_npm\_install) | ../../ | n/a |
 | <a name="module_package_dir_with_npm_install_lock_file"></a> [package\_dir\_with\_npm\_install\_lock\_file](#module\_package\_dir\_with\_npm\_install\_lock\_file) | ../../ | n/a |
 | <a name="module_package_dir_without_npm_install"></a> [package\_dir\_without\_npm\_install](#module\_package\_dir\_without\_npm\_install) | ../../ | n/a |

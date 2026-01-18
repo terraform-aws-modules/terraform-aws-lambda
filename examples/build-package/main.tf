@@ -137,6 +137,23 @@ module "package_dir_poetry_quiet" {
   quiet_archive_local_exec = true # Suppress Poetry/pip output during packaging
 }
 
+# Create zip-archive of a single directory where "uv export" & "pip install" will be executed
+module "package_dir_uv_no_lock" {
+  source = "../../"
+
+  create_function = false
+  runtime         = "python3.12"
+
+  source_path = [
+    {
+      path       = "${path.module}/../fixtures/python-app-uv-no-lock"
+      uv_install = true
+    }
+  ]
+
+  artifacts_dir = "${path.root}/builds/package_dir_uv_no_lock/"
+}
+
 # Create zip-archive of a single directory where "uv export" & "pip install" will be executed (using docker)
 module "package_dir_uv" {
   source = "../../"
