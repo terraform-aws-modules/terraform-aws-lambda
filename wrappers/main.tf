@@ -128,6 +128,7 @@ module "wrapper" {
   source_path                                  = try(each.value.source_path, var.defaults.source_path, null)
   store_on_s3                                  = try(each.value.store_on_s3, var.defaults.store_on_s3, false)
   tags                                         = try(each.value.tags, var.defaults.tags, {})
+  tenant_isolation_mode                        = try(each.value.tenant_isolation_mode, var.defaults.tenant_isolation_mode, false)
   timeout                                      = try(each.value.timeout, var.defaults.timeout, 3)
   timeouts                                     = try(each.value.timeouts, var.defaults.timeouts, {})
   tracing_mode                                 = try(each.value.tracing_mode, var.defaults.tracing_mode, null)

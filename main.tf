@@ -137,6 +137,13 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "tenancy_config" {
+    for_each = var.tenant_isolation_mode ? [true] : []
+    content {
+      tenant_isolation_mode = "PER_TENANT"
+    }
+  }
+
   tags = merge(
     var.tags,
     var.function_tags

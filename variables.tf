@@ -280,6 +280,12 @@ variable "skip_destroy" {
   default     = null
 }
 
+variable "tenant_isolation_mode" {
+  description = "Enable tenant isolation mode for the Lambda Function"
+  type        = bool
+  default     = false
+}
+
 ###############
 # Function URL
 ###############
