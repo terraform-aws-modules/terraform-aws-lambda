@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.2.1...v8.3.0) (2026-01-25)
+
+### Features
+
+* Add support for tenant isolation mode feature ([#718](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/718)) ([ab332c1](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/ab332c1e75f956144bce193966eb2b194d3194a3))
+
 ## [8.2.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.2.0...v8.2.1) (2026-01-25)
 
 ### Bug Fixes
