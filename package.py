@@ -1482,6 +1482,7 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
     runtime = query.runtime
     docker = query.docker
     docker_image_tag_id = None
+    generated_uv_lock = False
 
     uv_exec = "uv.exe" if WINDOWS and not docker else "uv"
     subproc_env = None
@@ -1523,6 +1524,7 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
             try:
                 check_call([uv_exec, "lock"], cwd=temp_dir)
                 uv_lock_target = os.path.join(temp_dir, "uv.lock")
+                generated_uv_lock = True
             except FileNotFoundError as e:
                 raise RuntimeError(
                     f"uv must be installed and available in PATH for runtime ({runtime})"
@@ -1600,6 +1602,15 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
                         "--requirement=requirements.txt",
                     ],
                     env=subproc_env,
+                )
+
+        if generated_uv_lock and os.path.isdir(path):
+            source_uv_lock = os.path.join(path, "uv.lock")
+            try:
+                shutil.copyfile(uv_lock_target, source_uv_lock)
+            except Exception as e:
+                log.debug(
+                    "Failed to copy generated uv.lock back to source directory: %s", e
                 )
 
         # Cleanup copied metadata
