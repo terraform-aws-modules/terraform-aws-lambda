@@ -1,5 +1,5 @@
 [project]
-name = "python-app-uv-no-lock"
+name = "uv_lambda"
 version = "0.1.0"
 description = "Fixture project to test uv without uv.lock"
 requires-python = ">=3.12"

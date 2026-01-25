@@ -1451,13 +1451,18 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
         shutil.copyfile(file, target_file)
         return target_file
 
-    def strip_editable_self_dependency(requirements_file):
+    def strip_editable_self_dependency(requirements_file, query):
         cleaned = []
+        is_lambda_build = (
+            query is not None
+            and hasattr(query, "runtime")
+            and hasattr(query, "artifacts_dir")
+        )
 
         with open(requirements_file, "r") as f:
             for line in f:
                 stripped = line.strip()
-                if stripped == "-e .":
+                if stripped == "-e ." and is_lambda_build:
                     continue
                 if stripped.startswith("-e file:") or stripped.startswith("file://"):
                     continue
@@ -1480,14 +1485,6 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
 
     uv_exec = "uv.exe" if WINDOWS and not docker else "uv"
     subproc_env = None
-
-    if not os.path.exists(uv_lock_file) and os.path.exists(pyproject_file):
-        try:
-            check_call([uv_exec, "lock"], cwd=project_path)
-        except FileNotFoundError as e:
-            raise RuntimeError(
-                f"uv must be installed and available in PATH for runtime ({runtime})"
-            ) from e
 
     if docker:
         docker_file = docker.docker_file
@@ -1522,6 +1519,18 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
         uv_lock_target = None
         if os.path.exists(uv_lock_file):
             uv_lock_target = copy_file_to_target(uv_lock_file, temp_dir)
+        elif os.path.exists(pyproject_target):
+            try:
+                check_call([uv_exec, "lock"], cwd=temp_dir)
+                uv_lock_target = os.path.join(temp_dir, "uv.lock")
+            except FileNotFoundError as e:
+                raise RuntimeError(
+                    f"uv must be installed and available in PATH for runtime ({runtime})"
+                ) from e
+        else:
+            raise RuntimeError(
+                "uv build requires either uv.lock or pyproject.toml to be present"
+            )
 
         with cd(temp_dir):
             uv_export = [
@@ -1534,7 +1543,8 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
                 "requirements.txt",
             ]
 
-            if uv_lock_target:
+            user_lock_exists = os.path.exists(uv_lock_file)
+            if user_lock_exists:
                 uv_export.append("--frozen")
 
             uv_export += uv_export_extra_args
@@ -1576,7 +1586,7 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
                 )
             else:
                 check_call(uv_export, env=subproc_env)
-                strip_editable_self_dependency("requirements.txt")
+                strip_editable_self_dependency("requirements.txt", query)
                 check_call(
                     [
                         uv_exec,
