@@ -7,12 +7,10 @@ locals {
 
   archive_filename        = try(data.external.archive_prepare[0].result.filename, null)
   archive_filename_string = local.archive_filename != null ? local.archive_filename : ""
-  archive_was_missing     = try(data.external.archive_prepare[0].result.was_missing, false)
 
   # Use a generated filename to determine when the source code has changed.
   # filename - to get package from local
-  filename    = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
-  was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : local.archive_was_missing
+  filename = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
 
   # s3_* - to get package from S3
   s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
@@ -55,7 +53,7 @@ resource "aws_lambda_function" "this" {
   }
 
   filename         = local.filename
-  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) ? filebase64sha256(local.filename) : null
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
@@ -182,7 +180,7 @@ resource "aws_lambda_layer_version" "this" {
   skip_destroy             = var.layer_skip_destroy
 
   filename         = local.filename
-  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) && !local.was_missing ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) ? filebase64sha256(local.filename) : null
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
