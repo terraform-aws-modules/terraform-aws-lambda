@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.23.0"
+      version = ">= 6.28"
     }
     external = {
       source  = "hashicorp/external"
@@ -18,5 +18,11 @@ terraform {
       source  = "hashicorp/null"
       version = ">= 2.0"
     }
+  }
+
+  provider_meta "aws" {
+    user_agent = [
+      "github.com/terraform-aws-modules/terraform-aws-lambda"
+    ]
   }
 }
