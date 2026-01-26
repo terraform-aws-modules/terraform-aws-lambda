@@ -53,7 +53,7 @@ resource "aws_lambda_function" "this" {
   }
 
   filename         = local.filename
-  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : try(filebase64sha256(local.filename), null)
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
@@ -187,7 +187,7 @@ resource "aws_lambda_layer_version" "this" {
   skip_destroy             = var.layer_skip_destroy
 
   filename         = local.filename
-  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : fileexists(local.filename)) ? filebase64sha256(local.filename) : null
+  source_code_hash = var.ignore_source_code_hash ? null : (local.filename == null ? false : try(filebase64sha256(local.filename), null)
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
