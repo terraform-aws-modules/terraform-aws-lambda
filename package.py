@@ -20,7 +20,7 @@ import tempfile
 import operator
 import platform
 import subprocess
-from subprocess import check_call, check_output
+from subprocess import check_call, check_output, CalledProcessError
 from contextlib import contextmanager
 from base64 import b64encode
 import logging
@@ -1521,13 +1521,26 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
         if os.path.exists(uv_lock_file):
             uv_lock_target = copy_file_to_target(uv_lock_file, temp_dir)
         elif os.path.exists(pyproject_target):
+            # Check if uv is available before attempting to use it
+            try:
+                check_output([uv_exec, "--version"], stderr=subprocess.STDOUT)
+            except FileNotFoundError as e:
+                raise RuntimeError(
+                    f"uv must be installed and available in PATH for runtime ({runtime}). "
+                    f"Install uv with: pip install uv"
+                ) from e
+
+            # Generate lock file
             try:
                 check_call([uv_exec, "lock"], cwd=temp_dir)
                 uv_lock_target = os.path.join(temp_dir, "uv.lock")
                 generated_uv_lock = True
-            except FileNotFoundError as e:
+                log.info("Generated uv.lock from pyproject.toml")
+            except CalledProcessError as e:
                 raise RuntimeError(
-                    f"uv must be installed and available in PATH for runtime ({runtime})"
+                    f"Failed to generate uv.lock from pyproject.toml. "
+                    f"Check that your pyproject.toml has valid dependency specifications. "
+                    f"Command failed with exit code {e.returncode}"
                 ) from e
         else:
             raise RuntimeError(
@@ -1608,15 +1621,27 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
             source_uv_lock = os.path.join(path, "uv.lock")
             try:
                 shutil.copyfile(uv_lock_target, source_uv_lock)
-            except Exception as e:
-                log.debug(
-                    "Failed to copy generated uv.lock back to source directory: %s", e
+                log.info("Generated uv.lock saved to: %s", source_uv_lock)
+            except (PermissionError, OSError) as e:
+                log.warning(
+                    "Failed to save generated uv.lock to source directory %s: %s. "
+                    "The build will succeed but uv.lock won't be persisted. "
+                    "Ensure the source directory is writable or manually copy uv.lock from the build artifacts.",
+                    path,
+                    e
                 )
 
         # Cleanup copied metadata
-        os.remove(pyproject_target)
+        try:
+            os.remove(pyproject_target)
+        except FileNotFoundError:
+            log.debug("pyproject_target already removed: %s", pyproject_target)
+
         if uv_lock_target:
-            os.remove(uv_lock_target)
+            try:
+                os.remove(uv_lock_target)
+            except FileNotFoundError:
+                log.debug("uv_lock_target already removed: %s", uv_lock_target)
 
         yield temp_dir
 
