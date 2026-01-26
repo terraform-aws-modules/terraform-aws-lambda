@@ -84,9 +84,11 @@ class TestUVPackaging:
 
         # Test that install_uv_dependencies works with existing lock
         # This is a smoke test - real testing would require uv installed
-        with patch("package.check_call") as mock_check_call, patch(
-            "package.check_output"
-        ) as mock_check_output, patch("builtins.open", side_effect=selective_open):
+        with (
+            patch("package.check_call") as mock_check_call,
+            patch("package.check_output") as mock_check_output,
+            patch("builtins.open", side_effect=selective_open),
+        ):
             mock_check_output.return_value = b"uv 0.9.21"
 
             with install_uv_dependencies(query, source_dir, [], None) as temp_dir:
@@ -116,9 +118,11 @@ class TestUVPackaging:
                 )
             return real_open(file, mode, *args, **kwargs)
 
-        with patch("package.check_call") as mock_check_call, patch(
-            "package.check_output"
-        ) as mock_check_output, patch("builtins.open", side_effect=selective_open):
+        with (
+            patch("package.check_call") as mock_check_call,
+            patch("package.check_output") as mock_check_output,
+            patch("builtins.open", side_effect=selective_open),
+        ):
             mock_check_output.return_value = b"uv 0.9.21"
 
             with install_uv_dependencies(query, source_dir, [], None) as temp_dir:
@@ -127,9 +131,9 @@ class TestUVPackaging:
                 lock_call_made = any(
                     "lock" in str(call) for call in mock_check_call.call_args_list
                 )
-                assert (
-                    lock_call_made
-                ), "uv lock should be called when uv.lock is missing"
+                assert lock_call_made, (
+                    "uv lock should be called when uv.lock is missing"
+                )
 
     def test_uv_missing_executable_error(self):
         """Test proper error when uv executable is not found."""
@@ -160,9 +164,10 @@ class TestUVPackaging:
         # Mock uv available but lock fails
         from subprocess import CalledProcessError
 
-        with patch("package.check_output") as mock_check_output, patch(
-            "package.check_call"
-        ) as mock_check_call:
+        with (
+            patch("package.check_output") as mock_check_output,
+            patch("package.check_call") as mock_check_call,
+        ):
             mock_check_output.return_value = b"uv 0.9.21"
             # First check_call is for 'uv lock' - make it fail
             mock_check_call.side_effect = [
@@ -217,10 +222,10 @@ dependencies = ["requests"]
                 return real_open(file, mode, *args, **kwargs)
 
             try:
-                with patch("package.check_call"), patch(
-                    "package.check_output"
-                ) as mock_check_output, patch(
-                    "builtins.open", side_effect=selective_open
+                with (
+                    patch("package.check_call"),
+                    patch("package.check_output") as mock_check_output,
+                    patch("builtins.open", side_effect=selective_open),
                 ):
                     mock_check_output.return_value = b"uv 0.9.21"
 
