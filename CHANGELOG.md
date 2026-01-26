@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.3.0...v8.4.0) (2026-01-26)
+
+### Features
+
+* Add uv support for python packaging ([#723](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/723)) ([8dc36e8](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/8dc36e89a31c0fa249ee89188f9ee8d9c79674d1))
+
 ## [8.3.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.2.1...v8.3.0) (2026-01-25)
 
 ### Features
