@@ -1,6 +1,10 @@
-from package import get_build_system_from_pyproject_toml, BuildPlanManager, install_uv_dependencies
+from package import (
+    get_build_system_from_pyproject_toml,
+    BuildPlanManager,
+    install_uv_dependencies,
+)
 from pytest import raises
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, mock_open
 import os
 import tempfile
 
@@ -65,11 +69,24 @@ class TestUVPackaging:
         query.runtime = "python3.12"
         query.docker = None
 
+        # Mock requirements.txt content
+        mock_requirements = "requests==2.31.0\nidna==3.11\n"
+
+        # Create a selective mock for open that only mocks requirements.txt
+        real_open = open
+
+        def selective_open(file, mode="r", *args, **kwargs):
+            if isinstance(file, str) and "requirements.txt" in file:
+                return mock_open(read_data=mock_requirements)(
+                    file, mode, *args, **kwargs
+                )
+            return real_open(file, mode, *args, **kwargs)
+
         # Test that install_uv_dependencies works with existing lock
         # This is a smoke test - real testing would require uv installed
-        with patch('package.check_call') as mock_check_call, \
-             patch('package.check_output') as mock_check_output:
-
+        with patch("package.check_call") as mock_check_call, patch(
+            "package.check_output"
+        ) as mock_check_output, patch("builtins.open", side_effect=selective_open):
             mock_check_output.return_value = b"uv 0.9.21"
 
             with install_uv_dependencies(query, source_dir, [], None) as temp_dir:
@@ -86,19 +103,33 @@ class TestUVPackaging:
         query.runtime = "python3.12"
         query.docker = None
 
-        with patch('package.check_call') as mock_check_call, \
-             patch('package.check_output') as mock_check_output:
+        # Mock requirements.txt content
+        mock_requirements = "requests==2.31.0\nidna==3.11\n"
 
+        # Create a selective mock for open that only mocks requirements.txt
+        real_open = open
+
+        def selective_open(file, mode="r", *args, **kwargs):
+            if isinstance(file, str) and "requirements.txt" in file:
+                return mock_open(read_data=mock_requirements)(
+                    file, mode, *args, **kwargs
+                )
+            return real_open(file, mode, *args, **kwargs)
+
+        with patch("package.check_call") as mock_check_call, patch(
+            "package.check_output"
+        ) as mock_check_output, patch("builtins.open", side_effect=selective_open):
             mock_check_output.return_value = b"uv 0.9.21"
 
             with install_uv_dependencies(query, source_dir, [], None) as temp_dir:
                 assert temp_dir is not None
                 # Verify uv lock was called for lock generation
                 lock_call_made = any(
-                    'lock' in str(call)
-                    for call in mock_check_call.call_args_list
+                    "lock" in str(call) for call in mock_check_call.call_args_list
                 )
-                assert lock_call_made, "uv lock should be called when uv.lock is missing"
+                assert (
+                    lock_call_made
+                ), "uv lock should be called when uv.lock is missing"
 
     def test_uv_missing_executable_error(self):
         """Test proper error when uv executable is not found."""
@@ -109,8 +140,12 @@ class TestUVPackaging:
         query.docker = None
 
         # Mock check_output to raise FileNotFoundError (uv not found)
-        with patch('package.check_output', side_effect=FileNotFoundError("uv not found")):
-            with raises(RuntimeError, match="uv must be installed and available in PATH"):
+        with patch(
+            "package.check_output", side_effect=FileNotFoundError("uv not found")
+        ):
+            with raises(
+                RuntimeError, match="uv must be installed and available in PATH"
+            ):
                 with install_uv_dependencies(query, source_dir, [], None):
                     pass
 
@@ -125,16 +160,18 @@ class TestUVPackaging:
         # Mock uv available but lock fails
         from subprocess import CalledProcessError
 
-        with patch('package.check_output') as mock_check_output, \
-             patch('package.check_call') as mock_check_call:
-
+        with patch("package.check_output") as mock_check_output, patch(
+            "package.check_call"
+        ) as mock_check_call:
             mock_check_output.return_value = b"uv 0.9.21"
             # First check_call is for 'uv lock' - make it fail
             mock_check_call.side_effect = [
-                CalledProcessError(1, ['uv', 'lock']),
+                CalledProcessError(1, ["uv", "lock"]),
             ]
 
-            with raises(RuntimeError, match="Failed to generate uv.lock from pyproject.toml"):
+            with raises(
+                RuntimeError, match="Failed to generate uv.lock from pyproject.toml"
+            ):
                 with install_uv_dependencies(query, source_dir, [], None):
                     pass
 
@@ -148,14 +185,16 @@ class TestUVPackaging:
             # Create pyproject.toml without uv.lock
             pyproject_path = os.path.join(source_dir, "pyproject.toml")
             with open(pyproject_path, "w") as f:
-                f.write("""
+                f.write(
+                    """
 [project]
 name = "test-uv"
 version = "0.1.0"
 dependencies = ["requests"]
 
 [tool.uv]
-""")
+"""
+                )
 
             # Make directory read-only
             os.chmod(source_dir, 0o555)
@@ -164,13 +203,30 @@ dependencies = ["requests"]
             query.runtime = "python3.12"
             query.docker = None
 
-            try:
-                with patch('package.check_call'), \
-                     patch('package.check_output') as mock_check_output:
+            # Mock requirements.txt content
+            mock_requirements = "requests==2.31.0\n"
 
+            # Create a selective mock for open that only mocks requirements.txt
+            real_open = open
+
+            def selective_open(file, mode="r", *args, **kwargs):
+                if isinstance(file, str) and "requirements.txt" in file:
+                    return mock_open(read_data=mock_requirements)(
+                        file, mode, *args, **kwargs
+                    )
+                return real_open(file, mode, *args, **kwargs)
+
+            try:
+                with patch("package.check_call"), patch(
+                    "package.check_output"
+                ) as mock_check_output, patch(
+                    "builtins.open", side_effect=selective_open
+                ):
                     mock_check_output.return_value = b"uv 0.9.21"
 
-                    with install_uv_dependencies(query, source_dir, [], None) as temp_dir:
+                    with install_uv_dependencies(
+                        query, source_dir, [], None
+                    ) as temp_dir:
                         assert temp_dir is not None
                         # Note: This test verifies that the build doesn't crash
                         # when copying to read-only directory. The warning logging
@@ -186,12 +242,14 @@ dependencies = ["requests"]
 
             # Create requirements with editable dependencies
             with open(requirements_file, "w") as f:
-                f.write("""requests==2.31.0
+                f.write(
+                    """requests==2.31.0
 -e .
 urllib3==2.6.2
 -e file:///path/to/local
 idna==3.11
-""")
+"""
+                )
 
             # Mock query for Lambda build
             query = Mock()
@@ -214,7 +272,12 @@ idna==3.11
     def test_uv_build_system_detection_with_uv_lock(self):
         """Test UV is detected when uv.lock exists in directory."""
         # Test with actual fixture
-        assert get_build_system_from_pyproject_toml("examples/fixtures/python-app-uv") == "uv"
+        assert (
+            get_build_system_from_pyproject_toml(
+                "examples/fixtures/python-app-uv/pyproject.toml"
+            )
+            == "uv"
+        )
 
     def test_uv_build_system_detection_without_lock(self):
         """Test UV is detected via [tool.uv] even without uv.lock."""

@@ -1628,7 +1628,7 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
                     "The build will succeed but uv.lock won't be persisted. "
                     "Ensure the source directory is writable or manually copy uv.lock from the build artifacts.",
                     path,
-                    e
+                    e,
                 )
 
         # Cleanup copied metadata
