@@ -685,17 +685,15 @@ class BuildPlanManager:
         self._source_paths = None
         self._log = log or logging.root
 
-    def hash(self, extra_paths):
+    def hash(self):
         if not self._source_paths:
             raise ValueError("BuildPlanManager.plan() should be called first")
-
-        content_hash_paths = self._source_paths + [(p, None, None) for p in extra_paths]
 
         # Generate a hash based on file names and content. Also use the
         # runtime value, build command, and content of the build paths
         # because they can have an effect on the resulting archive.
         self._log.debug("Computing content hash on files...")
-        content_hash = generate_content_hash(content_hash_paths, log=self._log)
+        content_hash = generate_content_hash(self._source_paths, log=self._log)
         return content_hash
 
     def plan(self, source_path, query, log=None):
@@ -1986,7 +1984,7 @@ def prepare_command(args):
         if log.isEnabledFor(DEBUG3):
             log.debug("QUERY: %s", json.dumps(query_data, indent=2))
         else:
-            log_excludes = ("source_path", "hash_extra_paths", "hash_internal", "paths")
+            log_excludes = ("source_path", "hash_internal", "paths")
             qd = {k: v for k, v in query_data.items() if k not in log_excludes}
             log.debug("QUERY (excerpt): %s", json.dumps(qd, indent=2))
 
@@ -1996,7 +1994,6 @@ def prepare_command(args):
     runtime = query.runtime
     function_name = query.function_name
     artifacts_dir = query.artifacts_dir
-    hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
     hash_internal = query.hash_internal
@@ -2013,10 +2010,7 @@ def prepare_command(args):
     if log.isEnabledFor(DEBUG2):
         log.debug("BUILD_PLAN: %s", json.dumps(build_plan, indent=2))
 
-    # Expand a Terraform path.<cwd|root|module> references
-    hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
-
-    content_hash = bpm.hash(hash_extra_paths)
+    content_hash = bpm.hash()
     content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
     for c in hash_internal:

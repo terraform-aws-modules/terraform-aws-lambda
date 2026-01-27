@@ -26,11 +26,10 @@ data "external" "archive_prepare" {
       docker_entrypoint         = var.docker_entrypoint
     }) : null
 
-    artifacts_dir    = var.artifacts_dir
-    runtime          = var.runtime
-    source_path      = try(tostring(var.source_path), jsonencode(var.source_path))
-    hash_extra       = var.hash_extra
-    hash_extra_paths = jsonencode([])
+    artifacts_dir = var.artifacts_dir
+    runtime       = var.runtime
+    source_path   = try(tostring(var.source_path), jsonencode(var.source_path))
+    hash_extra    = var.hash_extra
     # Include into the hash the module sources that affect the packaging.
     hash_internal = jsonencode([filesha256("${path.module}/package.py")])
 
