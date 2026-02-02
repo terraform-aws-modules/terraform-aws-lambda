@@ -116,7 +116,7 @@ module "package_dir_poetry_no_docker" {
       poetry_install = true
     }
   ]
-  artifacts_dir = "${path.root}/builds/package_dir_poetry/"
+  artifacts_dir = "${path.root}/builds/package_dir_poetry_no_docker/"
 }
 
 # Create zip-archive with Poetry dependencies and demonstrate quiet packaging output

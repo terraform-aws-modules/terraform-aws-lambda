@@ -1,8 +1,8 @@
 name: Tests
 
 env:
-  PYTEST_VERSION: 7.4.4
-  RUFF_VERSION: 0.1.13
+  PYTEST_VERSION: 9.0.2
+  RUFF_VERSION: 0.14.14
   RUFF_PY_VERSION: 3.12
 
 on:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python_version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4.1.1
@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
 
-      - name: Install poetry
+      - name: Install pytest
         shell: bash
         run: |
           pip install pytest==${{ env.PYTEST_VERSION }}

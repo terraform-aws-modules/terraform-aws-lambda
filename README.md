@@ -414,7 +414,7 @@ source_path = [
     npm_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path     = "src/python-app3",
+    path     = "src/nodejs-app2",
     commands = [
       "npm install",
       ":zip"
@@ -424,7 +424,7 @@ source_path = [
       "node_modules/.+", # Include all node_modules
     ],
   }, {
-    path     = "src/python-app3",
+    path     = "src/go-app1",
     commands = ["go build"],
     patterns = <<END
       bin/.*
@@ -437,9 +437,9 @@ source_path = [
 *Few notes:*
 
 - If you specify a source path as a string that references a folder and the runtime begins with `python` or `nodejs`, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
+- If you use the `commands` option and chain multiple commands, only the exit code of last command will be checked for success. If you prefer to fail fast, start the commands with the bash option `set -e` or powershell option `$ErrorActionPreference="Stop"`
 - All arguments except `path` are optional.
 - `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
-- If you use the `commands` option and chain multiple commands, only the exit code of last command will be checked for success. If you prefer to fail fast, start the commands with the bash option `set -e` or powershell option `$ErrorActionPreference="Stop"`
 
 ```txt
     !.*/.*\.txt        # Filter all txt files recursively
