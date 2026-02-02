@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.4.0...v8.5.0) (2026-02-02)
+
+### Features
+
+* Filter the directories/files hashed when using commands with patterns, docs and examples fixes ([#720](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/720)) ([daa5dfc](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/daa5dfc39aa4ae773df783587ef757c03ab094ce))
+
 ## [8.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.3.0...v8.4.0) (2026-01-26)
 
 ### Features
