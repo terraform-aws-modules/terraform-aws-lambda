@@ -1,8 +1,8 @@
 name: Tests
 
 env:
-  PYTEST_VERSION: 7.4.4
-  RUFF_VERSION: 0.1.13
+  PYTEST_VERSION: 9.0.2
+  RUFF_VERSION: 0.14.14
   RUFF_PY_VERSION: 3.12
 
 on:
