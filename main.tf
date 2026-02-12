@@ -12,7 +12,7 @@ locals {
   # filename - to get package from local
   filename = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
 
-  source_code_hash = var.ignore_source_code_hash || terraform_data.package_filename.output.filename == null ? null : try(filebase64sha256(terraform_data.package_filename.output.filename), null)
+  source_code_hash = var.ignore_source_code_hash ? null : (terraform_data.package_filename_for_hash[0].output.filename != null ? try(filebase64sha256(terraform_data.package_filename_for_hash[0].output.filename), null) : null)
 
   # s3_* - to get package from S3
   s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
@@ -26,7 +26,9 @@ locals {
 # that depends on null_resource.archive, and, if var.local_existing_package
 # is set to the output of another resource, on that other resource.
 # terraform-docs-ignore
-resource "terraform_data" "package_filename" {
+resource "terraform_data" "package_filename_for_hash" {
+  count = var.ignore_source_code_hash ? 0 : 1
+
   input = {
     filename = local.filename
   }
