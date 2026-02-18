@@ -20,6 +20,7 @@ module "wrapper" {
   attach_tracing_policy                        = try(each.value.attach_tracing_policy, var.defaults.attach_tracing_policy, false)
   authorization_type                           = try(each.value.authorization_type, var.defaults.authorization_type, "NONE")
   build_in_docker                              = try(each.value.build_in_docker, var.defaults.build_in_docker, false)
+  cloudwatch_logs_deletion_protection_enabled  = try(each.value.cloudwatch_logs_deletion_protection_enabled, var.defaults.cloudwatch_logs_deletion_protection_enabled, null)
   cloudwatch_logs_kms_key_id                   = try(each.value.cloudwatch_logs_kms_key_id, var.defaults.cloudwatch_logs_kms_key_id, null)
   cloudwatch_logs_log_group_class              = try(each.value.cloudwatch_logs_log_group_class, var.defaults.cloudwatch_logs_log_group_class, null)
   cloudwatch_logs_retention_in_days            = try(each.value.cloudwatch_logs_retention_in_days, var.defaults.cloudwatch_logs_retention_in_days, null)
