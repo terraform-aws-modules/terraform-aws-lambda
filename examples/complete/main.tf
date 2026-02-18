@@ -53,7 +53,7 @@ module "lambda_function" {
   }
 
   cloudwatch_logs_log_group_class             = "INFREQUENT_ACCESS"
-  cloudwatch_logs_deletion_protection_enabled = true
+  cloudwatch_logs_deletion_protection_enabled = false
 
   role_path = "/tf-managed/"
 
