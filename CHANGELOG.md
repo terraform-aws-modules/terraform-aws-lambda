@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.6.0...v8.7.0) (2026-02-18)
+
+### Features
+
+* Add support for durable lambda feature ([#731](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/731)) ([582013a](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/582013abd9c67dafe903accf3970b6f5e5b8ff49))
+
+## [8.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.5.1...v8.6.0) (2026-02-18)
+
+### Features
+
+* Add deletion_protection_enabled argument for lambda log group ([#736](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/736)) ([9b6ba43](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/9b6ba43a3b129ff26b9b14e9331a0ae7ef7ea57e))
+
+## [8.5.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.5.0...v8.5.1) (2026-02-18)
+
+### Bug Fixes
+
+* Fix error with inconsistent values for fileexists when setting the source code hash ([#734](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/734)) ([99a1bc5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/99a1bc50e332dc8702216faf5c0380cbbe11c89c))
+
+## [8.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.4.0...v8.5.0) (2026-02-02)
+
+### Features
+
+* Filter the directories/files hashed when using commands with patterns, docs and examples fixes ([#720](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/720)) ([daa5dfc](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/daa5dfc39aa4ae773df783587ef757c03ab094ce))
+
 ## [8.4.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.3.0...v8.4.0) (2026-01-26)
 
 ### Features

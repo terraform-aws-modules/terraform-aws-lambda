@@ -414,7 +414,7 @@ source_path = [
     npm_tmp_dir      = "/tmp/dir/location"
     prefix_in_zip    = "foo/bar1",
   }, {
-    path     = "src/python-app3",
+    path     = "src/nodejs-app2",
     commands = [
       "npm install",
       ":zip"
@@ -424,7 +424,7 @@ source_path = [
       "node_modules/.+", # Include all node_modules
     ],
   }, {
-    path     = "src/python-app3",
+    path     = "src/go-app1",
     commands = ["go build"],
     patterns = <<END
       bin/.*
@@ -437,9 +437,9 @@ source_path = [
 *Few notes:*
 
 - If you specify a source path as a string that references a folder and the runtime begins with `python` or `nodejs`, the build process will automatically build python and nodejs dependencies if `requirements.txt` or `package.json` file will be found in the source folder. If you want to customize this behavior, please use the object notation as explained below.
+- If you use the `commands` option and chain multiple commands, only the exit code of last command will be checked for success. If you prefer to fail fast, start the commands with the bash option `set -e` or powershell option `$ErrorActionPreference="Stop"`
 - All arguments except `path` are optional.
 - `patterns` - List of Python regex filenames should satisfy. Default value is "include everything" which is equal to `patterns = [".*"]`. This can also be specified as multiline heredoc string (no comments allowed). Some examples of valid patterns:
-- If you use the `commands` option and chain multiple commands, only the exit code of last command will be checked for success. If you prefer to fail fast, start the commands with the bash option `set -e` or powershell option `$ErrorActionPreference="Stop"`
 
 ```txt
     !.*/.*\.txt        # Filter all txt files recursively
@@ -529,20 +529,15 @@ locals {
   downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 }
 
-resource "null_resource" "download_package" {
-  triggers = {
-    downloaded = local.downloaded
+resource "terraform_data" "download_package" {
+  input = {
+    filename = local.downloaded
   }
+
+  triggers_replace = [local.downloaded]
 
   provisioner "local-exec" {
     command = "curl -L -o ${local.downloaded} ${local.package_url}"
-  }
-}
-
-data "null_data_source" "downloaded_package" {
-  inputs = {
-    id       = null_resource.download_package.id
-    filename = local.downloaded
   }
 }
 
@@ -555,7 +550,7 @@ module "lambda_function_existing_package_from_remote_url" {
   runtime       = "python3.12"
 
   create_package         = false
-  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
+  local_existing_package = terraform_data.download_package.output.filename
 }
 ```
 
@@ -750,6 +745,7 @@ No modules.
 | <a name="input_attach_tracing_policy"></a> [attach\_tracing\_policy](#input\_attach\_tracing\_policy) | Controls whether X-Ray tracing policy should be added to IAM role for Lambda Function | `bool` | `false` | no |
 | <a name="input_authorization_type"></a> [authorization\_type](#input\_authorization\_type) | The type of authentication that the Lambda Function URL uses. Set to 'AWS\_IAM' to restrict access to authenticated IAM users only. Set to 'NONE' to bypass IAM authentication and create a public endpoint. | `string` | `"NONE"` | no |
 | <a name="input_build_in_docker"></a> [build\_in\_docker](#input\_build\_in\_docker) | Whether to build dependencies in Docker | `bool` | `false` | no |
+| <a name="input_cloudwatch_logs_deletion_protection_enabled"></a> [cloudwatch\_logs\_deletion\_protection\_enabled](#input\_cloudwatch\_logs\_deletion\_protection\_enabled) | Whether to enable deletion protection for the log group. | `bool` | `null` | no |
 | <a name="input_cloudwatch_logs_kms_key_id"></a> [cloudwatch\_logs\_kms\_key\_id](#input\_cloudwatch\_logs\_kms\_key\_id) | The ARN of the KMS Key to use when encrypting log data. | `string` | `null` | no |
 | <a name="input_cloudwatch_logs_log_group_class"></a> [cloudwatch\_logs\_log\_group\_class](#input\_cloudwatch\_logs\_log\_group\_class) | Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS` | `string` | `null` | no |
 | <a name="input_cloudwatch_logs_retention_in_days"></a> [cloudwatch\_logs\_retention\_in\_days](#input\_cloudwatch\_logs\_retention\_in\_days) | Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653. | `number` | `null` | no |
@@ -783,6 +779,8 @@ No modules.
 | <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image to use for the build | `string` | `""` | no |
 | <a name="input_docker_pip_cache"></a> [docker\_pip\_cache](#input\_docker\_pip\_cache) | Whether to mount a shared pip cache folder into docker environment or not | `any` | `null` | no |
 | <a name="input_docker_with_ssh_agent"></a> [docker\_with\_ssh\_agent](#input\_docker\_with\_ssh\_agent) | Whether to pass SSH\_AUTH\_SOCK into docker environment or not | `bool` | `false` | no |
+| <a name="input_durable_config_execution_timeout"></a> [durable\_config\_execution\_timeout](#input\_durable\_config\_execution\_timeout) | Maximum execution time in seconds for the durable function. Valid values between 1 and 31622400 (366 days). | `number` | `null` | no |
+| <a name="input_durable_config_retention_period"></a> [durable\_config\_retention\_period](#input\_durable\_config\_retention\_period) | Number of days to retain the function's execution state. Valid values between 1 and 90. Defaults to 14 if durable\_config is enabled. | `number` | `null` | no |
 | <a name="input_environment_variables"></a> [environment\_variables](#input\_environment\_variables) | A map that defines environment variables for the Lambda Function. | `map(string)` | `{}` | no |
 | <a name="input_ephemeral_storage_size"></a> [ephemeral\_storage\_size](#input\_ephemeral\_storage\_size) | Amount of ephemeral storage (/tmp) in MB your Lambda Function can use at runtime. Valid value between 512 MB to 10,240 MB (10 GB). | `number` | `512` | no |
 | <a name="input_event_source_mapping"></a> [event\_source\_mapping](#input\_event\_source\_mapping) | Map of event source mapping | `any` | `{}` | no |
@@ -881,6 +879,7 @@ No modules.
 | <a name="output_lambda_event_source_mapping_uuid"></a> [lambda\_event\_source\_mapping\_uuid](#output\_lambda\_event\_source\_mapping\_uuid) | The UUID of the created event source mapping |
 | <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | The ARN of the Lambda Function |
 | <a name="output_lambda_function_arn_static"></a> [lambda\_function\_arn\_static](#output\_lambda\_function\_arn\_static) | The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions) |
+| <a name="output_lambda_function_code_sha256"></a> [lambda\_function\_code\_sha256](#output\_lambda\_function\_code\_sha256) | The base64-encoded representation of the source code package file |
 | <a name="output_lambda_function_invoke_arn"></a> [lambda\_function\_invoke\_arn](#output\_lambda\_function\_invoke\_arn) | The Invoke ARN of the Lambda Function |
 | <a name="output_lambda_function_kms_key_arn"></a> [lambda\_function\_kms\_key\_arn](#output\_lambda\_function\_kms\_key\_arn) | The ARN for the KMS encryption key of Lambda Function |
 | <a name="output_lambda_function_last_modified"></a> [lambda\_function\_last\_modified](#output\_lambda\_function\_last\_modified) | The date Lambda Function resource was last modified |
@@ -889,14 +888,16 @@ No modules.
 | <a name="output_lambda_function_qualified_invoke_arn"></a> [lambda\_function\_qualified\_invoke\_arn](#output\_lambda\_function\_qualified\_invoke\_arn) | The Invoke ARN identifying your Lambda Function Version |
 | <a name="output_lambda_function_signing_job_arn"></a> [lambda\_function\_signing\_job\_arn](#output\_lambda\_function\_signing\_job\_arn) | ARN of the signing job |
 | <a name="output_lambda_function_signing_profile_version_arn"></a> [lambda\_function\_signing\_profile\_version\_arn](#output\_lambda\_function\_signing\_profile\_version\_arn) | ARN of the signing profile version |
-| <a name="output_lambda_function_source_code_hash"></a> [lambda\_function\_source\_code\_hash](#output\_lambda\_function\_source\_code\_hash) | Base64-encoded representation of raw SHA-256 sum of the zip file |
+| <a name="output_lambda_function_source_code_hash"></a> [lambda\_function\_source\_code\_hash](#output\_lambda\_function\_source\_code\_hash) | The user-defined hash of the source code package file |
 | <a name="output_lambda_function_source_code_size"></a> [lambda\_function\_source\_code\_size](#output\_lambda\_function\_source\_code\_size) | The size in bytes of the function .zip file |
 | <a name="output_lambda_function_url"></a> [lambda\_function\_url](#output\_lambda\_function\_url) | The URL of the Lambda Function URL |
 | <a name="output_lambda_function_url_id"></a> [lambda\_function\_url\_id](#output\_lambda\_function\_url\_id) | The Lambda Function URL generated id |
 | <a name="output_lambda_function_version"></a> [lambda\_function\_version](#output\_lambda\_function\_version) | Latest published version of Lambda Function |
 | <a name="output_lambda_layer_arn"></a> [lambda\_layer\_arn](#output\_lambda\_layer\_arn) | The ARN of the Lambda Layer with version |
+| <a name="output_lambda_layer_code_sha256"></a> [lambda\_layer\_code\_sha256](#output\_lambda\_layer\_code\_sha256) | The base64-encoded representation of the Lambda Layer source code package file |
 | <a name="output_lambda_layer_created_date"></a> [lambda\_layer\_created\_date](#output\_lambda\_layer\_created\_date) | The date Lambda Layer resource was created |
 | <a name="output_lambda_layer_layer_arn"></a> [lambda\_layer\_layer\_arn](#output\_lambda\_layer\_layer\_arn) | The ARN of the Lambda Layer without version |
+| <a name="output_lambda_layer_source_code_hash"></a> [lambda\_layer\_source\_code\_hash](#output\_lambda\_layer\_source\_code\_hash) | The user-defined hash of the Lambda Layer source code package file |
 | <a name="output_lambda_layer_source_code_size"></a> [lambda\_layer\_source\_code\_size](#output\_lambda\_layer\_source\_code\_size) | The size in bytes of the Lambda Layer .zip file |
 | <a name="output_lambda_layer_version"></a> [lambda\_layer\_version](#output\_lambda\_layer\_version) | The Lambda Layer version |
 | <a name="output_lambda_role_arn"></a> [lambda\_role\_arn](#output\_lambda\_role\_arn) | The ARN of the IAM role created for the Lambda Function |

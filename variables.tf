@@ -476,6 +476,12 @@ variable "cloudwatch_logs_log_group_class" {
   default     = null
 }
 
+variable "cloudwatch_logs_deletion_protection_enabled" {
+  description = "Whether to enable deletion protection for the log group."
+  type        = bool
+  default     = null
+}
+
 variable "cloudwatch_logs_tags" {
   description = "A map of tags to assign to the resource."
   type        = map(string)
@@ -853,5 +859,21 @@ variable "logging_log_group" {
 variable "recursive_loop" {
   description = "Lambda function recursion configuration. Valid values are Allow or Terminate."
   type        = string
+  default     = null
+}
+
+############################################
+# Lambda Durable Execution Settings
+############################################
+
+variable "durable_config_execution_timeout" {
+  description = "Maximum execution time in seconds for the durable function. Valid values between 1 and 31622400 (366 days)."
+  type        = number
+  default     = null
+}
+
+variable "durable_config_retention_period" {
+  description = "Number of days to retain the function's execution state. Valid values between 1 and 90. Defaults to 14 if durable_config is enabled."
+  type        = number
   default     = null
 }
