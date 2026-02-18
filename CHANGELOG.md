@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.5.1...v8.6.0) (2026-02-18)
+
+### Features
+
+* Add deletion_protection_enabled argument for lambda log group ([#736](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/736)) ([9b6ba43](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/9b6ba43a3b129ff26b9b14e9331a0ae7ef7ea57e))
+
 ## [8.5.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.5.0...v8.5.1) (2026-02-18)
 
 ### Bug Fixes
