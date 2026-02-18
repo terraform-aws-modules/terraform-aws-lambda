@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.7.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.6.0...v8.7.0) (2026-02-18)
+
+### Features
+
+* Add support for durable lambda feature ([#731](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/731)) ([582013a](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/582013abd9c67dafe903accf3970b6f5e5b8ff49))
+
 ## [8.6.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.5.1...v8.6.0) (2026-02-18)
 
 ### Features
