@@ -1,3 +1,6 @@
+locals {
+  lambda_code_signing_profile_name = replace(random_pet.this.id, "-", "")
+}
 provider "aws" {
   region = "eu-west-1"
 
@@ -14,63 +17,41 @@ provider "aws" {
 module "lambda" {
   source = "../../"
 
-  function_name           = random_pet.this.id
-  handler                 = "index.lambda_handler"
-  runtime                 = "python3.12"
-  code_signing_config_arn = aws_lambda_code_signing_config.this.arn
-  create_package          = false
+  function_name                    = random_pet.this.id
+  handler                          = "index.lambda_handler"
+  runtime                          = "python3.12"
+  create_package                   = true
+  enable_code_signing              = true
+  code_signing_config_arn          = aws_lambda_code_signing_config.this.arn
+  lambda_code_signing_profile_name = local.lambda_code_signing_profile_name
+  s3_signing_prefix                = "signed/"
 
-  s3_existing_package = {
-    bucket = aws_signer_signing_job.this.signed_object[0].s3[0].bucket
-    key    = aws_signer_signing_job.this.signed_object[0].s3[0].key
+  source_path = "${path.module}/../fixtures/python-app1"
+
+  store_on_s3 = true
+  s3_bucket   = module.s3_bucket.s3_bucket_id
+  s3_prefix   = "lambda-builds/"
+
+  s3_object_override_default_tags = true
+  s3_object_tags = {
+    S3ObjectName = "lambda1"
+    Override     = "true"
   }
 }
 
-################################################################################
-# Lambda Code Signing
-################################################################################
-
-resource "aws_s3_object" "unsigned" {
-  bucket = module.s3_bucket.s3_bucket_id
-  key    = "unsigned/existing_package.zip"
-  source = "${path.module}/../fixtures/python-zip/existing_package.zip"
-
-  # Making sure that S3 versioning configuration is propagated properly
-  depends_on = [
-    module.s3_bucket
-  ]
-}
+# ################################################################################
+# # Lambda Code Signing
+# ################################################################################
 
 resource "aws_signer_signing_profile" "this" {
   platform_id = "AWSLambda-SHA384-ECDSA"
   # invalid value for name (must be alphanumeric with max length of 64 characters)
-  name = replace(random_pet.this.id, "-", "")
+  name = local.lambda_code_signing_profile_name
 
   signature_validity_period {
     value = 3
     type  = "MONTHS"
   }
-}
-
-resource "aws_signer_signing_job" "this" {
-  profile_name = aws_signer_signing_profile.this.name
-
-  source {
-    s3 {
-      bucket  = module.s3_bucket.s3_bucket_id
-      key     = aws_s3_object.unsigned.id
-      version = aws_s3_object.unsigned.version_id
-    }
-  }
-
-  destination {
-    s3 {
-      bucket = module.s3_bucket.s3_bucket_id
-      prefix = "signed/"
-    }
-  }
-
-  ignore_signing_job_failure = true
 }
 
 resource "aws_lambda_code_signing_config" "this" {
