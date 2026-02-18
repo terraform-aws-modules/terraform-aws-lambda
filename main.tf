@@ -146,6 +146,15 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "durable_config" {
+    for_each = var.durable_config_execution_timeout != null ? [true] : []
+
+    content {
+      execution_timeout = var.durable_config_execution_timeout
+      retention_period  = var.durable_config_retention_period
+    }
+  }
+
   dynamic "timeouts" {
     for_each = length(var.timeouts) > 0 ? [true] : []
 
