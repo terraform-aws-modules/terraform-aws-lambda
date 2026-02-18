@@ -2022,7 +2022,6 @@ def prepare_command(args):
     zip_filename = os.path.join(artifacts_dir, "{}.zip".format(content_hash))
 
     # Compute timestamp trigger
-    was_missing = False
     filename_path = os.path.join(os.getcwd(), zip_filename)
     if recreate_missing_package:
         if os.path.exists(filename_path):
@@ -2030,7 +2029,6 @@ def prepare_command(args):
             timestamp = st.st_mtime_ns
         else:
             timestamp = timestamp_now_ns()
-            was_missing = True
     else:
         timestamp = "<WARNING: Missing lambda zip artifacts wouldn't be restored>"
 
@@ -2061,7 +2059,6 @@ def prepare_command(args):
             "build_plan": build_plan,
             "build_plan_filename": build_plan_filename,
             "timestamp": str(timestamp),
-            "was_missing": "true" if was_missing else "false",
         },
         sys.stdout,
         indent=2,

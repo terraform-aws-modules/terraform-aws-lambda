@@ -529,20 +529,15 @@ locals {
   downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 }
 
-resource "null_resource" "download_package" {
-  triggers = {
-    downloaded = local.downloaded
+resource "terraform_data" "download_package" {
+  input = {
+    filename = local.downloaded
   }
+
+  triggers_replace = [local.downloaded]
 
   provisioner "local-exec" {
     command = "curl -L -o ${local.downloaded} ${local.package_url}"
-  }
-}
-
-data "null_data_source" "downloaded_package" {
-  inputs = {
-    id       = null_resource.download_package.id
-    filename = local.downloaded
   }
 }
 
@@ -555,7 +550,7 @@ module "lambda_function_existing_package_from_remote_url" {
   runtime       = "python3.12"
 
   create_package         = false
-  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
+  local_existing_package = terraform_data.download_package.output.filename
 }
 ```
 
@@ -882,6 +877,7 @@ No modules.
 | <a name="output_lambda_event_source_mapping_uuid"></a> [lambda\_event\_source\_mapping\_uuid](#output\_lambda\_event\_source\_mapping\_uuid) | The UUID of the created event source mapping |
 | <a name="output_lambda_function_arn"></a> [lambda\_function\_arn](#output\_lambda\_function\_arn) | The ARN of the Lambda Function |
 | <a name="output_lambda_function_arn_static"></a> [lambda\_function\_arn\_static](#output\_lambda\_function\_arn\_static) | The static ARN of the Lambda Function. Use this to avoid cycle errors between resources (e.g., Step Functions) |
+| <a name="output_lambda_function_code_sha256"></a> [lambda\_function\_code\_sha256](#output\_lambda\_function\_code\_sha256) | The base64-encoded representation of the source code package file |
 | <a name="output_lambda_function_invoke_arn"></a> [lambda\_function\_invoke\_arn](#output\_lambda\_function\_invoke\_arn) | The Invoke ARN of the Lambda Function |
 | <a name="output_lambda_function_kms_key_arn"></a> [lambda\_function\_kms\_key\_arn](#output\_lambda\_function\_kms\_key\_arn) | The ARN for the KMS encryption key of Lambda Function |
 | <a name="output_lambda_function_last_modified"></a> [lambda\_function\_last\_modified](#output\_lambda\_function\_last\_modified) | The date Lambda Function resource was last modified |
@@ -890,14 +886,16 @@ No modules.
 | <a name="output_lambda_function_qualified_invoke_arn"></a> [lambda\_function\_qualified\_invoke\_arn](#output\_lambda\_function\_qualified\_invoke\_arn) | The Invoke ARN identifying your Lambda Function Version |
 | <a name="output_lambda_function_signing_job_arn"></a> [lambda\_function\_signing\_job\_arn](#output\_lambda\_function\_signing\_job\_arn) | ARN of the signing job |
 | <a name="output_lambda_function_signing_profile_version_arn"></a> [lambda\_function\_signing\_profile\_version\_arn](#output\_lambda\_function\_signing\_profile\_version\_arn) | ARN of the signing profile version |
-| <a name="output_lambda_function_source_code_hash"></a> [lambda\_function\_source\_code\_hash](#output\_lambda\_function\_source\_code\_hash) | Base64-encoded representation of raw SHA-256 sum of the zip file |
+| <a name="output_lambda_function_source_code_hash"></a> [lambda\_function\_source\_code\_hash](#output\_lambda\_function\_source\_code\_hash) | The user-defined hash of the source code package file |
 | <a name="output_lambda_function_source_code_size"></a> [lambda\_function\_source\_code\_size](#output\_lambda\_function\_source\_code\_size) | The size in bytes of the function .zip file |
 | <a name="output_lambda_function_url"></a> [lambda\_function\_url](#output\_lambda\_function\_url) | The URL of the Lambda Function URL |
 | <a name="output_lambda_function_url_id"></a> [lambda\_function\_url\_id](#output\_lambda\_function\_url\_id) | The Lambda Function URL generated id |
 | <a name="output_lambda_function_version"></a> [lambda\_function\_version](#output\_lambda\_function\_version) | Latest published version of Lambda Function |
 | <a name="output_lambda_layer_arn"></a> [lambda\_layer\_arn](#output\_lambda\_layer\_arn) | The ARN of the Lambda Layer with version |
+| <a name="output_lambda_layer_code_sha256"></a> [lambda\_layer\_code\_sha256](#output\_lambda\_layer\_code\_sha256) | The base64-encoded representation of the Lambda Layer source code package file |
 | <a name="output_lambda_layer_created_date"></a> [lambda\_layer\_created\_date](#output\_lambda\_layer\_created\_date) | The date Lambda Layer resource was created |
 | <a name="output_lambda_layer_layer_arn"></a> [lambda\_layer\_layer\_arn](#output\_lambda\_layer\_layer\_arn) | The ARN of the Lambda Layer without version |
+| <a name="output_lambda_layer_source_code_hash"></a> [lambda\_layer\_source\_code\_hash](#output\_lambda\_layer\_source\_code\_hash) | The user-defined hash of the Lambda Layer source code package file |
 | <a name="output_lambda_layer_source_code_size"></a> [lambda\_layer\_source\_code\_size](#output\_lambda\_layer\_source\_code\_size) | The size in bytes of the Lambda Layer .zip file |
 | <a name="output_lambda_layer_version"></a> [lambda\_layer\_version](#output\_lambda\_layer\_version) | The Lambda Layer version |
 | <a name="output_lambda_role_arn"></a> [lambda\_role\_arn](#output\_lambda\_role\_arn) | The ARN of the IAM role created for the Lambda Function |

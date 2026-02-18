@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.5.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.5.0...v8.5.1) (2026-02-18)
+
+### Bug Fixes
+
+* Fix error with inconsistent values for fileexists when setting the source code hash ([#734](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/734)) ([99a1bc5](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/99a1bc50e332dc8702216faf5c0380cbbe11c89c))
+
 ## [8.5.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.4.0...v8.5.0) (2026-02-02)
 
 ### Features
