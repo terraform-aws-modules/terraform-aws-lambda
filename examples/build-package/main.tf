@@ -116,7 +116,7 @@ module "package_dir_poetry_no_docker" {
       poetry_install = true
     }
   ]
-  artifacts_dir = "${path.root}/builds/package_dir_poetry/"
+  artifacts_dir = "${path.root}/builds/package_dir_poetry_no_docker/"
 }
 
 # Create zip-archive with Poetry dependencies and demonstrate quiet packaging output
@@ -135,6 +135,84 @@ module "package_dir_poetry_quiet" {
   ]
   artifacts_dir            = "${path.root}/builds/package_dir_poetry_quiet/"
   quiet_archive_local_exec = true # Suppress Poetry/pip output during packaging
+}
+
+# Create zip-archive of a single directory where "uv export" & "pip install" will be executed
+module "package_dir_uv_no_lock" {
+  source = "../../"
+
+  create_function = false
+  runtime         = "python3.12"
+
+  source_path = [
+    {
+      path       = "${path.module}/../fixtures/python-app-uv-no-lock"
+      uv_install = true
+    }
+  ]
+
+  artifacts_dir = "${path.root}/builds/package_dir_uv_no_lock/"
+}
+
+# Create zip-archive of a single directory where "uv export" & "pip install" will be executed (using docker)
+module "package_dir_uv" {
+  source = "../../"
+
+  create_function = false
+
+  build_in_docker = true
+  runtime         = "python3.12"
+  docker_image    = "build-python-uv"
+  docker_file     = "${path.module}/../fixtures/python-app-uv/docker/Dockerfile"
+
+  source_path = [
+    {
+      path       = "${path.module}/../fixtures/python-app-uv"
+      uv_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_dir_uv/"
+}
+
+# Create zip-archive of a single directory where "uv export" & "pip install" will be executed (not using docker)
+module "package_dir_uv_no_docker" {
+  source = "../../"
+
+  create_function = false
+
+  runtime = "python3.12"
+
+  source_path = [
+    {
+      path       = "${path.module}/../fixtures/python-app-uv"
+      uv_install = true
+    }
+  ]
+  artifacts_dir = "${path.root}/builds/package_dir_uv_no_docker/"
+}
+
+# Create a Lambda Layer using uv for dependency management (using docker)
+module "lambda_layer_uv" {
+  source = "../../"
+
+  create_layer        = true
+  layer_name          = "${random_pet.this.id}-layer-uv"
+  compatible_runtimes = ["python3.12"]
+  runtime             = "python3.12"
+
+  build_in_docker = true
+  docker_image    = "build-python-uv"
+  docker_file     = "${path.module}/../fixtures/python-app-uv/docker/Dockerfile"
+
+  source_path = [
+    {
+      path          = "${path.module}/../fixtures/python-app-uv"
+      uv_install    = true
+      prefix_in_zip = "python"
+    }
+  ]
+  hash_extra    = "uv-extra-hash-to-prevent-conflicts-with-module.package_dir"
+  artifacts_dir = "${path.root}/builds/lambda_layer_uv/"
 }
 
 # Create zip-archive of a single directory without running "pip install" (which is default for python runtime)

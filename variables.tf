@@ -194,8 +194,10 @@ variable "tags" {
   default     = {}
 }
 
+# TODO - remove at next breaking change
+# tflint-ignore: terraform_unused_declarations
 variable "include_default_tag" {
-  description = "Set to false to not include the default tag in the tags map."
+  description = "[Deprecated] Set to false to not include the default tag in the tags map."
   type        = bool
   default     = true
 }
@@ -276,6 +278,12 @@ variable "skip_destroy" {
   description = "Set to true if you do not wish the function to be deleted at destroy time, and instead just remove the function from the Terraform state. Useful for Lambda@Edge functions attached to CloudFront distributions."
   type        = bool
   default     = null
+}
+
+variable "tenant_isolation_mode" {
+  description = "Enable tenant isolation mode for the Lambda Function"
+  type        = bool
+  default     = false
 }
 
 ###############

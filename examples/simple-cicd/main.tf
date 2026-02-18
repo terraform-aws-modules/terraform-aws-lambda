@@ -19,7 +19,7 @@ module "lambda_function" {
   runtime       = "python3.12"
 
   source_path = [
-    "${path.module}/src/python-app1",
+    "${path.module}/../fixtures/python-app1",
   ]
   trigger_on_package_timestamp = false
 }
