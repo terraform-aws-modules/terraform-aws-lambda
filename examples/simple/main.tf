@@ -52,7 +52,7 @@ module "lambda_function" {
   #  s3_bucket   = module.s3_bucket.s3_bucket_id
 
   #  create_package         = false
-  #  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
+  #  local_existing_package = terraform_data.download_package.output.filename
 
   # snap_start = true
 
@@ -314,19 +314,14 @@ module "lambda_function" {
 #  downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 #}
 #
-#resource "null_resource" "download_package" {
-#  triggers = {
-#    downloaded = local.downloaded
+#resource "terraform_data" "download_package" {
+#  input = {
+#    filename = local.downloaded
 #  }
+#
+#  triggers_replace = [local.downloaded]
 #
 #  provisioner "local-exec" {
 #    command = "curl -L -o ${local.downloaded} ${local.package_url}"
-#  }
-#}
-#
-#data "null_data_source" "downloaded_package" {
-#  inputs = {
-#    id       = null_resource.download_package.id
-#    filename = local.downloaded
 #  }
 #}

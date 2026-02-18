@@ -243,31 +243,49 @@ def generate_content_hash(source_paths, hash_func=hashlib.sha256, log=None):
 
     if log:
         log = log.getChild("hash")
+    _log = log if log.isEnabledFor(DEBUG3) else None
 
     hash_obj = hash_func()
 
-    for source_path in source_paths:
-        if os.path.isdir(source_path):
-            source_dir = source_path
-            _log = log if log.isEnabledFor(DEBUG3) else None
-            for source_file in list_files(source_dir, log=_log):
+    for source_path, pf, prefix in source_paths:
+        if pf is not None:
+            for path_from_pattern in pf.filter(source_path, prefix):
+                if os.path.isdir(path_from_pattern):
+                    # Hash only the path of the directory
+                    source_dir = path_from_pattern
+                    source_file = None
+                else:
+                    source_dir = os.path.dirname(path_from_pattern)
+                    source_file = os.path.relpath(path_from_pattern, source_dir)
                 update_hash(hash_obj, source_dir, source_file)
                 if log:
-                    log.debug(os.path.join(source_dir, source_file))
+                    log.debug(path_from_pattern)
         else:
-            source_dir = os.path.dirname(source_path)
-            source_file = os.path.relpath(source_path, source_dir)
-            update_hash(hash_obj, source_dir, source_file)
-            if log:
-                log.debug(source_path)
+            if os.path.isdir(source_path):
+                source_dir = source_path
+                for source_file in list_files(source_dir, log=_log):
+                    update_hash(hash_obj, source_dir, source_file)
+                    if log:
+                        log.debug(os.path.join(source_dir, source_file))
+            else:
+                source_dir = os.path.dirname(source_path)
+                source_file = os.path.relpath(source_path, source_dir)
+                update_hash(hash_obj, source_dir, source_file)
+                if log:
+                    log.debug(source_path)
 
     return hash_obj
 
 
-def update_hash(hash_obj, file_root, file_path):
+def update_hash(hash_obj, file_root, file_path=None):
     """
-    Update a hashlib object with the relative path and contents of a file.
+    Update a hashlib object with the relative path and, if the given
+    file_path is not None, its content.
     """
+
+    if file_path is None:
+        hash_obj.update(file_root.encode())
+        return
 
     relative_path = os.path.join(file_root, file_path)
     hash_obj.update(relative_path.encode())
@@ -562,7 +580,6 @@ class ZipContentFilter:
     def __init__(self, args):
         self._args = args
         self._rules = None
-        self._excludes = set()
         self._log = logging.getLogger("zip")
 
     def compile(self, patterns):
@@ -668,20 +685,18 @@ class BuildPlanManager:
         self._source_paths = None
         self._log = log or logging.root
 
-    def hash(self, extra_paths):
+    def hash(self):
         if not self._source_paths:
             raise ValueError("BuildPlanManager.plan() should be called first")
-
-        content_hash_paths = self._source_paths + extra_paths
 
         # Generate a hash based on file names and content. Also use the
         # runtime value, build command, and content of the build paths
         # because they can have an effect on the resulting archive.
         self._log.debug("Computing content hash on files...")
-        content_hash = generate_content_hash(content_hash_paths, log=self._log)
+        content_hash = generate_content_hash(self._source_paths, log=self._log)
         return content_hash
 
-    def plan(self, source_path, query):
+    def plan(self, source_path, query, log=None):
         claims = source_path
         if not isinstance(source_path, list):
             claims = [source_path]
@@ -690,11 +705,14 @@ class BuildPlanManager:
         build_plan = []
         build_step = []
 
+        if log:
+            log = log.getChild("plan")
+
         def step(*x):
             build_step.append(x)
 
-        def hash(path):
-            source_paths.append(path)
+        def hash(path, patterns=None, prefix=None):
+            source_paths.append((path, patterns, prefix))
 
         def pip_requirements_step(path, prefix=None, required=False, tmp_dir=None):
             command = runtime
@@ -790,7 +808,7 @@ class BuildPlanManager:
                 step("npm", runtime, requirements, prefix, tmp_dir)
                 hash(requirements)
 
-        def commands_step(path, commands):
+        def commands_step(path, commands, patterns):
             if not commands:
                 return
 
@@ -798,15 +816,12 @@ class BuildPlanManager:
                 commands = map(str.strip, commands.splitlines())
 
             if path:
-                path = os.path.normpath(path)
                 step("set:workdir", path)
 
             batch = []
             for c in commands:
                 if isinstance(c, str):
                     if c.startswith(":zip"):
-                        if path:
-                            hash(path)
                         if batch:
                             step("sh", "\n".join(batch))
                             batch.clear()
@@ -817,12 +832,18 @@ class BuildPlanManager:
                             prefix = prefix.strip()
                             _path = os.path.normpath(_path)
                             step("zip:embedded", _path, prefix)
+                            if path:
+                                hash(path, patterns, prefix)
                         elif n == 2:
                             _, _path = c
                             _path = os.path.normpath(_path)
                             step("zip:embedded", _path)
+                            if path:
+                                hash(path, patterns=patterns)
                         elif n == 1:
                             step("zip:embedded")
+                            if path:
+                                hash(path, patterns=patterns)
                         else:
                             raise ValueError(
                                 ":zip invalid call signature, use: "
@@ -836,7 +857,7 @@ class BuildPlanManager:
 
         for claim in claims:
             if isinstance(claim, str):
-                path = claim
+                path = os.path.normpath(claim)
                 if not os.path.exists(path):
                     abort(
                         'Could not locate source_path "{path}".  Paths are relative to directory where `terraform plan` is being run ("{pwd}")'.format(
@@ -862,12 +883,14 @@ class BuildPlanManager:
 
             elif isinstance(claim, dict):
                 path = claim.get("path")
+                if path:
+                    path = os.path.normpath(path)
                 patterns = claim.get("patterns")
                 commands = claim.get("commands")
                 if patterns:
                     step("set:filter", patterns_list(self._args, patterns))
                 if commands:
-                    commands_step(path, commands)
+                    commands_step(path, commands, patterns)
                 else:
                     prefix = claim.get("prefix_in_zip")
                     pip_requirements = claim.get("pip_requirements")
@@ -890,7 +913,7 @@ class BuildPlanManager:
                             )
                         else:
                             pip_requirements_step(
-                                pip_requirements,
+                                os.path.normpath(pip_requirements),
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("pip_tmp_dir"),
@@ -926,23 +949,14 @@ class BuildPlanManager:
                             )
                         else:
                             npm_requirements_step(
-                                npm_requirements,
+                                os.path.normpath(npm_requirements),
                                 prefix,
                                 required=True,
                                 tmp_dir=claim.get("npm_tmp_dir"),
                             )
                     if path:
-                        path = os.path.normpath(path)
                         step("zip", path, prefix)
-                        if patterns:
-                            # Take patterns into account when computing hash
-                            pf = ZipContentFilter(args=self._args)
-                            pf.compile(patterns)
-
-                            for path_from_pattern in pf.filter(path, prefix):
-                                hash(path_from_pattern)
-                        else:
-                            hash(path)
+                        hash(path, patterns, prefix)
             else:
                 raise ValueError("Unsupported source_path item: {}".format(claim))
 
@@ -950,7 +964,18 @@ class BuildPlanManager:
                 build_plan.append(build_step)
                 build_step = []
 
-        self._source_paths = source_paths
+        if log.isEnabledFor(DEBUG3):
+            log.debug("source_paths: %s", json.dumps(source_paths, indent=2))
+
+        for p, patterns, prefix in source_paths:
+            if self._source_paths is None:
+                self._source_paths = []
+            pf = None
+            if patterns is not None:
+                pf = ZipContentFilter(args=self._args)
+                pf.compile(patterns)
+            self._source_paths.append((p, pf, prefix))
+
         return build_plan
 
     def execute(self, build_plan, zip_stream, query):
@@ -1959,7 +1984,7 @@ def prepare_command(args):
         if log.isEnabledFor(DEBUG3):
             log.debug("QUERY: %s", json.dumps(query_data, indent=2))
         else:
-            log_excludes = ("source_path", "hash_extra_paths", "paths")
+            log_excludes = ("source_path", "hash_internal", "paths")
             qd = {k: v for k, v in query_data.items() if k not in log_excludes}
             log.debug("QUERY (excerpt): %s", json.dumps(qd, indent=2))
 
@@ -1969,9 +1994,9 @@ def prepare_command(args):
     runtime = query.runtime
     function_name = query.function_name
     artifacts_dir = query.artifacts_dir
-    hash_extra_paths = query.hash_extra_paths
     source_path = query.source_path
     hash_extra = query.hash_extra
+    hash_internal = query.hash_internal
     recreate_missing_package = yesno_bool(
         args.recreate_missing_package
         if args.recreate_missing_package is not None
@@ -1980,17 +2005,16 @@ def prepare_command(args):
     docker = query.docker
 
     bpm = BuildPlanManager(args, log=log)
-    build_plan = bpm.plan(source_path, query)
+    build_plan = bpm.plan(source_path, query, log)
 
     if log.isEnabledFor(DEBUG2):
         log.debug("BUILD_PLAN: %s", json.dumps(build_plan, indent=2))
 
-    # Expand a Terraform path.<cwd|root|module> references
-    hash_extra_paths = [p.format(path=tf_paths) for p in hash_extra_paths]
-
-    content_hash = bpm.hash(hash_extra_paths)
+    content_hash = bpm.hash()
     content_hash.update(json.dumps(build_plan, sort_keys=True).encode())
     content_hash.update(runtime.encode())
+    for c in hash_internal:
+        content_hash.update(c.encode())
     content_hash.update(hash_extra.encode())
     content_hash = content_hash.hexdigest()
 
@@ -1998,7 +2022,6 @@ def prepare_command(args):
     zip_filename = os.path.join(artifacts_dir, "{}.zip".format(content_hash))
 
     # Compute timestamp trigger
-    was_missing = False
     filename_path = os.path.join(os.getcwd(), zip_filename)
     if recreate_missing_package:
         if os.path.exists(filename_path):
@@ -2006,7 +2029,6 @@ def prepare_command(args):
             timestamp = st.st_mtime_ns
         else:
             timestamp = timestamp_now_ns()
-            was_missing = True
     else:
         timestamp = "<WARNING: Missing lambda zip artifacts wouldn't be restored>"
 
@@ -2037,7 +2059,6 @@ def prepare_command(args):
             "build_plan": build_plan,
             "build_plan_filename": build_plan_filename,
             "timestamp": str(timestamp),
-            "was_missing": "true" if was_missing else "false",
         },
         sys.stdout,
         indent=2,
