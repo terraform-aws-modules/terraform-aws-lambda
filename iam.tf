@@ -275,10 +275,10 @@ resource "aws_iam_role_policy_attachment" "additional_one" {
 ######################################
 
 resource "aws_iam_role_policy_attachment" "additional_many" {
-  count = local.create_role && var.attach_policies ? var.number_of_policies : 0
+  for_each = local.create_role && var.attach_policies ? toset(var.policies) : toset([])
 
   role       = aws_iam_role.lambda[0].name
-  policy_arn = var.policies[count.index]
+  policy_arn = each.value
 }
 
 ###############################
