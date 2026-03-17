@@ -89,7 +89,6 @@ module "wrapper" {
   maximum_event_age_in_seconds                 = try(each.value.maximum_event_age_in_seconds, var.defaults.maximum_event_age_in_seconds, null)
   maximum_retry_attempts                       = try(each.value.maximum_retry_attempts, var.defaults.maximum_retry_attempts, null)
   memory_size                                  = try(each.value.memory_size, var.defaults.memory_size, 128)
-  number_of_policies                           = try(each.value.number_of_policies, var.defaults.number_of_policies, 0)
   number_of_policy_jsons                       = try(each.value.number_of_policy_jsons, var.defaults.number_of_policy_jsons, 0)
   package_type                                 = try(each.value.package_type, var.defaults.package_type, "Zip")
   policies                                     = try(each.value.policies, var.defaults.policies, [])

@@ -610,11 +610,6 @@ variable "number_of_policy_jsons" {
   default     = 0
 }
 
-variable "number_of_policies" {
-  description = "Number of policies to attach to IAM role for Lambda Function"
-  type        = number
-  default     = 0
-}
 
 variable "attach_policy_statements" {
   description = "Controls whether policy_statements should be added to IAM role for Lambda Function"

@@ -175,8 +175,7 @@ module "lambda_function" {
     }
   }
 
-  attach_policies    = true
-  number_of_policies = 3
+  attach_policies = true
 
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
