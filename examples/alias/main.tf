@@ -38,7 +38,7 @@ module "lambda_function" {
   policies = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole",
   ]
-  number_of_policies = 1
+
 
   allowed_triggers = {
     APIGatewayAny = {
