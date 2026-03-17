@@ -76,8 +76,8 @@ EOF
   attach_policy = true
   policy        = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 
-  attach_policies    = true
-  policies           = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+  attach_policies = true
+  policies        = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
 
 
   attach_policy_statements = true
@@ -173,8 +173,8 @@ EOF
   attach_policy = true
   policy        = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
 
-  attach_policies    = true
-  policies           = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
+  attach_policies = true
+  policies        = ["arn:aws:iam::aws:policy/AWSXrayReadOnlyAccess"]
 
 
   attach_policy_statements = true
