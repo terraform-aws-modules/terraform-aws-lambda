@@ -26,7 +26,7 @@ module "lambda_s3_write" {
 
   environment_variables = {
     BUCKET_NAME = module.s3_bucket.s3_bucket_id
-    REGION_NAME = data.aws_region.current.region
+    REGION_NAME = data.aws_region.current.id
   }
 
   # Let the module create a role for us
@@ -54,7 +54,7 @@ resource "random_pet" "this" {
 }
 
 data "aws_ec2_managed_prefix_list" "this" {
-  name = "com.amazonaws.${data.aws_region.current.region}.s3"
+  name = "com.amazonaws.${data.aws_region.current.id}.s3"
 }
 
 module "vpc" {
@@ -64,7 +64,7 @@ module "vpc" {
   name = random_pet.this.id
   cidr = "10.0.0.0/16"
 
-  azs = ["${data.aws_region.current.region}a", "${data.aws_region.current.region}b", "${data.aws_region.current.region}c"]
+  azs = ["${data.aws_region.current.id}a", "${data.aws_region.current.id}b", "${data.aws_region.current.id}c"]
 
   # Intra subnets are designed to have no Internet access via NAT Gateway.
   intra_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
