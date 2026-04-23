@@ -877,3 +877,13 @@ variable "durable_config_retention_period" {
   type        = number
   default     = null
 }
+
+############################################
+# Lambda Managed Instances Capacity Provider Settings
+############################################
+
+variable "managed_instances_capacity_provider_arn" {
+  description = "ARN of the Capacity Provider."
+  type        = string
+  default     = null
+}

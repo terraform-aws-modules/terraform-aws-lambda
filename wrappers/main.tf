@@ -86,6 +86,7 @@ module "wrapper" {
   logging_log_format                           = try(each.value.logging_log_format, var.defaults.logging_log_format, "Text")
   logging_log_group                            = try(each.value.logging_log_group, var.defaults.logging_log_group, null)
   logging_system_log_level                     = try(each.value.logging_system_log_level, var.defaults.logging_system_log_level, "INFO")
+  managed_instances_capacity_provider_arn      = try(each.value.managed_instances_capacity_provider_arn, var.defaults.managed_instances_capacity_provider_arn, null)
   maximum_event_age_in_seconds                 = try(each.value.maximum_event_age_in_seconds, var.defaults.maximum_event_age_in_seconds, null)
   maximum_retry_attempts                       = try(each.value.maximum_retry_attempts, var.defaults.maximum_retry_attempts, null)
   memory_size                                  = try(each.value.memory_size, var.defaults.memory_size, 128)

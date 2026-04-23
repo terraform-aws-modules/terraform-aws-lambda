@@ -155,6 +155,16 @@ resource "aws_lambda_function" "this" {
     }
   }
 
+  dynamic "capacity_provider_config" {
+    for_each = var.managed_instances_capacity_provider_arn != null ? [true] : []
+
+    content {
+      lambda_managed_instances_capacity_provider_config {
+        capacity_provider_arn = var.managed_instances_capacity_provider_arn
+      }
+    }
+  }
+
   dynamic "timeouts" {
     for_each = length(var.timeouts) > 0 ? [true] : []
 
