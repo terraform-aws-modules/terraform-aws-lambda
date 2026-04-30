@@ -1583,7 +1583,7 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
                 "requirements.txt",
             ]
 
-            user_lock_exists = os.path.exists(uv_lock_file)
+            user_lock_exists = os.path.exists("uv.lock")
             if user_lock_exists:
                 uv_export.append("--frozen")
 
