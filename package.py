@@ -1182,12 +1182,15 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                     ok = True
                 if ok:
                     break
-                docker_cmd = docker_build_command(
-                    build_root=docker_build_root,
-                    docker_file=docker_file,
-                    tag=docker_image,
-                )
-                check_call(docker_cmd)
+                try:
+                    check_call(docker_pull_command(docker_image))
+                except CalledProcessError:
+                    docker_cmd = docker_build_command(
+                        build_root=docker_build_root,
+                        docker_file=docker_file,
+                        tag=docker_image,
+                    )
+                    check_call(docker_cmd)
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
@@ -1325,12 +1328,15 @@ def install_poetry_dependencies(query, path, poetry_export_extra_args, tmp_dir):
                     ok = True
                 if ok:
                     break
-                docker_cmd = docker_build_command(
-                    build_root=docker_build_root,
-                    docker_file=docker_file,
-                    tag=docker_image,
-                )
-                check_call(docker_cmd)
+                try:
+                    check_call(docker_pull_command(docker_image))
+                except CalledProcessError:
+                    docker_cmd = docker_build_command(
+                        build_root=docker_build_root,
+                        docker_file=docker_file,
+                        tag=docker_image,
+                    )
+                    check_call(docker_cmd)
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
@@ -1522,12 +1528,15 @@ def install_uv_dependencies(query, path, uv_export_extra_args, tmp_dir):
                 check_output(docker_image_id_command(docker_image)).decode().strip()
             )
             if not output:
-                docker_cmd = docker_build_command(
-                    build_root=docker_build_root,
-                    docker_file=docker_file,
-                    tag=docker_image,
-                )
-                check_call(docker_cmd)
+                try:
+                    check_call(docker_pull_command(docker_image))
+                except CalledProcessError:
+                    docker_cmd = docker_build_command(
+                        build_root=docker_build_root,
+                        docker_file=docker_file,
+                        tag=docker_image,
+                    )
+                    check_call(docker_cmd)
                 output = (
                     check_output(docker_image_id_command(docker_image)).decode().strip()
                 )
@@ -1703,12 +1712,15 @@ def install_npm_requirements(query, requirements_file, tmp_dir):
                     ok = True
                 if ok:
                     break
-                docker_cmd = docker_build_command(
-                    build_root=docker_build_root,
-                    docker_file=docker_file,
-                    tag=docker_image,
-                )
-                check_call(docker_cmd)
+                try:
+                    check_call(docker_pull_command(docker_image))
+                except CalledProcessError:
+                    docker_cmd = docker_build_command(
+                        build_root=docker_build_root,
+                        docker_file=docker_file,
+                        tag=docker_image,
+                    )
+                    check_call(docker_cmd)
                 ok = True
         elif docker_file or docker_build_root:
             raise ValueError(
@@ -1833,6 +1845,14 @@ class TemporaryCopy:
 def docker_image_id_command(tag):
     """"""
     docker_cmd = ["docker", "images", "--format={{.ID}}", tag]
+    cmd_log.info(shlex_join(docker_cmd))
+    log_handler and log_handler.flush()
+    return docker_cmd
+
+
+def docker_pull_command(tag):
+    """"""
+    docker_cmd = ["docker", "pull", tag]
     cmd_log.info(shlex_join(docker_cmd))
     log_handler and log_handler.flush()
     return docker_cmd
