@@ -405,7 +405,7 @@ variable "destination_on_success" {
 ##########################
 
 variable "provisioned_concurrent_executions" {
-  description = "Amount of capacity to allocate. Set to 1 or greater to enable, or set to 0 to disable provisioned concurrency."
+  description = "Amount of capacity to allocate. Set to 1 or greater to enable, or set to -1 to disable provisioned concurrency."
   type        = number
   default     = -1
 }
