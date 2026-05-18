@@ -209,6 +209,12 @@ resource "aws_lambda_function" "this" {
     aws_iam_role_policy_attachment.additional_many,
     aws_iam_role_policy_attachment.additional_one,
   ]
+  lifecycle {
+    precondition {
+      condition     = !(var.create_role && var.lambda_role != "")
+      error_message = "Both create_role and lambda_role are set. lambda_role is ignored when create_role is true (the default). Either set create_role = false to use your lambda_role, or remove lambda_role."
+    }
+  }
 }
 
 resource "aws_lambda_layer_version" "this" {
