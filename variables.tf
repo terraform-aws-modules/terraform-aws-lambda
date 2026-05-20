@@ -158,6 +158,12 @@ variable "dead_letter_target_arn" {
   default     = null
 }
 
+variable "enable_image_uri_lifecycle_changes" {
+  description = "Whether to enable lifecycle changes for Lambda Function with Image package type when image_uri is used. If true, changes to the image_uri will trigger an update to the Lambda Function resource, which will update the function to use the new image URI. If false, changes to the image_uri will not trigger an update to the Lambda Function resource, and the function will continue to use the original image URI. Defaults to true."
+  type        = bool
+  default     = false
+}
+
 variable "environment_variables" {
   description = "A map that defines environment variables for the Lambda Function."
   type        = map(string)

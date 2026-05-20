@@ -62,6 +62,13 @@ resource "aws_lambda_function" "this" {
   replacement_security_group_ids     = var.replacement_security_group_ids
   skip_destroy                       = var.skip_destroy
 
+
+  dynamic "lifecycle" {
+    for_each = var.enable_image_uri_lifecycle_changes  ? [true] : []
+    content {
+      ignore_changes = [image_uri]
+    }
+  }
   /* ephemeral_storage is not supported in gov-cloud region, so it should be set to `null` */
   dynamic "ephemeral_storage" {
     for_each = var.ephemeral_storage_size == null ? [] : [true]
