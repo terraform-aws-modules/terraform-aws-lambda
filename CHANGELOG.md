@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.8.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.0...v8.8.1) (2026-06-19)
+
+### Bug Fixes
+
+* **package:** Surface subprocess stderr through ZipWriter.__exit__ ([#758](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/758)) ([ad35a95](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/ad35a95a4a17ca3ad1df6bd0296c93b4d92f5228))
+
 ## [8.8.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.7.0...v8.8.0) (2026-04-23)
 
 ### Features
