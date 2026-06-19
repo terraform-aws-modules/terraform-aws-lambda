@@ -20,6 +20,7 @@ import tempfile
 import operator
 import platform
 import subprocess
+import threading
 from subprocess import check_call, check_output, CalledProcessError
 from contextlib import contextmanager
 from base64 import b64encode
@@ -352,7 +353,28 @@ class ZipWriteStream:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is not None:
-            self._log.exception("Error during zip archive creation")
+            # If the failure is a CalledProcessError that captured stderr,
+            # surface that stderr in the log so the operator can see what
+            # the underlying subprocess (typically pip) actually said.
+            # Without this, every pip-install failure inside the zip
+            # context surfaces only the generic line below, requiring the
+            # operator to fork + instrument package.py to debug.
+            if exc_type is subprocess.CalledProcessError and getattr(
+                exc_val, "stderr", None
+            ):
+                stderr_text = (
+                    exc_val.stderr.decode("utf-8", errors="replace")
+                    if isinstance(exc_val.stderr, (bytes, bytearray))
+                    else str(exc_val.stderr)
+                )
+                self._log.error(
+                    "Subprocess failed during zip archive creation: %s\n"
+                    "Captured stderr:\n%s",
+                    exc_val.cmd,
+                    stderr_text,
+                )
+            else:
+                self._log.exception("Error during zip archive creation")
             self.close(failed=True)
             raise SystemExit(1)
         self.close()
@@ -1266,6 +1288,9 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                 log_handler and log_handler.flush()
                 try:
                     if query.quiet:
+                        # quiet: swallow both streams, exit code only.
+                        # On failure, the raised CalledProcessError will
+                        # carry no stderr — the operator wanted quiet.
                         check_call(
                             pip_command,
                             env=subproc_env,
@@ -1273,7 +1298,38 @@ def install_pip_requirements(query, requirements_file, tmp_dir):
                             stderr=subprocess.DEVNULL,
                         )
                     else:
-                        check_call(pip_command, env=subproc_env)
+                        # Non-quiet: stream pip output to the console as
+                        # before AND capture stderr separately. Capturing
+                        # via `subprocess.run(..., stderr=PIPE)` would
+                        # mean pip's stderr no longer streams in real
+                        # time, which hurts UX for long-running installs.
+                        # Tee instead: a thread reads pip's stderr line
+                        # by line, writes to sys.stderr (real-time) AND
+                        # accumulates into a buffer for the CalledProcessError.
+                        process = subprocess.Popen(
+                            pip_command,
+                            env=subproc_env,
+                            stderr=subprocess.PIPE,
+                            text=False,
+                        )
+                        stderr_buf = bytearray()
+
+                        def _tee():
+                            for chunk in iter(lambda: process.stderr.read(4096), b""):
+                                sys.stderr.buffer.write(chunk)
+                                sys.stderr.flush()
+                                stderr_buf.extend(chunk)
+
+                        tee_thread = threading.Thread(target=_tee, daemon=True)
+                        tee_thread.start()
+                        rc = process.wait()
+                        tee_thread.join()
+                        if rc != 0:
+                            raise subprocess.CalledProcessError(
+                                rc,
+                                pip_command,
+                                stderr=bytes(stderr_buf),
+                            )
                 except FileNotFoundError as e:
                     raise RuntimeError(
                         "Python interpreter version equal "
