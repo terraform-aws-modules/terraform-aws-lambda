@@ -7,12 +7,16 @@ locals {
 data "aws_lambda_alias" "existing" {
   count = var.create && var.use_existing_alias ? 1 : 0
 
+  region = var.region
+
   function_name = var.function_name
   name          = var.name
 }
 
 resource "aws_lambda_alias" "no_refresh" {
   count = var.create && !var.use_existing_alias && !var.refresh_alias ? 1 : 0
+
+  region = var.region
 
   name        = var.name
   description = var.description
@@ -36,6 +40,8 @@ resource "aws_lambda_alias" "no_refresh" {
 resource "aws_lambda_alias" "with_refresh" {
   count = var.create && !var.use_existing_alias && var.refresh_alias ? 1 : 0
 
+  region = var.region
+
   name        = var.name
   description = var.description
 
@@ -53,6 +59,8 @@ resource "aws_lambda_alias" "with_refresh" {
 
 resource "aws_lambda_function_event_invoke_config" "this" {
   for_each = var.create && var.create_async_event_config ? local.qualifiers : {}
+
+  region = var.region
 
   function_name = var.function_name
   qualifier     = each.key == "version" ? local.version : var.name
@@ -83,6 +91,8 @@ resource "aws_lambda_function_event_invoke_config" "this" {
 resource "aws_lambda_permission" "version_triggers" {
   for_each = var.create && var.create_version_allowed_triggers ? var.allowed_triggers : {}
 
+  region = var.region
+
   function_name = var.function_name
 
   # Error: Error adding new Lambda Permission for ... InvalidParameterValueException: We currently do not support adding policies for $LATEST.
@@ -100,6 +110,8 @@ resource "aws_lambda_permission" "version_triggers" {
 resource "aws_lambda_permission" "qualified_alias_triggers" {
   for_each = var.create && var.create_qualified_alias_allowed_triggers ? var.allowed_triggers : {}
 
+  region = var.region
+
   function_name = var.function_name
   qualifier     = var.name
 
@@ -114,6 +126,8 @@ resource "aws_lambda_permission" "qualified_alias_triggers" {
 
 resource "aws_lambda_event_source_mapping" "this" {
   for_each = { for k, v in var.event_source_mapping : k => v if var.create }
+
+  region = var.region
 
   function_name = local.alias_arn
 

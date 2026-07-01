@@ -161,6 +161,7 @@ No modules.
 | <a name="input_maximum_retry_attempts"></a> [maximum\_retry\_attempts](#input\_maximum\_retry\_attempts) | Maximum number of times to retry when the function returns an error. Valid values between 0 and 2. Defaults to 2. | `number` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name for the alias you are creating. | `string` | `""` | no |
 | <a name="input_refresh_alias"></a> [refresh\_alias](#input\_refresh\_alias) | Whether to refresh function version used in the alias. Useful when using this module together with external tool do deployments (eg, AWS CodeDeploy). | `bool` | `true` | no |
+| <a name="input_region"></a> [region](#input\_region) | Region where the resource(s) will be managed. Defaults to the region set in the provider configuration | `string` | `null` | no |
 | <a name="input_routing_additional_version_weights"></a> [routing\_additional\_version\_weights](#input\_routing\_additional\_version\_weights) | A map that defines the proportion of events that should be sent to different versions of a lambda function. | `map(number)` | `{}` | no |
 | <a name="input_use_existing_alias"></a> [use\_existing\_alias](#input\_use\_existing\_alias) | Whether to manage existing alias instead of creating a new one. Useful when using this module together with external tool do deployments (eg, AWS CodeDeploy). | `bool` | `false` | no |
 
