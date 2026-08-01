@@ -56,7 +56,7 @@ module "docker_image" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_docker"></a> [docker](#requirement\_docker) | >= 3.5.0 |
@@ -65,7 +65,7 @@ module "docker_image" {
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_docker"></a> [docker](#provider\_docker) | >= 3.5.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
@@ -77,7 +77,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_ecr_lifecycle_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_lifecycle_policy) | resource |
 | [aws_ecr_repository.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository) | resource |
 | [docker_image.this](https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/image) | resource |
@@ -89,7 +89,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_build_args"></a> [build\_args](#input\_build\_args) | A map of Docker build arguments. | `map(string)` | `{}` | no |
 | <a name="input_build_target"></a> [build\_target](#input\_build\_target) | Set the target build stage to build | `string` | `null` | no |
 | <a name="input_builder"></a> [builder](#input\_builder) | The buildx builder to use for the Docker build. | `string` | `null` | no |
@@ -116,7 +116,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_image_id"></a> [image\_id](#output\_image\_id) | The ID of the Docker image |
 | <a name="output_image_uri"></a> [image\_uri](#output\_image\_uri) | The ECR image URI for deploying lambda |
 <!-- END_TF_DOCS -->

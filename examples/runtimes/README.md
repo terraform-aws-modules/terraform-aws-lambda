@@ -22,7 +22,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
@@ -31,7 +31,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_http"></a> [http](#provider\_http) | >= 3.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
@@ -39,7 +39,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_dotnet8_lambda_function"></a> [dotnet8\_lambda\_function](#module\_dotnet8\_lambda\_function) | ../../ | n/a |
 | <a name="module_go_lambda_function"></a> [go\_lambda\_function](#module\_go\_lambda\_function) | ../../ | n/a |
 | <a name="module_java21_lambda_function"></a> [java21\_lambda\_function](#module\_java21\_lambda\_function) | ../../ | n/a |
@@ -48,7 +48,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [aws_lambda_invocation.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/lambda_invocation) | data source |
 | [http_http.this](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
@@ -60,7 +60,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_dotnet8_lambda_function_url"></a> [dotnet8\_lambda\_function\_url](#output\_dotnet8\_lambda\_function\_url) | The URL of the Lambda Function in .NET 8 |
 | <a name="output_go_lambda_function_url"></a> [go\_lambda\_function\_url](#output\_go\_lambda\_function\_url) | The URL of the Lambda Function in Go |
 | <a name="output_java21_lambda_function_arn"></a> [java21\_lambda\_function\_arn](#output\_java21\_lambda\_function\_arn) | The ARN of the Lambda Function in Java 21 |

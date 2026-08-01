@@ -99,7 +99,7 @@ module "lambda" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.0 |
@@ -108,7 +108,7 @@ module "lambda" {
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 2.0 |
@@ -120,7 +120,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_codedeploy_app.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codedeploy_app) | resource |
 | [aws_codedeploy_deployment_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codedeploy_deployment_group) | resource |
 | [aws_iam_policy.hooks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
@@ -142,7 +142,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_after_allow_traffic_hook_arn"></a> [after\_allow\_traffic\_hook\_arn](#input\_after\_allow\_traffic\_hook\_arn) | ARN of Lambda function to execute after allow traffic during deployment. This function should be named CodeDeployHook\_, to match the managed AWSCodeDeployForLambda policy, unless you're using a custom role | `string` | `""` | no |
 | <a name="input_alarm_enabled"></a> [alarm\_enabled](#input\_alarm\_enabled) | Indicates whether the alarm configuration is enabled. This option is useful when you want to temporarily deactivate alarm monitoring for a deployment group without having to add the same alarms again later. | `bool` | `false` | no |
 | <a name="input_alarm_ignore_poll_alarm_failure"></a> [alarm\_ignore\_poll\_alarm\_failure](#input\_alarm\_ignore\_poll\_alarm\_failure) | Indicates whether a deployment should continue if information about the current state of alarms cannot be retrieved from CloudWatch. | `bool` | `false` | no |
@@ -182,7 +182,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_appspec"></a> [appspec](#output\_appspec) | Appspec data as HCL |
 | <a name="output_appspec_content"></a> [appspec\_content](#output\_appspec\_content) | Appspec data as valid JSON |
 | <a name="output_appspec_sha256"></a> [appspec\_sha256](#output\_appspec\_sha256) | SHA256 of Appspec JSON |
