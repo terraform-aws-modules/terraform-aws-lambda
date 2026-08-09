@@ -10,7 +10,7 @@ variables {
   handler       = "index.handler"
   runtime       = "python3.12"
 
-  create_package        = false
+  create_package         = false
   local_existing_package = "./examples/fixtures/python-zip/existing_package.zip"
 }
 
