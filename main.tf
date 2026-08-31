@@ -479,8 +479,9 @@ resource "aws_lambda_event_source_mapping" "this" {
   dynamic "provisioned_poller_config" {
     for_each = try([each.value.provisioned_poller_config], [])
     content {
-      maximum_pollers = try(provisioned_poller_config.value.maximum_pollers, null)
-      minimum_pollers = try(provisioned_poller_config.value.minimum_pollers, null)
+      maximum_pollers   = try(provisioned_poller_config.value.maximum_pollers, null)
+      minimum_pollers   = try(provisioned_poller_config.value.minimum_pollers, null)
+      poller_group_name = try(provisioned_poller_config.value.poller_group_name, null)
     }
   }
 
