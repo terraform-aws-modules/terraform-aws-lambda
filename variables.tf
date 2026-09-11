@@ -628,6 +628,12 @@ variable "trusted_entities" {
   default     = []
 }
 
+variable "assume_role_conditions" {
+  description = "List of conditions applied to the trusted-entities statement of the Lambda Function role (trust relationship). Useful for confused-deputy prevention, e.g. `aws:SourceAccount`"
+  type        = any
+  default     = []
+}
+
 variable "assume_role_policy_statements" {
   description = "Map of dynamic policy statements for assuming Lambda Function role (trust relationship)"
   type        = any
