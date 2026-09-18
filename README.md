@@ -651,12 +651,12 @@ the same request for OpenTofu.
   fork and add `ignore_changes` for `s3_key`, `source_code_hash` and
   `image_uri`.
 
-Compliance.tf serves this module with these rules applied at download time, on
-top of whatever your organization already has enabled there. Inputs and outputs
-do not change; the `source` line does. Drop the `version` argument and pin the
-release you use by adding `&version=` and that release number to the URL. To
-get started, register a free compliance.tf account and configure an access
-token:
+[Compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations) serves this module with
+these rules applied at download time, on top of whatever your organization
+already has enabled there. Inputs and outputs do not change; the `source` line
+does. Drop the `version` argument and pin the release you use by adding
+`&version=` and that release number to the URL. To get started, register a free
+compliance.tf account and configure an access token:
 
     source = "https://registry.compliance.tf/terraform-aws-modules/lambda/aws?add_rules=lifecycle_ignore_deployed_artifacts"
 
