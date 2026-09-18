@@ -633,6 +633,43 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 1. Creation of Lambda Functions and Lambda Layers is very similar and both support the same features (building from source path, using existing package, storing package locally or on S3)
 2. Check out this [Awesome list of AWS Lambda Layers](https://github.com/mthenw/awesome-layers)
 
+<!-- BEGIN_KNOWN_LIMITATIONS -->
+
+## Known limitations (Terraform/OpenTofu, not this module)
+
+A few requests come up again and again and cannot be implemented by this
+module, or by any module: Terraform requires `lifecycle` arguments to be
+literal values inside the resource block.
+[hashicorp/terraform#18367](https://github.com/hashicorp/terraform/issues/18367)
+has been open since 2018,
+[#22544](https://github.com/hashicorp/terraform/issues/22544) since 2019, and
+[opentofu/opentofu#1329](https://github.com/opentofu/opentofu/issues/1329) is
+the same request for OpenTofu.
+
+- **Terraform keeps reverting my Lambda code to an old version** - Native
+  options: publish the artifact from the same pipeline that runs Terraform, or
+  fork and add `ignore_changes` for `s3_key`, `source_code_hash` and
+  `image_uri`.
+
+[Compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations) serves this module with
+these rules applied at download time, on top of whatever your organization
+already has enabled there. Inputs and outputs do not change; the `source` line
+does. Drop the `version` argument and pin the release you use by adding
+`&version=` and that release number to the URL. To get started, register a free
+compliance.tf account and configure an access token:
+
+    source = "https://registry.compliance.tf/terraform-aws-modules/lambda/aws?add_rules=lifecycle_ignore_deployed_artifacts"
+
+The full workaround for each item above, and the exact diff each rule makes,
+are in the [compliance.tf docs for this module](https://compliance.tf/docs/workarounds/terraform-aws-lambda/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations). To preview a
+diff without an account, open this module in the
+[Rules Playground](https://registry.compliance.tf/playground?module=terraform-aws-modules/lambda/aws&rules=lifecycle_ignore_deployed_artifacts).
+
+Disclosure: written by this module's maintainer, who also builds
+[compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations).
+
+<!-- END_KNOWN_LIMITATIONS -->
+
 ## Examples
 
 - [Complete](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
