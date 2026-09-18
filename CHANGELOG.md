@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.8.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.1...v8.8.2) (2026-09-18)
+
+### Bug Fixes
+
+* Document known Terraform/OpenTofu limitations in README ([#773](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/773)) ([32f3160](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/32f3160cf5802241f95656e8a43fde932f56e271))
+* Update GitHub Actions and pre-commit hook versions ([#766](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/766)) ([e0fd062](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e0fd062d689a1f9fcc169016875aebaa96ece126))
+
 ## [8.8.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.0...v8.8.1) (2026-06-19)
 
 ### Bug Fixes
