@@ -20,6 +20,7 @@ module "wrapper" {
   maximum_retry_attempts                    = try(each.value.maximum_retry_attempts, var.defaults.maximum_retry_attempts, null)
   name                                      = try(each.value.name, var.defaults.name, "")
   refresh_alias                             = try(each.value.refresh_alias, var.defaults.refresh_alias, true)
+  region                                    = try(each.value.region, var.defaults.region, null)
   routing_additional_version_weights        = try(each.value.routing_additional_version_weights, var.defaults.routing_additional_version_weights, {})
   use_existing_alias                        = try(each.value.use_existing_alias, var.defaults.use_existing_alias, false)
 }

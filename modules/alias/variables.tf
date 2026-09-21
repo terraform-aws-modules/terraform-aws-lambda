@@ -46,6 +46,12 @@ variable "create_qualified_alias_allowed_triggers" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 ########
 # Alias
 ########
