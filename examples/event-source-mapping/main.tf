@@ -92,7 +92,7 @@ module "lambda_function" {
     apache_kafka = {
       batch_size                         = 100
       starting_position                  = "TRIM_HORIZON"
-      topics                             = ["topic1", "topic2"]
+      topics                             = ["topic1"]
       maximum_batching_window_in_seconds = 1
 
       self_managed_event_source = [
