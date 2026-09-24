@@ -634,7 +634,6 @@ Q4: What does this error mean - `"We currently do not support adding policies fo
 2. Check out this [Awesome list of AWS Lambda Layers](https://github.com/mthenw/awesome-layers)
 
 <!-- BEGIN_KNOWN_LIMITATIONS -->
-
 ## Known limitations (Terraform/OpenTofu, not this module)
 
 A few requests come up again and again and cannot be implemented by this
@@ -647,9 +646,9 @@ has been open since 2018,
 the same request for OpenTofu.
 
 - **Terraform keeps reverting my Lambda code to an old version** - Native
-  options: publish the artifact from the same pipeline that runs Terraform, or
-  fork and add `ignore_changes` for `s3_key`, `source_code_hash` and
-  `image_uri`.
+  options: set `ignore_source_code_hash = true` for a local zip, publish the
+  artifact from the same pipeline that runs Terraform, or fork and add
+  `ignore_changes` for `s3_key`, `s3_object_version` and `image_uri`.
 
 [Compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations) serves this module with
 these rules applied at download time, on top of whatever your organization
@@ -667,7 +666,6 @@ diff without an account, open this module in the
 
 Disclosure: written by this module's maintainer, who also builds
 [compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations).
-
 <!-- END_KNOWN_LIMITATIONS -->
 
 ## Examples
