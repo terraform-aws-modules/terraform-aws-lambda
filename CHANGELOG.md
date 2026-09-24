@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.2...v8.9.0) (2026-09-24)
+
+### Features
+
+* Enabling poller_group_name atribut for reducing Event Poller Unit lambda costs ([#770](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/770)) ([b911b7f](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/b911b7f49f25a019b04f9a6a578c113bd70f1266))
+
 ## [8.8.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.1...v8.8.2) (2026-09-18)
 
 ### Bug Fixes
