@@ -887,3 +887,15 @@ variable "managed_instances_capacity_provider_arn" {
   type        = string
   default     = null
 }
+
+variable "managed_instances_execution_environment_memory_gib_per_vcpu" {
+  description = "Number of GiB of memory per vCPU for Lambda Managed Instances execution environments."
+  type        = number
+  default     = null
+}
+
+variable "managed_instances_max_concurrency_per_execution_environment" {
+  description = "Maximum concurrent executions per Lambda Managed Instances execution environment."
+  type        = number
+  default     = null
+}
