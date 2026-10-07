@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.9.0...v8.10.0) (2026-10-07)
+
+### Features
+
+* Add `response_streaming_invoke_arn` to outputs ([#756](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/756)) ([8ed5f23](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/8ed5f23af4818e18fe4a401b96cd81438820b26a))
+
 ## [8.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.2...v8.9.0) (2026-09-24)
 
 ### Features
