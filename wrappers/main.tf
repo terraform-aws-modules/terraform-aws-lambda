@@ -6,6 +6,7 @@ module "wrapper" {
   allowed_triggers                             = try(each.value.allowed_triggers, var.defaults.allowed_triggers, {})
   architectures                                = try(each.value.architectures, var.defaults.architectures, null)
   artifacts_dir                                = try(each.value.artifacts_dir, var.defaults.artifacts_dir, "builds")
+  assume_role_conditions                       = try(each.value.assume_role_conditions, var.defaults.assume_role_conditions, [])
   assume_role_policy_statements                = try(each.value.assume_role_policy_statements, var.defaults.assume_role_policy_statements, {})
   attach_async_event_policy                    = try(each.value.attach_async_event_policy, var.defaults.attach_async_event_policy, false)
   attach_cloudwatch_logs_policy                = try(each.value.attach_cloudwatch_logs_policy, var.defaults.attach_cloudwatch_logs_policy, true)
