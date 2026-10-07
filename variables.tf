@@ -140,6 +140,12 @@ variable "publish" {
   default     = false
 }
 
+variable "publish_to" {
+  description = "The target to publish the Lambda Function version to. Valid value is LATEST_PUBLISHED."
+  type        = string
+  default     = null
+}
+
 variable "reserved_concurrent_executions" {
   description = "The amount of reserved concurrent executions for this Lambda Function. A value of 0 disables Lambda Function from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1."
   type        = number

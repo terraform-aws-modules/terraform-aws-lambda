@@ -53,6 +53,7 @@ resource "aws_lambda_function" "this" {
   layers                             = var.layers
   timeout                            = var.lambda_at_edge ? min(var.timeout, 30) : var.timeout
   publish                            = (var.lambda_at_edge || var.snap_start) ? true : var.publish
+  publish_to                         = var.publish_to
   kms_key_arn                        = var.kms_key_arn
   image_uri                          = var.image_uri
   package_type                       = var.package_type
