@@ -101,6 +101,7 @@ module "wrapper" {
   policy_statements                            = try(each.value.policy_statements, var.defaults.policy_statements, {})
   provisioned_concurrent_executions            = try(each.value.provisioned_concurrent_executions, var.defaults.provisioned_concurrent_executions, -1)
   publish                                      = try(each.value.publish, var.defaults.publish, false)
+  publish_to                                   = try(each.value.publish_to, var.defaults.publish_to, null)
   putin_khuylo                                 = try(each.value.putin_khuylo, var.defaults.putin_khuylo, true)
   quiet_archive_local_exec                     = try(each.value.quiet_archive_local_exec, var.defaults.quiet_archive_local_exec, true)
   recreate_missing_package                     = try(each.value.recreate_missing_package, var.defaults.recreate_missing_package, true)
