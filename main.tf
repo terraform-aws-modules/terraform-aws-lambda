@@ -161,7 +161,9 @@ resource "aws_lambda_function" "this" {
 
     content {
       lambda_managed_instances_capacity_provider_config {
-        capacity_provider_arn = var.managed_instances_capacity_provider_arn
+        capacity_provider_arn                     = var.managed_instances_capacity_provider_arn
+        execution_environment_memory_gib_per_vcpu = var.managed_instances_execution_environment_memory_gib_per_vcpu
+        per_execution_environment_max_concurrency = var.managed_instances_max_concurrency_per_execution_environment
       }
     }
   }
