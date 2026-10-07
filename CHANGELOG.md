@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.11.0...v8.12.0) (2026-10-07)
+
+### Features
+
+* Add Lambda Managed Instances Additional Config Variables ([#777](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/777)) ([e1232a9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e1232a95df0d8391e793f793d81eaf8f5c46ab0f))
+
 ## [8.11.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.10.0...v8.11.0) (2026-10-07)
 
 ### Features
