@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.11.0...v8.12.0) (2026-10-07)
+
+### Features
+
+* Add Lambda Managed Instances Additional Config Variables ([#777](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/777)) ([e1232a9](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e1232a95df0d8391e793f793d81eaf8f5c46ab0f))
+
+## [8.11.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.10.0...v8.11.0) (2026-10-07)
+
+### Features
+
+* Add Lambda publish target support ([#769](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/769)) ([1709b69](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/1709b69a3ee551d297d116140d38f4157b669c94))
+
+## [8.10.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.9.0...v8.10.0) (2026-10-07)
+
+### Features
+
+* Add `response_streaming_invoke_arn` to outputs ([#756](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/756)) ([8ed5f23](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/8ed5f23af4818e18fe4a401b96cd81438820b26a))
+
+## [8.9.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.2...v8.9.0) (2026-09-24)
+
+### Features
+
+* Enabling poller_group_name atribut for reducing Event Poller Unit lambda costs ([#770](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/770)) ([b911b7f](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/b911b7f49f25a019b04f9a6a578c113bd70f1266))
+
+## [8.8.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.1...v8.8.2) (2026-09-18)
+
+### Bug Fixes
+
+* Document known Terraform/OpenTofu limitations in README ([#773](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/773)) ([32f3160](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/32f3160cf5802241f95656e8a43fde932f56e271))
+* Update GitHub Actions and pre-commit hook versions ([#766](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/766)) ([e0fd062](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/e0fd062d689a1f9fcc169016875aebaa96ece126))
+
 ## [8.8.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.8.0...v8.8.1) (2026-06-19)
 
 ### Bug Fixes

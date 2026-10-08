@@ -18,7 +18,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
@@ -26,14 +26,14 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_alias_refresh"></a> [alias\_refresh](#module\_alias\_refresh) | ../../modules/alias | n/a |
 | <a name="module_deploy"></a> [deploy](#module\_deploy) | ../../modules/deploy | n/a |
 | <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | ../../ | n/a |
@@ -41,7 +41,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_sns_topic.sns1](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic.sns2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [random_pet.this](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
@@ -53,7 +53,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_appspec"></a> [appspec](#output\_appspec) | Appspec data as HCL |
 | <a name="output_appspec_content"></a> [appspec\_content](#output\_appspec\_content) | Appspec data as valid JSON |
 | <a name="output_appspec_sha256"></a> [appspec\_sha256](#output\_appspec\_sha256) | SHA256 of Appspec JSON |

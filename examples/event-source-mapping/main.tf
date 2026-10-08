@@ -88,37 +88,48 @@ module "lambda_function" {
       ]
       tags = { mapping = "amq" }
     }
-    #    self_managed_kafka = {
-    #      batch_size        = 1
-    #      starting_position = "TRIM_HORIZON"
-    #      topics            = ["topic1", "topic2"]
-    #      self_managed_event_source = [
-    #        {
-    #          endpoints = {
-    #            KAFKA_BOOTSTRAP_SERVERS = "kafka1.example.com:9092,kafka2.example.com:9092"
-    #          }
-    #        }
-    #      ]
-    #      self_managed_kafka_event_source_config = [
-    #        {
-    #          consumer_group_id = "example-consumer-group"
-    #        }
-    #      ]
-    #      source_access_configuration = [
-    #        {
-    #          type = "SASL_SCRAM_512_AUTH",
-    #          uri  = "SECRET_AUTH_INFO"
-    #        },
-    #        {
-    #          type = "VPC_SECURITY_GROUP",
-    #          uri  = "security_group:sg-12345678"
-    #        },
-    #        {
-    #          type = "VPC_SUBNET"
-    #          uri  = "subnet:subnet-12345678"
-    #        }
-    #      ]
-    #    }
+    # Self-managed Apache Kafka source running in Provisioned mode.
+    apache_kafka = {
+      batch_size                         = 100
+      starting_position                  = "TRIM_HORIZON"
+      topics                             = ["topic1"]
+      maximum_batching_window_in_seconds = 1
+
+      self_managed_event_source = [
+        {
+          endpoints = {
+            KAFKA_BOOTSTRAP_SERVERS = "kafka1.example.com:9092,kafka2.example.com:9092"
+          }
+        }
+      ]
+      self_managed_kafka_event_source_config = [
+        {
+          consumer_group_id = "example-consumer-group"
+        }
+      ]
+      source_access_configuration = [
+        {
+          type = "SASL_SCRAM_512_AUTH",
+          uri  = aws_secretsmanager_secret.this.arn
+        },
+        {
+          type = "VPC_SECURITY_GROUP",
+          uri  = "security_group:${module.vpc.default_security_group_id}"
+        },
+        {
+          type = "VPC_SUBNET"
+          uri  = "subnet:${module.vpc.public_subnets[0]}"
+        }
+      ]
+
+      # Provisioned mode: share Event Poller Unit (EPU) capacity across ESMs
+      # in the same VPC via a named poller group.
+      provisioned_poller_config = {
+        minimum_pollers   = 1
+        maximum_pollers   = 1
+        poller_group_name = "${random_pet.this.id}-poller-group"
+      }
+    }
   }
 
   allowed_triggers = {

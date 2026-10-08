@@ -1,8 +1,8 @@
 name: Tests
 
 env:
-  PYTEST_VERSION: 9.0.2
-  RUFF_VERSION: 0.14.14
+  PYTEST_VERSION: 9.1.1
+  RUFF_VERSION: 0.16.1
   RUFF_PY_VERSION: 3.12
 
 on:
@@ -21,10 +21,10 @@ jobs:
         python_version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python_version }}
-        uses: actions/setup-python@v5.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python_version }}
 
@@ -42,10 +42,10 @@ jobs:
     name: Ruff Format check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5.0.0
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.RUFF_PY_VERSION }}
 

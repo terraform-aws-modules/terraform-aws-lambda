@@ -140,6 +140,12 @@ variable "publish" {
   default     = false
 }
 
+variable "publish_to" {
+  description = "The target to publish the Lambda Function version to. Valid value is LATEST_PUBLISHED."
+  type        = string
+  default     = null
+}
+
 variable "reserved_concurrent_executions" {
   description = "The amount of reserved concurrent executions for this Lambda Function. A value of 0 disables Lambda Function from being triggered and -1 removes any concurrency limitations. Defaults to Unreserved Concurrency Limits -1."
   type        = number
@@ -885,5 +891,17 @@ variable "durable_config_retention_period" {
 variable "managed_instances_capacity_provider_arn" {
   description = "ARN of the Capacity Provider."
   type        = string
+  default     = null
+}
+
+variable "managed_instances_execution_environment_memory_gib_per_vcpu" {
+  description = "Number of GiB of memory per vCPU for Lambda Managed Instances execution environments."
+  type        = number
+  default     = null
+}
+
+variable "managed_instances_max_concurrency_per_execution_environment" {
+  description = "Maximum concurrent executions per Lambda Managed Instances execution environment."
+  type        = number
   default     = null
 }

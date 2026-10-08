@@ -53,6 +53,7 @@ resource "aws_lambda_function" "this" {
   layers                             = var.layers
   timeout                            = var.lambda_at_edge ? min(var.timeout, 30) : var.timeout
   publish                            = (var.lambda_at_edge || var.snap_start) ? true : var.publish
+  publish_to                         = var.publish_to
   kms_key_arn                        = var.kms_key_arn
   image_uri                          = var.image_uri
   package_type                       = var.package_type
@@ -160,7 +161,9 @@ resource "aws_lambda_function" "this" {
 
     content {
       lambda_managed_instances_capacity_provider_config {
-        capacity_provider_arn = var.managed_instances_capacity_provider_arn
+        capacity_provider_arn                     = var.managed_instances_capacity_provider_arn
+        execution_environment_memory_gib_per_vcpu = var.managed_instances_execution_environment_memory_gib_per_vcpu
+        per_execution_environment_max_concurrency = var.managed_instances_max_concurrency_per_execution_environment
       }
     }
   }
@@ -479,8 +482,9 @@ resource "aws_lambda_event_source_mapping" "this" {
   dynamic "provisioned_poller_config" {
     for_each = try([each.value.provisioned_poller_config], [])
     content {
-      maximum_pollers = try(provisioned_poller_config.value.maximum_pollers, null)
-      minimum_pollers = try(provisioned_poller_config.value.minimum_pollers, null)
+      maximum_pollers   = try(provisioned_poller_config.value.maximum_pollers, null)
+      minimum_pollers   = try(provisioned_poller_config.value.minimum_pollers, null)
+      poller_group_name = try(provisioned_poller_config.value.poller_group_name, null)
     }
   }
 
