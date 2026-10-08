@@ -87,7 +87,7 @@ variable "runtime" {
 }
 
 variable "lambda_role" {
-  description = " IAM role ARN attached to the Lambda Function. This governs both who / what can invoke your Lambda Function, as well as what resources our Lambda Function has access to. See Lambda Permission Model for more details."
+  description = "IAM role ARN attached to the Lambda Function. Only used when create_role is false; when create_role is true (the default), the module creates and manages the role and this value is ignored. This governs both who / what can invoke your Lambda Function, as well as what resources your Lambda Function has access to. See Lambda Permission Model for more details."
   type        = string
   default     = ""
 }
