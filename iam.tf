@@ -129,6 +129,16 @@ data "aws_iam_policy_document" "logs" {
 
     resources = flatten([for _, v in ["%v:*", "%v:*:*"] : format(v, local.log_group_arn)])
   }
+
+  dynamic "statement" {
+    for_each = !var.use_existing_cloudwatch_log_group && var.attach_create_log_group_permission ? [1] : []
+
+    content {
+      effect    = "Allow"
+      actions   = ["logs:CreateLogGroup"]
+      resources = [trimsuffix(local.log_group_arn, ":*")]
+    }
+  }
 }
 
 resource "aws_iam_role_policy" "logs" {

@@ -58,3 +58,20 @@ jobs:
         shell: bash
         run: |
           ruff format --check .
+
+  terraform-policy:
+    name: CloudWatch logs IAM policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+
+      - name: Initialize Terraform
+        run: terraform init -backend=false -input=false
+
+      - name: Test CloudWatch logs IAM policy
+        run: terraform test -filter=tests/cloudwatch_log_group.tftest.hcl
