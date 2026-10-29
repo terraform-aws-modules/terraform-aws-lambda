@@ -68,7 +68,8 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.8.5
+          # Plan-time resource overrides in the policy tests require Terraform >= 1.11.
+          terraform_version: 1.11.4
 
       - name: Initialize Terraform
         run: terraform init -backend=false -input=false
