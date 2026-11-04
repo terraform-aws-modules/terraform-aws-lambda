@@ -28,6 +28,7 @@ data "external" "archive_prepare" {
 
     artifacts_dir = var.artifacts_dir
     runtime       = var.runtime
+    architectures = var.architectures[0]
     source_path   = try(tostring(var.source_path), jsonencode(var.source_path))
     hash_extra    = var.hash_extra
     # Include into the hash the module sources that affect the packaging.
