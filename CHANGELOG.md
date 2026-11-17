@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.13.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.13.0...v8.13.1) (2026-11-17)
+
+### Bug Fixes
+
+* Grant CreateLogGroup on the bare log group ARN ([#783](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/783)) ([7273ac2](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/7273ac27d55ee5493882f11be41c22f3bfc34497))
+
 ## [8.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.12.0...v8.13.0) (2026-10-29)
 
 ### Features
