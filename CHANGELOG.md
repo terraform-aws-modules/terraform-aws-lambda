@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.13.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.13.1...v8.13.2) (2026-11-17)
+
+### Bug Fixes
+
+* Gate `package_filename_for_hash` behind `create` variable ([#784](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/784)) ([2582ce8](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/2582ce85b4f6dce8d3103193c1e2769488b8e761))
+
 ## [8.13.1](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.13.0...v8.13.1) (2026-11-17)
 
 ### Bug Fixes
