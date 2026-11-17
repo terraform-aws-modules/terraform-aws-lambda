@@ -88,13 +88,15 @@ resource "aws_lambda_permission" "version_triggers" {
   # Error: Error adding new Lambda Permission for ... InvalidParameterValueException: We currently do not support adding policies for $LATEST.
   qualifier = local.version != "$LATEST" ? local.version : null
 
-  statement_id       = try(each.value.statement_id, each.key)
-  action             = try(each.value.action, "lambda:InvokeFunction")
-  principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id   = try(each.value.principal_org_id, null)
-  source_arn         = try(each.value.source_arn, null)
-  source_account     = try(each.value.source_account, null)
-  event_source_token = try(each.value.event_source_token, null)
+  statement_id             = try(each.value.statement_id, each.key)
+  action                   = try(each.value.action, "lambda:InvokeFunction")
+  principal                = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id         = try(each.value.principal_org_id, null)
+  source_arn               = try(each.value.source_arn, null)
+  source_account           = try(each.value.source_account, null)
+  event_source_token       = try(each.value.event_source_token, null)
+  function_url_auth_type   = try(each.value.function_url_auth_type, null)
+  invoked_via_function_url = try(each.value.invoked_via_function_url, null)
 }
 
 resource "aws_lambda_permission" "qualified_alias_triggers" {
@@ -103,13 +105,15 @@ resource "aws_lambda_permission" "qualified_alias_triggers" {
   function_name = var.function_name
   qualifier     = var.name
 
-  statement_id       = try(each.value.statement_id, each.key)
-  action             = try(each.value.action, "lambda:InvokeFunction")
-  principal          = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id   = try(each.value.principal_org_id, null)
-  source_arn         = try(each.value.source_arn, null)
-  source_account     = try(each.value.source_account, null)
-  event_source_token = try(each.value.event_source_token, null)
+  statement_id             = try(each.value.statement_id, each.key)
+  action                   = try(each.value.action, "lambda:InvokeFunction")
+  principal                = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id         = try(each.value.principal_org_id, null)
+  source_arn               = try(each.value.source_arn, null)
+  source_account           = try(each.value.source_account, null)
+  event_source_token       = try(each.value.event_source_token, null)
+  function_url_auth_type   = try(each.value.function_url_auth_type, null)
+  invoked_via_function_url = try(each.value.invoked_via_function_url, null)
 }
 
 resource "aws_lambda_event_source_mapping" "this" {

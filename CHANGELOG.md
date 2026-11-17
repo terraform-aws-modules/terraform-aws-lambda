@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.13.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.12.0...v8.13.0) (2026-10-29)
+
+### Features
+
+* Support Function URL invocation permissions ([#780](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/780)) ([871a717](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/871a71768e4733532288c980873a6ee41e6aa1e4))
+
 ## [8.12.0](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.11.0...v8.12.0) (2026-10-07)
 
 ### Features

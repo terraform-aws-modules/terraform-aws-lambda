@@ -343,14 +343,15 @@ resource "aws_lambda_permission" "current_version_triggers" {
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
 
-  statement_id_prefix    = try(each.value.statement_id, each.key)
-  action                 = try(each.value.action, "lambda:InvokeFunction")
-  principal              = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id       = try(each.value.principal_org_id, null)
-  source_arn             = try(each.value.source_arn, null)
-  source_account         = try(each.value.source_account, null)
-  event_source_token     = try(each.value.event_source_token, null)
-  function_url_auth_type = try(each.value.function_url_auth_type, null)
+  statement_id_prefix      = try(each.value.statement_id, each.key)
+  action                   = try(each.value.action, "lambda:InvokeFunction")
+  principal                = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id         = try(each.value.principal_org_id, null)
+  source_arn               = try(each.value.source_arn, null)
+  source_account           = try(each.value.source_account, null)
+  event_source_token       = try(each.value.event_source_token, null)
+  function_url_auth_type   = try(each.value.function_url_auth_type, null)
+  invoked_via_function_url = try(each.value.invoked_via_function_url, null)
 
   lifecycle {
     create_before_destroy = true
@@ -365,14 +366,15 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 
   function_name = aws_lambda_function.this[0].function_name
 
-  statement_id_prefix    = try(each.value.statement_id, each.key)
-  action                 = try(each.value.action, "lambda:InvokeFunction")
-  principal              = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id       = try(each.value.principal_org_id, null)
-  source_arn             = try(each.value.source_arn, null)
-  source_account         = try(each.value.source_account, null)
-  event_source_token     = try(each.value.event_source_token, null)
-  function_url_auth_type = try(each.value.function_url_auth_type, null)
+  statement_id_prefix      = try(each.value.statement_id, each.key)
+  action                   = try(each.value.action, "lambda:InvokeFunction")
+  principal                = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id         = try(each.value.principal_org_id, null)
+  source_arn               = try(each.value.source_arn, null)
+  source_account           = try(each.value.source_account, null)
+  event_source_token       = try(each.value.event_source_token, null)
+  function_url_auth_type   = try(each.value.function_url_auth_type, null)
+  invoked_via_function_url = try(each.value.invoked_via_function_url, null)
 
   lifecycle {
     create_before_destroy = true
