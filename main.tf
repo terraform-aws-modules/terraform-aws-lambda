@@ -74,6 +74,8 @@ resource "aws_lambda_function" "this" {
 
   filename         = local.filename
   source_code_hash = local.source_code_hash
+  # Lambda reports the same hash as CodeSha256, so state keeps the deployed value after a code update
+  code_sha256 = local.source_code_hash
 
   s3_bucket         = local.s3_bucket
   s3_key            = local.s3_key
