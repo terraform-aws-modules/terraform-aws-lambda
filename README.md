@@ -313,6 +313,8 @@ module "lambda_function" {
 }
 ```
 
+For IAM-authenticated Function URLs, use separate `allowed_triggers` entries for `lambda:InvokeFunctionUrl` with `function_url_auth_type = "AWS_IAM"` and `lambda:InvokeFunction` with `invoked_via_function_url = true`. The latter restricts that permission to invocations through a Function URL. Both options are supported by the root module and the alias submodule. See the [Function URL permissions example](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/function-url).
+
 ## Conditional creation
 
 Sometimes you need to have a way to create resources conditionally but Terraform does not allow usage of `count` inside `module` block, so the solution is to specify `create` arguments.
@@ -675,6 +677,7 @@ Disclosure: written by this module's maintainer, who also builds
 - [Build and Package](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages in various ways.
 - [Runtimes](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/build-package) - Build and create deployment packages for various runtimes (such as Rust, Go, Java).
 - [Alias](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/alias) - Create static and dynamic aliases in various ways.
+- [Function URL permissions](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/function-url) - Restrict invocation permissions to IAM-authenticated Function URLs for a function and an alias.
 - [Deploy](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/deploy) - Complete end-to-end build/update/deploy process using AWS CodeDeploy.
 - [Async Invocations](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/async) - Create Lambda Function with async event configuration (with SQS, SNS, and EventBridge integration).
 - [With VPC](https://github.com/terraform-aws-modules/terraform-aws-lambda/tree/master/examples/with-vpc) - Create Lambda Function with VPC.

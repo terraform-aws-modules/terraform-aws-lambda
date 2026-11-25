@@ -12,7 +12,7 @@ locals {
   # filename - to get package from local
   filename = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
 
-  source_code_hash = var.ignore_source_code_hash ? null : (terraform_data.package_filename_for_hash[0].output.filename != null ? try(filebase64sha256(terraform_data.package_filename_for_hash[0].output.filename), null) : null)
+  source_code_hash = !local.create || var.ignore_source_code_hash ? null : (terraform_data.package_filename_for_hash[0].output.filename != null ? try(filebase64sha256(terraform_data.package_filename_for_hash[0].output.filename), null) : null)
 
   # s3_* - to get package from S3
   s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
@@ -27,7 +27,7 @@ locals {
 # is set to the output of another resource, on that other resource.
 # terraform-docs-ignore
 resource "terraform_data" "package_filename_for_hash" {
-  count = var.ignore_source_code_hash ? 0 : 1
+  count = local.create && !var.ignore_source_code_hash ? 1 : 0
 
   input = {
     filename = local.filename
@@ -343,14 +343,15 @@ resource "aws_lambda_permission" "current_version_triggers" {
   function_name = aws_lambda_function.this[0].function_name
   qualifier     = aws_lambda_function.this[0].version
 
-  statement_id_prefix    = try(each.value.statement_id, each.key)
-  action                 = try(each.value.action, "lambda:InvokeFunction")
-  principal              = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id       = try(each.value.principal_org_id, null)
-  source_arn             = try(each.value.source_arn, null)
-  source_account         = try(each.value.source_account, null)
-  event_source_token     = try(each.value.event_source_token, null)
-  function_url_auth_type = try(each.value.function_url_auth_type, null)
+  statement_id_prefix      = try(each.value.statement_id, each.key)
+  action                   = try(each.value.action, "lambda:InvokeFunction")
+  principal                = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id         = try(each.value.principal_org_id, null)
+  source_arn               = try(each.value.source_arn, null)
+  source_account           = try(each.value.source_account, null)
+  event_source_token       = try(each.value.event_source_token, null)
+  function_url_auth_type   = try(each.value.function_url_auth_type, null)
+  invoked_via_function_url = try(each.value.invoked_via_function_url, null)
 
   lifecycle {
     create_before_destroy = true
@@ -365,14 +366,15 @@ resource "aws_lambda_permission" "unqualified_alias_triggers" {
 
   function_name = aws_lambda_function.this[0].function_name
 
-  statement_id_prefix    = try(each.value.statement_id, each.key)
-  action                 = try(each.value.action, "lambda:InvokeFunction")
-  principal              = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
-  principal_org_id       = try(each.value.principal_org_id, null)
-  source_arn             = try(each.value.source_arn, null)
-  source_account         = try(each.value.source_account, null)
-  event_source_token     = try(each.value.event_source_token, null)
-  function_url_auth_type = try(each.value.function_url_auth_type, null)
+  statement_id_prefix      = try(each.value.statement_id, each.key)
+  action                   = try(each.value.action, "lambda:InvokeFunction")
+  principal                = try(each.value.principal, format("%s.amazonaws.com", try(each.value.service, "")))
+  principal_org_id         = try(each.value.principal_org_id, null)
+  source_arn               = try(each.value.source_arn, null)
+  source_account           = try(each.value.source_account, null)
+  event_source_token       = try(each.value.event_source_token, null)
+  function_url_auth_type   = try(each.value.function_url_auth_type, null)
+  invoked_via_function_url = try(each.value.invoked_via_function_url, null)
 
   lifecycle {
     create_before_destroy = true
