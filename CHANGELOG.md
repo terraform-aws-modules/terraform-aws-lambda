@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.13.3](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.13.2...v8.13.3) (2026-11-25)
+
+### Bug Fixes
+
+* Fix uv.lock check for running uv export with --frozen ([#747](https://github.com/terraform-aws-modules/terraform-aws-lambda/issues/747)) ([3025e68](https://github.com/terraform-aws-modules/terraform-aws-lambda/commit/3025e68b54ec455e71ba5049867da0a02352abf8))
+
 ## [8.13.2](https://github.com/terraform-aws-modules/terraform-aws-lambda/compare/v8.13.1...v8.13.2) (2026-11-17)
 
 ### Bug Fixes
